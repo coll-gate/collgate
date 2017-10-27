@@ -59,6 +59,12 @@ let View = Marionette.CompositeView.extend({
         'click @ui.add_column_column': 'onAddColumn'
     },
 
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/cellcontextmenu'),
+        }
+    },
+
     templateContext: function () {
         return {
             columnsList: this.displayedColumns,

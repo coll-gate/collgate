@@ -8,10 +8,10 @@
  * @details 
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('./descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var Numeric = function() {
+let Numeric = function() {
     DescriptorFormatType.call(this);
 
     this.name = "numeric";
@@ -23,15 +23,15 @@ _.extend(Numeric.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-cog");
+            let input = this._createStdInput(parent, "glyphicon-cog");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
-            var group = $('<div class="input-group"></div>');
-            var input = $('<input class="form-control" width="100%">');
-            var glyph = $('<span class="input-group-addon"><span class="fa fa-cog"></span></span>');
+            let group = $('<div class="input-group"></div>');
+            let input = $('<input class="form-control" width="100%">');
+            let glyph = $('<span class="input-group-addon"><span class="fa fa-cog"></span></span>');
 
             group.append(input);
             group.append(glyph);
@@ -98,7 +98,7 @@ _.extend(Numeric.prototype, DescriptorFormatType.prototype, {
 
     values: function() {
         if (this.el && this.parent) {
-            var value = this.el.val();
+            let value = this.el.val();
             return value !== "" ? value : null;
         }
 
@@ -134,15 +134,15 @@ _.extend(Numeric.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function(e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
@@ -173,7 +173,7 @@ Numeric.DescriptorTypeDetailsView = Marionette.View.extend({
 
         this.ui.format_precision.selectpicker({style: 'btn-default', container: 'body'});
 
-        var format = this.model.get('format');
+        let format = this.model.get('format');
 
         if (format.unit != undefined) {
             this.ui.format_unit.selectpicker('val', format.unit);
@@ -185,7 +185,7 @@ Numeric.DescriptorTypeDetailsView = Marionette.View.extend({
     },
 
     getFormat: function() {
-        var customUnit = this.ui.format_unit.val() === "custom" ? this.ui.format_unit_custom.val() : "";
+        let customUnit = this.ui.format_unit.val() === "custom" ? this.ui.format_unit_custom.val() : "";
 
         return {
             'unit': this.ui.format_unit.val(),
@@ -195,7 +195,7 @@ Numeric.DescriptorTypeDetailsView = Marionette.View.extend({
     },
 
     changeFormatUnit: function () {
-        var unit = $(this.ui.format_unit).val();
+        let unit = $(this.ui.format_unit).val();
 
         switch (unit) {
             case "custom":
@@ -210,8 +210,8 @@ Numeric.DescriptorTypeDetailsView = Marionette.View.extend({
     },
 
     inputFormatUnitCustom: function () {
-        var v = this.ui.format_unit_custom.val();
-        var re = /^[a-zA-Z0-9_\-%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ]+$/i;
+        let v = this.ui.format_unit_custom.val();
+        let re = /^[a-zA-Z0-9_\-%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             $(this.ui.format_unit_custom).validateField('failed', _t("Invalid characters (alphanumeric, _-°%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ allowed)"));

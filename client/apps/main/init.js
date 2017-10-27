@@ -228,13 +228,19 @@ MainModule.prototype = {
      * @param foo 'show' or 'destroy' or nothing to simply get the element.
      * @returns {*|jQuery|HTMLElement}
      */
-    glassPane: function(foo) {
+    glassPane: function(foo, options) {
+        options || (options = {});
+
         if (!this.glassPaneElement) {
             this.glassPaneElement = $('<div class="glasspane glasspane-full"></div>');
         }
 
         if (foo === 'show' && $('body').children('div.glasspane').length === 0) {
             $('body').append(this.glassPaneElement);
+
+            if ("opacity" in options) {
+                this.glassPaneElement.css('opacity', options.opacity);
+            }
 
             this.glassPaneElement.on('click', function() {
                 // remove and all bound events

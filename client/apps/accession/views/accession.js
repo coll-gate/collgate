@@ -8,9 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'object accession element',
     attributes: function () {
@@ -54,7 +54,7 @@ var View = Marionette.View.extend({
     },
 
     actionsProperties: function () {
-        var properties = {
+        let properties = {
             manage: {disabled: false},
             remove: {disabled: false}
         };
@@ -80,11 +80,11 @@ var View = Marionette.View.extend({
     },
 
     synonymCell: function (td) {
-        var synonyms = this.model.get('synonyms');
+        let synonyms = this.model.get('synonyms');
 
         // @todo which one ?
         if (synonyms.length > 2) {
-            var text = this.model.get('synonyms')[2].name;
+            let text = this.model.get('synonyms')[2].name;
 
             td.html(text);
         }

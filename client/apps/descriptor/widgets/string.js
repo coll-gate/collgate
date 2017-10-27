@@ -8,10 +8,10 @@
  * @details 
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('./descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var StringType = function() {
+let StringType = function() {
     DescriptorFormatType.call(this);
 
     this.name = "string";
@@ -23,7 +23,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-font");
+            let input = this._createStdInput(parent, "glyphicon-font");
 
             // hard limit to 1024 characters
             input.attr('maxlength', 1024);
@@ -32,14 +32,20 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
             this.readOnly = true;
             this.el = input;
         } else {
-            var group = $('<div class="input-group"></div>');
-            var input = $('<input class="form-control" width="100%">');
-            var glyph = $('<span class="input-group-addon"><span class="fa fa-font"></span></span>');
+            let group = $('<div class="input-group"></div>');
+            let input = $('<input class="form-control" width="100%">');
+            let glyph = $('<span class="input-group-addon"><span class="fa fa-font"></span></span>');
+            let clean = $('<span class="form-clean-btn action fa fa-eraser"></span>');
 
             group.append(input);
+            group.append(clean);
             group.append(glyph);
 
             parent.append(group);
+
+            clean.on('click', function() {
+               input.val("");
+            });
 
             // hard limit to 1024 characters
             input.attr('maxlength', 1024);
@@ -47,9 +53,9 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
             if (typeof format.regexp !== "undefined") {
                 input.on("input", function(e) {
                     // check regexp and max length of 1024
-                    var val = $(e.target).val();
-                    var re = new RegExp(format.regexp);
-                    var el = $(e.target);
+                    let val = $(e.target).val();
+                    let re = new RegExp(format.regexp);
+                    let el = $(e.target);
 
                     if (val.length > 1024) {
                         StringType.prototype._validationHelper(el, -1, _t('characters_max', {count: 1024}));
@@ -63,8 +69,8 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
                 });
             } else {
                 input.on("input", function(e) {
-                    var val = $(e.target).val();
-                    var el = $(e.target);
+                    let val = $(e.target).val();
+                    let el = $(e.target);
 
                     // hard limit to 1024 characters
                     if (val.length > 1024) {
@@ -124,7 +130,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
 
     values: function() {
         if (this.el && this.parent) {
-            var value = this.el.val();
+            let value = this.el.val();
             return value !== "" ? value : null;
         }
 
@@ -160,15 +166,15 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function(e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
@@ -176,13 +182,13 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
 
     _validationHelper: function(input, type, comment) {
         // validation working on input-group only
-        var el = input.parent().parent();
+        let el = input.parent().parent();
 
         if (!el.hasClass('has-feedback')) {
             el.addClass('has-feedback');
         }
 
-        var help = input.parent().siblings('span.help-block');
+        let help = input.parent().siblings('span.help-block');
         if (help.length === 0) {
             help = $('<span class="help-block"></span>');
             el.append(help);
@@ -217,7 +223,7 @@ StringType.DescriptorTypeDetailsView = Marionette.View.extend({
     },
 
     onRender: function() {
-        var format = this.model.get('format');
+        let format = this.model.get('format');
 
         this.ui.format_regexp.val(format.regexp);
     },

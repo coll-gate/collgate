@@ -8,8 +8,8 @@
  * @details
  */
 
-var Backbone = require('backbone');
-var Marionette = require('backbone.marionette');
+let Backbone = require('backbone');
+let Marionette = require('backbone.marionette');
 
 underscore = require("underscore");
 
@@ -57,7 +57,7 @@ Object.resolve = function(path, obj) {
 };
 
 // global application
-var Application = Marionette.Application.extend({
+let Application = Marionette.Application.extend({
 
     region: '#root',
 
@@ -83,7 +83,7 @@ var Application = Marionette.Application.extend({
         // capture most of HTTP error and display an alert message
         Backbone.originalSync = Backbone.sync;
         Backbone.sync = function (method, model, opts) {
-            var xhr, dfd;
+            let xhr, dfd;
 
             dfd = $.Deferred();
 
@@ -107,7 +107,7 @@ var Application = Marionette.Application.extend({
 
             // for each form automatically add the CSRF token
             xhr.done(function() {
-                var csrftoken = getCookie('csrftoken');
+                let csrftoken = getCookie('csrftoken');
                 $('form').each(function(index, el) {
                     $(this).find('input[name="csrfmiddlewaretoken"]').attr('value', csrftoken)
                 });
@@ -133,7 +133,7 @@ var Application = Marionette.Application.extend({
                 } else {
                     if (typeof(xhr.responseText) !== "undefined") {
                         if (xhr.getResponseHeader('Content-Type') === "application/json") {
-                            // var data = JSON.parse(xhr.responseText);
+                            // let data = JSON.parse(xhr.responseText);
                             // if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
                             //     $.alert.error(data.cause);
                             // }

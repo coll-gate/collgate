@@ -8,9 +8,9 @@
  * @details 
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
+let DescriptorFormatType = require('./descriptorformattype');
 
-var Ordinal = function() {
+let Ordinal = function() {
     DescriptorFormatType.call(this);
 
     this.name = "ordinal";
@@ -28,14 +28,14 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         }
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-option-vertical");
+            let input = this._createStdInput(parent, "glyphicon-option-vertical");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
             if (this.isInput) {
-                var input = $('<input" width="100%">');
+                let input = $('<input" width="100%">');
                 this.groupEl = this._createInputGroup(parent, "glyphicon-option-vertical", input);
 
                 input.numeric({
@@ -55,11 +55,11 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
                 this.el = input;
             } else {
                 // ordinal with at max 256 values as a dropdown
-                var select = $('<select data-width="100%"></select>');
+                let select = $('<select data-width="100%"></select>');
                 this.groupEl = this._createInputGroup(parent, "glyphicon-option-vertical", select);
 
-                for (var i = format.range[0]; i <= format.range[1]; ++i) {
-                    var option = $("<option></option>");
+                for (let i = format.range[0]; i <= format.range[1]; ++i) {
+                    let option = $("<option></option>");
 
                     option.attr("value", i);
                     option.html(i);
@@ -136,7 +136,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             if (this.el.val() !== "") {
-                var value = parseInt(this.el.val());
+                let value = parseInt(this.el.val());
                 return isNaN(value) ? null : value;
             } else {
                 return null;
@@ -180,22 +180,22 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function(e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
     }
 });
 
-var Numeric = require('./numeric');
+let Numeric = require('./numeric');
 
 Ordinal.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
     template: require('../templates/widgets/ordinal.html'),
@@ -216,7 +216,7 @@ Ordinal.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
         // same as numeric excepted the precision
         application.descriptor.views.formatUnits.drawSelect(this.ui.format_unit);
 
-        var format = this.model.get('format');
+        let format = this.model.get('format');
 
         if (format.unit != undefined) {
             this.ui.format_unit.selectpicker('val', format.unit);
@@ -225,7 +225,7 @@ Ordinal.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
         this.ui.format_range_min.numeric({decimal : false, negative : false, maxDecimalPlaces: 0});
         this.ui.format_range_max.numeric({decimal : false, negative : false, maxDecimalPlaces: 0});
 
-        var format = this.model.get('format');
+        format = this.model.get('format');
 
         if (format.range !== undefined) {
             this.ui.format_range_min.val(format.range[0]);
@@ -237,7 +237,7 @@ Ordinal.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
     },
 
     getFormat: function() {
-        var customUnit = this.ui.format_unit.val() === "custom" ? this.ui.format_unit_custom.val() : "";
+        let customUnit = this.ui.format_unit.val() === "custom" ? this.ui.format_unit_custom.val() : "";
 
         return {
             'unit': this.ui.format_unit.val(),

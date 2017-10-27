@@ -8,9 +8,9 @@
  * @details 
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
+let DescriptorFormatType = require('./descriptorformattype');
 
-var NumericRange = function() {
+let NumericRange = function() {
     DescriptorFormatType.call(this);
 
     this.name = "numeric_range";
@@ -22,15 +22,15 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-cog");
+            let input = this._createStdInput(parent, "glyphicon-cog");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
-            var group = $('<div class="input-group"></div>');
-            var input = $('<input class="form-control" width="100%">');
-            var glyph = $('<span class="input-group-addon"><span class="fa fa-cog"></span></span>');
+            let group = $('<div class="input-group"></div>');
+            let input = $('<input class="form-control" width="100%">');
+            let glyph = $('<span class="input-group-addon"><span class="fa fa-cog"></span></span>');
 
             group.append(input);
             group.append(glyph);
@@ -97,7 +97,7 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
 
     values: function() {
         if (this.el && this.parent) {
-            var value = this.el.val();
+            let value = this.el.val();
             return value !== "" ? value : null;
         }
 
@@ -133,22 +133,22 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function(e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
     }
 });
 
-var Numeric = require('./numeric');
+let Numeric = require('./numeric');
 
 NumericRange.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
     template: require('../templates/widgets/numericrange.html'),
@@ -172,7 +172,7 @@ NumericRange.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.exten
         this.ui.format_range_min.numeric({decimal: '.', negative: false});
         this.ui.format_range_max.numeric({decimal: '.', negative: false});
 
-        var format = this.model.get('format');
+        let format = this.model.get('format');
 
         if (format.range !== undefined) {
             this.ui.format_range_min.val(format.range[0]);
@@ -184,7 +184,7 @@ NumericRange.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.exten
     },
 
     getFormat: function() {
-        var format = NumericRange.DescriptorTypeDetailsView.__super__.getFormat.apply(this);
+        let format = NumericRange.DescriptorTypeDetailsView.__super__.getFormat.apply(this);
 
         format.range = [
             this.ui.format_range_min.val(),

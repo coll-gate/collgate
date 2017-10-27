@@ -8,9 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object classification-rank actions',
     template: require('../templates/classificationrank.html'),
@@ -66,7 +66,7 @@ var View = Marionette.View.extend({
     },
 
     actionsProperties: function() {
-        var properties = {
+        let properties = {
             tag: {disabled: false},
             remove: {disabled: false}
         };
@@ -96,7 +96,7 @@ var View = Marionette.View.extend({
             return false;
         }
 
-        var collection = this.model.collection;
+        let collection = this.model.collection;
         this.model.destroy({wait: true}).done(function (model) {
             collection.fetch({reset: true});
         });
@@ -109,8 +109,8 @@ var View = Marionette.View.extend({
             return false;
         }
 
-        var ChangeLabel = require('../../main/views/entitychangelabel');
-        var changeLabel = new ChangeLabel({
+        let ChangeLabel = require('../../main/views/entitychangelabel');
+        let changeLabel = new ChangeLabel({
             model: this.model,
             title: _t("Change the labels for the classification rank")});
 
@@ -120,8 +120,8 @@ var View = Marionette.View.extend({
     },
 
     renameClassificationRank: function() {
-        var ChangeName = require('../../main/views/entityrename');
-        var changeName = new ChangeName({
+        let ChangeName = require('../../main/views/entityrename');
+        let changeName = new ChangeName({
             model: this.model,
             title: _t("Rename classification rank")
         });
@@ -205,15 +205,15 @@ var View = Marionette.View.extend({
             return false;
         }
 
-        var elt = application.main.dnd.get();
+        let elt = application.main.dnd.get();
         if (elt.$el.hasClass('classification-rank')) {
             // reset borders
             this.$el.css('border-top', 'initial');
             this.$el.css('border-bottom', 'initial');
 
             if (this.model.collection) {
-                // var dst = $(e.originalEvent.target).parent('tr');
-                // var dstId = parseInt(dst.attr('element-id'));
+                // let dst = $(e.originalEvent.target).parent('tr');
+                // let dstId = parseInt(dst.attr('element-id'));
 
                 this.model.collection.moveClassificationRankAfter(
                     elt.model.get('id'),

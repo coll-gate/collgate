@@ -56,27 +56,11 @@ let View = AdvancedTable.extend({
         }
     },
 
-    templateContext: function () {
-        return {
-            columnsList: this.displayedColumns,
-            columnsOptions: this.getOption('columns')
-        }
-    },
-
-    childViewOptions: function () {
-        return {
-            columnsList: this.displayedColumns,
-            columnsOptions: this.getOption('columns')
-        }
-    },
-
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
+
         this.relatedEntity = this.getOption('relatedEntity');
         this.filters = this.getOption('filters');
-
-        // let context_menu = options.context_menu;
-        // this.listenTo(this.collection, 'reset', this.render, this);
     },
 
     onShowTab: function () {
@@ -127,7 +111,6 @@ let View = AdvancedTable.extend({
     onLinkToPanel: function () {
         application.accession.controllers.panel.linkAccessions(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
     }
-
 });
 
 // support of descriptors columns extension

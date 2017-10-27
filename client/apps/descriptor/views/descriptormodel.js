@@ -8,13 +8,21 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-model',
     template: require('../templates/descriptormodel.html'),
-
+    // template: require('../templates/entity.html'),
+/*
+    templateContext: function () {
+        return {
+            columnsList: this.getOption('columnsList'),
+            columnsOptions: this.getOption('columnsOptions')
+        }
+    },
+*/
     ui: {
         delete_btn: 'button.action.delete',
         edit_btn: '.action.edit',
@@ -43,7 +51,7 @@ var View = Marionette.View.extend({
     },
 
     actionsProperties: function() {
-        var properties = {
+        let properties = {
             tag: {disabled: false},
             remove: {disabled: false}
         };
