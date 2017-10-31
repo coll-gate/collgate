@@ -27,7 +27,6 @@ from igdectk.module.manager import module_manager
 
 from messenger.commands import COMMAND_CACHE_INVALIDATION
 
-
 logger = logging.getLogger('collgate')
 
 
@@ -167,7 +166,7 @@ class Entity(models.Model):
     CONTENT_TYPE_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 64, "pattern": r"^[a-z]{3,}\.[a-z]{3,}$"}
 
     # permission string validator
-    PERMISSION_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 64,  "pattern": r"^\S+[a-z-_]+\S+$"}
+    PERMISSION_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 64, "pattern": r"^\S+[a-z-_]+\S+$"}
 
     # entity status validator
     ENTITY_STATUS_VALIDATOR = {"type": "integer", "minimum": 0, "maximum": 3}
@@ -593,13 +592,15 @@ def _cache_update(sender, instance, created, **kwargs):
     if hasattr(instance, 'on_client_cache_update'):
         for invalidator in instance.on_client_cache_update():
             messenger_module = module_manager.get_module('messenger')
-            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, invalidator)
+            if hasattr(messenger_module, 'tcp_client'):
+                messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, invalidator)
 
     elif hasattr(instance, 'client_cache_update'):
         for invalidator in instance.client_cache_update:
             messenger_module = module_manager.get_module('messenger')
-            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
-                'category': invalidator, 'name': '*', 'values': None})
+            if hasattr(messenger_module, 'tcp_client'):
+                messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
+                    'category': invalidator, 'name': '*', 'values': None})
 
 
 @receiver(models.signals.post_save, sender=Entity)
