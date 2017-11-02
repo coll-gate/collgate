@@ -330,6 +330,10 @@ class ClassificationEntry(Entity):
     class Meta:
         verbose_name = _("classification entry")
 
+        permissions = (
+            ("list_classificationentry", "Can list classification entry"),
+        )
+
     def natural_name(self):
         return self.name
 

@@ -1,4 +1,4 @@
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin3');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin3');
 const I18NextWebpackPlugin = require('./translation');
 
 let fs = require("fs");
@@ -98,29 +98,29 @@ module.exports = function (env) {
     };
 
     if (env && env.minimized) {
-        defaults.plugins.push(
-            new webpack.BannerPlugin(fs.readFileSync('../LICENSE', 'utf8')),
-            new webpack.LoaderOptionsPlugin({debug: false}),
-            new /*webpack.optimize.*/UglifyJsPlugin({
-                parallel: true,
-                sourceMap: false,  // not for release
-                uglifyOptions: {
-                    ecma: 8,
-                    ie8: false,
-                    mangle: {
-                        //except: ['$super', '$', 'exports', 'require']
-                    },
-                    comments: /Coll-Gate IS /,
-                    minimize: true,
-                    output: {
-                        comments: false,
-                        beautify: false
-                    },
-                    compress: {
-                        warnings: false
-                    }
-                }
-            }));
+        // defaults.plugins.push(
+        //     new webpack.BannerPlugin(fs.readFileSync('../LICENSE', 'utf8')),
+        //     new webpack.LoaderOptionsPlugin({debug: false}),
+        //     new /*webpack.optimize.*/UglifyJsPlugin({
+        //         parallel: true,
+        //         sourceMap: false,  // not for release
+        //         uglifyOptions: {
+        //             ecma: 8,
+        //             ie8: false,
+        //             mangle: {
+        //                 //except: ['$super', '$', 'exports', 'require']
+        //             },
+        //             comments: /Coll-Gate IS /,
+        //             minimize: true,
+        //             output: {
+        //                 comments: false,
+        //                 beautify: false
+        //             },
+        //             compress: {
+        //                 warnings: false
+        //             }
+        //         }
+        //     }));
         defaults.output.filename = 'app.min.js';
     } else {
         defaults.devtool = "source-map";
