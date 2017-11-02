@@ -77,7 +77,7 @@ var View = Marionette.View.extend({
         if (this.widget.allow_multiple) {
             this.widget.destroy();
 
-            if (_.indexOf([
+            if ([
                     'in',
                     'notin',
                     'contains',
@@ -86,7 +86,7 @@ var View = Marionette.View.extend({
                     'not_contained_by',
                     'overlap',
                     'not_overlap'
-                ], this.ui.condition.val())) {
+                ].includes(this.ui.condition.val())) {
                 this.widget.create(column.format, this.ui.field_value_group, false, column.group, column.type, {
                     multiple: true,
                     extended_search: false
@@ -98,7 +98,7 @@ var View = Marionette.View.extend({
                 });
             }
         } else {
-            if (_.indexOf([
+            if ([
                     'in',
                     'notin',
                     'contains',
@@ -107,7 +107,7 @@ var View = Marionette.View.extend({
                     'not_contained_by',
                     'overlap',
                     'not_overlap'
-                ], this.ui.condition.val())) {
+                ].includes(this.ui.condition.val())) {
                 this.ui.field_value_group.find('select').prop('multiple', true).selectpicker('destroy').selectpicker({container: '.modal'});
             } else {
                 this.ui.field_value_group.find('select').prop('multiple', false).selectpicker('destroy').selectpicker({container: '.modal'});
