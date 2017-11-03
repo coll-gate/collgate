@@ -8,10 +8,10 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var EventMessageView = require('./eventmessage');
+let Marionette = require('backbone.marionette');
+let EventMessageView = require('./eventmessage');
 
-var View = Marionette.CollectionView.extend({
+let View = Marionette.CollectionView.extend({
     className: "event-message-list",
     childView: EventMessageView
 });

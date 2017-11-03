@@ -26,10 +26,10 @@
         if (version1 === version2) {
             return 0;
         }
-        var v1 = normalize(version1);
-        var v2 = normalize(version2);
-        var len = Math.max(v1.length, v2.length);
-        for (var i = 0; i < len; i++) {
+        let v1 = normalize(version1);
+        let v2 = normalize(version2);
+        let len = Math.max(v1.length, v2.length);
+        for (let i = 0; i < len; i++) {
             v1[i] = v1[i] || 0;
             v2[i] = v2[i] || 0;
             if (v1[i] === v2[i]) {

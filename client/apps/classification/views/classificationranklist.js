@@ -8,10 +8,10 @@
  * @details
  */
 
-var ClassificationRankView = require('../views/classificationrank');
-var AdvancedTable = require('../../main/views/advancedtable');
+let ClassificationRankView = require('../views/classificationrank');
+let AdvancedTable = require('../../main/views/advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/classificationranklist.html"),
     className: "object classification-rank-list advanced-table-container",
     childView: ClassificationRankView,
@@ -142,10 +142,10 @@ var View = AdvancedTable.extend({
         this.$el.find("tbody tr").last().css('border-bottom', 'initial');
         this.$el.find("thead tr th").css('border-bottom', 'initial');
 
-        var elt = application.main.dnd.get();
+        let elt = application.main.dnd.get();
         if (elt.$el.hasClass('classification-rank')) {
-            // var dst = $(e.originalEvent.target).parent('tr');
-            // var dstId = parseInt(dst.attr('element-id'));
+            // let dst = $(e.originalEvent.target).parent('tr');
+            // let dstId = parseInt(dst.attr('element-id'));
 
             if (application.main.dnd.getTarget()) {
                 this.collection.moveClassificationRankAfter(

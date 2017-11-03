@@ -8,11 +8,11 @@
  * @details
  */
 
-var AccessionClassificationEntryView = require('./accessionclassificationentry');
-var AdvancedTable = require('../../main/views/advancedtable');
-var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
+let AccessionClassificationEntryView = require('./accessionclassificationentry');
+let AdvancedTable = require('../../main/views/advancedtable');
+let DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../../descriptor/templates/entitylist.html"),
     className: "classification-entry-list advanced-table-container",
     childView: AccessionClassificationEntryView,

@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'type-add',
     template: require('../templates/descriptorvalueadd.html'),
@@ -41,7 +41,7 @@ var View = Marionette.View.extend({
     },
 
     validateValue: function() {
-        var v = this.ui.value.val();
+        let v = this.ui.value.val();
 
         if (v.length < 1) {
             $(this.ui.value).validateField('failed', _t('characters_min', {count: 1}));

@@ -8,9 +8,9 @@
  * @details
  */
 
-var DescribableModel = require('../models/describable');
+let DescribableModel = require('../models/describable');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: window.application.url(['descriptor', 'describable']),
     model: DescribableModel,
 
@@ -21,7 +21,7 @@ var Collection = Backbone.Collection.extend({
     default: [],
 
     findLabel: function (value) {
-        var res = this.findWhere({value: value});
+        let res = this.findWhere({value: value});
         return res ? res.get('label') : '';
     },
 });

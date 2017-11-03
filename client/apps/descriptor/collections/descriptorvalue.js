@@ -8,9 +8,9 @@
  * @details 
  */
 
-var DescriptorTypeModel = require('../models/descriptorvalue');
+let DescriptorTypeModel = require('../models/descriptorvalue');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: function() {
         return window.application.url(['descriptor', 'group', this.group_id, 'type', this.type_id, 'value']);
     },
@@ -40,7 +40,7 @@ var Collection = Backbone.Collection.extend({
 
     fetch: function(options) {
         options || (options = {});
-        var data = (options.data || {});
+        let data = (options.data || {});
 
         options.data = data;
 

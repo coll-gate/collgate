@@ -8,9 +8,9 @@
  * @details
  */
 
-var DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
+let DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
 
-var Accession = DescriptorMetaModelType.extend({
+let Accession = DescriptorMetaModelType.extend({
     template: require('../templates/descriptormetamodeltypes/accession.html'),
 
     ui: {
@@ -19,25 +19,25 @@ var Accession = DescriptorMetaModelType.extend({
     },
 
     onRender: function() {
-        var primaryClassification = this.ui.primary_classification;
+        let primaryClassification = this.ui.primary_classification;
 
         // classifications list according to the related meta model of accession
-        var ClassificationCollection = require('../../classification/collections/classification');
-        var classificationCollection = new ClassificationCollection();
+        let ClassificationCollection = require('../../classification/collections/classification');
+        let classificationCollection = new ClassificationCollection();
 
-        var SelectOption = require('../../main/renderers/selectoption');
-        var classifications = new SelectOption({
+        let SelectOption = require('../../main/renderers/selectoption');
+        let classifications = new SelectOption({
             className: "classification",
             collection: classificationCollection
         });
 
-        var primaryClassificationValue = Object.resolve('data.primary_classification', this.model.get('parameters'));
+        let primaryClassificationValue = Object.resolve('data.primary_classification', this.model.get('parameters'));
 
         classifications.drawSelect(primaryClassification, true, true, primaryClassificationValue).done(function () {
         });
 
         // batches list
-        var batchesListValues = Object.resolve('data.batch_descriptor_meta_models', this.model.get('parameters')) || [];
+        let batchesListValues = Object.resolve('data.batch_descriptor_meta_models', this.model.get('parameters')) || [];
 
         this.batchesWidget = application.descriptor.widgets.newElement('descriptor_meta_model');
         this.batchesWidget.create(

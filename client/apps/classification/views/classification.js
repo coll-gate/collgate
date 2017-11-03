@@ -8,9 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object classification actions',
     template: require('../templates/classification.html'),
@@ -47,7 +47,7 @@ var View = Marionette.View.extend({
     },
 
     actionsProperties: function() {
-        var properties = {
+        let properties = {
             tag: {disabled: false},
             remove: {disabled: false},
             edit: {disabled: false},
@@ -87,8 +87,8 @@ var View = Marionette.View.extend({
             return false;
         }
 
-        var ChangeLabel = require('../../main/views/entitychangelabel');
-        var changeLabel = new ChangeLabel({
+        let ChangeLabel = require('../../main/views/entitychangelabel');
+        let changeLabel = new ChangeLabel({
             model: this.model,
             title: _t("Change the labels for the classification")});
 
@@ -98,8 +98,8 @@ var View = Marionette.View.extend({
     },
 
     renameClassification: function() {
-        var ChangeName = require('../../main/views/entityrename');
-        var changeName = new ChangeName({
+        let ChangeName = require('../../main/views/entityrename');
+        let changeName = new ChangeName({
             model: this.model,
             title: _t("Rename the classification")
         });

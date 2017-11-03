@@ -8,7 +8,7 @@
  * @details 
  */
 
-var DescriptorFormatType = function() {
+let DescriptorFormatType = function() {
     this.name = "";         // format type name
     this.group = "";        // related informal group name
 
@@ -39,11 +39,11 @@ DescriptorFormatType.prototype = {
      * @private
      */
     _createStdInput: function(parent, glyphicon) {
-        var group = $('<div class="input-group"></div>');
-        var glyph = $('<span class="input-group-addon"><span class="glyphicon ' + glyphicon + '"></span></span>');
+        let group = $('<div class="input-group"></div>');
+        let glyph = $('<span class="input-group-addon"><span class="glyphicon ' + glyphicon + '"></span></span>');
         glyph.css(this.spanStyle);
 
-        var input = $('<input class="form-control" readonly="">');
+        let input = $('<input class="form-control" readonly="">');
         input.css(this.inputStyle);
 
         group.append(input);
@@ -62,8 +62,8 @@ DescriptorFormatType.prototype = {
      * @return {*|jQuery|HTMLElement} The created group
      */
     _createInputGroup: function(parent, glyphicon, input) {
-        var group = $('<div class="input-group"></div>');
-        var glyph = $('<span class="input-group-addon"><span class="glyphicon ' + glyphicon + '"></span></span>');
+        let group = $('<div class="input-group"></div>');
+        let glyph = $('<span class="input-group-addon"><span class="glyphicon ' + glyphicon + '"></span></span>');
         glyph.css(this.spanStyle);
 
         input.addClass('form-control');

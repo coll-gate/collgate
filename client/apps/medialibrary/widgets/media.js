@@ -8,10 +8,10 @@
  * @details 
  */
 
-var DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var Media = function() {
+let Media = function() {
     DescriptorFormatType.call(this);
 
     this.name = "media";
@@ -25,15 +25,15 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
         this.value = null;
 
         if (readOnly) {
-            var group = $('<div class="input-group"></div>');
-            var glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
+            let group = $('<div class="input-group"></div>');
+            let glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
             glyph.css(this.spanStyle);
 
             if (format.media_inline) {
                 /* miniature + download */
-                var group = $('<div class="input-group"></div>');
-                var collection = $('<div class="media-image-collection"></div>');
-                var glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
+                let group = $('<div class="input-group"></div>');
+                let collection = $('<div class="media-image-collection"></div>');
+                let glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
 
                 collection.css('height', 'auto');
 
@@ -47,14 +47,14 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 this.el = group;
                 this.parent = parent;
             } else {
-                var btnGroup = $('<span class="input-group-btn"></span>');
+                let btnGroup = $('<span class="input-group-btn"></span>');
                 btnGroup.css({
                     'width': '100%',
                     'height': '24px',
                     'padding': '0px'
                 });
 
-                var preview = $('<span class="media-preview btn btn-default"><span class="fa fa-eye"></span>&nbsp;' + _t('Preview') + '</span>');
+                let preview = $('<span class="media-preview btn btn-default"><span class="fa fa-eye"></span>&nbsp;' + _t('Preview') + '</span>');
                 preview.css({
                     'padding-top': '1px',
                     'padding-bottom': '1px',
@@ -63,7 +63,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 });
                 btnGroup.append(preview);
 
-                var download = $('<span class="media-download btn btn-default"><span class="fa fa-download"></span>&nbsp;' + _t('Download') + '</span>');
+                let download = $('<span class="media-download btn btn-default"><span class="fa fa-download"></span>&nbsp;' + _t('Download') + '</span>');
                 download.css({
                     'padding-top': '1px',
                     'padding-bottom': '1px',
@@ -82,7 +82,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
                 preview.on('click', $.proxy(function(e) {
                     if (this.value) {
-                        var widget = this;
+                        let widget = this;
 
                         // get the media mime-type
                         $.ajax({
@@ -90,11 +90,11 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                             url: window.application.url(['medialibrary', 'media', this.value]),
                             contentType: "application/json; charset=utf-8"
                         }).done(function(data) {
-                            var url = window.application.url(['medialibrary', 'media', data.uuid, 'download']);
+                            let url = window.application.url(['medialibrary', 'media', data.uuid, 'download']);
 
                             // get mime-type, and if compatible with a client view show it else download it
                             if (data.mime_type.startsWith('image/')) {
-                                var img = $('<img src="' + url + '" alt="' + data.file_name + '"></img>');
+                                let img = $('<img src="' + url + '" alt="' + data.file_name + '"></img>');
                                 img.css('display', 'none');
 
                                 $('body').append(img);
@@ -135,16 +135,16 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             this.readOnly = true;
         } else {
             /* show upload button and progress bar */
-            var group = $('<div class="input-group"></div>');
+            let group = $('<div class="input-group"></div>');
 
-            var btnGroup = $('<span class="input-group-btn"></span>');
-            var browse = $('<span class="btn btn-default btn-file">' + _t('Browse') + '</span>');
-            var erase = $('<span class="btn btn-default btn-file"><span class="fa fa-times"></span></span>');
+            let btnGroup = $('<span class="input-group-btn"></span>');
+            let browse = $('<span class="btn btn-default btn-file">' + _t('Browse') + '</span>');
+            let erase = $('<span class="btn btn-default btn-file"><span class="fa fa-times"></span></span>');
 
-            var input = $('<input type="file" style="display: none;">');
-            var progress = $('<span class="input-group-addon progress"><span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">0%</span></span>');
-            var fileName = $('<input type="text" class="form-control" readonly>');
-            var glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
+            let input = $('<input type="file" style="display: none;">');
+            let progress = $('<span class="input-group-addon progress"><span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">0%</span></span>');
+            let fileName = $('<input type="text" class="form-control" readonly>');
+            let glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
 
             progress.css({
                 'width': '30%',
@@ -172,11 +172,11 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             }, this));
 
             // upload a file object.
-            var uploadFile = function(widget, file) {
+            let uploadFile = function(widget, file) {
                 // empty progress bar
                 widget.progress.updateProgressBar(0, 0, 0);
 
-                var formData = new FormData();
+                let formData = new FormData();
                 formData.append('file', file);
 
                 $.ajax({
@@ -188,7 +188,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     contentType: false,
                     processData: false,
                     xhr: function() {
-                        var xhr = $.ajaxSettings.xhr();
+                        let xhr = $.ajaxSettings.xhr();
 
                         // progression
                         xhr.onprogress = function(e) {
@@ -221,7 +221,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
             // upload on change
             input.on('change', $.proxy(function(e) {
-                var file = this.el[0].files[0];
+                let file = this.el[0].files[0];
                 this.fileName.val(file.name);
 
                 uploadFile(this, this.el[0].files[0]);
@@ -236,7 +236,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 this.fileName.prop('readonly', true);
 
                 // jquery returns event in originalEvent
-                var file = e.originalEvent.dataTransfer.files[0];
+                let file = e.originalEvent.dataTransfer.files[0];
                 this.fileName.attr('value', file.name);
 
                 uploadFile(this, file);
@@ -271,7 +271,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     this.fileName.val("");
                     this.value = null;
                 } else if (this.value != null) {
-                    var widget = this;
+                    let widget = this;
 
                     // erase the last uploaded media and set descriptor value to null
                     $.ajax({
@@ -319,7 +319,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
     cancel: function() {
         if (this.el && this.parent) {
             if (!this.readOnly && this.value && this.value != this.initial) {
-                var widget = this;
+                let widget = this;
 
                 // erase the last uploaded media and set descriptor value to null
                 $.ajax({
@@ -393,7 +393,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
                 // mean inline mode for image
                 if (this.collection) {
-                     var widget = this;
+                     let widget = this;
 
                     // get the media file name
                     $.ajax({
@@ -403,8 +403,8 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     }).done(function(data) {
                         widget.media = data;
 
-                        var url = window.application.url(['medialibrary', 'media', data.uuid, 'download']);
-                        var img = $('<img class="media-image" src="' + url + '" alt="' + data.file_name + '"></img>');
+                        let url = window.application.url(['medialibrary', 'media', data.uuid, 'download']);
+                        let img = $('<img class="media-image" src="' + url + '" alt="' + data.file_name + '"></img>');
 
                         // center the miniature
                         img.css({
@@ -412,7 +412,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                             'margin-left': '43.5%'
                         });
 
-                        var download = $('<span class="media-download contextual btn btn-default"><span class="fa fa-download"></span></span>');
+                        let download = $('<span class="media-download contextual btn btn-default"><span class="fa fa-download"></span></span>');
                         download.on('click', $.proxy(function(e) {
                             // download the document
                             $('<form></form>')
@@ -442,7 +442,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 this.value = null;
 
                 if (this.collection) {
-                    var placeholder = $('<span class="fa fa-ban"></span>');
+                    let placeholder = $('<span class="fa fa-ban"></span>');
 
                     // center the placeholder
                     placeholder.css({
@@ -469,7 +469,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     this.erase.removeClass('disabled');
                 }
 
-                var widget = this;
+                let widget = this;
 
                 // get the media file name
                 $.ajax({
@@ -531,15 +531,15 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function(e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
@@ -567,7 +567,7 @@ Media.DescriptorTypeDetailsView = Marionette.View.extend({
 
         this.ui.format_media_inline.selectpicker({style: 'btn-default'});
 
-        var format = this.model.get('format');
+        let format = this.model.get('format');
 
         if (format.media_types != undefined) {
             this.ui.format_media_types.selectpicker('val', format.media_types);

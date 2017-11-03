@@ -8,10 +8,10 @@
  * @details
  */
 
-var MenuEntryBase = require('./menuentrybase');
-var MenuSeparator = require('./menuseparator');
+let MenuEntryBase = require('./menuentrybase');
+let MenuSeparator = require('./menuseparator');
 
-var Menu = function(name, label, order, auth) {
+let Menu = function(name, label, order, auth) {
     this.name = name || "";
     this.label = label || "";
     this.order = order || -1;

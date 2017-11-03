@@ -8,12 +8,12 @@
  * @details
  */
 
-var LayoutView = require('../../main/views/layout');
-var ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
-var EntityListFilterView = require('../../descriptor/views/entitylistfilter');
+let LayoutView = require('../../main/views/layout');
+let ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
+let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
-var Layout = LayoutView.extend({
+let Layout = LayoutView.extend({
     template: require("../templates/panellayout.html"),
     templateContext: function () {
         return {
@@ -67,10 +67,10 @@ var Layout = LayoutView.extend({
     },
 
     onDescriptorMetaModelChange: function (model, value) {
-        var panelLayout = this;
+        let panelLayout = this;
         if (value == null) {
-            var AccessionPanelDescriptorCreateView = require('./accessionpaneldescriptorcreate');
-            var accessionPanelDescriptorCreateView = new AccessionPanelDescriptorCreateView({model: model});
+            let AccessionPanelDescriptorCreateView = require('./accessionpaneldescriptorcreate');
+            let accessionPanelDescriptorCreateView = new AccessionPanelDescriptorCreateView({model: model});
 
             panelLayout.showChildView('descriptors', accessionPanelDescriptorCreateView);
 
@@ -85,8 +85,8 @@ var Layout = LayoutView.extend({
                 url: window.application.url(['descriptor', 'meta-model', value, 'layout']),
                 dataType: 'json'
             }).done(function (data) {
-                var PanelDescriptorView = require('../views/accessionpaneldescriptor');
-                var panelDescriptorView = new PanelDescriptorView({
+                let PanelDescriptorView = require('../views/accessionpaneldescriptor');
+                let panelDescriptorView = new PanelDescriptorView({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
@@ -100,18 +100,18 @@ var Layout = LayoutView.extend({
     },
 
     onRender: function () {
-        var panelLayout = this;
+        let panelLayout = this;
 
         if (this.model.isNew()) {
             this.model.save();
         }
 
         // accession tab
-        var AccessionCollection = require('../collections/accession');
-        var accessionPanelAccessions = new AccessionCollection([], {panel_id: this.model.get('id')});
+        let AccessionCollection = require('../collections/accession');
+        let accessionPanelAccessions = new AccessionCollection([], {panel_id: this.model.get('id')});
 
 
-        var columns = application.main.cache.lookup({
+        let columns = application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.accession'}
         });
@@ -121,8 +121,8 @@ var Layout = LayoutView.extend({
                 return;
             }
 
-            var AccessionListView = require('../views/panelaccessionlist');
-            var accessionListView = new AccessionListView({
+            let AccessionListView = require('../views/panelaccessionlist');
+            let accessionListView = new AccessionListView({
                 collection: accessionPanelAccessions,
                 model: panelLayout.model,
                 columns: data[0].value,
@@ -136,7 +136,7 @@ var Layout = LayoutView.extend({
                 }
             });
 
-            var contentBottomFooterLayout = new ContentBottomFooterLayout();
+            let contentBottomFooterLayout = new ContentBottomFooterLayout();
             panelLayout.showChildView('accessions', contentBottomFooterLayout);
 
             contentBottomFooterLayout.showChildView('content', accessionListView);

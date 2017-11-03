@@ -8,9 +8,9 @@
  * @details
  */
 
-var Dialog = require('./dialog');
+let Dialog = require('./dialog');
 
-var View = Dialog.extend({
+let View = Dialog.extend({
     attributes: {
         'id': 'dlg_change_rename'
     },
@@ -60,8 +60,8 @@ var View = Dialog.extend({
     },
 
     validateName: function () {
-        var v = this.ui.name.val();
-        var re = /^[a-zA-Z0-9_\-]+$/i;
+        let v = this.ui.name.val();
+        let re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             this.ui.name.validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -84,8 +84,8 @@ var View = Dialog.extend({
     },
 
     onApply: function () {
-        var name = this.ui.name.val();
-        var model = this.getOption('model');
+        let name = this.ui.name.val();
+        let model = this.getOption('model');
 
         if (this.validateName()) {
             model.save({name: name}, {

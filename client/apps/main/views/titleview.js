@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var TitleView = Marionette.View.extend({
+let TitleView = Marionette.View.extend({
     tagName: "span",
     template: _.template('<span class="text-selection-none" name="title"></span><span class="heading text-selection-all" name="object"></span>'),
 
@@ -32,7 +32,7 @@ var TitleView = Marionette.View.extend({
         this.ui.title.html(this.getOption('title'));
 
         if (this.getOption('glyphicon')) {
-            var glyphicon = this.getOption('glyphicon');
+            let glyphicon = this.getOption('glyphicon');
 
             if (glyphicon.startsWith('glyphicon-')) {
                 glyphicon = 'glyphicon ' + glyphicon;

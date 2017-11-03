@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var TwoColumnsLayout = Marionette.View.extend({
+let TwoColumnsLayout = Marionette.View.extend({
     template: require("../templates/leftonerighttwolayout.html"),
     attributes: {
         style: "height: 100%;"

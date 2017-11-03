@@ -8,10 +8,10 @@
  * @details
  */
 
-var DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var CityType = function () {
+let CityType = function () {
     DescriptorFormatType.call(this);
 
     this.name = "city";
@@ -27,27 +27,27 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         options.extended_search === false || (options.extended_search = true);
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-map-marker");
+            let input = this._createStdInput(parent, "glyphicon-map-marker");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
 
         } else if (options.extended_search === false) {
-            var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+            let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             parent.append(select);
             this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
 
             // init the autocomplete
-            var url = window.application.url(['geolocation', 'city', 'search']);
-            var initials = [];
+            let url = window.application.url(['geolocation', 'city', 'search']);
+            let initials = [];
 
-            var container = parent.closest('div.modal-dialog').parent();
+            let container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
                 container = this.groupEl;  // parent.closest('div.panel');
             }
 
-            var params = {
+            let params = {
                 // width: 'element',
                 data: initials,
                 dropdownParent: container,
@@ -70,11 +70,11 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                             params.next = data.next || null;
                         }
 
-                        var results = [];
+                        let results = [];
 
-                        for (var i = 0; i < data.items.length; ++i) {
+                        for (let i = 0; i < data.items.length; ++i) {
 
-                            var display = '';
+                            let display = '';
 
                             if (data.items[i].preferred_names) {
                                 display = data.items[i].preferred_names;
@@ -111,32 +111,32 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
             this.parent = parent;
             this.el = select;
         } else {
-            var select = $('<select style="width: 100%;"></select>');
+            let select = $('<select style="width: 100%;"></select>');
             parent.append(select);
             this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
 
             // init the autocomplete
-            var url = window.application.url('geolocation');
-            var initials = [];
+            let url = window.application.url('geolocation');
+            let initials = [];
 
-            var container = parent.closest('div.modal-dialog').parent();
+            let container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
                 container = this.groupEl;  // parent.closest('div.panel');
             }
 
-            var default_option = null;
+            let default_option = null;
 
-            var old_term = '';
+            let old_term = '';
 
             // Change display for the special option "Extend search"
-            var formatOption = function (option) {
+            let formatOption = function (option) {
                 if (option.id === 'more') {
                     return $('<span class="text-info">' + _t("Extended search...") + '</span>');
                 }
                 return option.text
             };
 
-            var selectAjax = function (live_mode) {
+            let selectAjax = function (live_mode) {
 
                 if (live_mode) {
                     return {
@@ -163,12 +163,12 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                                 params.next = data.next || null;
                             }
 
-                            var results = [];
+                            let results = [];
 
-                            for (var i = 0; i < data.items.length; ++i) {
+                            for (let i = 0; i < data.items.length; ++i) {
 
-                                var country_data = data.items[i].country;
-                                var display = '';
+                                let country_data = data.items[i].country;
+                                let display = '';
 
                                 if (data.items[i].preferred_names) {
                                     display = data.items[i].preferred_names;
@@ -230,11 +230,11 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                             params.next = data.next || null;
                         }
 
-                        var results = [];
+                        let results = [];
 
-                        for (var i = 0; i < data.items.length; ++i) {
-                            var country_data = data.items[i].country;
-                            var display = '';
+                        for (let i = 0; i < data.items.length; ++i) {
+                            let country_data = data.items[i].country;
+                            let display = '';
 
                             if (data.items[i].preferred_names) {
                                 display = data.items[i].preferred_names;
@@ -282,7 +282,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 }
             };
 
-            var params = {
+            let params = {
                 // width: 'element',
                 data: initials,
                 dropdownParent: container,
@@ -293,7 +293,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 placeholder: _t("Enter a value.")
             };
 
-            var initSelect2 = function (ajx_mode, reset_mode) {
+            let initSelect2 = function (ajx_mode, reset_mode) {
                 var ajx_mode = ajx_mode || false;
                 var reset_mode = reset_mode || false;
 
@@ -336,8 +336,8 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                                     'external_id': select.val()
                                 }
                             }).done(function (data) {
-                                var country_data = data.country;
-                                var display = '';
+                                let country_data = data.country;
+                                let display = '';
 
                                 if (data.preferred_names) {
                                     display = data.preferred_names;
@@ -381,7 +381,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                     });
                 }
                 if (old_term) {
-                    var $search = select.data('select2').dropdown.$search || select.data('select2').selection.$search;
+                    let $search = select.data('select2').dropdown.$search || select.data('select2').selection.$search;
                     select.val(null).trigger('change');
                     $search.val(old_term).trigger('keyup');
                 }
@@ -422,7 +422,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        var type = this;
+        let type = this;
 
         if (this.readOnly && defaultValues) {
             // defines value as attribute
@@ -433,8 +433,8 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 url: window.application.url(['geolocation', 'city', defaultValues]),
                 dataType: 'json'
             }).done(function (data) {
-                var country_data = data.country;
-                var display = '';
+                let country_data = data.country;
+                let display = '';
 
                 if (data.preferred_names) {
                     display = data.preferred_names;
@@ -464,29 +464,29 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 // defines value as attribute
                 this.el.attr('value', defaultValues);
 
-                var select = this.el;
+                let select = this.el;
 
                 // init the autocomplete
-                var url = window.application.url('geolocation');
-                var initials = [];
+                let url = window.application.url('geolocation');
+                let initials = [];
 
-                var container = this.parent.closest('div.modal-dialog').parent();
+                let container = this.parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
                     container = this.groupEl;  // parent.closest('div.panel');
                 }
 
-                var default_option = null;
-                var old_term = '';
+                let default_option = null;
+                let old_term = '';
 
                 // Change display for the special option "Extend search"
-                var formatOption = function (option) {
+                let formatOption = function (option) {
                     if (option.id === 'more') {
                         return $('<span class="text-info">' + _t("Extended search...") + '</span>');
                     }
                     return option.text
                 };
 
-                var selectAjax = function (live_mode) {
+                let selectAjax = function (live_mode) {
                     if (live_mode) {
                         return {
                             url: url + 'city/live-search/',
@@ -512,12 +512,12 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                                     params.next = data.next || null;
                                 }
 
-                                var results = [];
+                                let results = [];
 
-                                for (var i = 0; i < data.items.length; ++i) {
+                                for (let i = 0; i < data.items.length; ++i) {
 
-                                    var country_data = data.items[i].country;
-                                    var display = '';
+                                    let country_data = data.items[i].country;
+                                    let display = '';
 
                                     if (data.items[i].preferred_names) {
                                         display = data.items[i].preferred_names;
@@ -578,12 +578,12 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                                 params.next = data.next || null;
                             }
 
-                            var results = [];
+                            let results = [];
 
-                            for (var i = 0; i < data.items.length; ++i) {
+                            for (let i = 0; i < data.items.length; ++i) {
 
-                                var country_data = data.items[i].country;
-                                var display = '';
+                                let country_data = data.items[i].country;
+                                let display = '';
 
                                 if (data.items[i].preferred_names) {
                                     display = data.items[i].preferred_names;
@@ -631,7 +631,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                     }
                 };
 
-                var params = {
+                let params = {
                     data: initials,
                     dropdownParent: container,
                     ajax: selectAjax(false),
@@ -641,7 +641,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                     placeholder: _t("Enter a value.")
                 };
 
-                var initSelect2 = function (ajx_mode, reset_mode) {
+                let initSelect2 = function (ajx_mode, reset_mode) {
                     var ajx_mode = ajx_mode || false;
                     var reset_mode = reset_mode || false;
 
@@ -688,8 +688,8 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                                         }
                                     }).done(function (data) {
 
-                                        var country_data = data.country;
-                                        var display = '';
+                                        let country_data = data.country;
+                                        let display = '';
 
                                         if (data.preferred_names) {
                                             display = data.preferred_names;
@@ -736,7 +736,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                         });
                     }
                     if (old_term) {
-                        var $search = select.data('select2').dropdown.$search || select.data('select2').selection.$search;
+                        let $search = select.data('select2').dropdown.$search || select.data('select2').selection.$search;
                         select.val(null).trigger('change');
                         $search.val(old_term).trigger('keyup');
                     }
@@ -748,8 +748,8 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                     url: url + 'city/' + defaultValues + '/',
                     dataType: 'json'
                 }).done(function (data) {
-                    var country_data = data.country;
-                    var display = '';
+                    let country_data = data.country;
+                    let display = '';
 
                     if (data.preferred_names) {
                         display = data.preferred_names;
@@ -797,21 +797,21 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
     values: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                var value = parseInt(this.el.attr('value'));
+                let value = parseInt(this.el.attr('value'));
                 return isNaN(value) ? null : value;
             } else {
                 if (this.el.attr('value') !== undefined) {
-                    var value = parseInt(this.el.attr('value'));
+                    let value = parseInt(this.el.attr('value'));
                     return isNaN(value) ? null : value;
                 } else {
                     if (Array.isArray(this.el.val())) {
-                        var values = this.el.val();
+                        let values = this.el.val();
                         return values.map(function (value) {
                             value = parseInt(value);
                             return isNaN(value) ? null : value
                         })
                     } else if (this.el.val() !== "") {
-                        var value = parseInt(this.el.val());
+                        let value = parseInt(this.el.val());
                         return isNaN(value) ? null : value;
                     } else {
                         return null;
@@ -853,22 +853,22 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function (e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
     },
 
     onValueUnselected: function (e) {
-        var display = false;
+        let display = false;
 
         switch (this.conditionType) {
             case 0:
@@ -889,11 +889,11 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }

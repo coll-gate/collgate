@@ -8,27 +8,27 @@
  * @details 
  */
 
-var DescribableDetails = require('../../descriptor/views/describabledetails');
-var AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
+let DescribableDetails = require('../../descriptor/views/describabledetails');
+let AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
 
-var View = DescribableDetails.extend({
+let View = DescribableDetails.extend({
     onShowTab: function() {
-        var view = this;
+        let view = this;
 
-        var contextLayout = application.getView().getChildView('right');
+        let contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
-            var DefaultLayout = require('../../main/views/defaultlayout');
+            let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
             application.getView().showChildView('right', contextLayout);
         }
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
 
-        var actions = ['modify'];
+        let actions = ['modify'];
 
-        var AccessionDescriptorContextView = require('./accessiondescriptorcontext');
-        var contextView = new AccessionDescriptorContextView({actions: actions});
+        let AccessionDescriptorContextView = require('./accessiondescriptorcontext');
+        let contextView = new AccessionDescriptorContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:modify", function () {
@@ -44,9 +44,9 @@ var View = DescribableDetails.extend({
         // does not reload models, just redo the views
 
         // update the layout content
-        var accessionLayout = application.main.viewContent().getChildView('content');
+        let accessionLayout = application.main.viewContent().getChildView('content');
 
-        var view = new AccessionDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+        let view = new AccessionDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
         accessionLayout.showChildView('descriptors', view);
     }
 });

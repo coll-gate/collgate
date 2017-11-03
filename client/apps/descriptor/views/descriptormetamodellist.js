@@ -8,10 +8,10 @@
  * @details 
  */
 
-var DescriptorMetaModelView = require('../views/descriptormetamodel');
-var AdvancedTable = require('../../main/views/advancedtable');
+let DescriptorMetaModelView = require('../views/descriptormetamodel');
+let AdvancedTable = require('../../main/views/advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/descriptormetamodellist.html"),
     className: "object descriptor-meta-model-list advanced-table-container",
     childView: DescriptorMetaModelView,

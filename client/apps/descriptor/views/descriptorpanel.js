@@ -8,10 +8,10 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'object descriptor-panel',
     template: require('../templates/descriptorpanel.html'),
@@ -153,13 +153,13 @@ var View = Marionette.View.extend({
             return false;
         }
 
-        var elt = application.main.dnd.get();
+        let elt = application.main.dnd.get();
         if (elt.$el.hasClass('descriptor-model')) {
             // reset placeholders
             this.ui.top_placeholder.css('display', 'none');
             this.ui.bottom_placeholder.css('display', 'none');
 
-            var DefinesLabel = Dialog.extend({
+            let DefinesLabel = Dialog.extend({
                 template: require('../templates/descriptorpanelcreate.html'),
 
                 attributes: {
@@ -183,7 +183,7 @@ var View = Marionette.View.extend({
                 },
 
                 validateLabel: function() {
-                    var v = this.ui.label.val();
+                    let v = this.ui.label.val();
 
                     if (v.length < 3) {
                         $(this.ui.label).validateField('failed', _t('characters_min', {count: 3}));
@@ -196,19 +196,19 @@ var View = Marionette.View.extend({
                 },
 
                 onApply: function() {
-                    var view = this;
-                    var collection = this.getOption('collection');
-                    var position = this.getOption('position');
-                    var descriptor_model = this.getOption('descriptor_model');
+                    let view = this;
+                    let collection = this.getOption('collection');
+                    let position = this.getOption('position');
+                    let descriptor_model = this.getOption('descriptor_model');
 
                     if (this.validateLabel()) {
-                        var to_rshift = [];
+                        let to_rshift = [];
 
                         // server will r-shift position of any model upward this new
                         // do it locally to be consistent
-                        for (var model in collection.models) {
-                            var dmt = collection.models[model];
-                            var p = dmt.get('position');
+                        for (let model in collection.models) {
+                            let dmt = collection.models[model];
+                            let p = dmt.get('position');
                             if (p >= position) {
                                 dmt.set('position', p+1);
                                 to_rshift.push(dmt);
@@ -228,7 +228,7 @@ var View = Marionette.View.extend({
                                 view.destroy();
 
                                 // left shift (undo) for consistency with server
-                                for (var i = 0; i < to_rshift.length; ++i) {
+                                for (let i = 0; i < to_rshift.length; ++i) {
                                     to_rshift[i].set('position', to_rshift[i].get('position')-1);
                                 }
                             }
@@ -237,7 +237,7 @@ var View = Marionette.View.extend({
                 },
             });
 
-            var definesLabel = new DefinesLabel({
+            let definesLabel = new DefinesLabel({
                 collection: this.model.collection,
                 position: this.model.get('position'),
                 descriptor_model: elt.model.get('id')
@@ -256,10 +256,10 @@ var View = Marionette.View.extend({
             this.ui.bottom_placeholder.css('display', 'none');
 
             // ajax call
-            var position = elt.model.get('position');
-            var newPosition = this.model.get('position');
-            var modelId = this.model.collection.model_id;
-            var collection = this.model.collection;
+            let position = elt.model.get('position');
+            let newPosition = this.model.get('position');
+            let modelId = this.model.collection.model_id;
+            let collection = this.model.collection;
 
             $.ajax({
                 type: "PUT",
@@ -275,10 +275,10 @@ var View = Marionette.View.extend({
                 // do it locally to be consistent
                 // so that we don't need to collection.fetch({update: true, remove: true});
                 if (newPosition < position) {
-                    var to_rshift = [];
+                    let to_rshift = [];
 
-                    for (var model in collection.models) {
-                        var dmt = collection.models[model];
+                    for (let model in collection.models) {
+                        let dmt = collection.models[model];
                         if (dmt.get('id') !== elt.model.get('id')) {
                             if (dmt.get('position') >= newPosition) {
                                 to_rshift.push(dmt);
@@ -288,17 +288,17 @@ var View = Marionette.View.extend({
 
                     elt.model.set('position', newPosition);
 
-                    var nextPosition = newPosition + 1;
+                    let nextPosition = newPosition + 1;
 
-                    for (var i = 0; i < to_rshift.length; ++i) {
+                    for (let i = 0; i < to_rshift.length; ++i) {
                         to_rshift[i].set('position', nextPosition);
                         ++nextPosition;
                     }
                 } else {
-                    var to_lshift = [];
+                    let to_lshift = [];
 
-                    for (var model in collection.models) {
-                        var dmt = collection.models[model];
+                    for (let model in collection.models) {
+                        let dmt = collection.models[model];
                         if (dmt.get('id') !== elt.model.get('id')) {
                             if (dmt.get('position') <= newPosition) {
                                 to_lshift.push(dmt);
@@ -308,9 +308,9 @@ var View = Marionette.View.extend({
 
                     elt.model.set('position', newPosition);
 
-                    var nextPosition = 0;
+                    let nextPosition = 0;
 
-                    for (var i = 0; i < to_lshift.length; ++i) {
+                    for (let i = 0; i < to_lshift.length; ++i) {
                         to_lshift[i].set('position', nextPosition);
                         ++nextPosition;
                     }
@@ -327,8 +327,8 @@ var View = Marionette.View.extend({
     },
 
     editLabel: function() {
-        var ChangeLabel = require('../../main/views/entitychangelabel');
-        var changeLabel = new ChangeLabel({
+        let ChangeLabel = require('../../main/views/entitychangelabel');
+        let changeLabel = new ChangeLabel({
             model: this.model,
             title: _t("Change the labels for the panel of descriptor")});
 
@@ -338,16 +338,16 @@ var View = Marionette.View.extend({
     },
 
     deleteDescriptorPanel: function() {
-        var collection = this.model.collection;
-        var position = this.model.get('position');
+        let collection = this.model.collection;
+        let position = this.model.get('position');
 
         this.model.destroy({
             wait: true,
             success: function () {
-                for (var model in collection.models) {
-                    var dmt = collection.models[model];
+                for (let model in collection.models) {
+                    let dmt = collection.models[model];
                     if (dmt.get('position') > position) {
-                        var new_position = dmt.get('position') - 1;
+                        let new_position = dmt.get('position') - 1;
                         dmt.set('position', new_position);
                     }
                 }

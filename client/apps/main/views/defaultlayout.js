@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var DefaultLayout = Marionette.View.extend({
+let DefaultLayout = Marionette.View.extend({
     template: require("../templates/defaultlayout.html"),
     attributes: {
         style: "height: 100%;"
@@ -35,7 +35,7 @@ var DefaultLayout = Marionette.View.extend({
     },
 
     onResize: function() {
-        var view = this.getChildView('title');
+        let view = this.getChildView('title');
         if (view && view.onResize) {
             view.onResize();
         }

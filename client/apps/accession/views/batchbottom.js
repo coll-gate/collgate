@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'batch-bottom',
     template: require('../templates/batchbottom.html'),
@@ -47,8 +47,8 @@ var View = Marionette.View.extend({
     },
 
     validateBatchName: function() {
-        var v = this.ui.batch_name.val().trim();
-        var re = /^[a-zA-Z0-9_\-]+$/i;
+        let v = this.ui.batch_name.val().trim();
+        let re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             $(this.ui.batch_name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));

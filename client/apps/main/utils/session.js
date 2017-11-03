@@ -8,7 +8,7 @@
  * @details
  */
 
-// var Session = function() {
+// let Session = function() {
 //     this.auth = session.user.isAuth;
 //     this.settings = session.user.settings;
 // };
@@ -28,9 +28,9 @@
 //     updateUserSetting: function(settingName, setting, version) {
 //         version || (version = '0.1');
 //
-//         var current = this.settings[settingName];
+//         let current = this.settings[settingName];
 //         if (current) {
-//             var cmp = $.versioncompare(version, current.version || '0.1');
+//             let cmp = $.versioncompare(version, current.version || '0.1');
 //
 //             if (cmp === 0) {
 //                 current.setting = _.deepClone(setting);
@@ -43,7 +43,7 @@
 //             }
 //         } else {
 //             // validate the version number
-//             var cmp = $.versioncompare(version, '0.1');
+//             let cmp = $.versioncompare(version, '0.1');
 //
 //             if (cmp === -1) {
 //                 throw new Error("User setting minimal version supported is '0.1'.");
@@ -87,7 +87,7 @@
 //      * @returns {*} Setting version string.
 //      */
 //     getUserSettingVersion: function(settingName) {
-//         var setting = this.settings[settingName];
+//         let setting = this.settings[settingName];
 //         if (setting) {
 //             return setting.version;
 //         } else {
@@ -105,7 +105,7 @@
 //     getUserSetting: function(settingName, version, defaultSetting) {
 //         version || (version = '0.1');
 //
-//         var setting = this.settings[settingName];
+//         let setting = this.settings[settingName];
 //         if (setting && setting.version && ($.versioncompare(version, setting.version) === 0)) {
 //             return setting.setting;
 //         } else if (defaultSetting) {
@@ -124,10 +124,10 @@
 //     setDefaultUserSetting: function(settingName, defaultSetting, version) {
 //         version || (version = '0.1');
 //
-//         var setting = this.settings[settingName];
+//         let setting = this.settings[settingName];
 //         if (!setting) {
 //             // validate the version number
-//             var cmp = $.versioncompare(version, '0.1');
+//             let cmp = $.versioncompare(version, '0.1');
 //
 //             if (cmp === -1) {
 //                 throw new Error("User setting minimal version supported is '0.1'.");

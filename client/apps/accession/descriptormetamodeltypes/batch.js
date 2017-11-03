@@ -8,9 +8,9 @@
  * @details
  */
 
-var DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
+let DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
 
-var Batch = DescriptorMetaModelType.extend({
+let Batch = DescriptorMetaModelType.extend({
     template: "<div></div>",
 
     onRender: function() {

@@ -8,12 +8,12 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var DescriptorValueModel = require('../models/descriptorvalue');
-var DescriptorValuePairView = require('../views/descriptorvaluepair');
-var AdvancedTable = require('../../main/views/advancedtable');
+let Marionette = require('backbone.marionette');
+let DescriptorValueModel = require('../models/descriptorvalue');
+let DescriptorValuePairView = require('../views/descriptorvaluepair');
+let AdvancedTable = require('../../main/views/advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/descriptorvaluepairlist.html"),
     className: "object descriptor-value-list advanced-table-container",
     childView: DescriptorValuePairView,
@@ -52,8 +52,8 @@ var View = AdvancedTable.extend({
     },
 
     onRender: function() {
-        var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
-        var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
+        let sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
+        let sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
 
         if (sort_by[1] === '-') {
             if ((sort_el.attr('column-type') || "alpha") === "numeric") {
@@ -76,8 +76,8 @@ var View = AdvancedTable.extend({
     },
 
     sortColumn: function (e) {
-        var column = $(e.target).attr('column-name') || "id";
-        var order = $(e.target).attr('sort-direction') || "none";
+        let column = $(e.target).attr('column-name') || "id";
+        let order = $(e.target).attr('sort-direction') || "none";
 
         if (order === "asc") {
             sort_by = "-" + column;

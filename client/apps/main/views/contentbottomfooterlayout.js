@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     template: require("../templates/contentbottomfooterlayout.html"),
 
     attributes: {
@@ -40,7 +40,7 @@ var View = Marionette.View.extend({
     onShowTab: function(tabView) {
         this._lastRegion = tabView;
 
-        var view = this.getChildView('content');
+        let view = this.getChildView('content');
         if (view && view.onShowTab) {
             view.onShowTab(tabView);
         }
@@ -59,7 +59,7 @@ var View = Marionette.View.extend({
     onHideTab: function(tabView) {
         this._lastRegion = null;
 
-        var view = this.getChildView('content');
+        let view = this.getChildView('content');
         if (view && view.onHideTab) {
             view.onHideTab(tabView);
         }
@@ -76,7 +76,7 @@ var View = Marionette.View.extend({
     },
 
     onResize: function() {
-        var view = this.getChildView('content');
+        let view = this.getChildView('content');
         if (view && view.onResize) {
             view.onResize();
         }

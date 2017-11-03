@@ -8,9 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var DescriptorMetaModelType = Marionette.View.extend({
+let DescriptorMetaModelType = Marionette.View.extend({
     className: 'descriptor-meta-model-type-details-data',
     template: "<div></div>",
 

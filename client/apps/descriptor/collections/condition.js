@@ -8,9 +8,9 @@
  * @details 
  */
 
-var ConditionModel = require('../models/condition');
+let ConditionModel = require('../models/condition');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: window.application.url(['descriptor', 'condition']),
     model: ConditionModel,
 
@@ -22,7 +22,7 @@ var Collection = Backbone.Collection.extend({
     ],
 
     findLabel: function(value) {
-        var res = this.findWhere({value: value});
+        let res = this.findWhere({value: value});
         return res ? res.get('label') : '';
     },
 });

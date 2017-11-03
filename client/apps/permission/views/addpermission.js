@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'permission-add',
     template: require('../templates/addpermission.html'),
@@ -37,12 +37,12 @@ var View = Marionette.View.extend({
         application.permission.views.permissionType.drawSelect(this.ui.permissions_types, false);
 
         // remove defined permissions
-        var select = this.ui.permissions_types;
+        let select = this.ui.permissions_types;
 
-        for (var i = 0; i < this.collection.size(); ++i) {
-            var model = this.collection.at(i);
-            for (var j = 0; j < model.get('permissions').length; ++j) {
-                var permission = model.get('permissions')[j];
+        for (let i = 0; i < this.collection.size(); ++i) {
+            let model = this.collection.at(i);
+            for (let j = 0; j < model.get('permissions').length; ++j) {
+                let permission = model.get('permissions')[j];
                 select.find('option[value="' + permission.app_label + "." + model.get('model') + "." + permission.id + '"]').remove();
             }
         }
@@ -55,7 +55,7 @@ var View = Marionette.View.extend({
     },
 
     addPermission: function () {
-        var permission = $(this.ui.permissions_types).val().split('.');
+        let permission = $(this.ui.permissions_types).val().split('.');
 
         $.ajax({
             type: "POST",

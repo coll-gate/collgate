@@ -8,7 +8,7 @@
  * @details
  */
 
-var model = Backbone.Model.extend({
+let model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
             return window.application.url(['main', 'entity-synonym-type']);

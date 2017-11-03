@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     className: "action-panel",
     template: require('../templates/actionpanel.html'),
 
@@ -34,8 +34,8 @@ var View = Marionette.View.extend({
     },
 
     onRender: function() {
-        var view = this;
-        /*var ActionListView = require('./actionlist');
+        let view = this;
+        /*let ActionListView = require('./actionlist');
 
         application.main.collections.eventMessages.fetch().then(function() {
             view.showChildView('content', new ActionListView({collection: application.main.collections.action}));

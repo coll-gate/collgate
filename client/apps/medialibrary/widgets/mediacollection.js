@@ -8,10 +8,10 @@
  * @details 
  */
 
-var DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var MediaCollection = function() {
+let MediaCollection = function() {
     DescriptorFormatType.call(this);
 
     this.name = "media_collection";
@@ -23,7 +23,7 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "fa-check-square-o");
+            let input = this._createStdInput(parent, "fa-check-square-o");
 
             this.parent = parent;
             this.readOnly = true;
@@ -105,11 +105,11 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
             return false;
         }
 
-        var found = false;
+        let found = false;
 
-        for (var i = 0; i < a.length; ++i) {
+        for (let i = 0; i < a.length; ++i) {
             found = false;
-            for (var j = 0; j < b.length; ++j) {
+            for (let j = 0; j < b.length; ++j) {
                 if (a[i] === b[j]) {
                     found = true;
                     break;
@@ -151,15 +151,15 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function(e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
@@ -188,7 +188,7 @@ MediaCollection.DescriptorTypeDetailsView = Marionette.View.extend({
 
         this.ui.format_media_inline.selectpicker({style: 'btn-default'});
 
-        var format = this.model.get('format');
+        let format = this.model.get('format');
 
         if (format.media_types != undefined) {
             this.ui.format_media_types.selectpicker('val', format.media_types);

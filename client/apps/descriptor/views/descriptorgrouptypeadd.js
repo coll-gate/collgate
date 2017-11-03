@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'type-add',
     template: require('../templates/descriptorgrouptypeadd.html'),
@@ -44,8 +44,8 @@ var View = Marionette.View.extend({
     },
 
     validateTypeName: function() {
-        var v = this.ui.add_type_name.val();
-        var re = /^[a-zA-Z0-9_\-]+$/i;
+        let v = this.ui.add_type_name.val();
+        let re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             $(this.ui.add_type_name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -59,7 +59,7 @@ var View = Marionette.View.extend({
     },
 
     onTypeNameInput: function () {
-        var view = this;
+        let view = this;
 
         if (this.validateTypeName()) {
             $.ajax({
@@ -73,8 +73,8 @@ var View = Marionette.View.extend({
                 },
                 success: function(data) {
                     if (data.items.length > 0) {
-                        for (var i in data.items) {
-                            var t = data.items[i];
+                        for (let i in data.items) {
+                            let t = data.items[i];
 
                             if (t.name.toUpperCase() === view.ui.add_type_name.val().toUpperCase()) {
                                 $(view.ui.add_type_name).validateField('failed', _t('Descriptor type name already in usage'));

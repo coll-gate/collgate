@@ -8,10 +8,10 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('./dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('./dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     className: "event-message-panel",
     template: require('../templates/eventmessagepanel.html'),
 
@@ -37,8 +37,8 @@ var View = Marionette.View.extend({
     },
 
     onRender: function() {
-        var view = this;
-        var EventMessageListView = require('./eventmessagelist');
+        let view = this;
+        let EventMessageListView = require('./eventmessagelist');
 
         application.main.collections.eventMessages.fetch().then(function() {
             view.showChildView('content', new EventMessageListView({collection: application.main.collections.eventMessages}));
@@ -46,7 +46,7 @@ var View = Marionette.View.extend({
     },
 
     onAddEventMessage: function() {
-        var CreateEventMessage = Dialog.extend({
+        let CreateEventMessage = Dialog.extend({
             template: require('../templates/eventmessagecreate.html'),
 
             attributes: {
@@ -70,7 +70,7 @@ var View = Marionette.View.extend({
             },
 
             validateMessage: function (e) {
-                var v = $(e.target).val();
+                let v = $(e.target).val();
 
                 if (v.length === 0) {
                     $(e.target).validateField('failed', _t('Should not be empty'));
@@ -84,7 +84,7 @@ var View = Marionette.View.extend({
 
             validateMessages: function() {
                 $.each($(this.ui.message), function(i, message) {
-                    var v = $(this).val();
+                    let v = $(this).val();
 
                    if (v.length === 0) {
                        $(this).validateField('failed', _t('Should not be empty'));
@@ -96,13 +96,13 @@ var View = Marionette.View.extend({
             },
 
             onApply: function () {
-                var view = this;
-                var collection = this.getOption('collection');
+                let view = this;
+                let collection = this.getOption('collection');
 
-                var messages = {};
+                let messages = {};
 
                 $.each($(this.ui.message), function(i, message) {
-                    var v = $(this).val();
+                    let v = $(this).val();
                     messages[$(message).attr("language")] = v;
                 });
 
@@ -123,7 +123,7 @@ var View = Marionette.View.extend({
             }
         });
 
-        var createEventMessage = new CreateEventMessage({collection: this.getChildView('content').collection});
+        let createEventMessage = new CreateEventMessage({collection: this.getChildView('content').collection});
         createEventMessage.render();
     },
 

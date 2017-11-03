@@ -8,7 +8,7 @@
  * @details
  */
 
-var DragAndDrop = function() {
+let DragAndDrop = function() {
     this.dndType = 'undefined';
     this.classification = [];
     this.dnd = null;
@@ -93,7 +93,7 @@ DragAndDrop.prototype = {
         if (this.dnd) {
             if (this.dndType === type) {
                 if (classification) {
-                    var classes = classification.split(' ');
+                    let classes = classification.split(' ');
                     return _.difference(classes, this.classification).length === 0;
                 } else {
                     return true;
@@ -131,7 +131,7 @@ DragAndDrop.prototype = {
         if (this.dnd) {
             if (this.dndType === type) {
                 if (classifications) {
-                    var classes = classifications.split(' ');
+                    let classes = classifications.split(' ');
                     return _.intersection(classes, this.classification).length > 0;
                 } else {
                     return true;
@@ -164,7 +164,7 @@ DragAndDrop.prototype = {
      */
     setTarget: function(target) {
         if (this.dnd) {
-            var targetType = undefined;
+            let targetType = undefined;
 
             if (target instanceof jQuery) {
                 targetType = this.SELECTOR;

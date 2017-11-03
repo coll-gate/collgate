@@ -5,18 +5,17 @@
  * @date 2017-02-15
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
-var LayoutView = require('../../main/views/layout');
-var AccessionModel = require('../models/accession');
+let LayoutView = require('../../main/views/layout');
+let AccessionModel = require('../models/accession');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
+let ContentBottomLayout = require('../../main/views/contentbottomlayout');
+let BatchPathView = require('../views/batchpath');
+let BatchDescriptorEditView = require('../views/batchdescriptoredit');
 
-var ScrollingMoreView = require('../../main/views/scrollingmore');
-var ContentBottomLayout = require('../../main/views/contentbottomlayout');
-var BatchPathView = require('../views/batchpath');
-var BatchDescriptorEditView = require('../views/batchdescriptoredit');
-
-var Layout = LayoutView.extend({
+let Layout = LayoutView.extend({
     template: require("../templates/batchlayout.html"),
 
     attributes: {
@@ -38,7 +37,7 @@ var Layout = LayoutView.extend({
         'actions': "div.tab-pane[name=actions]"
     },
 
-    initialize: function(model, options) {
+    initialize: function (model, options) {
         Layout.__super__.initialize.apply(this, arguments);
 
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
@@ -48,12 +47,15 @@ var Layout = LayoutView.extend({
         }
     },
 
-    onBatchCreate: function(model, value) {
+    onBatchCreate: function () {
         // re-render once created
         this.render();
 
         // and update history
-        Backbone.history.navigate('app/accession/batch/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
+        Backbone.history.navigate('app/accession/batch/' + this.model.get('id') + '/', {
+            /*trigger: true,*/
+            replace: false
+        });
     },
 
     disableParentsTab: function () {
@@ -68,11 +70,11 @@ var Layout = LayoutView.extend({
         this.ui.actions_tab.parent().addClass('disabled');
     },
 
-    onDescriptorMetaModelChange: function(model, value) {
-        if (value == null) {
+    onDescriptorMetaModelChange: function (model, value) {
+        if (value) {
             this.getRegion('descriptors').empty();
         } else {
-            var batchLayout = this;
+            let batchLayout = this;
 
             // get the layout before creating the view
             $.ajax({
@@ -84,8 +86,8 @@ var Layout = LayoutView.extend({
                     return;
                 }
 
-                var BatchDescriptorView = require('../views/batchdescriptor');
-                var batchDescriptorView = new BatchDescriptorView({
+                let BatchDescriptorView = require('../views/batchdescriptor');
+                let batchDescriptorView = new BatchDescriptorView({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
@@ -99,12 +101,12 @@ var Layout = LayoutView.extend({
         }
     },
 
-    onRender: function() {
-        var batchLayout = this;
+    onRender: function () {
+        let batchLayout = this;
 
         if (!this.model.isNew()) {
             // details
-            var accession = new AccessionModel({id: this.model.get('accession')});
+            let accession = new AccessionModel({id: this.model.get('accession')});
             accession.fetch().then(function () {
                 if (!batchLayout.isRendered()) {
                     return;
@@ -117,25 +119,26 @@ var Layout = LayoutView.extend({
             });
 
             // get available columns
-            var columns = application.main.cache.lookup({
+            let columns = application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'accession.batch'}
             });
 
             // parents batches tab
-            var BatchCollection = require('../collections/batch');
-            var parentBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'parents'});
+            let BatchCollection = require('../collections/batch');
+            let parentBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'parents'});
 
             $.when(columns, parentBatches.fetch()).then(function (data) {
                 if (!batchLayout.isRendered()) {
                     return;
                 }
 
-                var BatchListView = require('../views/batchlist');
-                var batchListView = new BatchListView({
-                    collection: parentBatches, model: batchLayout.model, columns: data[0].value});
+                let BatchListView = require('../views/batchlist');
+                let batchListView = new BatchListView({
+                    collection: parentBatches, model: batchLayout.model, columns: data[0].value
+                });
 
-                var contentBottomLayout = new ContentBottomLayout();
+                let contentBottomLayout = new ContentBottomLayout();
                 batchLayout.showChildView('parents', contentBottomLayout);
 
                 contentBottomLayout.showChildView('content', batchListView);
@@ -143,18 +146,19 @@ var Layout = LayoutView.extend({
             });
 
             // children batches tab
-            var childrenBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'children'});
+            let childrenBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'children'});
 
             $.when(columns, childrenBatches.fetch()).then(function (data) {
                 if (!batchLayout.isRendered()) {
                     return;
                 }
 
-                var BatchListView = require('../views/batchlist');
-                var batchListView = new BatchListView({
-                    collection: childrenBatches, model: batchLayout.model, columns: data[0].columns});
+                let BatchListView = require('../views/batchlist');
+                let batchListView = new BatchListView({
+                    collection: childrenBatches, model: batchLayout.model, columns: data[0].columns
+                });
 
-                var contentBottomLayout = new ContentBottomLayout();
+                let contentBottomLayout = new ContentBottomLayout();
                 batchLayout.showChildView('batches', contentBottomLayout);
 
                 contentBottomLayout.showChildView('content', batchListView);
@@ -162,14 +166,15 @@ var Layout = LayoutView.extend({
             });
         } else {
             // details
-            var accession = new AccessionModel({id: this.model.get('accession')});
-            accession.fetch().then(function() {
+            let accession = new AccessionModel({id: this.model.get('accession')});
+            accession.fetch().then(function () {
                 if (!batchLayout.isRendered()) {
                     return;
                 }
 
                 batchLayout.showChildView('details', new BatchPathView({
-                    model: batchLayout.model, accession: accession, noLink: true}));
+                    model: batchLayout.model, accession: accession, noLink: true
+                }));
             });
 
             // descriptors edit tab
@@ -177,13 +182,14 @@ var Layout = LayoutView.extend({
                 method: "GET",
                 url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
                 dataType: 'json'
-            }).done(function(data) {
+            }).done(function (data) {
                 if (!batchLayout.isRendered()) {
                     return;
                 }
 
-                var batchDescriptorView = new BatchDescriptorEditView({
-                    model: batchLayout.model, descriptorMetaModelLayout: data});
+                let batchDescriptorView = new BatchDescriptorEditView({
+                    model: batchLayout.model, descriptorMetaModelLayout: data
+                });
 
                 batchLayout.showChildView('descriptors', batchDescriptorView);
             });

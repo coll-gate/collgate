@@ -8,11 +8,11 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var PermissionModel = require('../models/permission');
-var PermissionView = require('../views/permission');
+let Marionette = require('backbone.marionette');
+let PermissionModel = require('../models/permission');
+let PermissionView = require('../views/permission');
 
-var PermissionListView = Marionette.CompositeView.extend({
+let PermissionListView = Marionette.CompositeView.extend({
     template: require("../templates/permissionlist.html"),
     childViewContainer: ".permission-list",
     childView: PermissionView,
@@ -30,12 +30,12 @@ var PermissionListView = Marionette.CompositeView.extend({
     },
 
     removePermission: function (e) {
-        var appLabel = e.target.getAttribute("app_label");
-        var codename = e.target.getAttribute("codename");
-        var modelName = e.target.getAttribute("model");
-        var object = e.target.getAttribute("object");
+        let appLabel = e.target.getAttribute("app_label");
+        let codename = e.target.getAttribute("codename");
+        let modelName = e.target.getAttribute("model");
+        let object = e.target.getAttribute("object");
 
-        var model = null;
+        let model = null;
         if (object.length > 0)
             model = this.collection.findWhere({model: modelName, object: object});
         else

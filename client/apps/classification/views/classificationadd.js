@@ -8,10 +8,10 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'classification-add',
     template: require('../templates/classificationadd.html'),
@@ -32,7 +32,7 @@ var View = Marionette.View.extend({
     },
 
     addClassification: function () {
-        var ClassificationCreate = Dialog.extend({
+        let ClassificationCreate = Dialog.extend({
             template: require('../templates/classificationcreate.html'),
 
             attributes: {
@@ -64,11 +64,11 @@ var View = Marionette.View.extend({
                     return;
                 }
 
-                var view = this;
-                var collection = this.getOption('collection');
-                var name = this.getOption('name');
-                var label = this.ui.label.val();
-                var description = this.ui.description.val();
+                let view = this;
+                let collection = this.getOption('collection');
+                let name = this.getOption('name');
+                let label = this.ui.label.val();
+                let description = this.ui.description.val();
 
                 collection.create({
                     name: name,
@@ -86,7 +86,7 @@ var View = Marionette.View.extend({
             },
 
             validateLabel: function () {
-                var v = this.ui.label.val();
+                let v = this.ui.label.val();
 
                 if (v.length < 3) {
                     $(this.ui.label).validateField('failed', _t('characters_min', {count: 3}));
@@ -104,7 +104,7 @@ var View = Marionette.View.extend({
         });
 
         if (!this.ui.add_classification_name.hasClass('invalid')) {
-            var classificationCreate = new ClassificationCreate({
+            let classificationCreate = new ClassificationCreate({
                 collection: this.collection,
                 name: this.ui.add_classification_name.val()
             });
@@ -116,8 +116,8 @@ var View = Marionette.View.extend({
     },
 
     validateClassificationName: function() {
-        var v = this.ui.add_classification_name.val();
-        var re = /^[a-zA-Z0-9_\-]+$/i;
+        let v = this.ui.add_classification_name.val();
+        let re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             this.ui.add_classification_name.validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -149,8 +149,8 @@ var View = Marionette.View.extend({
                 view: this,
             }).done(function (data) {
                 if (data.items.length > 0) {
-                    for (var i in data.items) {
-                        var t = data.items[i];
+                    for (let i in data.items) {
+                        let t = data.items[i];
 
                         if (t.name.toUpperCase() === this.view.ui.add_classification_name.val().toUpperCase()) {
                             this.view.ui.add_classification_name.validateField('failed', _t('Classification name already in usage'));

@@ -8,14 +8,14 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var DescriptorGroupModel = require('../models/descriptorgroup');
+let Marionette = require('backbone.marionette');
+let DescriptorGroupModel = require('../models/descriptorgroup');
 
-var DescriptorTypeCollection = require('../collections/descriptortype');
-var DescriptorTypeListAltView = require('./descriptortypelistalt');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
+let DescriptorTypeCollection = require('../collections/descriptortype');
+let DescriptorTypeListAltView = require('./descriptortypelistalt');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-group-alt',
     template: require('../templates/descriptorgroupalt.html'),
@@ -32,11 +32,11 @@ var View = Marionette.View.extend({
     },
 
     viewDescriptorTypes: function() {
-        var layout = this.getOption('layout');
-        var collection = new DescriptorTypeCollection([], {group_id: this.model.id});
+        let layout = this.getOption('layout');
+        let collection = new DescriptorTypeCollection([], {group_id: this.model.id});
 
         collection.fetch().then(function () {
-            var descriptorTypeListView = new DescriptorTypeListAltView({collection : collection});
+            let descriptorTypeListView = new DescriptorTypeListAltView({collection : collection});
 
             layout.showChildView('right-down-content', descriptorTypeListView);
             layout.showChildView('right-down-bottom', new ScrollingMoreView({targetView: descriptorTypeListView}));

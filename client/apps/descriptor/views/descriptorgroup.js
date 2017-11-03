@@ -8,9 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-group actions',
     template: require('../templates/descriptorgroup.html'),
@@ -45,7 +45,7 @@ var View = Marionette.View.extend({
     },
 
     actionsProperties: function() {
-        var properties = {
+        let properties = {
             tag: {disabled: false},
             remove: {disabled: false}
         };
@@ -80,8 +80,8 @@ var View = Marionette.View.extend({
             return false;
         }
 
-        var ChangeName = require('../../main/views/entityrename');
-        var changeName = new ChangeName({
+        let ChangeName = require('../../main/views/entityrename');
+        let changeName = new ChangeName({
             model: this.model,
             title: _t("Rename the group of descriptors")
         });

@@ -8,11 +8,11 @@
  * @details
  */
 
-var PanelView = require('../views/panel');
-var AdvancedTable = require('../../main/views/advancedtable');
-var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
+let PanelView = require('../views/panel');
+let AdvancedTable = require('../../main/views/advancedtable');
+let DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../../descriptor/templates/entitylist.html"),
     className: "panel-list advanced-table-container",
     childView: PanelView,
@@ -73,22 +73,22 @@ var View = AdvancedTable.extend({
     },
 
     onShowTab: function () {
-        var view = this;
+        let view = this;
 
-        var DefaultLayout = require('../../main/views/defaultlayout');
-        var contextLayout = new DefaultLayout();
+        let DefaultLayout = require('../../main/views/defaultlayout');
+        let contextLayout = new DefaultLayout();
         application.getView().showChildView('right', contextLayout);
 
-        var actions = [
+        let actions = [
             'create-panel',
             'union',
             'intersection'
         ];
 
-        var PanelListContextView = require('./panellistcontext');
-        var contextView = new PanelListContextView({actions: actions});
+        let PanelListContextView = require('./panellistcontext');
+        let contextView = new PanelListContextView({actions: actions});
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Panel actions"), glyphicon: 'fa-wrench'}));
         contextLayout.showChildView('content', contextView);
 

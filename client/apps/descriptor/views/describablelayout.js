@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var Layout = Marionette.View.extend({
+let Layout = Marionette.View.extend({
     template: _.template('<div class="describable-header"></div><div class="describable-body"></div><div class="describable-footer"></div>'),
     attributes: {
     },

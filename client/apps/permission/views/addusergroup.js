@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'user-add',
     template: require('../templates/addusergroup.html'),
@@ -30,8 +30,8 @@ var View = Marionette.View.extend({
     },
 
     onDomRefresh: function () {
-        var select = this.ui.username;
-        var collection = this.collection;
+        let select = this.ui.username;
+        let collection = this.collection;
 
         $(select).select2({
             ajax: {
@@ -41,7 +41,7 @@ var View = Marionette.View.extend({
                 data: function (params) {
                     params.term || (params.term = '');
 
-                    var filters = {
+                    let filters = {
                         method: 'icontains',
                         fields: '*',
                         '*': params.term.split(' ').filter(function (t) { return t.length > 2; }),
@@ -56,9 +56,9 @@ var View = Marionette.View.extend({
                     // no pagination
                     params.page = params.page || 1;
 
-                    var results = [];
+                    let results = [];
 
-                    for (var i = 0; i < data.items.length; ++i) {
+                    for (let i = 0; i < data.items.length; ++i) {
                         // ignore results in collection of users
                         if (collection.findWhere({username: data.items[i].value}) == undefined) {
                             results.push({
@@ -83,10 +83,10 @@ var View = Marionette.View.extend({
     },
 
     addUser: function () {
-        var el = this.ui.username;
+        let el = this.ui.username;
 
         if (el.val()) {
-            var username = el.val();
+            let username = el.val();
             el.val(null).trigger("change");
             this.collection.create({username: username}, {wait: true});
         }

@@ -8,10 +8,10 @@
  * @details 
  */
 
-var BatchView = require('../views/batch');
-var AdvancedTable = require('../../main/views/advancedtable');
+let BatchView = require('../views/batch');
+let AdvancedTable = require('../../main/views/advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../../descriptor/templates/entitylist.html"),
     className: "accession-batch-list",
     childView: BatchView,

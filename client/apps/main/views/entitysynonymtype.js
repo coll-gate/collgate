@@ -8,9 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object entity-synonym-type',
     template: require('../templates/entitysynonymtype.html'),
@@ -66,8 +66,8 @@ var View = Marionette.View.extend({
             return false;
         }
 
-        var ChangeLabel = require('../../main/views/entitychangelabel');
-        var changeLabel = new ChangeLabel({
+        let ChangeLabel = require('../../main/views/entitychangelabel');
+        let changeLabel = new ChangeLabel({
             model: this.model,
             title: _t("Change the labels for the type of synonym")});
 
@@ -81,8 +81,8 @@ var View = Marionette.View.extend({
             return false;
         }
 
-        var ChangeName = require('./entityrename');
-        var changeName = new ChangeName({
+        let ChangeName = require('./entityrename');
+        let changeName = new ChangeName({
             model: this.model,
             title: _t("Rename the type of synonym")
         });

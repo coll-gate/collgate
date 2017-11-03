@@ -8,28 +8,28 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var PermissionCollection = require('../collections/permission');
-var PermissionUserCollection = require('../collections/user');
-var PermissionGroupCollection = require('../collections/group');
-var PermissionGroupUserCollection = require('../collections/groupuser');
+let PermissionCollection = require('../collections/permission');
+let PermissionUserCollection = require('../collections/user');
+let PermissionGroupCollection = require('../collections/group');
+let PermissionGroupUserCollection = require('../collections/groupuser');
 
-var PermissionListView = require('../views/permissionlist');
-var PermissionAddView = require('../views/addpermission');
-var PermissionUserListView = require('../views/userlist');
-var PermissionGroupListView = require('../views/grouplist');
-var PermissionGroupUserListView = require('../views/groupuserlist');
-var PermissionGroupAddUserView = require('../views/addusergroup');
-var PermissionAddGroupView = require('../views/addgroup');
+let PermissionListView = require('../views/permissionlist');
+let PermissionAddView = require('../views/addpermission');
+let PermissionUserListView = require('../views/userlist');
+let PermissionGroupListView = require('../views/grouplist');
+let PermissionGroupUserListView = require('../views/groupuserlist');
+let PermissionGroupAddUserView = require('../views/addusergroup');
+let PermissionAddGroupView = require('../views/addgroup');
 
-var GroupModel = require('../models/group');
+let GroupModel = require('../models/group');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
 
-var PermissionRouter = Marionette.AppRouter.extend({
+let PermissionRouter = Marionette.AppRouter.extend({
     routes : {
         "app/permission/user/": "getUsers",
         "app/permission/user/:username/permission/": "getPermissionsForUser",
@@ -39,15 +39,15 @@ var PermissionRouter = Marionette.AppRouter.extend({
     },
 
     getUsers: function () {
-        var userCollection = new PermissionUserCollection();
+        let userCollection = new PermissionUserCollection();
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of users")}));
 
         userCollection.fetch().then(function () {
-            var permissionUserList = new PermissionUserListView({collection : userCollection});
+            let permissionUserList = new PermissionUserListView({collection : userCollection});
 
             defaultLayout.showChildView('content', permissionUserList);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: permissionUserList}));
@@ -55,15 +55,15 @@ var PermissionRouter = Marionette.AppRouter.extend({
     },
 
     getPermissionsForUser: function(username) {
-        var permissionsCollection = new PermissionCollection([], {username: username});
+        let permissionsCollection = new PermissionCollection([], {username: username});
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of permissions for user"), object: username}));
 
         permissionsCollection.fetch().then(function () {
-            var permissionListView = new PermissionListView({collection : permissionsCollection});
+            let permissionListView = new PermissionListView({collection : permissionsCollection});
 
             defaultLayout.showChildView('content', permissionListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: permissionListView}));
@@ -75,15 +75,15 @@ var PermissionRouter = Marionette.AppRouter.extend({
     },
 
     getGroups: function () {
-        var groupCollection = new PermissionGroupCollection();
+        let groupCollection = new PermissionGroupCollection();
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of groups")}));
 
         groupCollection.fetch().then(function () {
-            var permissionGroupList = new PermissionGroupListView({collection : groupCollection});
+            let permissionGroupList = new PermissionGroupListView({collection : groupCollection});
 
             defaultLayout.showChildView('content', permissionGroupList);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: permissionGroupList}));
@@ -95,12 +95,12 @@ var PermissionRouter = Marionette.AppRouter.extend({
     },
 
     getPermissionsForGroup: function(id) {
-        var permissionsCollection = new PermissionCollection([], {group_id: id, is_group: true});
+        let permissionsCollection = new PermissionCollection([], {group_id: id, is_group: true});
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        var group = new GroupModel({id: id});
+        let group = new GroupModel({id: id});
         group.fetch().then(function() {
             defaultLayout.showChildView('title', new TitleView({
                 title: _t("List of permissions for group"),
@@ -109,7 +109,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         });
 
         permissionsCollection.fetch().then(function () {
-            var permissionList = new PermissionListView({collection : permissionsCollection});
+            let permissionList = new PermissionListView({collection : permissionsCollection});
 
             defaultLayout.showChildView('content', permissionList);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: permissionList}));
@@ -121,12 +121,12 @@ var PermissionRouter = Marionette.AppRouter.extend({
     },
 
     getUsersForGroup: function(id) {
-        var userCollection = new PermissionGroupUserCollection([], {group_id: id});
+        let userCollection = new PermissionGroupUserCollection([], {group_id: id});
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        var group = new GroupModel({id: id});
+        let group = new GroupModel({id: id});
         group.fetch().then(function() {
             defaultLayout.showChildView('title', new TitleView({
                 title: _t("List of users for group"),
@@ -135,7 +135,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         });
 
         userCollection.fetch().then(function() {
-            var permissionGroupUserList = new PermissionGroupUserListView({collection : userCollection});
+            let permissionGroupUserList = new PermissionGroupUserListView({collection : userCollection});
 
             defaultLayout.showChildView('content', permissionGroupUserList);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: permissionGroupUserList}));

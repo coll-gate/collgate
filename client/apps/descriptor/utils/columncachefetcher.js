@@ -8,9 +8,9 @@
  * @details
  */
 
-var CacheFetcher = require('../../main/utils/cachefetcher');
+let CacheFetcher = require('../../main/utils/cachefetcher');
 
-var ColumnCacheFetcher = function() {
+let ColumnCacheFetcher = function() {
     CacheFetcher.call(this);
 
     this.type = "entity_columns";
@@ -24,19 +24,19 @@ ColumnCacheFetcher.prototype.constructor = ColumnCacheFetcher;
  * @param keys Keys list.
  */
 ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
-    var name = options.format.model;
+    let name = options.format.model;
     if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
         name += ':' + options.format.descriptor_meta_models.sort().toString();
     }
 
-    var cache = cacheManager.get('entity_columns', name);
+    let cache = cacheManager.get('entity_columns', name);
 
-    var queryData = {};
-    var doFetch = false;
-    var now = Date.now();
+    let queryData = {};
+    let doFetch = false;
+    let now = Date.now();
 
     // lookup into the global cache
-    var entry = 0 in cache ? cache[0] : undefined;
+    let entry = 0 in cache ? cache[0] : undefined;
 
     if (cacheManager.enabled && entry !== undefined) {
         // found. look for validity
@@ -47,14 +47,14 @@ ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
         doFetch = true;
     }
 
-    var url = window.application.url(['descriptor', 'columns', options.format.model]);
+    let url = window.application.url(['descriptor', 'columns', options.format.model]);
 
     if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
         queryData.descriptor_meta_models = options.format.descriptor_meta_models.toString();
     }
 
     if (doFetch) {
-        var promise = $.ajax({
+        let promise = $.ajax({
             type: "GET",
             url: url,
             contentType: 'application/json; charset=utf8',
@@ -63,8 +63,8 @@ ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
 
         promise.done(function (data) {
             // feed the cache and compute expire timestamp. validity of null means it never expires.
-            var now = Date.now();
-            var expire = data.validity !== null ? data.validity * 1000 + now : null;
+            let now = Date.now();
+            let expire = data.validity !== null ? data.validity * 1000 + now : null;
             if (!data.cacheable) {
                 expire = now;
             }
@@ -86,7 +86,7 @@ ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
 };
 
 ColumnCacheFetcher.prototype.get = function(cacheManager, options) {
-    var name = options.format.model;
+    let name = options.format.model;
     if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
         name += ':' + options.format.descriptor_meta_models.sort().toString();
     }

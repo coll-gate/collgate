@@ -8,9 +8,9 @@
  * @details
  */
 
-var Dialog = require('./dialog');
+let Dialog = require('./dialog');
 
-var View = Dialog.extend({
+let View = Dialog.extend({
     template: require('../templates/entitychangelabel.html'),
 
     templateContext: function () {
@@ -39,14 +39,14 @@ var View = Dialog.extend({
 
         this.mergeOptions(options, ['title']);
 
-        var self = this;
+        let self = this;
 
         $.ajax({
             type: "GET",
             url: this.model.url() + 'label/',
             dataType: 'json'
         }).done(function (data) {
-            for (var lang_id in data) {
+            for (let lang_id in data) {
                 self.ui.label.filter('[language=' + lang_id + ']').attr('value', data[lang_id]);
             }
         }).fail(function () {
@@ -65,7 +65,7 @@ var View = Dialog.extend({
     },
 
     validateLabel: function (e) {
-        var v = $(e.target).val();
+        let v = $(e.target).val();
 
         if (v.length < 1) {
             $(e.target).validateField('failed', _t('characters_min', {count: 1}));
@@ -82,7 +82,7 @@ var View = Dialog.extend({
 
     validateLabels: function () {
         $.each($(this.ui.label), function (i, label) {
-            var v = $(this).val();
+            let v = $(this).val();
 
             if (v.length < 1) {
                 $(this).validateField('failed', _t('characters_min', {count: 1}));
@@ -97,13 +97,13 @@ var View = Dialog.extend({
     },
 
     onApply: function () {
-        var view = this;
-        var model = this.model;
+        let view = this;
+        let model = this.model;
 
-        var labels = {};
+        let labels = {};
 
         $.each($(this.ui.label), function (i, label) {
-            var v = $(this).val();
+            let v = $(this).val();
             labels[$(label).attr("language")] = v;
         });
 

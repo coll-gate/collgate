@@ -8,10 +8,10 @@
  * @details
  */
 
-var DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var CountryType = function () {
+let CountryType = function () {
     DescriptorFormatType.call(this);
 
     this.name = "country";
@@ -27,27 +27,27 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         });
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-map-marker");
+            let input = this._createStdInput(parent, "glyphicon-map-marker");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
 
         } else {
-            var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+            let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             parent.append(select);
             this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
 
             // init the autocomplete
-            var url = window.application.url(['geolocation', 'country', 'search']);
-            var initials = [];
+            let url = window.application.url(['geolocation', 'country', 'search']);
+            let initials = [];
 
-            var container = parent.closest('div.modal-dialog').parent();
+            let container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
                 container = this.groupEl;  // parent.closest('div.panel');
             }
 
-            var params = {
+            let params = {
                 // width: 'element',
                 data: initials,
                 dropdownParent: container,
@@ -70,11 +70,11 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                             params.next = data.next || null;
                         }
 
-                        var results = [];
+                        let results = [];
 
-                        for (var i = 0; i < data.items.length; ++i) {
+                        for (let i = 0; i < data.items.length; ++i) {
 
-                            var display = '';
+                            let display = '';
 
                             if (data.items[i].preferred_names) {
                                 display = data.items[i].preferred_names;
@@ -143,7 +143,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        var type = this;
+        let type = this;
 
         if (this.readOnly && defaultValues) {
             // defines value as attribute
@@ -154,7 +154,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                 url: window.application.url(['geolocation', 'country', defaultValues]),
                 dataType: 'json'
             }).done(function (data) {
-                var display = '';
+                let display = '';
 
                 if (data.preferred_names) {
                     display = data.preferred_names;
@@ -177,15 +177,15 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                 this.el.select2('destroy');
 
                 // init the autocomplete
-                var url = window.application.url(['geolocation', 'country']);
-                var initials = [];
+                let url = window.application.url(['geolocation', 'country']);
+                let initials = [];
 
-                var container = this.parent.closest('div.modal-dialog').parent();
+                let container = this.parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
                     container = this.groupEl;  // parent.closest('div.panel');
                 }
 
-                var params = {
+                let params = {
                     data: initials,
                     dropdownParent: container,
                     ajax: {
@@ -207,10 +207,10 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                                 params.next = data.next || null;
                             }
 
-                            var results = [];
+                            let results = [];
 
-                            for (var i = 0; i < data.items.length; ++i) {
-                                var display = '';
+                            for (let i = 0; i < data.items.length; ++i) {
+                                let display = '';
 
                                 if (data.items[i].preferred_names) {
                                     display = data.items[i].preferred_names;
@@ -248,7 +248,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                     url: url + defaultValues + '/',
                     dataType: 'json'
                 }).done(function (data) {
-                    var display = '';
+                    let display = '';
 
                     if (data.preferred_names) {
                         display = data.preferred_names;
@@ -277,21 +277,21 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
     values: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                var value = parseInt(this.el.attr('value'));
+                let value = parseInt(this.el.attr('value'));
                 return isNaN(value) ? null : value;
             } else {
                 if (this.el.attr('value') !== undefined) {
-                    var value = parseInt(this.el.attr('value'));
+                    let value = parseInt(this.el.attr('value'));
                     return isNaN(value) ? null : value;
                 } else {
                     if (Array.isArray(this.el.val())) {
-                        var values = this.el.val();
+                        let values = this.el.val();
                         return values.map(function (value) {
                             value = parseInt(value);
                             return isNaN(value) ? null : value
                         })
                     } else if (this.el.val() !== "") {
-                        var value = parseInt(this.el.val());
+                        let value = parseInt(this.el.val());
                         return isNaN(value) ? null : value;
                     } else {
                         return null;
@@ -333,22 +333,22 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function (e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
     },
 
     onValueUnselected: function (e) {
-        var display = false;
+        let display = false;
 
         switch (this.conditionType) {
             case 0:
@@ -369,11 +369,11 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }

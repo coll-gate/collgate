@@ -8,9 +8,9 @@
  * @details
  */
 
-var Menu = require('./menu');
+let Menu = require('./menu');
 
-var MenuManager = function(parent) {
+let MenuManager = function(parent) {
     this.$el = parent;
     this.menus = [];
 };
@@ -22,7 +22,7 @@ MenuManager.prototype = {
      * @param menu
      */
     mergeMenu: function(org, menu) {
-        for (var i = 0; i < menu.entries.length; ++i) {
+        for (let i = 0; i < menu.entries.length; ++i) {
             org.entry(menu.entries[i]);
         }
     },
@@ -42,15 +42,15 @@ MenuManager.prototype = {
             throw "menu Must be a Menu object"
         }
 
-        for (var i = 0; i < this.menus.length; ++i) {
+        for (let i = 0; i < this.menus.length; ++i) {
             if (this.menus[i].name === menu.name) {
                 this.mergeMenu(this.menus[i], menu);
                 return;
             }
         }
 
-        var pos = 0;
-        for (var i = 0; i < this.menus.length; ++i) {
+        let pos = 0;
+        for (let i = 0; i < this.menus.length; ++i) {
             if (this.menus[i].order <= menu.order) {
                 ++pos;
             } else {
@@ -79,7 +79,7 @@ MenuManager.prototype = {
         if (this.$el) {
             this.destroy();
 
-            for (var i = 0; i < this.menus.length; ++i) {
+            for (let i = 0; i < this.menus.length; ++i) {
                 this.menus[i].render(this.$el, -1);
             }
         }
@@ -89,7 +89,7 @@ MenuManager.prototype = {
      * Get a menu according to its name.
      */
     getMenu: function(name) {
-        for (var i = 0; i < this.menus.length; ++i) {
+        for (let i = 0; i < this.menus.length; ++i) {
             if (this.menus[i].name === name) {
                 return this.menus[i];
             }
@@ -104,8 +104,8 @@ MenuManager.prototype = {
     removeMenu: function(name, destroy) {
         typeof destroy !== "undefined" || (destroy = true);
 
-        for (var i = 0; i < this.menus.length; ++i) {
-            var menu = this.menus[i];
+        for (let i = 0; i < this.menus.length; ++i) {
+            let menu = this.menus[i];
 
             if (menu.name === name) {
                 if (destroy) {

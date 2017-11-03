@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: "div",
     attributes: {
         'id': 'dlg_default',
@@ -30,7 +30,7 @@ var View = Marionette.View.extend({
     },
 
     constructor: function() {
-        var prototype = this.constructor.prototype;
+        let prototype = this.constructor.prototype;
 
         this.events = {};
         this.defaultOptions = {};
@@ -88,7 +88,7 @@ var View = Marionette.View.extend({
     },
 
     escapeKey: function(e) {
-        var code = e.keyCode || e.which;
+        let code = e.keyCode || e.which;
 
         // escape key cancel
         if (code === 27) {

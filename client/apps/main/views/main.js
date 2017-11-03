@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var MainLayout = Marionette.View.extend({
+let MainLayout = Marionette.View.extend({
     template: require('../templates/main.html'),
     className: "column",
 
@@ -29,7 +29,7 @@ var MainLayout = Marionette.View.extend({
     check_status_timeout: 3*60*1000,   // every 3 minutes
 
     initialize: function() {
-        var uiSetting = window.application.getUserSetting(
+        let uiSetting = window.application.getUserSetting(
             "ui", window.application.UI_SETTING_VERSION, window.application.UI_DEFAULT_SETTING);
 
         this.currentDisplayMode = uiSetting['display_mode'];
@@ -38,17 +38,17 @@ var MainLayout = Marionette.View.extend({
 
     setDisplay: function(mode) {
         // full width for mobile devices
-        var panels = [
+        let panels = [
             this.ui.left,
             this.ui.content,
             this.ui.right
         ];
 
-        var m = mode.split('-');
-        for (var i = 0; i < panels.length; ++i) {
-            var classes = panels[i].attr('class').split(' ');
+        let m = mode.split('-');
+        for (let i = 0; i < panels.length; ++i) {
+            let classes = panels[i].attr('class').split(' ');
 
-            for (var j = 0; j < classes.length; ++j) {
+            for (let j = 0; j < classes.length; ++j) {
                 if (classes[j].startsWith('col-')) {
                     panels[i].removeClass(classes[j]);
                 }
@@ -70,7 +70,7 @@ var MainLayout = Marionette.View.extend({
     },
 
     onResize: function() {
-        var view = this.getChildView('left');
+        let view = this.getChildView('left');
         if (view && view.onResize) {
             view.onResize();
         }
@@ -101,7 +101,7 @@ var MainLayout = Marionette.View.extend({
             this.setDisplay('0-12-0');
         } else {
             if (this.compactDisplay) {
-                var displayMode = window.application.getUserSetting(
+                let displayMode = window.application.getUserSetting(
                     "ui", window.application.UI_SETTING_VERSION, window.application.UI_DEFAULT_SETTING)['display_mode'];
 
                 // restore to previous setting
@@ -112,7 +112,7 @@ var MainLayout = Marionette.View.extend({
 
         // display grabber in full width
         if (this.ui.content.hasClass('col-md-12') || this.compactDisplay) {
-            var right = $('div.container').css('padding-right').replace('px', '');
+            let right = $('div.container').css('padding-right').replace('px', '');
             this.ui.content.children('div.root-right-bar-grabber').css('display', 'block').css('right', '-' + right + 'px');
         } else {
             this.ui.content.children('div.root-right-bar-grabber').css('display', 'none')
@@ -126,13 +126,13 @@ var MainLayout = Marionette.View.extend({
         'dom:refresh': function(child) {
             // re-inject the grabber column each time the content has changed
             if (child && child.$el.parent().hasClass('root-content')) {
-                var grabber = $('<div class="root-right-bar-grabber"></div>');
+                let grabber = $('<div class="root-right-bar-grabber"></div>');
                 this.ui.content.append(grabber);
 
                 this.ui.content.children('div.root-right-bar-grabber').on('mouseover', $.proxy(this.onMouseHoverRightPane, this));
 
                 if (this.ui.content.hasClass('col-md-12')) {
-                    var right = $('div.container').css('padding-right').replace('px', '');
+                    let right = $('div.container').css('padding-right').replace('px', '');
                     grabber.css('display', 'block').css('right', '-' + right + 'px');
                 } else {
                     grabber.css('display', 'none');
@@ -155,11 +155,11 @@ var MainLayout = Marionette.View.extend({
 
     onWindowScroll: function() {
         if (this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
-            var top = this.ui.content.position().top;
-            var height = this.ui.content.outerHeight();
+            let top = this.ui.content.position().top;
+            let height = this.ui.content.outerHeight();
 
             // adjust top position for mobile devices
-            var scrollTop = $(window).scrollTop();
+            let scrollTop = $(window).scrollTop();
             if (scrollTop !== 0 || $(window).height() < $('body').height()) {
                 top = scrollTop + 15;
                 height = $(window).height() - 30;
@@ -175,11 +175,11 @@ var MainLayout = Marionette.View.extend({
                 return false;
             }
 
-            var top = this.ui.content.position().top;
-            var height = this.ui.content.outerHeight();
+            let top = this.ui.content.position().top;
+            let height = this.ui.content.outerHeight();
 
             // for mobile devices the top and height must be adjusted by scroll height and viewport height
-            var scrollTop = $(window).scrollTop();
+            let scrollTop = $(window).scrollTop();
             if (scrollTop !== 0 || $(window).height() < $('body').height()) {
                 top = scrollTop + 15;
                 height = $(window).height() - 30;
@@ -250,7 +250,7 @@ var MainLayout = Marionette.View.extend({
         }
 
         // check only if no activities since a certain delta time
-        var now = new Date().getTime();
+        let now = new Date().getTime();
         if (now - session.user.lastAction > this.check_status_timeout) {
             if (this.checkStatus) {
                 return;

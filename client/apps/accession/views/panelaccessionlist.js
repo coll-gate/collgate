@@ -8,11 +8,11 @@
  * @details
  */
 
-var AccessionView = require('../views/panelaccession');
-var AdvancedTable = require('../../main/views/advancedtable');
-var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
+let AccessionView = require('../views/panelaccession');
+let AdvancedTable = require('../../main/views/advancedtable');
+let DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../../descriptor/templates/entitylist.html"),
     className: 'advanced-table-container',
     childView: AccessionView,
@@ -78,29 +78,29 @@ var View = AdvancedTable.extend({
     },
 
     onShowTab: function () {
-        var view = this;
+        let view = this;
 
-        var contextLayout = application.getView().getChildView('right');
+        let contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
-            var DefaultLayout = require('../../main/views/defaultlayout');
+            let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
             application.getView().showChildView('right', contextLayout);
         }
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({
             title: _t("Accession actions"),
             glyphicon: 'fa-wrench'
         }));
 
-        var actions = [
+        let actions = [
             'create-panel',
             'link-to-panel',
             'unlink-accessions'
         ];
 
-        var PanelAccessionListContextView = require('./accessionlistcontext');
-        var contextView = new PanelAccessionListContextView({actions: actions});
+        let PanelAccessionListContextView = require('./accessionlistcontext');
+        let contextView = new PanelAccessionListContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("panel:create", function () {
@@ -127,7 +127,7 @@ var View = AdvancedTable.extend({
             return;
         }
 
-        var view = this;
+        let view = this;
         $.ajax({
                 type: 'PATCH',
                 url: window.application.url(['accession', 'accessionpanel', this.model.id, 'accessions']),
@@ -159,7 +159,7 @@ var View = AdvancedTable.extend({
 
     updateAmount: function () {
         // update the accessions amount badge only if layout view is specified
-        var panelLayoutView = this.getOption('layoutView', null);
+        let panelLayoutView = this.getOption('layoutView', null);
 
         if (!panelLayoutView) {
             console.error("Panel layout view is missing: updateAmount() can not find amount badge to update");

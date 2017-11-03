@@ -8,9 +8,9 @@
  * @details
  */
 
-var MenuEntryBase = require('./menuentrybase');
+let MenuEntryBase = require('./menuentrybase');
 
-var MenuSeparator = function(order, auth) {
+let MenuSeparator = function(order, auth) {
     MenuEntryBase.call(this, null, order, auth);
 };
 
@@ -22,7 +22,7 @@ MenuSeparator.prototype.constructor = MenuSeparator;
  * @param parent
  */
 MenuSeparator.prototype.render = function(parent) {
-    var entry = $('<li role="presentation" class="divider" name="' + this.name + '"></li>');
+    let entry = $('<li role="presentation" class="divider" name="' + this.name + '"></li>');
     entry.addClass(this.authTypeClassName());
 
     parent.append(entry);

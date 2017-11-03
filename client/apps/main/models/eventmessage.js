@@ -8,7 +8,7 @@
  * @details 
  */
 
-var Model = Backbone.Model.extend({
+let Model = Backbone.Model.extend({
     defaults: function() {
         return {
             id: null,

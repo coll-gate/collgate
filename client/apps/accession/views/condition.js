@@ -8,9 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'condition',
     template: require('../templates/searchcondition.html'),
@@ -48,7 +48,7 @@ var View = Marionette.View.extend({
     },
 
     onRender: function () {
-        var operator = this.$el.find('div.search-condition').find('div.operator').children('div').children('select');
+        let operator = this.$el.find('div.search-condition').find('div.operator').children('div').children('select');
         operator.append('<option value="and">' + _t('AND') + '</option>');
         operator.append('<option value="or">' + _t('OR') + '</option>');
         operator.selectpicker({}).selectpicker('val', 'and');
@@ -71,8 +71,8 @@ var View = Marionette.View.extend({
     },
 
     onConditionChange: function () {
-        var field = this.ui.field.val();
-        var column = this.columns[field];
+        let field = this.ui.field.val();
+        let column = this.columns[field];
 
         if (this.widget.allow_multiple) {
             this.widget.destroy();
@@ -123,8 +123,8 @@ var View = Marionette.View.extend({
             this.ui.field_value_group.show();
         }
 
-        var value = null;
-        var operator = null;
+        let value = null;
+        let operator = null;
 
         if (this.widget) {
             value = this.widget.values();
@@ -191,8 +191,8 @@ var View = Marionette.View.extend({
     },
 
     onChangeField: function () {
-        var field = this.ui.field.val();
-        var column = this.columns[field];
+        let field = this.ui.field.val();
+        let column = this.columns[field];
 
         if (!column) {
             return;
@@ -212,13 +212,13 @@ var View = Marionette.View.extend({
                 this.widget.create(column.format, this.ui.field_value_group, false, column.group, column.type, {extended_search: false});
             }
         } else {
-            var input = $('<input type="text" class="search-value form-control" name="search-value"/>');
+            let input = $('<input type="text" class="search-value form-control" name="search-value"/>');
             this.ui.field_value_group.append(input);
         }
 
         this.ui.condition.children('option').remove();
 
-        var operators_labels = {
+        let operators_labels = {
             'isnull': _t('Undefined'),
             'notnull': _t('Defined'),
             'eq': _t('Exact'),
@@ -236,8 +236,8 @@ var View = Marionette.View.extend({
             'not_contained_by': _t('Not contained by')
         };
 
-        for (var i = 0; i < column.available_operators.length; i++) {
-            var operator_code = column.available_operators[i];
+        for (let i = 0; i < column.available_operators.length; i++) {
+            let operator_code = column.available_operators[i];
             this.ui.condition.append('<option value="' + operator_code + '">' + operators_labels[operator_code] + '</option>');
         }
 
@@ -253,8 +253,8 @@ var View = Marionette.View.extend({
 
     onRemove: function () {
         if (this.first_element) {
-            var new_first_model = this.parent.collection.models[1];
-            var new_first_view = this.parent.children.findByModel(new_first_model);
+            let new_first_model = this.parent.collection.models[1];
+            let new_first_view = this.parent.children.findByModel(new_first_model);
 
             new_first_view.ui.row_operator.selectpicker('val', 'and');
 

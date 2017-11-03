@@ -8,12 +8,12 @@
  * @details 
  */
 
-var AdvancedTable = require('../../main/views/advancedtable');
-var Dialog = require('../../main/views/dialog');
+let AdvancedTable = require('../../main/views/advancedtable');
+let Dialog = require('../../main/views/dialog');
 
-var DescriptorPanelView = require('../views/descriptorpanel');
+let DescriptorPanelView = require('../views/descriptorpanel');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/descriptorpanellist.html"),
     childView: DescriptorPanelView,
     childViewContainer: 'div.descriptor-panel-list',
@@ -124,9 +124,9 @@ var View = AdvancedTable.extend({
             return false;
         }
 
-        var elt = application.main.dnd.get();
+        let elt = application.main.dnd.get();
         if (elt.$el.hasClass('descriptor-model')) {
-            var DefinesLabel = Dialog.extend({
+            let DefinesLabel = Dialog.extend({
                 template: require('../templates/descriptorpanelcreate.html'),
 
                 attributes: {
@@ -150,7 +150,7 @@ var View = AdvancedTable.extend({
                 },
 
                 validateLabel: function() {
-                    var v = this.ui.label.val();
+                    let v = this.ui.label.val();
 
                     if (v.length < 3) {
                         $(this.ui.label).validateField('failed', _t('characters_min', {count: 3}));
@@ -163,19 +163,19 @@ var View = AdvancedTable.extend({
                 },
 
                 onApply: function() {
-                    var view = this;
-                    var collection = this.getOption('collection');
-                    var position = this.getOption('position');
-                    var modelId = this.getOption('descriptor_model');
+                    let view = this;
+                    let collection = this.getOption('collection');
+                    let position = this.getOption('position');
+                    let modelId = this.getOption('descriptor_model');
 
                     if (this.validateLabel()) {
-                        var to_rshift = [];
+                        let to_rshift = [];
 
                         // server will r-shift position of any model upward this new
                         // do it locally to be consistent
-                        for (var model in collection.models) {
-                            var dmt = collection.models[model];
-                            var p = dmt.get('position');
+                        for (let model in collection.models) {
+                            let dmt = collection.models[model];
+                            let p = dmt.get('position');
                             if (p >= position) {
                                 dmt.set('position', p+1);
                                 to_rshift.push(dmt);
@@ -195,7 +195,7 @@ var View = AdvancedTable.extend({
                                 view.destroy();
 
                                 // left shift (undo) for consistency with server
-                                for (var i = 0; i < to_rshift.length; ++i) {
+                                for (let i = 0; i < to_rshift.length; ++i) {
                                     to_rshift[i].set('position', to_rshift[i].get('position')-1);
                                 }
                             }
@@ -204,16 +204,16 @@ var View = AdvancedTable.extend({
                 }
             });
 
-            var collection = this.collection;
+            let collection = this.collection;
 
             // find last position + 1
-            var newPosition = 0;
+            let newPosition = 0;
 
             if (collection.models.length > 0) {
                 newPosition = collection.at(collection.models.length-1).get('position') + 1;
             }
 
-            var definesLabel = new DefinesLabel({
+            let definesLabel = new DefinesLabel({
                 collection: collection,
                 position: newPosition,
                 descriptor_model: elt.model.get('id')
@@ -221,11 +221,11 @@ var View = AdvancedTable.extend({
 
             definesLabel.render();
         } else if (elt.$el.hasClass('descriptor-panel')) {
-            var collection = this.collection;
-            var metaModelId = collection.model_id;
+            let collection = this.collection;
+            let metaModelId = collection.model_id;
 
             // find last position + 1
-            var newPosition = collection.at(collection.models.length-1).get('position') + 1;
+            let newPosition = collection.at(collection.models.length-1).get('position') + 1;
 
             $.ajax({
                 type: "PUT",
@@ -240,10 +240,10 @@ var View = AdvancedTable.extend({
                 elt.model.set('position', newPosition);
 
                 // lshift any others element
-                for (var model in collection.models) {
-                    var dmt = collection.models[model];
+                for (let model in collection.models) {
+                    let dmt = collection.models[model];
                     if (dmt.get('id') !== elt.model.get('id')) {
-                        var p = dmt.get('position');
+                        let p = dmt.get('position');
                         dmt.set('position', p - 1);
                     }
                 }

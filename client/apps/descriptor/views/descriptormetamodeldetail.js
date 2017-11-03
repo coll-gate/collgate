@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     className: 'object descriptor-meta-model-detail',
     template: require('../templates/descriptormetamodeldetail.html'),
 
@@ -34,10 +34,10 @@ var View = Marionette.View.extend({
     },
 
     onRender: function() {
-        var target = this.model.get('target');
+        let target = this.model.get('target');
 
         // update the contextual region according to the format
-        var Element = application.descriptor.descriptorMetaModelTypes.getElement(target);
+        let Element = application.descriptor.descriptorMetaModelTypes.getElement(target);
         if (Element) {
             this.showChildView('content', new Element({model: this.model}));
         } else {
@@ -46,8 +46,8 @@ var View = Marionette.View.extend({
     },
 
     inputName: function () {
-        var v = this.ui.name.val();
-        var re = /^[a-zA-Z0-9_-]+$/i;
+        let v = this.ui.name.val();
+        let re = /^[a-zA-Z0-9_-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             $(this.ui.name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -62,11 +62,11 @@ var View = Marionette.View.extend({
         if (!$(this.ui.name.isValidField()))
             return;
 
-        var target = this.model.get('target');
-        var name = this.ui.name.val();
-        var description = this.ui.description.val();
+        let target = this.model.get('target');
+        let name = this.ui.name.val();
+        let description = this.ui.description.val();
 
-        var parameters = {
+        let parameters = {
             'type': target,
             'data': this.getChildView('content') ? this.getChildView('content').getData() : {}
         };

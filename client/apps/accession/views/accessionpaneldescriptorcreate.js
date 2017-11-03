@@ -8,10 +8,10 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
         tagName: 'div',
         template: require('../templates/accessionpaneldescriptorcreate.html'),
 
@@ -30,14 +30,14 @@ var View = Marionette.View.extend({
         },
 
         onDefine: function (e) {
-            var model = this.model;
+            let model = this.model;
 
             $.ajax({
                 type: "GET",
                 url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.accessionpanel']),
                 dataType: 'json'
             }).done(function (data) {
-                var CreateDescriptorView = Dialog.extend({
+                let CreateDescriptorView = Dialog.extend({
                     attributes: {
                         'id': 'dlg_create_descriptor'
                     },
@@ -70,16 +70,16 @@ var View = Marionette.View.extend({
                     },
 
                     onContinue: function () {
-                        var view = this;
-                        var model = this.getOption('model');
+                        let view = this;
+                        let model = this.getOption('model');
 
                         if (this.ui.meta_model.val() != null) {
-                            var metaModel = parseInt(this.ui.meta_model.val());
+                            let metaModel = parseInt(this.ui.meta_model.val());
 
                             view.destroy();
 
                             // update the descriptor part of the accessionPanel layout
-                            // var accessionPanelLayout = application.main.viewContent();
+                            // let accessionPanelLayout = application.main.viewContent();
 
                             // patch the accessionPanel descriptor meta model
                             model.save(
@@ -98,7 +98,7 @@ var View = Marionette.View.extend({
                             //     url: window.application.url(['descriptor', 'meta-model', metaModel, 'layout']),
                             //     dataType: 'json'
                             // }).done(function (data) {
-                            //     var accessionPanelDescriptorView = new AccessionPanelDescriptorView({
+                            //     let accessionPanelDescriptorView = new AccessionPanelDescriptorView({
                             //         model: model,
                             //         descriptorMetaModelLayout: data
                             //     });
@@ -108,27 +108,27 @@ var View = Marionette.View.extend({
                     }
                 });
 
-                var createDescriptorView = new CreateDescriptorView({model: model});
+                let createDescriptorView = new CreateDescriptorView({model: model});
                 createDescriptorView.render();
             })
             ;
         },
 
         onShowTab: function () {
-            var view = this;
+            let view = this;
 
-            var DefaultLayout = require('../../main/views/defaultlayout');
-            var contextLayout = new DefaultLayout();
+            let DefaultLayout = require('../../main/views/defaultlayout');
+            let contextLayout = new DefaultLayout();
             application.getView().showChildView('right', contextLayout);
 
-            var actions = [];
+            let actions = [];
 
             actions.push('add');
 
-            var AccessionPanelDescriptorContextView = require('./accessionpaneldescriptorcontext');
-            var contextView = new AccessionPanelDescriptorContextView({actions: actions});
+            let AccessionPanelDescriptorContextView = require('./accessionpaneldescriptorcontext');
+            let contextView = new AccessionPanelDescriptorContextView({actions: actions});
 
-            var TitleView = require('../../main/views/titleview');
+            let TitleView = require('../../main/views/titleview');
             contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
             contextLayout.showChildView('content', contextView);
 

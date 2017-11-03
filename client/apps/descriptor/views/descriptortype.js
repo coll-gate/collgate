@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-type',
     template: require('../templates/descriptortype.html'),
@@ -44,7 +44,7 @@ var View = Marionette.View.extend({
     },
 
     actionsProperties: function() {
-        var properties = {
+        let properties = {
             edit: {disabled: false},
             manage: {disabled: false},
             remove: {disabled: false}

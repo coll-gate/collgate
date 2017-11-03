@@ -8,9 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var Layout = Marionette.View.extend({
+let Layout = Marionette.View.extend({
     template: require("../templates/descriptortypedetailslayout.html"),
 
     regions: {
@@ -35,14 +35,14 @@ var Layout = Marionette.View.extend({
     },
 
     onRender: function () {
-        var format = this.model.get('format');
+        let format = this.model.get('format');
 
         application.descriptor.views.formatTypes.drawSelect(this.ui.format_type, true, false, format.type);
 
         // update the contextual region according to the format
-        var Element = application.descriptor.widgets.getElement(format.type);
+        let Element = application.descriptor.widgets.getElement(format.type);
         if (Element && Element.DescriptorTypeDetailsView) {
-            var content_el = new Element.DescriptorTypeDetailsView({model: this.model});
+            let content_el = new Element.DescriptorTypeDetailsView({model: this.model});
             this.showChildView('content', content_el);
         } else {
             this.getRegion('content').empty();
@@ -65,10 +65,10 @@ var Layout = Marionette.View.extend({
     },
 
     changeFormatType: function () {
-        var type = this.ui.format_type.val();
+        let type = this.ui.format_type.val();
 
         // update the contextual region according to the format
-        var Element = application.descriptor.widgets.getElement(type);
+        let Element = application.descriptor.widgets.getElement(type);
         if (Element && Element.DescriptorTypeDetailsView) {
             this.showChildView('content', new Element.DescriptorTypeDetailsView({model: this.model}));
         } else {
@@ -77,8 +77,8 @@ var Layout = Marionette.View.extend({
     },
 
     inputName: function () {
-        var v = this.ui.name.val();
-        var re = /^[a-zA-Z0-9_-]+$/i;
+        let v = this.ui.name.val();
+        let re = /^[a-zA-Z0-9_-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             $(this.ui.name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -93,11 +93,11 @@ var Layout = Marionette.View.extend({
         if (!$(this.ui.name.isValidField()))
             return;
 
-        var name = this.ui.name.val();
-        var code = this.ui.code.val();
-        var description = this.ui.description.val();
+        let name = this.ui.name.val();
+        let code = this.ui.code.val();
+        let description = this.ui.description.val();
 
-        var format = {};
+        let format = {};
 
         if (this.getChildView('content')) {
             format = this.getChildView('content').getFormat();

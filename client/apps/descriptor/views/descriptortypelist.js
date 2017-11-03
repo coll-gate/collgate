@@ -8,10 +8,10 @@
  * @details 
  */
 
-var AdvancedTable = require('../../main/views/advancedtable');
-var DescriptorTypeView = require('../views/descriptortype');
+let AdvancedTable = require('../../main/views/advancedtable');
+let DescriptorTypeView = require('../views/descriptortype');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/descriptortypelist.html"),
     className: "object descriptor-type-list advanced-table-container",
     childView: DescriptorTypeView,

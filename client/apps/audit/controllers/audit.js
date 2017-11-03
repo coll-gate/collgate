@@ -8,20 +8,20 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var AuditCollection = require('../collections/audit');
-var AuditListView = require('../views/auditlist');
+let Marionette = require('backbone.marionette');
+let AuditCollection = require('../collections/audit');
+let AuditListView = require('../views/auditlist');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
+let DefaultLayout = require('../../main/views/defaultlayout');
 
-var TitleView = require('../../main/views/titleview');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
-var Dialog = require('../../main/views/dialog');
+let TitleView = require('../../main/views/titleview');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
+let Dialog = require('../../main/views/dialog');
 
-var Controller = Marionette.Object.extend({
+let Controller = Marionette.Object.extend({
 
     searchByUserName: function () {
-        var ModalView = Dialog.extend({
+        let ModalView = Dialog.extend({
             attributes: {
                 'id': 'dlg_audit_by_username'
             },
@@ -56,7 +56,7 @@ var Controller = Marionette.Object.extend({
                         data: function (params) {
                             params.term || (params.term = '');
 
-                            var filters = {
+                            let filters = {
                                 method: 'icontains',
                                 fields: '*',
                                 '*': params.term.split(' ').filter(function (t) { return t.length > 2; })
@@ -71,9 +71,9 @@ var Controller = Marionette.Object.extend({
                             // no pagination
                             params.page = params.page || 1;
 
-                            var results = [];
+                            let results = [];
 
-                            for (var i = 0; i < data.items.length; ++i) {
+                            for (let i = 0; i < data.items.length; ++i) {
                                 results.push({
                                     id: data.items[i].value,
                                     text: data.items[i].label
@@ -100,11 +100,11 @@ var Controller = Marionette.Object.extend({
             }
         });
 
-        var modal = new ModalView({controller: this});
+        let modal = new ModalView({controller: this});
         modal.render();
 
         modal.on("view:search", function(view) {
-            var username = view.ui.username.val();
+            let username = view.ui.username.val();
             if (username) {
                 this.getAuditListByUsername(username);
                 view.destroy();
@@ -115,15 +115,15 @@ var Controller = Marionette.Object.extend({
     },
 
     getAuditListByUsername: function (username) {
-        var auditCollection = new AuditCollection([], {username: username});
+        let auditCollection = new AuditCollection([], {username: username});
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of audit entries related to user"), object: username}));
 
         auditCollection.fetch({data: {cursor: null}, processData: true}).then(function () {
-            var auditListView = new AuditListView({collection: auditCollection});
+            let auditListView = new AuditListView({collection: auditCollection});
 
             defaultLayout.showChildView('content', auditListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: auditListView}));
@@ -131,7 +131,7 @@ var Controller = Marionette.Object.extend({
     },
 
     searchByEntity: function (uuid) {
-            var ModalView = Dialog.extend({
+            let ModalView = Dialog.extend({
             attributes: {
                 'id': 'dlg_audit_by_entity'
             },
@@ -154,7 +154,7 @@ var Controller = Marionette.Object.extend({
             onRender: function () {
                 ModalView.__super__.onRender.apply(this);
 
-                var view = this;
+                let view = this;
 
                 application.main.views.contentTypes.drawSelect(this.ui.content_type);
                 //application.main.views.contentTypes.htmlFromValue(this.el);
@@ -169,10 +169,10 @@ var Controller = Marionette.Object.extend({
                         data: function (params) {
                             params.term || (params.term = '');
 
-                            //var name_match = params.term.match(/^([a-zA-Z0-9_-]{1,})$/);
-                            var uuid_match = params.term.match(/^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$/);
+                            //let name_match = params.term.match(/^([a-zA-Z0-9_-]{1,})$/);
+                            let uuid_match = params.term.match(/^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$/);
 
-                            var filters = {
+                            let filters = {
                                 method: 'icontains'
                             };
 
@@ -180,7 +180,7 @@ var Controller = Marionette.Object.extend({
                                 filters.fields = 'uuid';
                                 filters.uuid = params.term;
                             } else {
-                                var ct = view.ui.content_type.val().split('.');
+                                let ct = view.ui.content_type.val().split('.');
 
                                 filters.fields = ['app_label', 'model', 'object_name'];
                                 filters.app_label = ct[0];
@@ -197,9 +197,9 @@ var Controller = Marionette.Object.extend({
                             // no pagination
                             params.page = params.page || 1;
 
-                            var results = [];
+                            let results = [];
 
-                            for (var i = 0; i < data.items.length; ++i) {
+                            for (let i = 0; i < data.items.length; ++i) {
                                 results.push({
                                     id: data.items[i].id,
                                     text: data.items[i].name
@@ -228,13 +228,13 @@ var Controller = Marionette.Object.extend({
             }
         });
 
-        var modal = new ModalView({controller: this});
+        let modal = new ModalView({controller: this});
         modal.render();
 
         modal.on("view:search", function(view) {
-            var object_id = $(view.ui.entity).val();
-            var object_name = $(view.ui.entity).select2('data')[0].text;
-            var ct = $(view.ui.content_type).val().split('.');
+            let object_id = $(view.ui.entity).val();
+            let object_name = $(view.ui.entity).select2('data')[0].text;
+            let ct = $(view.ui.content_type).val().split('.');
             if (ct.length === 2 && object_id) {
                 this.getAuditListByEntity(ct[0], ct[1], object_id, object_name);
                 view.destroy();
@@ -245,9 +245,9 @@ var Controller = Marionette.Object.extend({
     },
 
     getAuditListByEntity: function (app_label, model, object_id, object_name) {
-        var auditCollection = new AuditCollection([], {entity: {app_label: app_label, model: model, object_id: object_id}});
+        let auditCollection = new AuditCollection([], {entity: {app_label: app_label, model: model, object_id: object_id}});
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         // if not specified retrieve the entity name
@@ -274,7 +274,7 @@ var Controller = Marionette.Object.extend({
         }
 
         auditCollection.fetch({data: {cursor: null}, processData: true}).then(function () {
-            var auditListView = new AuditListView({collection: auditCollection});
+            let auditListView = new AuditListView({collection: auditCollection});
 
             defaultLayout.showChildView('content', auditListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: auditListView}));

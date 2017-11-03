@@ -8,10 +8,10 @@
  * @details 
  */
 
-var AuditView = require('../views/audit');
-var AdvancedTable = require('../../main/views/advancedtable');
+let AuditView = require('../views/audit');
+let AdvancedTable = require('../../main/views/advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/auditlist.html"),
     className: "object audit-list advanced-table-container",
     childView: AuditView,

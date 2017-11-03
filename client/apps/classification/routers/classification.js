@@ -8,38 +8,38 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var ClassificationModel = require('../models/classification');
+let Marionette = require('backbone.marionette');
+let ClassificationModel = require('../models/classification');
 
-var ClassificationListView = require('../views/classificationlist');
-var ClassificationCreateView = require('../views/classificationadd');
+let ClassificationListView = require('../views/classificationlist');
+let ClassificationCreateView = require('../views/classificationadd');
 
-var ClassificationRankListView = require('../views/classificationranklist');
-var ClassificationRankCreateView = require('../views/classificationrankadd');
+let ClassificationRankListView = require('../views/classificationranklist');
+let ClassificationRankCreateView = require('../views/classificationrankadd');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
 
-var ClassificationCollection = require('../collections/classification');
-var ClassificationRankCollection = require('../collections/classificationrank');
+let ClassificationCollection = require('../collections/classification');
+let ClassificationRankCollection = require('../collections/classificationrank');
 
 
-var ClassificationRouter = Marionette.AppRouter.extend({
+let ClassificationRouter = Marionette.AppRouter.extend({
     routes : {
         "app/classification/classification/": "getClassificationList",
         "app/classification/classification/:id/classificationrank/": "getClassificationIdRanksList"
     },
 
     getClassificationList : function() {
-        var collection = new ClassificationCollection();
+        let collection = new ClassificationCollection();
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of classifications")}));
 
-        var classificationListView = new ClassificationListView({collection : collection});
+        let classificationListView = new ClassificationListView({collection : collection});
 
         defaultLayout.showChildView('content', classificationListView);
         defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
@@ -55,14 +55,14 @@ var ClassificationRouter = Marionette.AppRouter.extend({
     },
 
     getClassificationIdRanksList : function(id) {
-        var classification = new ClassificationModel({id: id});
+        let classification = new ClassificationModel({id: id});
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var collection = new ClassificationRankCollection([], {classification_id: id});
+        let collection = new ClassificationRankCollection([], {classification_id: id});
 
-        var classificationRankListView = new ClassificationRankListView({
+        let classificationRankListView = new ClassificationRankListView({
                 classification: classification,
                 collection: collection
             });

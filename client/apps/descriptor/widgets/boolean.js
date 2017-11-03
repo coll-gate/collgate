@@ -8,10 +8,10 @@
  * @details 
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('./descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var BooleanType = function() {
+let BooleanType = function() {
     DescriptorFormatType.call(this);
 
     this.name = "boolean";
@@ -23,17 +23,17 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-check");
+            let input = this._createStdInput(parent, "glyphicon-check");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
-            var select = $('<select data-width="100%"></select>');
+            let select = $('<select data-width="100%"></select>');
             this.groupEl = this._createInputGroup(parent, "glyphicon-check", select);
 
             // true
-            var option = $("<option></option>");
+            let option = $("<option></option>");
 
             option.attr("value", "true");
             option.html(_t('Yes'));
@@ -145,15 +145,15 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function(e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }

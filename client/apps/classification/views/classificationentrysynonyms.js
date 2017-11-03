@@ -8,10 +8,10 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'classification-entry-synonyms',
     template: require('../templates/classificationentrysynonyms.html'),
@@ -54,10 +54,10 @@ var View = Marionette.View.extend({
         application.classification.views.classificationEntrySynonymTypes.htmlFromValue(this.el);
 
         // disable non multiple synonym types
-        for (var i = 0; i < this.model.get('synonyms').length; ++i) {
-            var st = application.classification.collections.classificationEntrySynonymTypes.get(this.model.get('synonyms')[i].synonym_type);
+        for (let i = 0; i < this.model.get('synonyms').length; ++i) {
+            let st = application.classification.collections.classificationEntrySynonymTypes.get(this.model.get('synonyms')[i].synonym_type);
             if (!st.get('multiple_entry')) {
-                var name = st.get('name');
+                let name = st.get('name');
                 this.ui.classification_entry_synonym_type.find('option[name=' + name + ']').prop('disabled', true);
             }
         }
@@ -68,9 +68,9 @@ var View = Marionette.View.extend({
     },
 
     onChangeSynonymType: function () {
-        var synonymTypeId = parseInt(this.ui.classification_entry_synonym_type.val());
+        let synonymTypeId = parseInt(this.ui.classification_entry_synonym_type.val());
         if (!isNaN(synonymTypeId)) {
-            var synonymType = application.classification.collections.classificationEntrySynonymTypes.get(synonymTypeId);
+            let synonymType = application.classification.collections.classificationEntrySynonymTypes.get(synonymTypeId);
 
             // enable/disable and default language
             if (synonymType.get('has_language')) {
@@ -89,7 +89,7 @@ var View = Marionette.View.extend({
     },
 
     validateName: function() {
-        var v = this.ui.synonym_name.val().trim();
+        let v = this.ui.synonym_name.val().trim();
 
         if (v.length > 128) {
             $(this.ui.synonym_name).validateField('failed', _t('characters_max', {count: 128}));
@@ -104,14 +104,14 @@ var View = Marionette.View.extend({
 
     onSynonymNameInput: function () {
         if (this.validateName()) {
-            var synonymTypeId = parseInt(this.ui.classification_entry_synonym_type.val());
-            var synonymType = application.classification.collections.classificationEntrySynonymTypes.get(synonymTypeId);
-            var language = this.ui.synonym_language.val();
+            let synonymTypeId = parseInt(this.ui.classification_entry_synonym_type.val());
+            let synonymType = application.classification.collections.classificationEntrySynonymTypes.get(synonymTypeId);
+            let language = this.ui.synonym_language.val();
 
-            var self = this;
-            var name = this.ui.synonym_name.val().trim();
+            let self = this;
+            let name = this.ui.synonym_name.val().trim();
 
-                var filters = {
+                let filters = {
                 fields: ["name", "synonym_type"],
                 method: "ieq",
                 name: name,
@@ -132,8 +132,8 @@ var View = Marionette.View.extend({
                     cache: false,
                 }).done(function (data) {
                     if (data.items.length > 0) {
-                        for (var i in data.items) {
-                            var t = data.items[i];
+                        for (let i in data.items) {
+                            let t = data.items[i];
 
                             // name must be unique
                             if (t.label.toUpperCase() === name.toUpperCase()) {
@@ -162,10 +162,10 @@ var View = Marionette.View.extend({
 
     onAddSynonym: function () {
         if (this.validateName() && !this.ui.synonym_name.hasClass('invalid')) {
-            var self = this;
-            var synonymType = parseInt(this.ui.classification_entry_synonym_type.val());
-            var name = $(this.ui.synonym_name).val().trim();
-            var language = $(this.ui.synonym_language).val();
+            let self = this;
+            let synonymType = parseInt(this.ui.classification_entry_synonym_type.val());
+            let name = $(this.ui.synonym_name).val().trim();
+            let language = $(this.ui.synonym_language).val();
 
             $.ajax({
                 type: "POST",
@@ -182,9 +182,9 @@ var View = Marionette.View.extend({
     },
 
     onRemoveSynonym: function (e) {
-        var synonym = $(e.target.parentNode.parentNode);
-        var synonymId = $(e.target).data('synonym-id');
-        var self = this;
+        let synonym = $(e.target.parentNode.parentNode);
+        let synonymId = $(e.target).data('synonym-id');
+        let self = this;
 
         $.ajax({
             type: "DELETE",
@@ -198,9 +198,9 @@ var View = Marionette.View.extend({
     },
 
     onRenameSynonym: function(e) {
-        var parentSelf = this;
+        let parentSelf = this;
 
-        var ChangeSynonym = Dialog.extend({
+        let ChangeSynonym = Dialog.extend({
             template: require('../templates/classificationentrychangesynonym.html'),
 
             attributes: {
@@ -221,13 +221,13 @@ var View = Marionette.View.extend({
 
             onSynonymNameInput: function () {
                 if (this.validateName()) {
-                    var synonymTypeId = this.getOption('synonym_type');
-                    var synonymType = application.classification.collections.classificationEntrySynonymTypes.get(synonymTypeId);
+                    let synonymTypeId = this.getOption('synonym_type');
+                    let synonymType = application.classification.collections.classificationEntrySynonymTypes.get(synonymTypeId);
 
-                    var self = this;
-                    var name = this.ui.synonym_name.val().trim();
+                    let self = this;
+                    let name = this.ui.synonym_name.val().trim();
 
-                    var filters = {
+                    let filters = {
                         fields: ["name", "synonym_type"],
                         method: "ieq",
                         name: name,
@@ -248,8 +248,8 @@ var View = Marionette.View.extend({
                             cache: false
                         }).done(function (data) {
                             if (data.items.length > 0) {
-                                for (var i in data.items) {
-                                    var t = data.items[i];
+                                for (let i in data.items) {
+                                    let t = data.items[i];
 
                                     if ((t.classification_entry === self.model.get('id')) && (t.id === self.getOption('synonym_id'))) {
                                         // valid if same classification entry and same synonym
@@ -279,7 +279,7 @@ var View = Marionette.View.extend({
             },
 
             validateName: function() {
-                var v = this.ui.synonym_name.val().trim();
+                let v = this.ui.synonym_name.val().trim();
 
                 if (v.length < 3) {
                     $(this.ui.synonym_name).validateField('failed', _t('characters_min', {count: 3}));
@@ -294,9 +294,9 @@ var View = Marionette.View.extend({
             },
 
             onApply: function() {
-                var self = this;
-                var synonymId = this.getOption('synonym_id');
-                var name = this.ui.synonym_name.val().trim();
+                let self = this;
+                let synonymId = this.getOption('synonym_id');
+                let name = this.ui.synonym_name.val().trim();
 
                 if (!this.ui.synonym_name.hasClass('invalid')) {
                     $.ajax({
@@ -316,14 +316,14 @@ var View = Marionette.View.extend({
             }
         });
 
-        var synonym = $(e.target.parentNode);
-        var synonymId = $(e.target).data('synonym-id');
+        let synonym = $(e.target.parentNode);
+        let synonymId = $(e.target).data('synonym-id');
 
-        var synonymType = parseInt(synonym.find("[name='synonym-type']").attr('value'));
-        var name = synonym.find("[name='name']").text();
-        var language = synonym.find("[name='language']").attr('value');
+        let synonymType = parseInt(synonym.find("[name='synonym-type']").attr('value'));
+        let name = synonym.find("[name='name']").text();
+        let language = synonym.find("[name='language']").attr('value');
 
-        var changeSynonym = new ChangeSynonym({
+        let changeSynonym = new ChangeSynonym({
             model: this.model,
             synonym_id: synonymId,
             name: name,

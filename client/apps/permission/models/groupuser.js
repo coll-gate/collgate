@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
-var Model = Backbone.Model.extend({
+let Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
             return window.application.url(['permission', 'group', this.collection.group_id, 'user']);
@@ -35,8 +35,8 @@ var Model = Backbone.Model.extend({
     },
 
     validate: function(attrs) {
-        var errors = {};
-        var hasError = false;
+        let errors = {};
+        let hasError = false;
 
         if (hasError) {
           return errors;

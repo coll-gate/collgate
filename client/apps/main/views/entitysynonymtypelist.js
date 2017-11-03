@@ -8,10 +8,10 @@
  * @details
  */
 
-var EntitySynonymView = require('../views/entitysynonymtype');
-var AdvancedTable = require('./advancedtable');
+let EntitySynonymView = require('../views/entitysynonymtype');
+let AdvancedTable = require('./advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/entitysynonymtypelist.html"),
     className: "entity-synonym-type-list advanced-table-container",
     childView: EntitySynonymView,

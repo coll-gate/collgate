@@ -8,15 +8,15 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-value actions',
     template: require('../templates/descriptorvalue.html'),
     // templateContext: function () {
-    //     // var ctx = this.model;
+    //     // let ctx = this.model;
     //     // ctx.format = this.model.collection.format;
     //     //
     //     // // @todo check with user permission
@@ -51,7 +51,7 @@ var View = Marionette.View.extend({
     },
 
     actionsProperties: function() {
-        var properties = {
+        let properties = {
             edit: {disabled: false},
             remove: {disable: false}
         };
@@ -80,7 +80,7 @@ var View = Marionette.View.extend({
 
     onEditValue0: function () {
         if (this.getOption('can_modify')) {
-            var model = this.model;
+            let model = this.model;
 
             if (model.collection.format['trans']) {
                 $.ajax({
@@ -88,9 +88,9 @@ var View = Marionette.View.extend({
                     url: this.model.url() + 'value0/',
                     dataType: 'json',
                 }).done(function (data) {
-                    var values = data;
+                    let values = data;
 
-                    var ChangeValues = Dialog.extend({
+                    let ChangeValues = Dialog.extend({
                         template: require('../templates/descriptorvaluechangefieldmultiple.html'),
                         templateContext: function () {
                             return {
@@ -119,7 +119,7 @@ var View = Marionette.View.extend({
                         },
 
                         validateValue: function (e) {
-                            var v = $(e.target).val();
+                            let v = $(e.target).val();
 
                             if (v.length < 1) {
                                 $(e.target).validateField('failed', _t('characters_min', {count: 1}));
@@ -136,7 +136,7 @@ var View = Marionette.View.extend({
 
                         validateValues: function () {
                             $.each($(this.ui.value), function (i, value) {
-                                var v = $(this).val();
+                                let v = $(this).val();
 
                                 if (v.length < 3) {
                                     $(this).validateField('failed', _t('characters_min', {count: 3}));
@@ -151,13 +151,13 @@ var View = Marionette.View.extend({
                         },
 
                         onApply: function () {
-                            var view = this;
-                            var model = this.getOption('model');
+                            let view = this;
+                            let model = this.getOption('model');
 
-                            var values = {};
+                            let values = {};
 
                             $.each($(this.ui.value), function (i, value) {
-                                var v = $(this).val();
+                                let v = $(this).val();
                                 values[$(value).attr("language")] = v;
                             });
 
@@ -179,11 +179,11 @@ var View = Marionette.View.extend({
                         },
                     });
 
-                    var changeValues = new ChangeValues({model: model});
+                    let changeValues = new ChangeValues({model: model});
                     changeValues.render();
                 });
             } else {
-                var ChangeLabel = Dialog.extend({
+                let ChangeLabel = Dialog.extend({
                     template: require('../templates/descriptorvaluechangefield.html'),
 
                     attributes: {
@@ -208,7 +208,7 @@ var View = Marionette.View.extend({
                     },
 
                     validateValue: function () {
-                        var v = this.ui.value.val();
+                        let v = this.ui.value.val();
 
                         if (v.length < 1) {
                             $(this.ui.value).validateField('failed', _t('characters_min', {count: 1}));
@@ -221,8 +221,8 @@ var View = Marionette.View.extend({
                     },
 
                     onApply: function () {
-                        var view = this;
-                        var model = this.getOption('model');
+                        let view = this;
+                        let model = this.getOption('model');
 
                         if (this.validateValue()) {
                             model.save({value0: this.ui.value.val()}, {
@@ -240,7 +240,7 @@ var View = Marionette.View.extend({
                     },
                 });
 
-                var changeLabel = new ChangeLabel({
+                let changeLabel = new ChangeLabel({
                     model: this.model,
                 });
 

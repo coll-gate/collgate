@@ -8,9 +8,9 @@
  * @details
  */
 
-var CacheFetcher = require('../../main/utils/cachefetcher');
+let CacheFetcher = require('../../main/utils/cachefetcher');
 
-var DescriptorCacheFetcher = function() {
+let DescriptorCacheFetcher = function() {
     CacheFetcher.call(this);
 
     this.type = "descriptors";
@@ -24,22 +24,22 @@ DescriptorCacheFetcher.prototype.constructor = DescriptorCacheFetcher;
  * @param keys Keys list.
  */
 DescriptorCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
-    var cache = cacheManager.get('descriptors', options.format.name);
+    let cache = cacheManager.get('descriptors', options.format.name);
 
-    var queryData = {};
-    var doFetch = false;
+    let queryData = {};
+    let doFetch = false;
 
     if (cacheManager.enabled) {
         // make the list of values
-        var keysToFetch = new Set();
+        let keysToFetch = new Set();
 
-        var toFetch = false;
-        var now = Date.now();
+        let toFetch = false;
+        let now = Date.now();
 
         // lookup into the global cache
-        for (var i = 0; i < keys.length; ++i) {
-            var key = keys[i];
-            var entry = undefined;
+        for (let i = 0; i < keys.length; ++i) {
+            let key = keys[i];
+            let entry = undefined;
 
             toFetch = false;
 
@@ -68,10 +68,10 @@ DescriptorCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
         queryData = {values: JSON.stringify(keys)};
     }
 
-    var url = window.application.url(['descriptor', 'descriptor-model-type', options.format.name]);
+    let url = window.application.url(['descriptor', 'descriptor-model-type', options.format.name]);
 
     if (doFetch) {
-        var promise = $.ajax({
+        let promise = $.ajax({
             type: "GET",
             url: url,
             contentType: 'application/json; charset=utf8',
@@ -80,14 +80,14 @@ DescriptorCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
 
         promise.done(function (data) {
             // feed the cache and compute expire timestamp. validity of null means it never expires.
-            var now = Date.now();
-            var expire = data.validity !== null ? data.validity * 1000 + now : null;
+            let now = Date.now();
+            let expire = data.validity !== null ? data.validity * 1000 + now : null;
             if (!data.cacheable) {
                 expire = now;
             }
 
             // items is a dict
-            for (var key in data.items) {
+            for (let key in data.items) {
                 cache[key] = {
                     expire: expire,
                     value: data.items[key]

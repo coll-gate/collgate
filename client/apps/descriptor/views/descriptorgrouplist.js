@@ -8,10 +8,10 @@
  * @details 
  */
 
-var DescriptorGroupView = require('../views/descriptorgroup');
-var AdvancedTable = require('../../main/views/advancedtable');
+let DescriptorGroupView = require('../views/descriptorgroup');
+let AdvancedTable = require('../../main/views/advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/descriptorgrouplist.html"),
     className: "object descriptor-group-list advanced-table-container",
     childView: DescriptorGroupView,

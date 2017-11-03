@@ -8,12 +8,12 @@
  * @details 
  */
 
-var Dialog = require('./dialog');
+let Dialog = require('./dialog');
 
 /**
  * Use the dialog:confirm event of the this dialog to trigger the confirm action.
  */
-var View = Dialog.extend({
+let View = Dialog.extend({
     attributes: {
         'id': 'dlg_confirm'
     },

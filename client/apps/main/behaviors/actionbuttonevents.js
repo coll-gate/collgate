@@ -37,7 +37,7 @@ let ActionBtnEvents = Marionette.Behavior.extend({
         group.css('margin-left', (-numButtons * 24 - 10).toString() + 'px');
 
         // $(window).on('resize', function change_btn_mode() {
-        //     var btn_size = null;
+        //     let btn_size = null;
         //     if ($(window).width() <= 1024) {
         //         group.css("display", "block");
         //         group.children('div.action.actions-buttons').removeClass('btn-group-xs');

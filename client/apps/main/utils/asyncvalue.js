@@ -14,16 +14,16 @@
         options || (options = {});
 
         this.each(function() {
-            var el = $(this);
+            let el = $(this);
 
             if (method === 'init') {
                 // batch over children having span.className
                 if (options.children) {
-                    var spans = el.find('span.' + options.className);
-                    var values = [];
+                    let spans = el.find('span.' + options.className);
+                    let values = [];
 
                     spans.each(function(i, element) {
-                        var span = $(this);
+                        let span = $(this);
 
                         values.push(span.attr('value'));
 
@@ -37,15 +37,15 @@
                     }, values).done(function (data) {
                         // init each popover span
                         spans.each(function(i, element) {
-                            var span = $(this);
-                            var value = parseInt(span.attr('value'));
+                            let span = $(this);
+                            let value = parseInt(span.attr('value'));
 
                             span.html(data[value].value.label);
                         });
                     });
                 } else {
-                    var span = el.children('span.' + options.className);
-                    var created = false;
+                    let span = el.children('span.' + options.className);
+                    let created = false;
 
                     if (!span.length) {
                         span = $('<span class="async-value" value="" data-async-value="managed">' + (options.label || "") + '</span>');
@@ -67,7 +67,7 @@
                         el.html(span);
                     }
 
-                    var value = parseInt(span.attr('value'));
+                    let value = parseInt(span.attr('value'));
 
                     if (Number.isInteger(value)) {
                         application.main.cache.lookup({
@@ -80,7 +80,7 @@
                     }
                 }
             } else if (method === 'update') {
-                var value = parseInt(el.attr('value'));
+                let value = parseInt(el.attr('value'));
 
                 if (Number.isInteger(value)) {
                     application.main.cache.lookup({

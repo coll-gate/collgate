@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var Renderer = Marionette.Object.extend({
+let Renderer = Marionette.Object.extend({
     template: require('../templates/selectoption.html'),
     tagName: 'select',
 
@@ -51,22 +51,22 @@ var Renderer = Marionette.Object.extend({
      * @param idOrValue Default look for value into the value attribute, but you can specify another one
      */
     elHtmlFromValue: function(el, idOrValue) {
-        var self = this;
+        let self = this;
         idOrValue || (idOrValue = 'value');
 
         if (this.collection.size() > 0) {
-            var value = el.attr("value");
+            let value = el.attr("value");
 
-            var model = self.collection.find(function(model) {
+            let model = self.collection.find(function(model) {
                 return model.get(idOrValue) == value;
             });
 
             el.html(model ? model.get('label') : "");
         } else {
             this.collection.on("sync", function () {
-                var value = el.attr("value");
+                let value = el.attr("value");
 
-                var model = self.collection.find(function(model) {
+                let model = self.collection.find(function(model) {
                     return model.get(idOrValue) == value;
                 });
 
@@ -83,15 +83,15 @@ var Renderer = Marionette.Object.extend({
      * @param idOrValue Default look for value into the value attribute, but you can specify another one
      */
     htmlFromValue: function(parent, idOrValue) {
-        var self = this;
+        let self = this;
         idOrValue || (idOrValue = 'value');
 
         if (this.collection.size() > 0) {
             $(parent).find('.' + self.className).each(function (idx, el) {
-                var _el = $(el);
-                var value = _el.attr("value");
+                let _el = $(el);
+                let value = _el.attr("value");
 
-                var model = self.collection.find(function(model) {
+                let model = self.collection.find(function(model) {
                     return model.get(idOrValue) == value;
                 });
 
@@ -100,10 +100,10 @@ var Renderer = Marionette.Object.extend({
         } else {
             this.collection.on("sync", function () {
                 $(parent).find('.' + self.className).each(function (idx, el) {
-                    var _el = $(el);
-                    var value = _el.attr("value");
+                    let _el = $(el);
+                    let value = _el.attr("value");
 
-                    var model = self.collection.find(function(model) {
+                    let model = self.collection.find(function(model) {
                         return model.get(idOrValue) == value;
                     });
 
@@ -121,22 +121,22 @@ var Renderer = Marionette.Object.extend({
      * @param idOrValue Default look for value into the value attribute, but you can specify another one
      */
     elAttributeFromValue: function(el, attribute, idOrValue) {
-        var self = this;
+        let self = this;
         idOrValue || (idOrValue = 'value');
 
         if (this.collection.size() > 0) {
-            var value = el.attr("value");
+            let value = el.attr("value");
 
-            var model = self.collection.find(function(model) {
+            let model = self.collection.find(function(model) {
                 return model.get(idOrValue) == value;
             });
 
             el.attr(attribute, model ? model.get('label') : "");
         } else {
             this.collection.on("sync", function () {
-                var value = el.attr("value");
+                let value = el.attr("value");
 
-                var model = self.collection.find(function(model) {
+                let model = self.collection.find(function(model) {
                     return model.get(idOrValue) == value;
                 });
 
@@ -154,15 +154,15 @@ var Renderer = Marionette.Object.extend({
      * @param idOrValue Default look for value into the value attribute, but you can specify another one
      */
     attributeFromValue: function(parent, attribute, idOrValue) {
-        var self = this;
+        let self = this;
         idOrValue || (idOrValue = 'value');
 
         if (this.collection.size() > 0) {
             $(parent).find('.' + self.className).each(function (idx, el) {
-                var _el = $(el);
-                var value = _el.attr("value");
+                let _el = $(el);
+                let value = _el.attr("value");
 
-                var model = self.collection.find(function(model) {
+                let model = self.collection.find(function(model) {
                     return model.get(idOrValue) == value;
                 });
 
@@ -171,10 +171,10 @@ var Renderer = Marionette.Object.extend({
         } else {
             this.collection.on("sync", function () {
                 $(parent).find('.' + self.className).each(function (idx, el) {
-                    var _el = $(el);
-                    var value = _el.attr("value");
+                    let _el = $(el);
+                    let value = _el.attr("value");
 
-                    var model = self.collection.find(function(model) {
+                    let model = self.collection.find(function(model) {
                         return model.get(idOrValue) == value;
                     });
 
@@ -196,12 +196,12 @@ var Renderer = Marionette.Object.extend({
         widget != undefined || (widget = true);
         emptyValue != undefined || (emptyValue = false);
 
-        var deferred = $.Deferred();
+        let deferred = $.Deferred();
 
         if (this.collection.size() > 0) {
-            var s = $(sel);
+            let s = $(sel);
             if (emptyValue) {
-                var emptyOption = "<option value=''></option>";
+                let emptyOption = "<option value=''></option>";
                 s.html(emptyOption + this.html);
             } else {
                 s.html(this.html);
@@ -220,12 +220,12 @@ var Renderer = Marionette.Object.extend({
 
             deferred.resolve();
         } else {
-            var self = this;
+            let self = this;
 
             this.collection.on("sync", function () {
-                var s = $(sel);
+                let s = $(sel);
                 if (emptyValue) {
-                    var emptyOption = "<option value=''></option>";
+                    let emptyOption = "<option value=''></option>";
                     s.html(emptyOption + self.html);
                 } else {
                     s.html(self.html);

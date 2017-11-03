@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
-var Permission = Backbone.Model.extend({
+let Permission = Backbone.Model.extend({
     defaults: {
         model: undefined,
         object: undefined,
@@ -26,8 +26,8 @@ var Permission = Backbone.Model.extend({
     },
 
     validate: function(attrs) {
-        var errors = {};
-        var hasError = false;
+        let errors = {};
+        let hasError = false;
 
         if (hasError) {
           return errors;
@@ -35,7 +35,7 @@ var Permission = Backbone.Model.extend({
     },
 
     hasPerm: function (app_label, perm) {
-        for (var i = 0; i < this.permissions.length; ++i) {
+        for (let i = 0; i < this.permissions.length; ++i) {
             if (app_label == this.permissions[i].app_label) {
                 if (perm == this.permissions[i].id) {
                     return true;

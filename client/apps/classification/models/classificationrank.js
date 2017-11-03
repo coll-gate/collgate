@@ -8,7 +8,7 @@
  * @details 
  */
 
-var ClassificationRankModel = Backbone.Model.extend({
+let ClassificationRankModel = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
             return window.application.url(['classification', 'classification', this.getClassificationId(), 'classificationrank']);

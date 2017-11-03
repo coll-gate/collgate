@@ -8,10 +8,10 @@
  * @details
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('./descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var Entity = function () {
+let Entity = function () {
     DescriptorFormatType.call(this);
 
     this.name = "entity";
@@ -30,7 +30,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
         });
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-share");
+            let input = this._createStdInput(parent, "glyphicon-share");
 
             this.parent = parent;
             this.readOnly = true;
@@ -39,19 +39,19 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             if (!format.list_type || format.list_type === "autocomplete") {
                 this.autocomplete = true;
 
-                var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+                let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
                 this.groupEl = this._createInputGroup(parent, "glyphicon-share", select);
 
                 // init the autocomplete
-                var url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
-                var initials = [];
+                let url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
+                let initials = [];
 
-                var container = parent.closest('div.modal-dialog').parent();
+                let container = parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
                     container = this.groupEl;  // parent.closest('div.panel');
                 }
 
-                var params = {
+                let params = {
                     // width: 'element',
                     data: initials,
                     dropdownParent: container,
@@ -78,9 +78,9 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                                 params.next = data.next || null;
                             }
 
-                            var results = [];
+                            let results = [];
 
-                            for (var i = 0; i < data.items.length; ++i) {
+                            for (let i = 0; i < data.items.length; ++i) {
                                 results.push({
                                     id: data.items[i].id,
                                     text: data.items[i].label
@@ -109,13 +109,13 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             } else if (format.list_type === 'dropdown') {
                 this.autocomplete = false;
 
-                var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+                let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
                 this.groupEl = this._createInputGroup(parent, "glyphicon-share", select);
 
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
                 // init the selectpicker
-                var url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
+                let url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
 
                 // refresh values
                 this.promise = $.ajax({
@@ -123,9 +123,9 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                     dataType: 'json',
                     data: {filters: "{}"}
                 }).done(function (data) {
-                    for (var i = 0; i < data.items.length; ++i) {
-                        var option = $("<option></option>");
-                        var item = data.items[i];
+                    for (let i = 0; i < data.items.length; ++i) {
+                        let option = $("<option></option>");
+                        let item = data.items[i];
 
                         option.attr("value", item.value || item.id);
                         option.attr("title", item.label || item.name);
@@ -185,10 +185,10 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        var url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
+        let url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
 
         if (this.readOnly) {
-            var type = this;
+            let type = this;
 
             if (definesValues) {
                 this.el.attr('value', defaultValues);
@@ -203,10 +203,10 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             }
         } else {
             if (definesValues) {
-                var type = this;
+                let type = this;
 
                 if (this.autocomplete) {
-                    var initials = [];
+                    let initials = [];
 
                     // @todo multiple ?
 
@@ -227,7 +227,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                         }).done(function (data) {
                             initials.push({id: data.id, text: data.name});
 
-                            var option = new Option(data.name, data.id, true, true);
+                            let option = new Option(data.name, data.id, true, true);
                             type.el.append(option).trigger('change');
 
                             type.el.trigger({
@@ -271,13 +271,13 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 return this.el.attr('value');
             } else {
                 if (Array.isArray(this.el.val())) {
-                    var values = this.el.val();
+                    let values = this.el.val();
                     return values.map(function (value) {
                         value = parseInt(value);
                         return isNaN(value) ? null : value
                     })
                 } else if (this.el.val() !== "") {
-                    var value = parseInt(this.el.val());
+                    let value = parseInt(this.el.val());
                     return isNaN(value) ? null : value;
                 } else {
                     return null;
@@ -317,7 +317,7 @@ Entity.DescriptorTypeDetailsView = Marionette.View.extend({
     },
 
     onRender: function () {
-        var format = this.model.get('format');
+        let format = this.model.get('format');
         application.descriptor.views.describables.drawSelect(this.ui.format_model, true, false, format.model);
     },
 

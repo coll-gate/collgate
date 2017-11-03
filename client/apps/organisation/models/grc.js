@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
-var Model = Backbone.Model.extend({
+let Model = Backbone.Model.extend({
     url: window.application.url(['organisation', 'grc']),
 
     defaults: {

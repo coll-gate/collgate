@@ -8,17 +8,17 @@
  * @details
  */
 
-var Dialog = require('../../main/views/dialog');
-var Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var AccessionPanelModel = require('../models/panel');
-var AccessionPanelLayout = require('../views/panellayout');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let AccessionPanelModel = require('../models/panel');
+let AccessionPanelLayout = require('../views/panellayout');
 
-var Controller = Marionette.Object.extend({
+let Controller = Marionette.Object.extend({
     delete: function (model) {
-        var DeletePanelDialog = Dialog.extend({
+        let DeletePanelDialog = Dialog.extend({
             template: require('../../main/templates/confirm.html'),
             templateContext: function () {
                 return {
@@ -49,7 +49,7 @@ var Controller = Marionette.Object.extend({
 
         });
 
-        var deletePanelDialog = new DeletePanelDialog();
+        let deletePanelDialog = new DeletePanelDialog();
         deletePanelDialog.render();
     },
 
@@ -60,7 +60,7 @@ var Controller = Marionette.Object.extend({
         search || (search = {});
 
 
-        var CreatePanelDialog = Dialog.extend({
+        let CreatePanelDialog = Dialog.extend({
             template: require('../templates/panelcreate.html'),
             ui: {
                 validate: "button.create",
@@ -78,10 +78,10 @@ var Controller = Marionette.Object.extend({
             },
 
             onNameInput: function () {
-                var name = this.ui.name.val().trim();
+                let name = this.ui.name.val().trim();
 
                 if (this.validateName()) {
-                    var filters = {
+                    let filters = {
                         method: 'ieq',
                         fields: ['name'],
                         'name': name
@@ -95,8 +95,8 @@ var Controller = Marionette.Object.extend({
                         el: this.ui.name,
                         success: function (data) {
                             if (data.items.length > 0) {
-                                for (var i in data.items) {
-                                    var panel = data.items[i];
+                                for (let i in data.items) {
+                                    let panel = data.items[i];
 
                                     if (panel.name.toUpperCase() === name.toUpperCase()) {
                                         $(this.el).validateField('failed', _t('Accession panel name already in usage'));
@@ -112,7 +112,7 @@ var Controller = Marionette.Object.extend({
             },
 
             validateName: function () {
-                var v = this.ui.name.val().trim();
+                let v = this.ui.name.val().trim();
 
                 if (v.length > 128) {
                     this.ui.name.validateField('failed', _t('characters_max', {count: 128}));
@@ -126,13 +126,13 @@ var Controller = Marionette.Object.extend({
             },
 
             onCreate: function () {
-                var view = this;
+                let view = this;
 
                 if (this.ui.name.isValidField()) {
-                    var name = this.ui.name.val().trim();
+                    let name = this.ui.name.val().trim();
 
                     // create a new local model and open an edit view with this model
-                    var model = new AccessionPanelModel({
+                    let model = new AccessionPanelModel({
                         name: name,
                         selection: {
                             select: selection,
@@ -146,7 +146,7 @@ var Controller = Marionette.Object.extend({
 
                     view.destroy();
 
-                    var defaultLayout = new DefaultLayout();
+                    let defaultLayout = new DefaultLayout();
                     application.main.showContent(defaultLayout);
 
                     defaultLayout.showChildView('title', new TitleView({
@@ -154,13 +154,13 @@ var Controller = Marionette.Object.extend({
                         model: model
                     }));
 
-                    var accessionPanelLayout = new AccessionPanelLayout({model: model});
+                    let accessionPanelLayout = new AccessionPanelLayout({model: model});
                     defaultLayout.showChildView('content', accessionPanelLayout);
                 }
             }
         });
 
-        var createPanelDialog = new CreatePanelDialog();
+        let createPanelDialog = new CreatePanelDialog();
         createPanelDialog.render();
     },
 
@@ -179,7 +179,7 @@ var Controller = Marionette.Object.extend({
             url: window.application.url(['accession', 'accessionpanel']),
             dataType: 'json'
         }).done(function (data) {
-            var LinkToPanelDialog = Dialog.extend({
+            let LinkToPanelDialog = Dialog.extend({
                 template: require('../templates/panellinkaccessions.html'),
                 templateContext: function () {
                     return {
@@ -205,9 +205,9 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onLinkToPanel: function (ev) {
-                    var view = this;
-                    var panel_id = this.ui.panel.val();
-                    var go_to_panel = $(ev.currentTarget).data('gotopanel');
+                    let view = this;
+                    let panel_id = this.ui.panel.val();
+                    let go_to_panel = $(ev.currentTarget).data('gotopanel');
 
                     $.ajax({
                         type: 'PATCH',
@@ -235,7 +235,7 @@ var Controller = Marionette.Object.extend({
                 }
             });
 
-            var linkToPanelDialog = new LinkToPanelDialog();
+            let linkToPanelDialog = new LinkToPanelDialog();
             linkToPanelDialog.render();
         });
 

@@ -8,9 +8,9 @@
  * @details
  */
 
-var DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
+let DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
 
-var ClassificationEntry = DescriptorMetaModelType.extend({
+let ClassificationEntry = DescriptorMetaModelType.extend({
     template: require('../templates/descriptormetamodeltypes/classificationentry.html'),
 
     ui: {
@@ -18,19 +18,19 @@ var ClassificationEntry = DescriptorMetaModelType.extend({
     },
 
     onRender: function() {
-        var select = this.ui.classification;
+        let select = this.ui.classification;
 
         // classifications list according to the related meta model of accession
-        var ClassificationCollection = require('../collections/classification');
-        var classificationCollection = new ClassificationCollection();
+        let ClassificationCollection = require('../collections/classification');
+        let classificationCollection = new ClassificationCollection();
 
-        var SelectOption = require('../../main/renderers/selectoption');
-        var classifications = new SelectOption({
+        let SelectOption = require('../../main/renderers/selectoption');
+        let classifications = new SelectOption({
             className: "classification",
             collection: classificationCollection
         });
 
-        var value = Object.resolve('data.classification', this.model.get('parameters'));
+        let value = Object.resolve('data.classification', this.model.get('parameters'));
 
         classifications.drawSelect(select, true, false, value).done(function () {
         });

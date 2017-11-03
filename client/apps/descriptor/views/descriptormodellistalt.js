@@ -8,12 +8,12 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var DescriptorModelView = require('../views/descriptormodelalt');
+let Marionette = require('backbone.marionette');
+let DescriptorModelView = require('../views/descriptormodelalt');
 
-var AdvancedTable = require('../../main/views/advancedtable');
+let AdvancedTable = require('../../main/views/advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/descriptormodellistalt.html"),
     className: "object descriptor-model-list advanced-table-container",
     childView: DescriptorModelView,

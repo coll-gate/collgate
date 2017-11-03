@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object group',
     template: require('../templates/group.html'),
@@ -64,8 +64,8 @@ var View = Marionette.View.extend({
     },
 
     onRenameGroup: function() {
-        var ChangeName = require('../../main/views/entityrename');
-        var changeName = new ChangeName({
+        let ChangeName = require('../../main/views/entityrename');
+        let changeName = new ChangeName({
             model: this.model,
             title: _t("Rename the group of users"),
             maxlength: 80

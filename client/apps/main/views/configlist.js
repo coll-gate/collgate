@@ -8,10 +8,10 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var ConfigView = require('../views/config');
+let Marionette = require('backbone.marionette');
+let ConfigView = require('../views/config');
 
-var View = Marionette.CollectionView.extend({
+let View = Marionette.CollectionView.extend({
     template: "<div></div>",
     className: "config-list",
     childView: ConfigView,

@@ -8,10 +8,10 @@
  * @details 
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('./descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var DateType = function() {
+let DateType = function() {
     DescriptorFormatType.call(this);
 
     this.name = "date";
@@ -23,15 +23,15 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-calendar");
+            let input = this._createStdInput(parent, "glyphicon-calendar");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
-            var group = $('<div class="input-group"></div>');
-            var input = $('<input class="form-control" width="100%">');
-            var glyph = $('<span class="input-group-addon"><span class="fa fa-calendar"></span></span>').css('cursor', 'pointer');
+            let group = $('<div class="input-group"></div>');
+            let input = $('<input class="form-control" width="100%">');
+            let glyph = $('<span class="input-group-addon"><span class="fa fa-calendar"></span></span>').css('cursor', 'pointer');
 
             group.append(input);
             group.append(glyph);
@@ -52,7 +52,7 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
             }).on('dp.show', function (e) {
                 // fix position when parent has overflow-y defined
                 // https://github.com/Eonasdan/bootstrap-datetimepicker/issues/790
-                var dateTimePicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+                let dateTimePicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
                     position = dateTimePicker.offset(),
                     parent = dateTimePicker.parent(),
                     parentPos = parent.offset(),
@@ -72,7 +72,7 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
 
                 // if dateTimePicker is wider than the thing it is attached to then move it so the centers line up
                 if (parentPos.left + parentWid < position.left + width) {
-                    var newLeft = parentPos.left;
+                    let newLeft = parentPos.left;
                     newLeft += parentWid / 2;
                     newLeft -= width / 2;
                     dateTimePicker.css({left: newLeft});
@@ -116,13 +116,13 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                var date = moment(defaultValues);
+                let date = moment(defaultValues);
                 this.el.val(date.format("L"));
                 this.el.attr('value', defaultValues);
             }
         } else {
             if (definesValues) {
-                var date = moment(defaultValues);
+                let date = moment(defaultValues);
                 this.el.data('DateTimePicker').date(date);
             }
         }
@@ -131,10 +131,10 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                var value = this.el.attr('value');
+                let value = this.el.attr('value');
                 return value !== "" ? value : null;
             } else {
-                var date = this.el.data('DateTimePicker').date();
+                let date = this.el.data('DateTimePicker').date();
                 if (date != null) {
                     // format to YYYYMMDD date
                     return date.format("YYYYMMDD");
@@ -176,15 +176,15 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function(e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }

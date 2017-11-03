@@ -8,10 +8,10 @@
  * @details 
  */
 
-var PermissionGroupView = require('../views/group');
-var AdvancedTable = require('../../main/views/advancedtable');
+let PermissionGroupView = require('../views/group');
+let AdvancedTable = require('../../main/views/advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/grouplist.html"),
     className: "permission-group-list advanced-table-container",
     childView: PermissionGroupView,

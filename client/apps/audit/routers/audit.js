@@ -8,14 +8,14 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var AuditCollection = require('../collections/audit');
-var AuditListView = require('../views/auditlist');
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
+let Marionette = require('backbone.marionette');
+let AuditCollection = require('../collections/audit');
+let AuditListView = require('../views/auditlist');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
 
-var Router = Marionette.AppRouter.extend({
+let Router = Marionette.AppRouter.extend({
     controller: application.audit.controllers.audit,
     appRoutes : {
         "app/audit/search/?username=:username": "getAuditListByUsername",
@@ -23,12 +23,12 @@ var Router = Marionette.AppRouter.extend({
     },
 
     // getAuditListByUsername: function(username) {
-    //     var controller = new AuditController();
+    //     let controller = new AuditController();
     //     controller.getAuditListByUsername(username);
     // },
     //
     // getAuditListByEntity: function(app_label, model, object_id) {
-    //     var controller = new AuditController();
+    //     let controller = new AuditController();
     //     controller.getAuditListByEntity(app_label, model, object_id);
     // }
 });

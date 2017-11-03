@@ -8,7 +8,7 @@
  * @details 
  */
 
-var DescriptorFormatTypeManager = function() {
+let DescriptorFormatTypeManager = function() {
     this.descriptorFormatType = {};
 };
 
@@ -18,12 +18,12 @@ DescriptorFormatTypeManager.prototype = {
     },
 
     getElement: function(formatType) {
-        var element = this.descriptorFormatType[formatType];
+        let element = this.descriptorFormatType[formatType];
         return element;
     },
 
     newElement: function(formatType) {
-        var Element = this.descriptorFormatType[formatType];
+        let Element = this.descriptorFormatType[formatType];
         if (Element) {
             return new Element();
         }

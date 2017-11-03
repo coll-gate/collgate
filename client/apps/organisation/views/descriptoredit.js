@@ -8,9 +8,9 @@
  * @details 
  */
 
-var DescribableEdit = require('../../descriptor/views/describableedit');
+let DescribableEdit = require('../../descriptor/views/describableedit');
 
-var View = DescribableEdit.extend({
+let View = DescribableEdit.extend({
     onCancel: function() {
         // cancel global widget modifications
         this.cancel();
@@ -22,14 +22,14 @@ var View = DescribableEdit.extend({
         }
 
         // does not reload models, just redo the views
-        var view = this;
-        var name = this.model.get('name');
+        let view = this;
+        let name = this.model.get('name');
 
         // update the layout content
-        var layout = application.main.viewContent().getChildView('content');
+        let layout = application.main.viewContent().getChildView('content');
 
-        var DescriptorView = require('../views/descriptor');
-        var descriptorView = new DescriptorView({
+        let DescriptorView = require('../views/descriptor');
+        let descriptorView = new DescriptorView({
             model: this.model,
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
@@ -38,22 +38,22 @@ var View = DescribableEdit.extend({
 
     onApply: function () {
         // does not reload models, save and redo the views
-        var view = this;
-        var model = this.model;
+        let view = this;
+        let model = this.model;
 
-        var descriptors = this.prepareDescriptors();
+        let descriptors = this.prepareDescriptors();
         if (descriptors === null) {
             return;
         }
 
-        var isNew = this.model.isNew();
+        let isNew = this.model.isNew();
 
         this.model.save({descriptors: descriptors}, {wait: true, patch: !isNew}).then(function () {
-            var layout = application.main.viewContent().getChildView('content');
+            let layout = application.main.viewContent().getChildView('content');
 
             // update the layout content
-            var DescriptorView = require('../views/descriptor');
-            var descriptorView = new DescriptorView({
+            let DescriptorView = require('../views/descriptor');
+            let descriptorView = new DescriptorView({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
@@ -62,23 +62,23 @@ var View = DescribableEdit.extend({
     },
 
     onShowTab: function() {
-        var view = this;
+        let view = this;
 
         // contextual panel
-        var contextLayout = application.getView().getChildView('right');
+        let contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
-            var DefaultLayout = require('../../main/views/defaultlayout');
+            let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
             application.getView().showChildView('right', contextLayout);
         }
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
 
-        var actions = ['apply', 'cancel'];
+        let actions = ['apply', 'cancel'];
 
-        var DescriptorContextView = require('../views/descriptorcontext');
-        var contextView = new DescriptorContextView({actions: actions});
+        let DescriptorContextView = require('../views/descriptorcontext');
+        let contextView = new DescriptorContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:cancel", function() {

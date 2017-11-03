@@ -8,18 +8,18 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var PanelModel = require('../models/panel');
-var PanelCollection = require('../collections/panel');
-var PanelListView = require('../views/panellist');
-var EntityListFilterView = require('../../descriptor/views/entitylistfilter');
-var DefaultLayout = require('../../main/views/defaultlayout');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
-var TitleView = require('../../main/views/titleview');
-var PanelLayout = require('../views/panellayout');
+let PanelModel = require('../models/panel');
+let PanelCollection = require('../collections/panel');
+let PanelListView = require('../views/panellist');
+let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
+let TitleView = require('../../main/views/titleview');
+let PanelLayout = require('../views/panellayout');
 
-var Router = Marionette.AppRouter.extend({
+let Router = Marionette.AppRouter.extend({
     routes: {
         "app/accession/accessionpanel/": "getPanelList",
         "app/accession/accessionpanel/:id/*tab": "getPanel"
@@ -28,22 +28,22 @@ var Router = Marionette.AppRouter.extend({
     getPanelList: function (options) {
         options || (options = {});
 
-        var collection = new PanelCollection({
+        let collection = new PanelCollection({
             filters: (options.filters || {})
         });
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of panels")}));
 
-        var columns = application.main.cache.lookup({
+        let columns = application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.accessionpanel'}
         });
 
         columns.done(function (data) {
-            var panelListView = new PanelListView({collection: collection, columns: data[0].value});
+            let panelListView = new PanelListView({collection: collection, columns: data[0].value});
 
             defaultLayout.showChildView('content', panelListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
@@ -62,9 +62,9 @@ var Router = Marionette.AppRouter.extend({
     getPanel: function (id, tab) {
         tab || (tab = "descriptors");
 
-        var panel = new PanelModel({id: id});
+        let panel = new PanelModel({id: id});
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
         panel.fetch().then(function () {
@@ -74,7 +74,7 @@ var Router = Marionette.AppRouter.extend({
 
             defaultLayout.showChildView('title', new TitleView({title: _t("Panel"), model: panel}));
 
-            var panelLayout = new PanelLayout({model: panel, initialTab: tab.replace('/', '')});
+            let panelLayout = new PanelLayout({model: panel, initialTab: tab.replace('/', '')});
             defaultLayout.showChildView('content', panelLayout);
         });
     }

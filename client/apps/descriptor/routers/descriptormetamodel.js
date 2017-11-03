@@ -8,27 +8,27 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var DescriptorMetaModelModel = require('../models/descriptormetamodel');
+let DescriptorMetaModelModel = require('../models/descriptormetamodel');
 
-var DescriptorModelCollection = require('../collections/descriptormodel');
-var DescriptorMetaModelCollection = require('../collections/descriptormetamodel');
-var DescriptorPanelCollection = require('../collections/descriptorpanel');
+let DescriptorModelCollection = require('../collections/descriptormodel');
+let DescriptorMetaModelCollection = require('../collections/descriptormetamodel');
+let DescriptorPanelCollection = require('../collections/descriptorpanel');
 
-var DescriptorMetaModelAddView = require('../views/descriptormetamodeladd');
-var DescriptorMetaModelDetailView = require('../views/descriptormetamodeldetail');
-var DescriptorMetaModelListView = require('../views/descriptormetamodellist');
-var DescriptorPanelListView = require('../views/descriptorpanellist');
+let DescriptorMetaModelAddView = require('../views/descriptormetamodeladd');
+let DescriptorMetaModelDetailView = require('../views/descriptormetamodeldetail');
+let DescriptorMetaModelListView = require('../views/descriptormetamodellist');
+let DescriptorPanelListView = require('../views/descriptorpanellist');
 
-var DescriptorModelListAltView = require('../views/descriptormodellistalt');
+let DescriptorModelListAltView = require('../views/descriptormodellistalt');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TwoColumnsLayout = require('../../main/views/twocolumnslayout');
-var TitleView = require('../../main/views/titleview');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TwoColumnsLayout = require('../../main/views/twocolumnslayout');
+let TitleView = require('../../main/views/titleview');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
 
-var Router = Marionette.AppRouter.extend({
+let Router = Marionette.AppRouter.extend({
     routes : {
         "app/descriptor/meta-model/": "getDescriptorMetaModelList",
         "app/descriptor/meta-model/:id/": "getDescriptorMetaModel",
@@ -36,15 +36,15 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getDescriptorMetaModelList: function () {
-        var collection = new DescriptorMetaModelCollection();
+        let collection = new DescriptorMetaModelCollection();
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of meta-models of descriptor")}));
 
         collection.fetch().then(function () {
-            var descriptorMetaModelList = new DescriptorMetaModelListView({collection : collection});
+            let descriptorMetaModelList = new DescriptorMetaModelListView({collection : collection});
             defaultLayout.showChildView('content', descriptorMetaModelList);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorMetaModelList}));
         });
@@ -56,10 +56,10 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getDescriptorMetaModel: function (id) {
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var model = new DescriptorMetaModelModel({id: id});
+        let model = new DescriptorMetaModelModel({id: id});
 
         model.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({title: _t("Details for the meta-model of descriptor"), object: model.get('name')}));
@@ -68,25 +68,25 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getDescriptorPanelListForModel: function(id) {
-        var panelCollection = new DescriptorPanelCollection([], {model_id: id});
+        let panelCollection = new DescriptorPanelCollection([], {model_id: id});
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of panels of descriptor")}));
 
-        var twoColumnsLayout = new TwoColumnsLayout({});
+        let twoColumnsLayout = new TwoColumnsLayout({});
         defaultLayout.showChildView('content', twoColumnsLayout);
 
         panelCollection.fetch().then(function () {
-            var descriptorPanelList = new DescriptorPanelListView({collection : panelCollection});
+            let descriptorPanelList = new DescriptorPanelListView({collection : panelCollection});
             twoColumnsLayout.showChildView('left-content', descriptorPanelList);
             twoColumnsLayout.showChildView('left-bottom', new ScrollingMoreView({targetView: descriptorPanelList}));
         });
 
-        var modelCollection = new DescriptorModelCollection();
+        let modelCollection = new DescriptorModelCollection();
         modelCollection.fetch().then(function () {
-            var descriptorModelList = new DescriptorModelListAltView({
+            let descriptorModelList = new DescriptorModelListAltView({
                 collection: modelCollection,
                 layout: twoColumnsLayout
             });

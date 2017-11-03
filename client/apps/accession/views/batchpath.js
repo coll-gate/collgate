@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/batchpath.html'),
     templateContext: function () {
@@ -51,7 +51,7 @@ var View = Marionette.View.extend({
             return;
         }
 
-        var accession_id = $(e.target).data('accession-id');
+        let accession_id = $(e.target).data('accession-id');
         Backbone.history.navigate("app/accession/accession/" + accession_id + "/", {trigger: true});
     }
 });

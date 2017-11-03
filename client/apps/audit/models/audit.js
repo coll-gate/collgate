@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
-var Model = Backbone.Model.extend({
+let Model = Backbone.Model.extend({
     defaults: {
         id: undefined,
         type: 0,
@@ -33,8 +33,8 @@ var Model = Backbone.Model.extend({
     },
 
     validate: function(attrs) {
-        var errors = {};
-        var hasError = false;
+        let errors = {};
+        let hasError = false;
 
         if (hasError) {
           return errors;

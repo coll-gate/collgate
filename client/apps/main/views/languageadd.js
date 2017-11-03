@@ -8,10 +8,10 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'language-add',
     template: require('../templates/languageadd.html'),
@@ -35,7 +35,7 @@ var View = Marionette.View.extend({
         this.validateCodeName();
 
         if (!this.ui.add_language_code.hasClass('invalid')) {
-            var CreateLanguageDialog = Dialog.extend({
+            let CreateLanguageDialog = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_language'
                 },
@@ -53,7 +53,7 @@ var View = Marionette.View.extend({
                 },
 
                 onLabelInput: function () {
-                    var label = this.ui.label.val().trim();
+                    let label = this.ui.label.val().trim();
 
                     if (this.validateLabel()) {
 
@@ -67,7 +67,7 @@ var View = Marionette.View.extend({
                 },
 
                 validateLabel: function() {
-                    var v = this.ui.label.val().trim();
+                    let v = this.ui.label.val().trim();
 
                     if (v.length > 128) {
                         this.ui.label.validateField('failed', _t('characters_max', {count: 128}));
@@ -83,15 +83,15 @@ var View = Marionette.View.extend({
                 },
 
                 validate: function() {
-                    var valid = this.validateLabel();
+                    let valid = this.validateLabel();
                     return valid;
                 },
 
                 onAdd: function() {
-                    var view = this;
+                    let view = this;
 
                     if (this.validate()) {
-                        var label = this.ui.label.val().trim();
+                        let label = this.ui.label.val().trim();
 
                         this.getOption('collection').create({
                             code: this.getOption('code'), label: label}, {wait: true});
@@ -102,7 +102,7 @@ var View = Marionette.View.extend({
             });
 
             // show current language label dialog
-            var createLanguageDialog = new CreateLanguageDialog({
+            let createLanguageDialog = new CreateLanguageDialog({
                 collection: this.collection,
                 code: this.ui.add_language_code.val()});
             createLanguageDialog.render();
@@ -112,8 +112,8 @@ var View = Marionette.View.extend({
     },
 
     validateCodeName: function() {
-        var v = this.ui.add_language_code.val();
-        var re = /^[a-zA-Z]{2}([_-][a-zA-Z]{2})*$/;
+        let v = this.ui.add_language_code.val();
+        let re = /^[a-zA-Z]{2}([_-][a-zA-Z]{2})*$/;
 
         if (v.length > 0 && !re.test(v)) {
             this.ui.add_language_code.validateField('failed', _t("Invalid format"));

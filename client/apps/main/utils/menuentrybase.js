@@ -8,7 +8,7 @@
  * @details
  */
 
-var MenuEntryBase = function(name, order, auth) {
+let MenuEntryBase = function(name, order, auth) {
     this.name = name || "";
     this.order = order || -1;
     this.auth = auth || "ANY";

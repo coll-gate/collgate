@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'classification-entry-filter',
     template: require('../../descriptor/templates/entitylistfilter.html'),
@@ -34,13 +34,13 @@ var View = Marionette.View.extend({
     },
 
     onRender: function() {
-        var columns = this.getOption('columns') || {};
+        let columns = this.getOption('columns') || {};
 
         // append others columns by alpha order
-        var columnsByLabel = [];
+        let columnsByLabel = [];
 
-        for (var columnName in columns) {
-            var column = columns[columnName];
+        for (let columnName in columns) {
+            let column = columns[columnName];
             columnsByLabel.push({
                 name: columnName,
                 label: column.label || columnName
@@ -51,10 +51,10 @@ var View = Marionette.View.extend({
             return a.label.localeCompare(b.label);
         });
 
-        for (var c in columnsByLabel) {
-            var column = columnsByLabel[c];
+        for (let c in columnsByLabel) {
+            let column = columnsByLabel[c];
 
-            var option = $('<option>' + column.label + '</option>');
+            let option = $('<option>' + column.label + '</option>');
             option.attr('value', column.name);
 
             this.ui.entity_field.append(option);
@@ -71,9 +71,9 @@ var View = Marionette.View.extend({
 
     onFilter: function () {
         if (this.validateSearchValue()) {
-            var field = this.ui.entity_field.val();
-            var op = "eq";
-            var value = null;
+            let field = this.ui.entity_field.val();
+            let op = "eq";
+            let value = null;
 
             if (field === "name") {
                 op = "icontains";
@@ -108,7 +108,7 @@ var View = Marionette.View.extend({
 
     validateSearchValue: function() {
         if (!this.widget) {
-            var v = this.$el.find(".search-value").val().trim();
+            let v = this.$el.find(".search-value").val().trim();
 
             if (v.length > 0 && v.length < 3) {
                 this.$el.find(".search-value").validateField('ok');
@@ -130,8 +130,8 @@ var View = Marionette.View.extend({
     },
 
     onChangeField: function () {
-        var field = this.ui.entity_field.val();
-        var column = this.getOption('columns')[field] || {};
+        let field = this.ui.entity_field.val();
+        let column = this.getOption('columns')[field] || {};
 
         if (this.widget) {
             this.widget.destroy();
@@ -151,7 +151,7 @@ var View = Marionette.View.extend({
             this.widget = null;
         }
 
-        var input = $('<input type="text" class="search-value form-control" name="search-value"/>');
+        let input = $('<input type="text" class="search-value form-control" name="search-value"/>');
         this.ui.search_group.append(input);
     }
 });

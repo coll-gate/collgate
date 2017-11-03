@@ -8,9 +8,7 @@
  * @details http://smnh.me/extending-events-and-attributes-of-the-inherited-backbone-views/
  */
 
-var Marionette = require('backbone.marionette');
-
-var BaseView = Backbone.View.extend({
+let BaseView = Backbone.View.extend({
 
     extendableProperties: {
         "events": "defaults",
@@ -20,7 +18,7 @@ var BaseView = Backbone.View.extend({
     },
 
     extendProperties: function(properties) {
-        var propertyName, prototypeValue, extendMethod,
+        let propertyName, prototypeValue, extendMethod,
             prototype = this.constructor.prototype;
 
         while (prototype) {

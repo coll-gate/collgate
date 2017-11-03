@@ -8,11 +8,11 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var Dialog = require('../../main/views/dialog');
+let Dialog = require('../../main/views/dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-meta-model',
     template: require('../templates/descriptormetamodel.html'),
@@ -48,7 +48,7 @@ var View = Marionette.View.extend({
     },
 
     actionsProperties: function() {
-        var properties = {
+        let properties = {
             edit: {disabled: false},
             remove: {disabled: false}
         };
@@ -89,8 +89,8 @@ var View = Marionette.View.extend({
     },
 
     editLabel: function () {
-        var ChangeLabel = require('../../main/views/entitychangelabel');
-        var changeLabel = new ChangeLabel({
+        let ChangeLabel = require('../../main/views/entitychangelabel');
+        let changeLabel = new ChangeLabel({
             model: this.model,
             title: _t("Change the labels for the meta-model of descriptor")});
 

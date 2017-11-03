@@ -8,24 +8,24 @@
  * @details 
  */
 
-var DescribableDetails = require('../../descriptor/views/describabledetails');
-var ClassificationEntryDescriptorEditView = require('./classificationentrydescriptoredit');
+let DescribableDetails = require('../../descriptor/views/describabledetails');
+let ClassificationEntryDescriptorEditView = require('./classificationentrydescriptoredit');
 
-var View = DescribableDetails.extend({
+let View = DescribableDetails.extend({
     onShowTab: function() {
-        var view = this;
+        let view = this;
 
-        var contextLayout = application.getView().getChildView('right');
+        let contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
-            var DefaultLayout = require('../../main/views/defaultlayout');
+            let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
             application.getView().showChildView('right', contextLayout);
         }
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
 
-        var actions = [];
+        let actions = [];
 
         if (!this.model.get('descriptor_meta_model')) {
             actions.push('add');
@@ -35,8 +35,8 @@ var View = DescribableDetails.extend({
             // actions.push('delete');
         }
 
-        var ClassificationEntryDescriptorContextView = require('./classificationentrydescriptorcontext');
-        var contextView = new ClassificationEntryDescriptorContextView({actions: actions});
+        let ClassificationEntryDescriptorContextView = require('./classificationentrydescriptorcontext');
+        let contextView = new ClassificationEntryDescriptorContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:modify", function () {
@@ -45,15 +45,15 @@ var View = DescribableDetails.extend({
 
         // contextView.on("descriptormetamodel:replace", function () {
         //     // this will update the model and so on the view
-        //     var ClassificationEntryDescriptorCreateView = require('./classificationentrydescriptorcreate');
-        //     var classificationEntryDescriptorCreateView = new ClassificationEntryDescriptorCreateView({model: view.model});
+        //     let ClassificationEntryDescriptorCreateView = require('./classificationentrydescriptorcreate');
+        //     let classificationEntryDescriptorCreateView = new ClassificationEntryDescriptorCreateView({model: view.model});
         //
         //     classificationEntryDescriptorCreateView.onDefine();
         // });
         //
         // contextView.on("descriptormetamodel:delete", function () {
-        //     var ConfirmDialog = require('../../main/views/confirmdialog');
-        //     var confirmDialog = new ConfirmDialog({
+        //     let ConfirmDialog = require('../../main/views/confirmdialog');
+        //     let confirmDialog = new ConfirmDialog({
         //         title: _t('Delete descriptors'),
         //         label: _t('Are you sure you want to delete any descriptors for this classification entry ?')
         //     });
@@ -74,9 +74,9 @@ var View = DescribableDetails.extend({
         // does not reload models, just redo the views
 
         // update the descriptor part of the classificationEntry layout
-        var classificationEntryLayout = application.main.viewContent().getChildView('content');
+        let classificationEntryLayout = application.main.viewContent().getChildView('content');
 
-        var view = new ClassificationEntryDescriptorEditView({
+        let view = new ClassificationEntryDescriptorEditView({
             model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
         classificationEntryLayout.showChildView('descriptors', view);
     }

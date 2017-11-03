@@ -8,13 +8,13 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 
-var DescriptorTypeModel = require('../models/descriptortype');
+let DescriptorTypeModel = require('../models/descriptortype');
 
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-model-type',
     template: require('../templates/descriptormodeltype.html'),
@@ -147,13 +147,13 @@ var View = Marionette.View.extend({
             return false;
         }
 
-        var elt = application.main.dnd.get();
+        let elt = application.main.dnd.get();
         if (elt.$el.hasClass('descriptor-type')) {
             // reset borders
             this.$el.css('border-top', 'initial');
             this.$el.css('border-bottom', 'initial');
 
-            var DefinesLabel = Dialog.extend({
+            let DefinesLabel = Dialog.extend({
                 template: require('../templates/descriptormodeltypecreate.html'),
 
                 attributes: {
@@ -179,7 +179,7 @@ var View = Marionette.View.extend({
                 },
 
                 validateLabel: function() {
-                    var v = this.ui.label.val();
+                    let v = this.ui.label.val();
 
                     if (v.length < 1) {
                         $(this.ui.label).validateField('failed', g_t('characters_min', {count: 1}));
@@ -196,8 +196,8 @@ var View = Marionette.View.extend({
                 },
 
                 validateName: function() {
-                    var v = this.ui.name.val();
-                    var re = /^[a-zA-Z0-9_\-]+$/i;
+                    let v = this.ui.name.val();
+                    let re = /^[a-zA-Z0-9_\-]+$/i;
 
                     if (v.length > 0 && !re.test(v)) {
                         $(this.ui.name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -213,19 +213,19 @@ var View = Marionette.View.extend({
                 },
 
                 onApply: function() {
-                    var view = this;
-                    var collection = this.getOption('collection');
-                    var position = this.getOption('position');
-                    var code = this.getOption('code');
+                    let view = this;
+                    let collection = this.getOption('collection');
+                    let position = this.getOption('position');
+                    let code = this.getOption('code');
 
                     if (this.validateName() && this.validateLabel()) {
-                        var to_rshift = [];
+                        let to_rshift = [];
 
                         // server will r-shift position of any model upward this new
                         // do it locally to be consistent
-                        for (var model in collection.models) {
-                            var dmt = collection.models[model];
-                            var p = dmt.get('position');
+                        for (let model in collection.models) {
+                            let dmt = collection.models[model];
+                            let p = dmt.get('position');
                             if (p >= position) {
                                 dmt.set('position', p+1);
                                 to_rshift.push(dmt);
@@ -246,7 +246,7 @@ var View = Marionette.View.extend({
                                 $.alert.error(_t("Unable to create the type of model of descriptor !"));
 
                                 // left shift (undo) for consistency with server
-                                for (var i = 0; i < to_rshift.length; ++i) {
+                                for (let i = 0; i < to_rshift.length; ++i) {
                                     to_rshift[i].set('position', to_rshift[i].get('position')-1);
                                 }
                             }
@@ -255,7 +255,7 @@ var View = Marionette.View.extend({
                 }
             });
 
-            var definesLabel = new DefinesLabel({
+            let definesLabel = new DefinesLabel({
                 collection: this.model.collection,
                 position: this.model.get('position'),
                 code: elt.model.get('code')
@@ -274,10 +274,10 @@ var View = Marionette.View.extend({
             this.$el.css('border-bottom', 'initial');
 
             // ajax call
-            var position = elt.model.get('position');
-            var newPosition = this.model.get('position');
-            var modelId = this.model.collection.model_id;
-            var collection = this.model.collection;
+            let position = elt.model.get('position');
+            let newPosition = this.model.get('position');
+            let modelId = this.model.collection.model_id;
+            let collection = this.model.collection;
 
             $.ajax({
                 type: "PUT",
@@ -293,10 +293,10 @@ var View = Marionette.View.extend({
                 // do it locally to be consistent
                 // so that we don't need to collection.fetch({update: true, remove: true});
                 if (newPosition < position) {
-                    var to_rshift = [];
+                    let to_rshift = [];
 
-                    for (var model in collection.models) {
-                        var dmt = collection.models[model];
+                    for (let model in collection.models) {
+                        let dmt = collection.models[model];
                         if (dmt.get('id') !== elt.model.get('id')) {
                             if (dmt.get('position') >= newPosition) {
                                 to_rshift.push(dmt);
@@ -306,17 +306,17 @@ var View = Marionette.View.extend({
 
                     elt.model.set('position', newPosition);
 
-                    var nextPosition = newPosition + 1;
+                    let nextPosition = newPosition + 1;
 
-                    for (var i = 0; i < to_rshift.length; ++i) {
+                    for (let i = 0; i < to_rshift.length; ++i) {
                         to_rshift[i].set('position', nextPosition);
                         ++nextPosition;
                     }
                 } else {
-                    var to_lshift = [];
+                    let to_lshift = [];
 
-                    for (var model in collection.models) {
-                        var dmt = collection.models[model];
+                    for (let model in collection.models) {
+                        let dmt = collection.models[model];
                         if (dmt.get('id') !== elt.model.get('id')) {
                             if (dmt.get('position') <= newPosition) {
                                 to_lshift.push(dmt);
@@ -326,9 +326,9 @@ var View = Marionette.View.extend({
 
                     elt.model.set('position', newPosition);
 
-                    var nextPosition = 0;
+                    let nextPosition = 0;
 
-                    for (var i = 0; i < to_lshift.length; ++i) {
+                    for (let i = 0; i < to_lshift.length; ++i) {
                         to_lshift[i].set('position', nextPosition);
                         ++nextPosition;
                     }
@@ -349,8 +349,8 @@ var View = Marionette.View.extend({
             return;
         }
 
-        var ChangeName = require('../../main/views/entityrename');
-        var changeName = new ChangeName({
+        let ChangeName = require('../../main/views/entityrename');
+        let changeName = new ChangeName({
             model: this.model,
             title: _t("Rename the type of model of descriptors")
         });
@@ -362,8 +362,8 @@ var View = Marionette.View.extend({
     },
 
     editLabel: function() {
-        var ChangeLabel = require('../../main/views/entitychangelabel');
-        var changeLabel = new ChangeLabel({
+        let ChangeLabel = require('../../main/views/entitychangelabel');
+        let changeLabel = new ChangeLabel({
             model: this.model,
             title: _t("Change the labels for the type of model of descriptor")});
 
@@ -381,9 +381,9 @@ var View = Marionette.View.extend({
     },
 
     changeIndex: function() {
-        var model = this.model;
+        let model = this.model;
 
-        var ChangeIndex = Dialog.extend({
+        let ChangeIndex = Dialog.extend({
             template: require('../templates/descriptormodeltypechangeindex.html'),
 
             attributes: {
@@ -414,28 +414,28 @@ var View = Marionette.View.extend({
             },
 
             onApply: function () {
-                var index = parseInt(this.ui.index.val());
+                let index = parseInt(this.ui.index.val());
 
                 this.model.save({index: index}, {patch: true, wait: true});
                 this.destroy();
             }
         });
 
-        var changeIndex = new ChangeIndex({model: model});
+        let changeIndex = new ChangeIndex({model: model});
         changeIndex.render();
     },
 
     deleteDescriptorModelType: function() {
-        var collection = this.model.collection;
-        var position = this.model.get('position');
+        let collection = this.model.collection;
+        let position = this.model.get('position');
 
         this.model.destroy({
             wait: true,
             success: function () {
-                for (var model in collection.models) {
-                    var dmt = collection.models[model];
+                for (let model in collection.models) {
+                    let dmt = collection.models[model];
                     if (dmt.get('position') > position) {
-                        var new_position = dmt.get('position') - 1;
+                        let new_position = dmt.get('position') - 1;
                         dmt.set('position', new_position);
                     }
                 }
@@ -444,16 +444,16 @@ var View = Marionette.View.extend({
     },
 
     editCondition: function() {
-        var model = this.model;
+        let model = this.model;
 
         $.ajax({
             type: "GET",
             url: this.model.url() + 'condition/',
             dataType: 'json'
         }).done(function (data) {
-            var condition = data;
+            let condition = data;
 
-            var ChangeCondition = Dialog.extend({
+            let ChangeCondition = Dialog.extend({
                 template: require('../templates/descriptormodeltypecondition.html'),
                 templateContext: function () {
                     return {
@@ -490,7 +490,7 @@ var View = Marionette.View.extend({
                     $(this.ui.target).selectpicker({container: 'body', style: 'btn-default'});
 
                     // initial values set after getting them from dropdown or autocomplete initialization
-                    var condition = this.getOption('condition');
+                    let condition = this.getOption('condition');
                     if (condition.defined) {
                         this.definesValues = true;
                         this.defaultValues = condition.values;
@@ -524,15 +524,15 @@ var View = Marionette.View.extend({
                 },
 
                 onSelectCondition: function () {
-                    var val = parseInt(this.ui.condition.val());
+                    let val = parseInt(this.ui.condition.val());
                     this.toggleCondition(val);
                 },
 
                 onSelectTarget: function () {
-                    var view = this;
-                    var targetId = this.ui.target.val();
+                    let view = this;
+                    let targetId = this.ui.target.val();
 
-                    var model = this.getOption('model').collection.findWhere({id: parseInt(targetId)});
+                    let model = this.getOption('model').collection.findWhere({id: parseInt(targetId)});
                     if (model) {
                         // destroy an older widget and label
                         if (this.descriptorType && this.descriptorType.widget) {
@@ -546,23 +546,23 @@ var View = Marionette.View.extend({
                         );
 
                         this.descriptorType.fetch().then(function() {
-                            var format = view.descriptorType.get('format');
+                            let format = view.descriptorType.get('format');
 
-                            var condition = parseInt(view.ui.condition.val());
+                            let condition = parseInt(view.ui.condition.val());
                             view.toggleCondition(condition);
 
                             // unit label
-                            var unit = format.unit === "custom" ? 'custom_unit' in format ? format.custom_unit : "" : format.unit;
+                            let unit = format.unit === "custom" ? 'custom_unit' in format ? format.custom_unit : "" : format.unit;
 
                             if (unit !== "") {
-                                var label = $('<label class="control-label">' + _t("Value") + '&nbsp;<span>(' + unit + ')</span></label>');
+                                let label = $('<label class="control-label">' + _t("Value") + '&nbsp;<span>(' + unit + ')</span></label>');
                                 view.ui.condition_values.append(label);
                             } else {
-                                var label = $('<label class="control-label">' + _t("Value") + '</label>');
+                                let label = $('<label class="control-label">' + _t("Value") + '</label>');
                                 view.ui.condition_values.append(label);
                             }
 
-                            var widget = application.descriptor.widgets.newElement(format.type);
+                            let widget = application.descriptor.widgets.newElement(format.type);
                             widget.create(format, view.ui.condition_values, false, view.descriptorType.group, view.descriptorType.id);
 
                             if (view.definesValues) {
@@ -581,9 +581,9 @@ var View = Marionette.View.extend({
                 },
 
                 onDestroyCondition: function() {
-                    var view = this;
-                    var model = this.getOption('model');
-                    var condition = this.getOption('condition');
+                    let view = this;
+                    let model = this.getOption('model');
+                    let condition = this.getOption('condition');
 
                     // destroy the widget
                     if (this.descriptorType && this.descriptorType.widget) {
@@ -603,11 +603,11 @@ var View = Marionette.View.extend({
                 },
 
                 onApply: function () {
-                    var view = this;
-                    var model = this.getOption('model');
-                    var condition = this.getOption('condition');
+                    let view = this;
+                    let model = this.getOption('model');
+                    let condition = this.getOption('condition');
 
-                    var data = {
+                    let data = {
                         target: parseInt(this.ui.target.val()),
                         condition: parseInt(this.ui.condition.val())
                     };
@@ -654,7 +654,7 @@ var View = Marionette.View.extend({
                 }
             });
 
-            var changeCondition = new ChangeCondition({model: model, condition: condition});
+            let changeCondition = new ChangeCondition({model: model, condition: condition});
             changeCondition.render();
         });
     }

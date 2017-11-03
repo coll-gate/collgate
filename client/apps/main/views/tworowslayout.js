@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var TwoRowsLayout = Marionette.View.extend({
+let TwoRowsLayout = Marionette.View.extend({
     template: require("../templates/tworowslayout.html"),
     attributes: {
         style: "height: 100%;"
@@ -28,7 +28,7 @@ var TwoRowsLayout = Marionette.View.extend({
     },
 
     onResize: function() {
-        var view = this.getChildView('up');
+        let view = this.getChildView('up');
         if (view && view.onResize) {
             view.onResize();
         }

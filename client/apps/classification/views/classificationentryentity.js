@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     template: require('../templates/classificationentryentity.html'),
     className: "element",
@@ -37,7 +37,7 @@ var View = Marionette.View.extend({
     },
 
     onViewEntity: function(e) {
-        var path = this.model.get('content_type').replace('.', '/');
+        let path = this.model.get('content_type').replace('.', '/');
         Backbone.history.navigate("app/" + path + "/" + this.model.get('id') + "/", {trigger: true});
     }
 });

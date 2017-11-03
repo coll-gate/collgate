@@ -8,17 +8,17 @@
  * @details
  */
 
-var BatchView = require('../views/batch');
-var AdvancedTable = require('../../main/views/advancedtable');
-var Dialog = require('../../main/views/dialog');
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
-var AccessionModel = require('../models/accession');
-var BatchModel = require('../models/batch');
-var BatchLayout = require('../views/batchlayout');
+let BatchView = require('../views/batch');
+let AdvancedTable = require('../../main/views/advancedtable');
+let Dialog = require('../../main/views/dialog');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
+let AccessionModel = require('../models/accession');
+let BatchModel = require('../models/batch');
+let BatchLayout = require('../views/batchlayout');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../../descriptor/templates/entitylist.html"),
     className: "batch-list advanced-table-container",
     childView: BatchView,
@@ -77,22 +77,22 @@ var View = AdvancedTable.extend({
 
         // context only for children (sub-batches)
         if (this.collection.batch_type !== 'parents') {
-            var view = this;
+            let view = this;
 
-            var contextLayout = application.getView().getChildView('right');
+            let contextLayout = application.getView().getChildView('right');
             if (!contextLayout) {
-                var DefaultLayout = require('../../main/views/defaultlayout');
+                let DefaultLayout = require('../../main/views/defaultlayout');
                 contextLayout = new DefaultLayout();
                 application.getView().showChildView('right', contextLayout);
             }
 
-            var TitleView = require('../../main/views/titleview');
+            let TitleView = require('../../main/views/titleview');
             contextLayout.showChildView('title', new TitleView({title: _t("Batches actions")}));
 
-            var actions = ['create'];
+            let actions = ['create'];
 
-            var AccessionBatchesContextView = require('./accessionbatchescontext');
-            var contextView = new AccessionBatchesContextView({actions: actions});
+            let AccessionBatchesContextView = require('./accessionbatchescontext');
+            let contextView = new AccessionBatchesContextView({actions: actions});
             contextLayout.showChildView('content', contextView);
 
             contextView.on("batch:create", function () {
@@ -106,16 +106,16 @@ var View = AdvancedTable.extend({
     },
 
     onCreate: function () {
-        var accessionModel = null;
-        var batchModel = null;
+        let accessionModel = null;
+        let batchModel = null;
 
-        var metaModelPromise = $.ajax({
+        let metaModelPromise = $.ajax({
             type: "GET",
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.batch/']),
             dataType: 'json'
         });
 
-        var accessionModelPromise = null;
+        let accessionModelPromise = null;
 
         if (this.model instanceof AccessionModel) {
             accessionModel = this.model;
@@ -128,7 +128,7 @@ var View = AdvancedTable.extend({
         }
 
         $.when(metaModelPromise, accessionModelPromise).then(function (data) {
-            var CreateBatchView = Dialog.extend({
+            let CreateBatchView = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_batch'
                 },
@@ -154,8 +154,8 @@ var View = AdvancedTable.extend({
                 onRender: function () {
                     CreateBatchView.__super__.onRender.apply(this);
 
-                    var accession = this.getOption('accession');
-                    var batch = this.getOption('batch');
+                    let accession = this.getOption('accession');
+                    let batch = this.getOption('batch');
 
                     this.ui.code.val(accession.get('name') + ' (' + accession.get('code') + ')');
                     this.ui.meta_model.selectpicker({});
@@ -168,10 +168,10 @@ var View = AdvancedTable.extend({
                 },
 
                 onNameInput: function () {
-                    var name = this.ui.name.val().trim();
+                    let name = this.ui.name.val().trim();
 
                     if (this.validateName()) {
-                        var filters = {
+                        let filters = {
                             method: 'ieq',
                             fields: ['name'],
                             'name': name
@@ -185,8 +185,8 @@ var View = AdvancedTable.extend({
                             data: {filters: JSON.stringify(filters)},
                             el: this.ui.name,
                             success: function (data) {
-                                for (var i in data.items) {
-                                    var t = data.items[i];
+                                for (let i in data.items) {
+                                    let t = data.items[i];
 
                                     if (t.label.toUpperCase() === name.toUpperCase()) {
                                         $(this.el).validateField('failed', _t('Batch name already in usage'));
@@ -201,7 +201,7 @@ var View = AdvancedTable.extend({
                 },
 
                 validateName: function () {
-                    var v = this.ui.name.val().trim();
+                    let v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
                         $(this.ui.name).validateField('failed', _t('characters_max', {count: 128}));
@@ -215,7 +215,7 @@ var View = AdvancedTable.extend({
                 },
 
                 validate: function () {
-                    var valid = this.validateName();
+                    let valid = this.validateName();
 
                     if (this.ui.name.hasClass('invalid')) {
                         valid = false;
@@ -225,14 +225,14 @@ var View = AdvancedTable.extend({
                 },
 
                 onContinue: function () {
-                    var view = this;
+                    let view = this;
 
                     if (this.validate()) {
-                        var name = this.ui.name.val().trim();
-                        var metaModel = parseInt(this.ui.meta_model.val());
+                        let name = this.ui.name.val().trim();
+                        let metaModel = parseInt(this.ui.meta_model.val());
 
                         // create a new local model and open an edit view with this model
-                        var model = new BatchModel({
+                        let model = new BatchModel({
                             accession: view.getOption('accession').get('id'),
                             name: name,
                             descriptor_meta_model: metaModel
@@ -240,7 +240,7 @@ var View = AdvancedTable.extend({
 
                         view.destroy();
 
-                        var defaultLayout = new DefaultLayout();
+                        let defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
@@ -248,13 +248,13 @@ var View = AdvancedTable.extend({
                             model: model
                         }));
 
-                        var accessionLayout = new BatchLayout({model: model});
+                        let accessionLayout = new BatchLayout({model: model});
                         defaultLayout.showChildView('content', accessionLayout);
                     }
                 }
             });
 
-            var createBatchView = new CreateBatchView({accession: accessionModel, batch: batchModel});
+            let createBatchView = new CreateBatchView({accession: accessionModel, batch: batchModel});
             createBatchView.render();
         });
     }

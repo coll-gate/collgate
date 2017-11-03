@@ -8,10 +8,10 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'classification-rank-add',
     template: require('../templates/classificationrankadd.html'),
@@ -33,7 +33,7 @@ var View = Marionette.View.extend({
     },
 
     addClassificationRank: function () {
-        var ClassificationRankCreate = Dialog.extend({
+        let ClassificationRankCreate = Dialog.extend({
             template: require('../templates/classificationrankcreate.html'),
 
             attributes: {
@@ -65,11 +65,11 @@ var View = Marionette.View.extend({
                     return;
                 }
 
-                var view = this;
-                var collection = this.getOption('collection');
-                var name = this.getOption('name');
-                var label = this.ui.label.val();
-                // var level = this.ui.level.val();
+                let view = this;
+                let collection = this.getOption('collection');
+                let name = this.getOption('name');
+                let label = this.ui.label.val();
+                // let level = this.ui.level.val();
 
                 collection.create({
                     name: name,
@@ -87,7 +87,7 @@ var View = Marionette.View.extend({
             },
 
             validateLabel: function () {
-                var v = this.ui.label.val();
+                let v = this.ui.label.val();
 
                 if (v.length < 3) {
                     $(this.ui.label).validateField('failed', _t('characters_min', {count: 3}));
@@ -105,7 +105,7 @@ var View = Marionette.View.extend({
         });
 
         if (!this.ui.add_classification_rank_name.hasClass('invalid')) {
-            var classificationRankCreate = new ClassificationRankCreate({
+            let classificationRankCreate = new ClassificationRankCreate({
                 collection: this.collection,
                 classification: this.classification,
                 name: this.ui.add_classification_rank_name.val()
@@ -118,8 +118,8 @@ var View = Marionette.View.extend({
     },
 
     validateClassificationRankName: function() {
-        var v = this.ui.add_classification_rank_name.val();
-        var re = /^[a-zA-Z0-9_\-]+$/i;
+        let v = this.ui.add_classification_rank_name.val();
+        let re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             this.ui.add_classification_rank_name.validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -151,8 +151,8 @@ var View = Marionette.View.extend({
                 view: this,
             }).done(function (data) {
                 if (data.items.length > 0) {
-                    for (var i in data.items) {
-                        var t = data.items[i];
+                    for (let i in data.items) {
+                        let t = data.items[i];
 
                         if (t.name.toUpperCase() === this.view.ui.add_classification_rank_name.val().toUpperCase()) {
                             this.view.ui.add_classification_rank_name.validateField('failed', _t('Classification rank name already in usage'));

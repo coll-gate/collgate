@@ -8,10 +8,10 @@
  * @details 
  */
 
-var EnumSingle = require('./enumsingle');
-var Marionette = require('backbone.marionette');
+let EnumSingle = require('./enumsingle');
+let Marionette = require('backbone.marionette');
 
-var EnumOrdinal = function() {
+let EnumOrdinal = function() {
     EnumSingle.call(this);
 
     this.name = "enum_ordinal";
@@ -57,7 +57,7 @@ EnumOrdinal.DescriptorTypeDetailsView = Marionette.View.extend({
         this.ui.format_range_min.numeric({decimal : false, negative : false, maxDecimalPlaces: 0});
         this.ui.format_range_max.numeric({decimal : false, negative : false, maxDecimalPlaces: 0});
 
-        var format = this.model.get('format');
+        let format = this.model.get('format');
 
         if (format.range !== undefined) {
             this.ui.format_range_min.val(format.range[0]);
@@ -102,7 +102,7 @@ EnumOrdinal.DescriptorTypeDetailsView = Marionette.View.extend({
     },
 
     changeListType: function () {
-        var listType = this.ui.list_type.val();
+        let listType = this.ui.list_type.val();
 
         switch (listType) {
             case "dropdown":

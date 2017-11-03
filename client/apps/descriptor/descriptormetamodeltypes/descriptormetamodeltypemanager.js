@@ -8,7 +8,7 @@
  * @details
  */
 
-var DescriptorMetaModelTypeManager = function() {
+let DescriptorMetaModelTypeManager = function() {
     this.descriptorMetaModelTypes = {};
 };
 
@@ -18,12 +18,12 @@ DescriptorMetaModelTypeManager.prototype = {
     },
 
     getElement: function(modelName) {
-        var element = this.descriptorMetaModelTypes[modelName];
+        let element = this.descriptorMetaModelTypes[modelName];
         return element;
     },
 
     makeView: function(modelName, model) {
-        var Element = this.descriptorMetaModelTypes[modelName];
+        let Element = this.descriptorMetaModelTypes[modelName];
         if (Element) {
             return new Element({mode: model});
         }

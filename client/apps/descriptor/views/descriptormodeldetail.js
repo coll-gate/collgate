@@ -8,10 +8,10 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var DescriptorModelModel = require('../models/descriptormodel');
+let Marionette = require('backbone.marionette');
+let DescriptorModelModel = require('../models/descriptormodel');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     className: 'object descriptor-model-detail',
     template: require('../templates/descriptormodeldetail.html'),
 
@@ -36,8 +36,8 @@ var View = Marionette.View.extend({
     },
 
     inputName: function () {
-        var v = this.ui.name.val();
-        var re = /^[a-zA-Z0-9_-]+$/i;
+        let v = this.ui.name.val();
+        let re = /^[a-zA-Z0-9_-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             $(this.ui.name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -52,9 +52,9 @@ var View = Marionette.View.extend({
         if (!$(this.ui.name.isValidField()))
             return;
 
-        var name = this.ui.name.val();
-        var verbose_name = this.ui.verbose_name.val();
-        var description = this.ui.description.val();
+        let name = this.ui.name.val();
+        let verbose_name = this.ui.verbose_name.val();
+        let description = this.ui.description.val();
 
         this.model.save({
             name: name,

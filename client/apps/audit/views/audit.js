@@ -8,10 +8,10 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var AuditModel = require('../models/audit');
+let Marionette = require('backbone.marionette');
+// let AuditModel = require('../models/audit');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'object audit element',
     attributes: {

@@ -8,9 +8,9 @@
  * @details 
  */
 
-var DescriptorPanelModel = require('../models/descriptorpanel');
+let DescriptorPanelModel = require('../models/descriptorpanel');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: function() {
         return window.application.url(['descriptor', 'meta-model', this.model_id, 'panel']);
     },

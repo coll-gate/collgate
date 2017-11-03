@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
-var Model = Backbone.Model.extend({
+let Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
             return window.application.url(['accession', 'accession']);
@@ -33,8 +33,8 @@ var Model = Backbone.Model.extend({
     },
 
     validate: function(attrs) {
-        var errors = {};
-        var hasError = false;
+        let errors = {};
+        let hasError = false;
         if (!attrs.name) {
             errors.name = 'Name must be valid and at least 3 characters length';
             hasError = true;

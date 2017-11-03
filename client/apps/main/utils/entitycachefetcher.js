@@ -8,9 +8,9 @@
  * @details
  */
 
-var CacheFetcher = require('./cachefetcher');
+let CacheFetcher = require('./cachefetcher');
 
-var EntityCacheFetcher = function() {
+let EntityCacheFetcher = function() {
     CacheFetcher.call(this);
 
     this.type = "entity";
@@ -21,17 +21,17 @@ EntityCacheFetcher.prototype.constructor = EntityCacheFetcher;
 
 EntityCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     // make the list of values
-    var keysToFetch = new Set();
+    let keysToFetch = new Set();
 
-    var cache = cacheManager.get('entity', options.format.model);
-    var toFetch = false;
-    var now = Date.now();
+    let cache = cacheManager.get('entity', options.format.model);
+    let toFetch = false;
+    let now = Date.now();
 
     if (cacheManager.enabled) {
         // lookup into the global cache
-        for (var i = 0; i < keys.length; ++i) {
-            var key = keys[i];
-            var entry = undefined;
+        for (let i = 0; i < keys.length; ++i) {
+            let key = keys[i];
+            let entry = undefined;
 
             toFetch = false;
 
@@ -57,8 +57,8 @@ EntityCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
         keysToFetch = new Set(keys);
     }
 
-    var url = "";
-    var queryData = {values: JSON.stringify(Array.from(keys))};
+    let url = "";
+    let queryData = {values: JSON.stringify(Array.from(keys))};
 
     if (options.format.details) {
         url = window.application.url(['main', 'entity', options.format.model, 'details']);
@@ -67,7 +67,7 @@ EntityCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     }
 
     if (keysToFetch.size) {
-        var promise = $.ajax({
+        let promise = $.ajax({
             type: "GET",
             url: url,
             contentType: 'application/json; charset=utf8',
@@ -76,13 +76,13 @@ EntityCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
 
         promise.done(function (data) {
             // feed the cache and compute expire timestamp. validity of null means it never expires.
-            var now = Date.now();
-            var expire = data.validity !== null ? data.validity * 1000 + now : null;
+            let now = Date.now();
+            let expire = data.validity !== null ? data.validity * 1000 + now : null;
             if (!data.cacheable) {
                 expire = now;
             }
 
-            for (var key in data.items) {
+            for (let key in data.items) {
                 cache[key] = {
                     expire: expire,
                     value: data.items[key]

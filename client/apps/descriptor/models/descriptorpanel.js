@@ -8,11 +8,11 @@
  * @details 
  */
 
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
-var Model = Backbone.Model.extend({
+let Model = Backbone.Model.extend({
     url: function() {
-        var model_id = this.model_id || this.get('model') || this.collection.model_id;
+        let model_id = this.model_id || this.get('model') || this.collection.model_id;
 
         if (this.isNew()) {
             return window.application.url(['descriptor', 'meta-model', model_id, 'panel']);
@@ -45,8 +45,8 @@ var Model = Backbone.Model.extend({
     },
 
     validate: function(attrs) {
-        var errors = {};
-        var hasError = false;
+        let errors = {};
+        let hasError = false;
 
         if (hasError) {
           return errors;

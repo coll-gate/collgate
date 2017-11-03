@@ -8,9 +8,9 @@
  * @details 
  */
 
-var ItemView = require('../../main/views/itemview');
+let ItemView = require('../../main/views/itemview');
 
-var View = ItemView.extend({
+let View = ItemView.extend({
     tagName: 'div',
     template: require('../templates/describabledetails.html'),
     templateContext: function () {
@@ -42,22 +42,22 @@ var View = ItemView.extend({
     },
 
     onRender: function() {
-        var view = this;
-        var model = this.model;
-        var descriptors = model.get('descriptors');
+        let view = this;
+        let model = this.model;
+        let descriptors = model.get('descriptors');
 
         $.each(this.ui.descriptor, function(index) {
-            var el = $(this);
+            let el = $(this);
 
-            var pi = el.attr('panel-index');
-            var i = el.attr('index');
-            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-            var descriptorType = descriptorModelType.descriptor_type;
-            var format = descriptorType.format;
+            let pi = el.attr('panel-index');
+            let i = el.attr('index');
+            let descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+            let descriptorType = descriptorModelType.descriptor_type;
+            let format = descriptorType.format;
 
-            var values = model.get('descriptors')[descriptorModelType.name];
+            let values = model.get('descriptors')[descriptorModelType.name];
 
-            var widget = application.descriptor.widgets.newElement(format.type);
+            let widget = application.descriptor.widgets.newElement(format.type);
             if (widget) {
                 widget.create(format, el.children('td.descriptor-value'), true, descriptorType.group, descriptorType.id);
                 widget.set(format, true, values, descriptorType.group, descriptorType.id);
@@ -69,18 +69,18 @@ var View = ItemView.extend({
     },
 
     onDomRefresh: function() {
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                var condition = descriptorModelType.condition;
+        for (let pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (let i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                let descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                let condition = descriptorModelType.condition;
 
                 if (condition.defined) {
                     // search the target descriptor type for the condition
-                    var target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+                    let target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
+                    let targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
 
                     // initial state of the condition
-                    var display = true;
+                    let display = true;
 
                     if (targetDescriptorModelType.widget) {
                         display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
@@ -99,9 +99,9 @@ var View = ItemView.extend({
 
     onBeforeDetach: function() {
         // destroy any widgets
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (let pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (let i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                let descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.destroy();
                 }

@@ -8,9 +8,9 @@
  * @details
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
+let DescriptorFormatType = require('./descriptorformattype');
 
-var DescriptorMetaModel = function () {
+let DescriptorMetaModel = function () {
     DescriptorFormatType.call(this);
 
     this.name = "descriptor_meta_model";
@@ -28,25 +28,25 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
         });
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "fa-folder-open");
+            let input = this._createStdInput(parent, "fa-folder-open");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
-            var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+            let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             this.groupEl = this._createInputGroup(parent, "fa-th-large", select);
 
             // init the autocomplete
-            var url = window.application.url(['descriptor', 'meta-model']);
-            var initials = [];
+            let url = window.application.url(['descriptor', 'meta-model']);
+            let initials = [];
 
-            var container = parent.closest('div.modal-dialog').parent();
+            let container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
                 container = this.groupEl;  // parent.closest('div.panel');
             }
 
-            var params = {
+            let params = {
                 // width: 'element',
                 data: initials,
                 dropdownParent: container,
@@ -74,9 +74,9 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
                             params.next = data.next || null;
                         }
 
-                        var results = [];
+                        let results = [];
 
-                        for (var i = 0; i < data.items.length; ++i) {
+                        for (let i = 0; i < data.items.length; ++i) {
                             results.push({
                                 id: data.items[i].id,
                                 text: data.items[i].label
@@ -135,10 +135,10 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        var url = window.application.url(['descriptor', 'meta-model']);
+        let url = window.application.url(['descriptor', 'meta-model']);
 
         if (this.readOnly) {
-            var type = this;
+            let type = this;
 
             if (definesValues) {
                 this.el.attr('value', defaultValues);
@@ -153,20 +153,20 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
             }
         } else {
             if (definesValues) {
-                var type = this;
+                let type = this;
 
                 // need to re-init the select2 widget
                 this.el.select2('destroy');
 
                 // init the autocomplete
-                var initials = [];
+                let initials = [];
 
-                var container = this.parent.closest('div.modal-dialog').parent();
+                let container = this.parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
                     container = this.groupEl;  // this.parent.closest('div.panel');
                 }
 
-                var params = {
+                let params = {
                     data: initials,
                     dropdownParent: container,
                     ajax: {
@@ -193,9 +193,9 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
                                 params.next = data.next || null;
                             }
 
-                            var results = [];
+                            let results = [];
 
-                            for (var i = 0; i < data.items.length; ++i) {
+                            for (let i = 0; i < data.items.length; ++i) {
                                 results.push({
                                     id: data.items[i].id,
                                     text: data.items[i].label
@@ -236,21 +236,21 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
     values: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                var value = parseInt(this.el.attr('value'));
+                let value = parseInt(this.el.attr('value'));
                 return isNaN(value) ? null : value;
             } else {
                 if (this.el.attr('value') !== undefined) {
-                    var value = parseInt(this.el.attr('value'));
+                    let value = parseInt(this.el.attr('value'));
                     return isNaN(value) ? null : value;
                 } else {
                     if (Array.isArray(this.el.val())) {
-                        var values = this.el.val();
+                        let values = this.el.val();
                         return values.map(function (value) {
                             value = parseInt(value);
                             return isNaN(value) ? null : value
                         })
                     } else if (this.el.val() !== "") {
-                        var value = parseInt(this.el.val());
+                        let value = parseInt(this.el.val());
                         return isNaN(value) ? null : value;
                     } else {
                         return null;

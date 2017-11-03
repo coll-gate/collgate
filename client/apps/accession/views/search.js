@@ -8,10 +8,10 @@
  * @details
  */
 
-var ConditionCollection = require('./conditioncollection');
-var Dialog = require('../../main/views/dialog');
+let ConditionCollection = require('./conditioncollection');
+let Dialog = require('../../main/views/dialog');
 
-var View = Dialog.extend({
+let View = Dialog.extend({
     template: require('../templates/search.html'),
     templateContext: function () {
         return {
@@ -63,7 +63,7 @@ var View = Dialog.extend({
     },
 
     onAddSearchRow: function () {
-        var added_model = application.accession.collections.conditionList.add({
+        let added_model = application.accession.collections.conditionList.add({
             row_operator: null,
             field: null,
             condition: "eq",
@@ -74,9 +74,9 @@ var View = Dialog.extend({
     },
 
     onChangeEntityType: function () {
-        var entityType = this.ui.entity_type.selectpicker('val');
+        let entityType = this.ui.entity_type.selectpicker('val');
         this.ui.meta_model.prop('disabled', false);
-        var view = this;
+        let view = this;
 
         $.ajax({
             type: "GET",
@@ -85,8 +85,8 @@ var View = Dialog.extend({
         }).done(function (data) {
             view.ui.meta_model.children('option').remove();
 
-            for (var i = 0; i < data.length; ++i) {
-                var opt = $('<option></option>');
+            for (let i = 0; i < data.length; ++i) {
+                let opt = $('<option></option>');
                 opt.attr('value', data[i].id);
                 opt.html(data[i].label);
 
@@ -119,9 +119,9 @@ var View = Dialog.extend({
     },
 
     refreshFieldList: function (childview) {
-        var entityType = this.ui.entity_type.selectpicker('val');
+        let entityType = this.ui.entity_type.selectpicker('val');
         const metaModels = this.ui.meta_model.selectpicker('val');
-        var selects = null;
+        let selects = null;
 
         if (childview) {
             selects = childview.ui.field;
@@ -131,10 +131,10 @@ var View = Dialog.extend({
 
         const view = this;
 
-        var descriptorMetaModels = [];
+        let descriptorMetaModels = [];
 
         if (metaModels) {
-            for (var i = 0; i < metaModels.length; ++i) {
+            for (let i = 0; i < metaModels.length; ++i) {
                 descriptorMetaModels.push(parseInt(metaModels[i]));
             }
         }
@@ -146,7 +146,7 @@ var View = Dialog.extend({
         }).done(function (data) {
             $(selects).children('option').remove().end();
 
-            var columns = data[0].value;
+            let columns = data[0].value;
 
             view.getChildView('conditions').children.each(function (childview) {
                 childview.columns = columns;
@@ -208,8 +208,8 @@ var View = Dialog.extend({
 
     getQuery: function (conditions, condition, parentheses_to_handle) {
         condition = (condition || 0);
-        var result = [];
-        for (var i = condition; i < conditions.length; ++i) {
+        let result = [];
+        for (let i = condition; i < conditions.length; ++i) {
             if (typeof parentheses_to_handle === 'undefined') {
                 parentheses_to_handle = conditions[i].attributes.open_group;
             }
@@ -233,7 +233,7 @@ var View = Dialog.extend({
             }
             // add conditions group
             if (conditions[i].attributes.open_group && parentheses_to_handle !== 0) {
-                var group = this.getQuery(conditions, i, parentheses_to_handle - 1);
+                let group = this.getQuery(conditions, i, parentheses_to_handle - 1);
                 result.push(group.result);
                 i = (group.end_index || i);
 
@@ -268,8 +268,8 @@ var View = Dialog.extend({
         });
         const entityType = this.ui.entity_type.val();
         if (entityType === 'accession.accession') {
-            var conditions = this.getChildView('conditions').collection.models;
-            var query = this.getQuery(conditions);
+            let conditions = this.getChildView('conditions').collection.models;
+            let query = this.getQuery(conditions);
         }
     },
 
@@ -277,7 +277,7 @@ var View = Dialog.extend({
         this.ui.entity_type.selectpicker('destroy');
         this.ui.meta_model.selectpicker('destroy');
 
-        var rows = this.$el.find('div.search-condition');
+        let rows = this.$el.find('div.search-condition');
         $.each(rows, function (i, el) {
             $(el).find('div.condition').selectpicker('destroy');
         });

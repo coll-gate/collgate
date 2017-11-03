@@ -8,27 +8,27 @@
  * @details 
  */
 
-var DescribableDetails = require('../../descriptor/views/describabledetails');
-var BatchDescriptorEditView = require('../views/batchdescriptoredit');
+let DescribableDetails = require('../../descriptor/views/describabledetails');
+let BatchDescriptorEditView = require('../views/batchdescriptoredit');
 
-var View = DescribableDetails.extend({
+let View = DescribableDetails.extend({
     onShowTab: function() {
-        var view = this;
+        let view = this;
 
-        var contextLayout = application.getView().getChildView('right');
+        let contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
-            var DefaultLayout = require('../../main/views/defaultlayout');
+            let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
             application.getView().showChildView('right', contextLayout);
         }
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
 
-        var actions = ['modify'];
+        let actions = ['modify'];
 
-        var BatchDescriptorContextView = require('./batchdescriptorcontext');
-        var contextView = new BatchDescriptorContextView({actions: actions});
+        let BatchDescriptorContextView = require('./batchdescriptorcontext');
+        let contextView = new BatchDescriptorContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:modify", function () {
@@ -42,12 +42,12 @@ var View = DescribableDetails.extend({
 
     onModify: function () {
         // does not reload models, just redo the views
-        var name = this.model.get('name');
+        let name = this.model.get('name');
 
         // update the layout content
-        var batchLayout = application.main.viewContent().getChildView('content');
+        let batchLayout = application.main.viewContent().getChildView('content');
 
-        var view = new BatchDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+        let view = new BatchDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
         batchLayout.showChildView('descriptors', view);
     }
 });

@@ -8,10 +8,10 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var ConditionView = require('./condition');
+let Marionette = require('backbone.marionette');
+let ConditionView = require('./condition');
 
-var View = Marionette.CollectionView.extend({
+let View = Marionette.CollectionView.extend({
     tagName: "condition-list",
     childView: ConditionView,
     childViewOptions: function () {
@@ -19,23 +19,23 @@ var View = Marionette.CollectionView.extend({
     },
 
     validParenthesis: function () {
-        var $error_msg = this.$el.parents('.modal-content').find('#error-msg');
-        var $search_btn = this.$el.parents('.modal-content').find('button.search');
-        var $save_btn = this.$el.parents('.modal-content').find('button.save');
+        let $error_msg = this.$el.parents('.modal-content').find('#error-msg');
+        let $search_btn = this.$el.parents('.modal-content').find('button.search');
+        let $save_btn = this.$el.parents('.modal-content').find('button.save');
 
         $error_msg.hide();
 
-        var l_stack = [];
-        var r_stack = [];
-        var l_invalid_depth = [];
-        var r_invalid_depth = [];
-        var depth = 0;
+        let l_stack = [];
+        let r_stack = [];
+        let l_invalid_depth = [];
+        let r_invalid_depth = [];
+        let depth = 0;
 
         this.children.each(function (view) {
             view.ui.right_parenthesis.css('color', 'black').prop('title', '');
             view.ui.left_parenthesis.css('color', 'black').prop('title', '');
 
-            for (var i=0; i < view.open_group; i++ ) {
+            for (let i=0; i < view.open_group; i++ ) {
                 l_stack.push(view);
                 depth++;
                 if (depth >= 3) {
@@ -43,7 +43,7 @@ var View = Marionette.CollectionView.extend({
                 }
             }
 
-            for (var i=0; i < view.close_group; i++ ) {
+            for (let i=0; i < view.close_group; i++ ) {
                 if (l_stack.length === 0) {
                     r_stack.push(view);
                     return false;

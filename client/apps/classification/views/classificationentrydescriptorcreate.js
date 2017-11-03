@@ -8,11 +8,11 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
-var ClassificationEntryDescriptorView = require('./classificationentrydescriptor');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
+let ClassificationEntryDescriptorView = require('./classificationentrydescriptor');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/classificationentrydescriptorcreate.html'),
 
@@ -31,14 +31,14 @@ var View = Marionette.View.extend({
     },
 
     onDefine: function(e) {
-        var model = this.model;
+        let model = this.model;
 
         $.ajax({
             type: "GET",
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'classification.classificationentry']),
             dataType: 'json',
         }).done(function(data) {
-            var CreateDescriptorView = Dialog.extend({
+            let CreateDescriptorView = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_descriptor',
                 },
@@ -71,16 +71,16 @@ var View = Marionette.View.extend({
                 },
 
                 onContinue: function() {
-                    var view = this;
-                    var model = this.getOption('model');
+                    let view = this;
+                    let model = this.getOption('model');
 
                     if (this.ui.meta_model.val() != null) {
-                        var metaModel = parseInt(this.ui.meta_model.val());
+                        let metaModel = parseInt(this.ui.meta_model.val());
 
                         view.destroy();
 
                         // update the descriptor part of the classificationEntry layout
-                        var classificationEntryLayout = application.main.viewContent();
+                        let classificationEntryLayout = application.main.viewContent();
 
                         // patch the classificationEntry descriptor meta model
                         model.save({descriptor_meta_model: metaModel}, {patch: true, wait: false});
@@ -90,7 +90,7 @@ var View = Marionette.View.extend({
                             url: window.application.url(['descriptor', 'meta-model', metaModel, 'layout']),
                             dataType: 'json',
                         }).done(function(data) {
-                            var classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
+                            let classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
                                 model: model,
                                 descriptorMetaModelLayout: data
                             });
@@ -100,26 +100,26 @@ var View = Marionette.View.extend({
                 }
             });
 
-            var createDescriptorView = new CreateDescriptorView({model: model});
+            let createDescriptorView = new CreateDescriptorView({model: model});
             createDescriptorView.render();
         });
     },
 
     onShowTab: function() {
-        var view = this;
+        let view = this;
 
-        var DefaultLayout = require('../../main/views/defaultlayout');
-        var contextLayout = new DefaultLayout();
+        let DefaultLayout = require('../../main/views/defaultlayout');
+        let contextLayout = new DefaultLayout();
         application.getView().showChildView('right', contextLayout);
 
-        var actions = [];
+        let actions = [];
 
         actions.push('add');
 
-        var ClassificationEntryDescriptorContextView = require('./classificationentrydescriptorcontext');
-        var contextView = new ClassificationEntryDescriptorContextView({actions: actions});
+        let ClassificationEntryDescriptorContextView = require('./classificationentrydescriptorcontext');
+        let contextView = new ClassificationEntryDescriptorContextView({actions: actions});
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
         contextLayout.showChildView('content', contextView);
 

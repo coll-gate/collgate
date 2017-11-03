@@ -8,28 +8,28 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var DescriptorGroupModel = require('../models/descriptorgroup');
-var DescriptorTypeModel = require('../models/descriptortype');
-var DescriptorTypeCollection = require('../collections/descriptortype');
-var DescriptorValueCollection = require('../collections/descriptorvalue');
-var DescriptorGroupListView = require('../views/descriptorgrouplist');
-var DescriptorTypeListView = require('../views/descriptortypelist');
+let Marionette = require('backbone.marionette');
+let DescriptorGroupModel = require('../models/descriptorgroup');
+let DescriptorTypeModel = require('../models/descriptortype');
+let DescriptorTypeCollection = require('../collections/descriptortype');
+let DescriptorValueCollection = require('../collections/descriptorvalue');
+let DescriptorGroupListView = require('../views/descriptorgrouplist');
+let DescriptorTypeListView = require('../views/descriptortypelist');
 
-var DescriptorValueListView = require('../views/descriptorvaluelist');
-var DescriptorValuePairListView = require('../views/descriptorvaluepairlist');
-var DescriptorValueOrdinalListView = require('../views/descriptorvalueordinallist');
-var DescriptorValueAddView = require('../views/descriptorvalueadd');
+let DescriptorValueListView = require('../views/descriptorvaluelist');
+let DescriptorValuePairListView = require('../views/descriptorvaluepairlist');
+let DescriptorValueOrdinalListView = require('../views/descriptorvalueordinallist');
+let DescriptorValueAddView = require('../views/descriptorvalueadd');
 
-var DescriptorTypeDetailsLayout = require('../views/descriptortypedetailslayout');
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
+let DescriptorTypeDetailsLayout = require('../views/descriptortypedetailslayout');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
 
-var DescriptorGroupAddView = require('../views/descriptorgroupadd');
-var DescriptorGroupTypeAddView = require('../views/descriptorgrouptypeadd');
+let DescriptorGroupAddView = require('../views/descriptorgroupadd');
+let DescriptorGroupTypeAddView = require('../views/descriptorgrouptypeadd');
 
-var Router = Marionette.AppRouter.extend({
+let Router = Marionette.AppRouter.extend({
     routes : {
         "app/descriptor/group/": "getDescriptorGroupList",
         "app/descriptor/group/:id/type/": "getDescriptorTypeListForGroup",
@@ -39,14 +39,14 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getDescriptorGroupList : function() {
-        var collection = application.descriptor.collections.descriptorGroup;
+        let collection = application.descriptor.collections.descriptorGroup;
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of groups of descriptors")}));
 
-        var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
+        let descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
 
         defaultLayout.showChildView('content', descriptorGroupListView);
         defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
@@ -62,12 +62,12 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getDescriptorTypeListForGroup : function(id) {
-        var collection = new DescriptorTypeCollection([], {group_id: id});
+        let collection = new DescriptorTypeCollection([], {group_id: id});
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var model = new DescriptorGroupModel({id: id});
+        let model = new DescriptorGroupModel({id: id});
         model.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({title: _t("Types of descriptors for the group"), model: model}));
 
@@ -78,7 +78,7 @@ var Router = Marionette.AppRouter.extend({
         });
 
         collection.fetch().then(function () {
-            var descriptorTypeListView = new DescriptorTypeListView({collection : collection});
+            let descriptorTypeListView = new DescriptorTypeListView({collection : collection});
 
             defaultLayout.showChildView('content', descriptorTypeListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorTypeListView}));
@@ -86,10 +86,10 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getDescriptorTypeForGroup : function(gid, tid) {
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
+        let model = new DescriptorTypeModel({id: tid}, {group_id: gid});
 
         model.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({title: _t("Details for the type of descriptor"), model: model}));
@@ -98,17 +98,17 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getDescriptorValueListForType : function(gid, tid) {
-        var collection = new DescriptorValueCollection([], {group_id: gid, type_id: tid});
+        let collection = new DescriptorValueCollection([], {group_id: gid, type_id: tid});
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
+        let model = new DescriptorTypeModel({id: tid}, {group_id: gid});
         model.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({title: _t("Values for the type of descriptor"), model: model}));
 
             collection.fetch().then(function () {
-                var valueListView = null;
+                let valueListView = null;
 
                 if (model.get('format').type === "enum_single") {
                     valueListView = new DescriptorValueListView({

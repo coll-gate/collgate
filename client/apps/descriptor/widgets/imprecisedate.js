@@ -8,10 +8,10 @@
  * @details
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('./descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var ImpreciseDateType = function () {
+let ImpreciseDateType = function () {
     DescriptorFormatType.call(this);
 
     this.name = "imprecise_date";
@@ -24,20 +24,20 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-calendar");
+            let input = this._createStdInput(parent, "glyphicon-calendar");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
-            var group = $('<div class="input-group"></div>');
-            var input = $('<input class="form-control" width="100%">').css({
+            let group = $('<div class="input-group"></div>');
+            let input = $('<input class="form-control" width="100%">').css({
                     height: '0px',
                     visibility: 'hidden',
                     padding: '0px',
                     border: 'none'}); // element to hide
-            var display_input = $('<input class="form-control" width="100%" pattern="[0-9\/\s]+">');
-            var glyph = $('<span class="input-group-addon"><span class="fa fa-calendar"></span></span>').css('cursor', 'pointer');
+            let display_input = $('<input class="form-control" width="100%" pattern="[0-9\/\s]+">');
+            let glyph = $('<span class="input-group-addon"><span class="fa fa-calendar"></span></span>').css('cursor', 'pointer');
 
             group.append(display_input);
             group.append(input);
@@ -46,10 +46,10 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
             parent.append(group);
 
             /// Partial datetime ///
-            var accuracy = null; // 0: nothing, 1: year, 2: year-month, 3: year-month-day
-            var current_date = null;
+            let accuracy = null; // 0: nothing, 1: year, 2: year-month, 3: year-month-day
+            let current_date = null;
 
-            var el = input.datetimepicker({
+            let el = input.datetimepicker({
                 locale: session.language,
                 showClose: true,
                 format: "L",
@@ -67,7 +67,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 // }
             });
 
-            var lastFocusedElement = null;
+            let lastFocusedElement = null;
 
             display_input.mousedown(function(e) {
                 // To prevent case when element already had focus
@@ -100,7 +100,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
 
             display_input.on('change', function (e) {
                 // define date accuracy
-                var temp = (display_input.val().match(/[\/\-.]/g) || []).length;
+                let temp = (display_input.val().match(/[\/\-.]/g) || []).length;
                 if (!display_input.val()) {
                     accuracy = 0;
                     current_date = null;
@@ -144,8 +144,8 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 }
             });
 
-            var ok_button = null;
-            var widget_picker = null;
+            let ok_button = null;
+            let widget_picker = null;
 
             el.on("dp.show", function (e) {
                 el.data('DateTimePicker').format("L");
@@ -153,7 +153,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
 
                 // fix position when parent has overflow-y defined
                 // https://github.com/Eonasdan/bootstrap-datetimepicker/issues/790
-                var dateTimePicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+                let dateTimePicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
                     position = dateTimePicker.offset(),
                     parent = dateTimePicker.parent(),
                     parentPos = parent.offset(),
@@ -173,7 +173,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
 
                 // if dateTimePicker is wider than the thing it is attached to then move it so the centers line up
                 if (parentPos.left + parentWid < position.left + width) {
-                    var newLeft = parentPos.left;
+                    let newLeft = parentPos.left;
                     newLeft += parentWid / 2;
                     newLeft -= width / 2;
                     dateTimePicker.css({left: newLeft});
@@ -181,7 +181,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
 
                 widget_picker = dateTimePicker;
 
-                var button = $('.OK').html(_t("Undefined")).css('display', 'none');
+                let button = $('.OK').html(_t("Undefined")).css('display', 'none');
                 button.on('click', function (e) {
                     if (accuracy === 1) {
                         el.data('DateTimePicker').format("YYYY");
@@ -199,7 +199,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 ok_button = button;
 
                 // manage (undefined/ok) button visibility 1st part
-                var picker_view = dateTimePicker.find('.picker-switch');
+                let picker_view = dateTimePicker.find('.picker-switch');
                 picker_view.on('click', function () {
                     if (dateTimePicker.find('.datepicker-days').css('display') === 'block') {
                         accuracy = 1; // fix accuracy of the date
@@ -268,7 +268,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
         }
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
-        var date = null;
+        let date = null;
 
         if (this.readOnly) {
             if (definesValues) {
@@ -322,11 +322,11 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
     values: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                var value = this.el.val();
+                let value = this.el.val();
                 return value !== "" ? value : null;
             } else {
-                var date = this.el.data('DateTimePicker').date();
-                var format = this.el.data('DateTimePicker').format();
+                let date = this.el.data('DateTimePicker').date();
+                let format = this.el.data('DateTimePicker').format();
                 if (date != null) {
                     switch (format) {
                         case "YYYY":
@@ -376,15 +376,15 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function (e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }

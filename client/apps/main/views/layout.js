@@ -8,9 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var Layout = Marionette.View.extend({
+let Layout = Marionette.View.extend({
     attributes: {
         style: "height: 100%;"
     },
@@ -27,9 +27,9 @@ var Layout = Marionette.View.extend({
             this.triggerMethod('select:tab', region, child);
         },
         'dom:refresh': function(child) {
-            var tab = this.$el.find('div.tab-pane.active').attr('name');
-            var view = this.getChildView(tab);
-            var region = this.getRegion(tab);
+            let tab = this.$el.find('div.tab-pane.active').attr('name');
+            let view = this.getChildView(tab);
+            let region = this.getRegion(tab);
 
             // update child of current tab
             if (view && view === child) {
@@ -45,7 +45,7 @@ var Layout = Marionette.View.extend({
     },
 
     constructor: function() {
-        var prototype = this.constructor.prototype;
+        let prototype = this.constructor.prototype;
 
         this.events = {};
         this.defaultOptions = {};
@@ -88,11 +88,11 @@ var Layout = Marionette.View.extend({
         this.activeTab = this.ui.initial_pane.attr('name');
 
         // initial tab is defined by the initializer of the view, and is the last part of the url path
-        var tabExits = this.ui.tabs_buttons.filter('[aria-controls="' + this.initialTab + '"]').length > 0;
+        let tabExits = this.ui.tabs_buttons.filter('[aria-controls="' + this.initialTab + '"]').length > 0;
         if (!tabExits) {
             if (!this.model.isNew()) {
                 // if the tab is invalid, ignore it and update the url without the invalid tab name
-                var href = Backbone.history.getFragment();
+                let href = Backbone.history.getFragment();
 
                 if (href.endsWith(this.initialTab + '/')) {
                     href = href.replace(this.initialTab + '/', '');
@@ -124,7 +124,7 @@ var Layout = Marionette.View.extend({
     onDomRefresh: function() {
         this.updateTabState();
 
-        var region = this.getRegion(this.activeTab);
+        let region = this.getRegion(this.activeTab);
         if (region) {
             if (region.currentView && region.currentView.onShowTab) {
                 region.currentView.onShowTab(this);
@@ -140,7 +140,7 @@ var Layout = Marionette.View.extend({
     setActiveTab: function(tab) {
         this.activeTab = this.ui.initial_pane.attr('name');
 
-        var tabExits = this.ui.tabs_buttons.filter('[aria-controls="' + tab + '"]').length > 0;
+        let tabExits = this.ui.tabs_buttons.filter('[aria-controls="' + tab + '"]').length > 0;
         if (this.activeTab !== tab && tabExits) {
             // un-active the default
             this.ui.tabs_buttons.filter('[aria-controls="' + this.activeTab + '"]').parent().removeClass('active');
@@ -150,10 +150,10 @@ var Layout = Marionette.View.extend({
             this.ui.tabs_buttons.filter('[aria-controls="' + tab + '"]').parent().addClass('active');
             this.ui.tabs_contents.filter('[name="' + tab + '"]').addClass('active');
 
-            var previousTab = this.activeTab;
+            let previousTab = this.activeTab;
             this.activeTab = tab;
 
-            var region = this.getRegion(tab);
+            let region = this.getRegion(tab);
             if (region) {
                 if (region.currentView && region.currentView.onShowTab) {
                     region.currentView.onShowTab(this);
@@ -168,7 +168,7 @@ var Layout = Marionette.View.extend({
 
                 // update the url for the history with the new active tab
                 if (!this.model.isNew()) {
-                    var href = Backbone.history.getFragment();
+                    let href = Backbone.history.getFragment();
 
                     if (href.endsWith(previousTab + '/')) {
                         href = href.replace(previousTab + '/', '');
@@ -182,10 +182,10 @@ var Layout = Marionette.View.extend({
 
     onShowBsTab: function(e) {
         // e.target current tab, e.relatedTarget previous tab
-        var tab = e.target.getAttribute('aria-controls');
+        let tab = e.target.getAttribute('aria-controls');
         this.activeTab = tab;
 
-        var region = this.getRegion(tab);
+        let region = this.getRegion(tab);
         if (region) {
             if (region.currentView && region.currentView.onShowTab) {
                 region.currentView.onShowTab(this);
@@ -200,8 +200,8 @@ var Layout = Marionette.View.extend({
 
             // update the url for the history with the new active tab
             if (!this.model.isNew()) {
-                var href = Backbone.history.getFragment();
-                var previousTab = e.relatedTarget.getAttribute('aria-controls');
+                let href = Backbone.history.getFragment();
+                let previousTab = e.relatedTarget.getAttribute('aria-controls');
 
                 if (href.endsWith(previousTab + '/')) {
                     href = href.replace(previousTab + '/', '');
@@ -213,9 +213,9 @@ var Layout = Marionette.View.extend({
     },
 
     onHideBsTab: function(e) {
-        var tab = e.target.getAttribute('aria-controls');
+        let tab = e.target.getAttribute('aria-controls');
 
-        var view = this.getChildView(tab);
+        let view = this.getChildView(tab);
         if (view && view.onHideTab) {
             view.onHideTab(this);
         }
@@ -229,7 +229,7 @@ var Layout = Marionette.View.extend({
 
     onResize: function() {
         if (this.activeTab) {
-            var view = this.getChildView(this.activeTab);
+            let view = this.getChildView(this.activeTab);
             if (view && view.onResize) {
                 view.onResize();
             }

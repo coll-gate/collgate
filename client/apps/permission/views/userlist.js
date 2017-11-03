@@ -8,10 +8,10 @@
  * @details 
  */
 
-var PermissionUserView = require('../views/user');
-var AdvancedTable = require('../../main/views/advancedtable');
+let PermissionUserView = require('../views/user');
+let AdvancedTable = require('../../main/views/advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/userlist.html"),
     className: "permission-user-list advanced-table-container",
     childView: PermissionUserView,

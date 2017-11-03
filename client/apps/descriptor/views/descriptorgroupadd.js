@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'group-add',
     template: require('../templates/descriptorgroupadd.html'),
@@ -31,7 +31,7 @@ var View = Marionette.View.extend({
     },
 
     addGroup: function () {
-        var v = this.ui.add_group_name.val().trim();
+        let v = this.ui.add_group_name.val().trim();
 
         if (!this.ui.add_group_name.hasClass('invalid') && v.length) {
             this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
@@ -40,8 +40,8 @@ var View = Marionette.View.extend({
     },
 
     validateGroupName: function() {
-        var v = this.ui.add_group_name.val();
-        var re = /^[a-zA-Z0-9_\-]+$/i;
+        let v = this.ui.add_group_name.val();
+        let re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             this.ui.add_group_name.validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -68,8 +68,8 @@ var View = Marionette.View.extend({
                 el: this.ui.add_group_name,
                 success: function(data) {
                     if (data.items.length > 0) {
-                        for (var i in data.items) {
-                            var t = data.items[i];
+                        for (let i in data.items) {
+                            let t = data.items[i];
 
                             if (t.name.toUpperCase() === this.el.val().toUpperCase()) {
                                 $(this.el).validateField('failed', _t('Group name already in usage'));

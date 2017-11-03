@@ -8,9 +8,9 @@
  * @details
  */
 
-var MenuEntryBase = require('./menuentrybase');
+let MenuEntryBase = require('./menuentrybase');
 
-var MenuEntry = function(name, label, url, icon, order, auth) {
+let MenuEntry = function(name, label, url, icon, order, auth) {
     MenuEntryBase.call(this, name, order, auth);
 
     this.label = label || null;
@@ -31,21 +31,21 @@ MenuEntry.prototype.hasLabel = function () {
  * @param parent
  */
 MenuEntry.prototype.render = function(parent) {
-    var entry = $('<li role="presentation" name="' + this.name + '"></li>');
+    let entry = $('<li role="presentation" name="' + this.name + '"></li>');
     entry.addClass(this.authTypeClassName());
 
-    var aEl = $('<a role="menuitem" class="url" tabindex="-1" href="' + this.url + '"></a>');
+    let aEl = $('<a role="menuitem" class="url" tabindex="-1" href="' + this.url + '"></a>');
 
     if (this.icon) {
         if (this.icon.startsWith('fa-')) {
-            var iconEl = $('<i class="fa ' + this.icon + '"></i>');
+            let iconEl = $('<i class="fa ' + this.icon + '"></i>');
             aEl.append(iconEl);
         } else {
-            var iconEl = $('<i class="glyphicon ' + this.icon + '"></i>');
+            let iconEl = $('<i class="glyphicon ' + this.icon + '"></i>');
             aEl.append(iconEl);
         }
     } else {
-        var noIconEl = $('<i class="fa fa-user" style="visibility: hidden;"></i>');
+        let noIconEl = $('<i class="fa fa-user" style="visibility: hidden;"></i>');
         aEl.append(noIconEl);
     }
 
@@ -64,27 +64,27 @@ MenuEntry.prototype.bind = function() {
     // href starting with ~ are actions that directly call a controller,
     // but doesn't modify the URL neither the history
     if (this.url.startsWith("~") && this.url.length > 1) {
-        var aEl = this.$el.children("a.url");
+        let aEl = this.$el.children("a.url");
         aEl.attr("href", "#");
 
-        var href = this.url;
+        let href = this.url;
 
         aEl.on("click", function(e) {
             // close the menu and prevent default to open the url
             $(".dropdown").removeClass("open");
             $(".dropdown-toggle").attr("aria-expanded", false);
 
-            var parts = href.slice(1).split('/');
+            let parts = href.slice(1).split('/');
             if (!application[parts[0]]) {
                 return false;
             };
 
-            var ctrl = application[parts[0]].controllers[parts[1]];
+            let ctrl = application[parts[0]].controllers[parts[1]];
             if (!ctrl) {
                 return false;
             }
 
-            var method = parts[2];
+            let method = parts[2];
             if (!method || !ctrl[method]) {
                 return false;
             }
@@ -98,9 +98,9 @@ MenuEntry.prototype.bind = function() {
         });
     } else if (this.url.startsWith("#") && this.url.length > 1) {
         // href starting with # are route that must be called using the navigation mechanism
-        var aEl = this.$el.children("a.url");
+        let aEl = this.$el.children("a.url");
 
-        var href = this.url.replace('#', window.application.url('app'));
+        let href = this.url.replace('#', window.application.url('app'));
         aEl.attr("href", href);
 
         aEl.on("click", function (e) {
@@ -108,7 +108,7 @@ MenuEntry.prototype.bind = function() {
             $(".dropdown").removeClass("open");
             $(".dropdown-toggle").attr("aria-expanded", false);
 
-            var href = $(this).attr("href").replace('/coll-gate/', '');
+            let href = $(this).attr("href").replace('/coll-gate/', '');
             Backbone.history.navigate(href, {trigger: true});
 
             return false;

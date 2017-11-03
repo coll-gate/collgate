@@ -8,12 +8,12 @@
  * @details 
  */
 
-var EnumSingle = require('./enumsingle');
-var Marionette = require('backbone.marionette');
+let EnumSingle = require('./enumsingle');
+let Marionette = require('backbone.marionette');
 
-var Popover = require('../../main/behaviors/popover');
+let Popover = require('../../main/behaviors/popover');
 
-var EnumPair = function() {
+let EnumPair = function() {
     EnumSingle.call(this);
 
     this.name = "enum_pair";

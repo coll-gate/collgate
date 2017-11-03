@@ -8,9 +8,9 @@
  * @details 
  */
 
-var FormatTypeModel = require('../models/formattype');
+let FormatTypeModel = require('../models/formattype');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: window.application.url(['descriptor', 'format', 'type']),
     model: FormatTypeModel,
 
@@ -20,8 +20,8 @@ var Collection = Backbone.Collection.extend({
         this.models = [];
         this.lookup = {};
 
-        for (var i = 0; i < this.items.length; ++i) {
-            var model = this.items[i];
+        for (let i = 0; i < this.items.length; ++i) {
+            let model = this.items[i];
             this.lookup[model.id] = model.label;
             this.models.push(new FormatTypeModel({
                 id: model.id,
@@ -38,19 +38,19 @@ var Collection = Backbone.Collection.extend({
     },
 
     toJSON: function() {
-        var results = [];
-        var groups = {};
+        let results = [];
+        let groups = {};
 
         // init groups
-        for (var i = 0; i < this.groups.length; ++i) {
-            var group = this.groups[i];
+        for (let i = 0; i < this.groups.length; ++i) {
+            let group = this.groups[i];
             groups[group.group] = {id: -1, value: "", label: group.label, options: []};
             results.push(groups[group.group]);
         }
 
-        for (var i = 0; i < this.models.length; ++i) {
-            var model = this.models[i];
-            var group = groups[model.get('group')];
+        for (let i = 0; i < this.models.length; ++i) {
+            let model = this.models[i];
+            let group = groups[model.get('group')];
 
             if (model.id) {
                 group.options.push({

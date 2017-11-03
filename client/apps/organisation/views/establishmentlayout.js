@@ -8,12 +8,12 @@
  * @details 
  */
 
-var LayoutView = require('../../main/views/layout');
-var EstablishmentDetailsView = require('../views/establishmentdetails');
-var DescriptorEditView = require('../views/descriptoredit');
-var OrganisationModel = require('../models/organisation');
+let LayoutView = require('../../main/views/layout');
+let EstablishmentDetailsView = require('../views/establishmentdetails');
+let DescriptorEditView = require('../views/descriptoredit');
+let OrganisationModel = require('../models/organisation');
 
-var Layout = LayoutView.extend({
+let Layout = LayoutView.extend({
     template: require("../templates/establishmentlayout.html"),
 
     ui: {
@@ -50,7 +50,7 @@ var Layout = LayoutView.extend({
         if (value == null) {
             this.getRegion('descriptors').empty();
         } else {
-            var establishmentLayout = this;
+            let establishmentLayout = this;
 
             // get the layout before creating the view
             $.ajax({
@@ -58,8 +58,8 @@ var Layout = LayoutView.extend({
                 url: window.application.url(['descriptor', 'meta-model', value, 'layout']),
                 dataType: 'json'
             }).done(function (data) {
-                var DescriptorView = require('../views/descriptor');
-                var descriptorView = new DescriptorView({
+                let DescriptorView = require('../views/descriptor');
+                let descriptorView = new DescriptorView({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
@@ -77,12 +77,12 @@ var Layout = LayoutView.extend({
     },
 
     onRender: function() {
-        var establishmentLayout = this;
+        let establishmentLayout = this;
 
         // details view
         if (!this.model.isNew()) {
             // organisation parent
-            var organisation = new OrganisationModel({id: this.model.get('organisation')});
+            let organisation = new OrganisationModel({id: this.model.get('organisation')});
             organisation.fetch().then(function () {
                 establishmentLayout.showChildView('details', new EstablishmentDetailsView({
                     model: establishmentLayout.model,
@@ -91,20 +91,20 @@ var Layout = LayoutView.extend({
             });
 
             /*// conservatories tab
-            var ConservatoriesCollection = require('../collections/conservatories');
-            var conservatories = new ConservatoriesCollection([], {establishment_id: this.model.get('id')});
+            let ConservatoriesCollection = require('../collections/conservatories');
+            let conservatories = new ConservatoriesCollection([], {establishment_id: this.model.get('id')});
 
             conservatories.fetch().then(function() {
-                var EstablishmentListView = require('../views/establishmentlist');
-                var establishmentListView  = new EstablishmentListView({collection: establishments, model: organisationLayout.model});
+                let EstablishmentListView = require('../views/establishmentlist');
+                let establishmentListView  = new EstablishmentListView({collection: establishments, model: organisationLayout.model});
 
-                var contentBottomFooterLayout = new ContentBottomFooterLayout();
+                let contentBottomFooterLayout = new ContentBottomFooterLayout();
                 organisationLayout.showChildView('establishments', contentBottomFooterLayout);
 
                 contentBottomFooterLayout.showChildView('content', establishmentListView);
                 contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: establishmentListView}));
 
-                var EstablishmentListFilterView = require('./establishmentlistfilter');
+                let EstablishmentListFilterView = require('./establishmentlistfilter');
                 contentBottomFooterLayout.showChildView('footer', new EstablishmentListFilterView({
                     organisation: organisationLayout.model,
                     collection: establishments
@@ -118,7 +118,7 @@ var Layout = LayoutView.extend({
             this.ui.contacts_tab.parent().removeClass('disabled');
         } else {
             // organisation parent
-            var organisation = new OrganisationModel({id: this.model.get('organisation')});
+            let organisation = new OrganisationModel({id: this.model.get('organisation')});
             organisation.fetch().then(function () {
                 establishmentLayout.showChildView('details', new EstablishmentDetailsView({
                     model: establishmentLayout.model,
@@ -133,7 +133,7 @@ var Layout = LayoutView.extend({
                 url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
                 dataType: 'json'
             }).done(function(data) {
-                var descriptorView = new DescriptorEditView({
+                let descriptorView = new DescriptorEditView({
                     model: establishmentLayout.model, descriptorMetaModelLayout: data});
 
                 establishmentLayout.showChildView('descriptors', descriptorView);

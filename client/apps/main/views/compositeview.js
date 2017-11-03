@@ -8,11 +8,11 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.CompositeView.extend({
+let View = Marionette.CompositeView.extend({
     constructor: function() {
-        var prototype = this.constructor.prototype;
+        let prototype = this.constructor.prototype;
 
         this.events = {};
         this.defaultOptions = {};

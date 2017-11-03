@@ -8,10 +8,10 @@
  * @details
  */
 
-var LanguageView = require('../views/language');
-var AdvancedTable = require('./advancedtable');
+let LanguageView = require('../views/language');
+let AdvancedTable = require('./advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/languagelist.html"),
     className: "language-list advanced-table-container",
     childView: LanguageView,

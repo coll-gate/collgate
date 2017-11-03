@@ -8,9 +8,9 @@
  * @details 
  */
 
-var ItemView = require('../../main/views/itemview');
+let ItemView = require('../../main/views/itemview');
 
-var View = ItemView.extend({
+let View = ItemView.extend({
     tagName: 'div',
     template: require('../templates/describableedit.html'),
     templateContext: function () {
@@ -41,21 +41,21 @@ var View = ItemView.extend({
     },
 
     onRender: function() {
-        var view = this;
-        var model = this.model;
-        var exists = !model.isNew();
+        let view = this;
+        let model = this.model;
+        let exists = !model.isNew();
 
         $.each(this.ui.descriptor, function(index) {
-            var el = $(this);
+            let el = $(this);
 
-            var pi = el.attr('panel-index');
-            var i = el.attr('index');
-            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-            var descriptorType = descriptorModelType.descriptor_type;
-            var format = descriptorType.format;
+            let pi = el.attr('panel-index');
+            let i = el.attr('index');
+            let descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+            let descriptorType = descriptorModelType.descriptor_type;
+            let format = descriptorType.format;
 
-            var definesValues = false;
-            var defaultValues = null;
+            let definesValues = false;
+            let defaultValues = null;
 
             // default value or current descriptor value
             if (exists) {
@@ -73,7 +73,7 @@ var View = ItemView.extend({
                 }
             }
 
-            var widget = application.descriptor.widgets.newElement(format.type);
+            let widget = application.descriptor.widgets.newElement(format.type);
             if (widget) {
                 widget.create(format, el.children('td.descriptor-value'), false, descriptorType.group, descriptorType.id);
                 widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
@@ -89,13 +89,13 @@ var View = ItemView.extend({
     },
 
     onDomRefresh: function() {
-        var descriptors = {};
+        let descriptors = {};
 
         // firstly make a list for each descriptor of which descriptors need them for a condition
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                var condition = descriptorModelType.condition;
+        for (let pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (let i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                let descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                let condition = descriptorModelType.condition;
 
                 // if given set initials values for the widget
                 if (this.model.isNew()) {
@@ -104,8 +104,8 @@ var View = ItemView.extend({
 
                 if (condition.defined) {
                     /* @todo optimize with model not dom */
-                    var target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+                    let target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
+                    let targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
 
                     if (targetDescriptorModelType.widget && descriptorModelType.widget) {
                         if (targetDescriptorModelType.id in descriptors) {
@@ -120,7 +120,7 @@ var View = ItemView.extend({
                         }
 
                         // initial state of the condition
-                        var display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
+                        let display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
 
                         if (!display) {
                             // hide at tr level
@@ -132,17 +132,17 @@ var View = ItemView.extend({
         }
 
         // once lists are done attach them to their widgets and bind the change event
-        for (var k in descriptors) {
-            var descriptor = descriptors[k];
+        for (let k in descriptors) {
+            let descriptor = descriptors[k];
             descriptor.widget.bindConditionListener(descriptor.listeners, descriptor.conditionType, descriptor.conditionValue);
         }
     },
 
     onBeforeDetach: function() {
         // destroy any widgets
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (let pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (let i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                let descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.destroy();
                 }
@@ -151,15 +151,15 @@ var View = ItemView.extend({
     },
 
     findDescriptorModelTypeForConditionTarget: function(target) {
-        var pi = target.attr('panel-index');
-        var i = target.attr('index');
-        var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        let pi = target.attr('panel-index');
+        let i = target.attr('index');
+        let targetDescriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
 
         // find el from target
-        var descriptorModelTypes = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types;
-        for (var i = 0; i < descriptorModelTypes.length; ++i) {
+        let descriptorModelTypes = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types;
+        for (let i = 0; i < descriptorModelTypes.length; ++i) {
             if (descriptorModelTypes[i].condition.target === targetDescriptorModelType.id) {
-                var descriptorModelType = descriptorModelTypes[i];
+                let descriptorModelType = descriptorModelTypes[i];
 
                 return {
                     targetDescriptorModelType: targetDescriptorModelType,
@@ -173,16 +173,16 @@ var View = ItemView.extend({
     },
 
     prepareDescriptors: function () {
-        var descriptors = {};
+        let descriptors = {};
 
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (let pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (let i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                let descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
 
-                var mandatory = descriptorModelType.mandatory;
+                let mandatory = descriptorModelType.mandatory;
 
-                var currValue = this.model.get('descriptors')[descriptorModelType.name];
-                var values = null;
+                let currValue = this.model.get('descriptors')[descriptorModelType.name];
+                let values = null;
 
                 // display of the tr
                 if (descriptorModelType.widget && descriptorModelType.widget.parent.parent().css('display') !== "none") {
@@ -194,7 +194,7 @@ var View = ItemView.extend({
                     return null;
                 }
 
-                var write = true;
+                let write = true;
                 if (descriptorModelType.set_once && currValue != null) {
                     write = false;
                 }
@@ -214,9 +214,9 @@ var View = ItemView.extend({
 
     cancel: function() {
         // destroy any widgets
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (let pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (let i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                let descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.cancel();
                 }
@@ -233,9 +233,9 @@ var View = ItemView.extend({
 
     onApply: function() {
         // non optimized default behavior, load after save
-        var model = this.model;
+        let model = this.model;
 
-        var descriptors = this.prepareDescriptors();
+        let descriptors = this.prepareDescriptors();
         if (descriptors === null) {
             return;
         }

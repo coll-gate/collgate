@@ -8,9 +8,9 @@
  * @details 
  */
 
-var DescribableEdit = require('../../descriptor/views/describableedit');
+let DescribableEdit = require('../../descriptor/views/describableedit');
 
-var View = DescribableEdit.extend({
+let View = DescribableEdit.extend({
     onCancel: function() {
         // cancel global widget modifications
         this.cancel();
@@ -22,14 +22,14 @@ var View = DescribableEdit.extend({
         }
 
         // does not reload models, just redo the views
-        var view = this;
-        var name = this.model.get('name');
+        let view = this;
+        let name = this.model.get('name');
 
         // update the layout content
-        var batchLayout = application.main.viewContent().getChildView('content');
+        let batchLayout = application.main.viewContent().getChildView('content');
 
-        var BatchDescriptorView = require('../views/batchdescriptor');
-        var batchDescriptorView = new BatchDescriptorView({
+        let BatchDescriptorView = require('../views/batchdescriptor');
+        let batchDescriptorView = new BatchDescriptorView({
             model: this.model,
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
@@ -38,21 +38,21 @@ var View = DescribableEdit.extend({
 
     onApply: function () {
         // does not reload models, save and redo the views
-        var view = this;
-        var model = this.model;
+        let view = this;
+        let model = this.model;
 
-        var descriptors = this.prepareDescriptors();
+        let descriptors = this.prepareDescriptors();
         if (descriptors === null) {
             return;
         }
 
         this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
             //Backbone.history.navigate('app/accession/batch/' + model.get('id') + '/', {trigger: true, replace: true});
-            var batchLayout = application.main.viewContent().getChildView('content');
+            let batchLayout = application.main.viewContent().getChildView('content');
 
             // update the layout content
-            var BatchDescriptorView = require('../views/batchdescriptor');
-            var batchDescriptorView = new BatchDescriptorView({
+            let BatchDescriptorView = require('../views/batchdescriptor');
+            let batchDescriptorView = new BatchDescriptorView({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
@@ -61,23 +61,23 @@ var View = DescribableEdit.extend({
     },
 
     onShowTab: function() {
-        var view = this;
+        let view = this;
 
         // contextual panel
-        var contextLayout = application.getView().getChildView('right');
+        let contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
-            var DefaultLayout = require('../../main/views/defaultlayout');
+            let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
             application.getView().showChildView('right', contextLayout);
         }
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
 
-        var actions = ['apply', 'cancel'];
+        let actions = ['apply', 'cancel'];
 
-        var BatchDescriptorContextView = require('../views/batchdescriptorcontext');
-        var contextView = new BatchDescriptorContextView({actions: actions});
+        let BatchDescriptorContextView = require('../views/batchdescriptorcontext');
+        let contextView = new BatchDescriptorContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:cancel", function() {

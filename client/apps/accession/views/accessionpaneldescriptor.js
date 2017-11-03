@@ -8,28 +8,28 @@
  * @details
  */
 
-var DescribableDetails = require('../../descriptor/views/describabledetails');
-var AccessionPanelDescriptorEditView = require('./accessionpaneldescriptoredit');
+let DescribableDetails = require('../../descriptor/views/describabledetails');
+let AccessionPanelDescriptorEditView = require('./accessionpaneldescriptoredit');
 
-var View = DescribableDetails.extend({
+let View = DescribableDetails.extend({
 
     onShowTab: function () {
-        var view = this;
+        let view = this;
 
-        var contextLayout = application.getView().getChildView('right');
+        let contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
-            var DefaultLayout = require('../../main/views/defaultlayout');
+            let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
             application.getView().showChildView('right', contextLayout);
         }
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
 
-        var actions = ['modify'];
+        let actions = ['modify'];
 
-        var AccessionPanelDescriptorContextView = require('./accessionpaneldescriptorcontext');
-        var contextView = new AccessionPanelDescriptorContextView({actions: actions});
+        let AccessionPanelDescriptorContextView = require('./accessionpaneldescriptorcontext');
+        let contextView = new AccessionPanelDescriptorContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:modify", function () {
@@ -43,8 +43,8 @@ var View = DescribableDetails.extend({
 
     onReplace: function () {
         // this will update the model and so on the view
-        var AccessionPanelDescriptorCreateView = require('./accessionpaneldescriptorcreate');
-        var accessionPanelDescriptorCreateView = new AccessionPanelDescriptorCreateView({model: this.model});
+        let AccessionPanelDescriptorCreateView = require('./accessionpaneldescriptorcreate');
+        let accessionPanelDescriptorCreateView = new AccessionPanelDescriptorCreateView({model: this.model});
 
         accessionPanelDescriptorCreateView.onDefine();
     },
@@ -57,9 +57,9 @@ var View = DescribableDetails.extend({
         // does not reload models, just redo the views
 
         // update the layout content
-        var accessionPanelLayout = application.main.viewContent().getChildView('content');
+        let accessionPanelLayout = application.main.viewContent().getChildView('content');
 
-        var view = new AccessionPanelDescriptorEditView({
+        let view = new AccessionPanelDescriptorEditView({
             model: this.model,
             descriptorMetaModelLayout: this.descriptorMetaModelLayout
         });

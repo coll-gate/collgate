@@ -8,10 +8,10 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var ConfigModel = require('../models/config');
+let Marionette = require('backbone.marionette');
+let ConfigModel = require('../models/config');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/config.html'),
     className: "object config",

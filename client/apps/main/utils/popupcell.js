@@ -15,16 +15,16 @@
         options || (options = {});
 
         this.each(function() {
-            var el = $(this);
+            let el = $(this);
 
             if (method === 'init') {
                 // batch over children having span.className
                 if (options.children) {
-                    var spans = el.find('span.' + options.className);
-                    var values = [];
+                    let spans = el.find('span.' + options.className);
+                    let values = [];
 
                     spans.each(function(i, element) {
-                        var span = $(this);
+                        let span = $(this);
 
                         values.push(span.attr('value'));
 
@@ -41,8 +41,8 @@
                         }, values).done(function (data) {
                             // init each popover span
                             spans.each(function(i, element) {
-                                var span = $(this);
-                                var value = parseInt(span.attr('value'));
+                                let span = $(this);
+                                let value = parseInt(span.attr('value'));
 
                                 span.attr('data-content', data[value].value.label);
                                 span.popover({'trigger': 'hover'});
@@ -55,8 +55,8 @@
                         });
                     });
                 } else {
-                    var span = el.children('span.' + options.className);
-                    var created = false;
+                    let span = el.children('span.' + options.className);
+                    let created = false;
 
                     if (!span.length) {
                         span = $('<span class="popover-dismiss" data-toggle="popover" data-popupcell="managed" data-placement="bottom" data-container="body" data-content="" value="">' + (options.label || "") + '</span>');
@@ -79,8 +79,8 @@
                     }
 
                     span.one('mouseover', function (e) {
-                        var el = $(this);
-                        var value = parseInt(el.attr('value'));
+                        let el = $(this);
+                        let value = parseInt(el.attr('value'));
 
                         if (Number.isInteger(value)) {
                             application.main.cache.lookup({
@@ -99,7 +99,7 @@
                     });
                 }
             } else if (method === 'update') {
-                var value = parseInt(el.attr('value'));
+                let value = parseInt(el.attr('value'));
 
                 if (Number.isInteger(value)) {
                     application.main.cache.lookup({

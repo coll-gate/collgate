@@ -8,10 +8,10 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'descriptor-meta-model-add',
     template: require('../templates/descriptormetamodeladd.html'),
@@ -32,7 +32,7 @@ var View = Marionette.View.extend({
     },
 
     addDescriptorMetaModel: function () {
-        var DescriptorModelCreate = Dialog.extend({
+        let DescriptorModelCreate = Dialog.extend({
            template: require('../templates/descriptormetamodelcreate.html'),
 
             attributes: {
@@ -69,12 +69,12 @@ var View = Marionette.View.extend({
                     return;
                 }
 
-                var view = this;
-                var collection = this.getOption('collection');
-                var name = this.getOption('name');
-                var label = this.ui.label.val();
-                var target = this.ui.descriptor_meta_model_target.val();
-                var description = this.ui.description.val();
+                let view = this;
+                let collection = this.getOption('collection');
+                let name = this.getOption('name');
+                let label = this.ui.label.val();
+                let target = this.ui.descriptor_meta_model_target.val();
+                let description = this.ui.description.val();
 
                 if (target != null) {
                     collection.create({
@@ -95,7 +95,7 @@ var View = Marionette.View.extend({
             },
 
             validateLabel: function() {
-                var v = this.ui.label.val();
+                let v = this.ui.label.val();
 
                 if (v.length < 3) {
                     $(this.ui.label).validateField('failed', _t('characters_min', {count: 3}));
@@ -113,7 +113,7 @@ var View = Marionette.View.extend({
         });
 
         if (!this.ui.name.hasClass('invalid') && this.validateName()) {
-            var descriptorModelCreate = new DescriptorModelCreate({
+            let descriptorModelCreate = new DescriptorModelCreate({
                 collection: this.collection,
                 name: this.ui.name.val()
             });
@@ -124,8 +124,8 @@ var View = Marionette.View.extend({
     },
 
     validateName: function() {
-        var v = this.ui.name.val();
-        var re = /^[a-zA-Z0-9_\-]+$/i;
+        let v = this.ui.name.val();
+        let re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             $(this.ui.name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -152,8 +152,8 @@ var View = Marionette.View.extend({
                 el: this.ui.name,
                 success: function(data) {
                     if (data.items.length > 0) {
-                        for (var i in data.items) {
-                            var t = data.items[i];
+                        for (let i in data.items) {
+                            let t = data.items[i];
 
                             if (t.name.toUpperCase() === this.el.val().toUpperCase()) {
                                 $(this.el).validateField('failed', _t('Descriptor meta-model name already in usage'));
