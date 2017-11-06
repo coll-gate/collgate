@@ -631,18 +631,14 @@ def get_classification_entry_children_list_count(request, cls_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(ClassificationEntry)
 
-    # only children @todo like prev
-    filters = [{
-        'type': 'term',
-        'field': 'parent',
-        'value': classification_entry.id,
-        'op': 'eq'
-    }]
+    # if only children
+    if request.GET.get('deeply', False):
+        cq.filter(parent_list__in=[classification_entry.id])
+    else:
+        cq.filter(parent=classification_entry.id)
 
     if request.GET.get('filters'):
-        filters.extend(json.loads(request.GET['filters']))
-
-    cq.filter(filters)
+        cq.filter(json.loads(request.GET['filters']))
 
     count = cq.count()
 

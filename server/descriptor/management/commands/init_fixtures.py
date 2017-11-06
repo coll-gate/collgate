@@ -84,10 +84,13 @@ class Command(BaseCommand):
         from audit import localsettings
         if not localsettings.migration_audit:
             for module in module_manager.modules:
-                # avoid main signal during fixture processing
-                main_unregister_models(module.name)
                 # and audit creation
                 audit_unregister_models(module.name)
+
+        # disable cache model registration
+        for module in module_manager.modules:
+            # avoid main signal during fixture processing
+            main_unregister_models(module.name)
 
         from descriptor.fixtures import manager
         fixture_manager = manager.FixtureManager()

@@ -25,7 +25,28 @@ let Collection = CountableCollection.extend({
         Collection.__super__.initialize.apply(this, arguments);
 
         this.model_id = (options.model_id || null);
-    }
+        this.deeply = (options.deeply || false);
+    },
+
+    fetch: function(options) {
+        options || (options = {data: {}});
+
+        if (this.deeply) {
+            options.data.deeply = this.deeply;
+        }
+
+        return CountableCollection.prototype.fetch.call(this, options);
+    },
+
+    count: function(options) {
+        options || (options = {data: {}});
+
+        if (this.deeply) {
+            options.data.deeply = this.deeply;
+        }
+
+        return CountableCollection.prototype.count.call(this, options);
+    },
 });
 
 module.exports = Collection;
