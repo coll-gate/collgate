@@ -13,23 +13,25 @@ let Marionette = require('backbone.marionette');
 let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-model',
-    template: require('../templates/descriptormodel.html'),
-    // template: require('../templates/entity.html'),
-/*
+    // template: require('../templates/descriptormodel.html'),
+    template: require('../templates/entity.html'),
+
     templateContext: function () {
         return {
             columnsList: this.getOption('columnsList'),
             columnsOptions: this.getOption('columnsOptions')
         }
     },
-*/
+
     ui: {
+        details: 'td.view-descriptor-model-details',
         delete_btn: 'button.action.delete',
         edit_btn: '.action.edit',
         manage_btn: '.action.manage'
     },
 
     events: {
+        'click @ui.details': 'viewDescriptorModelDetails',
         'click @ui.delete_btn': 'deleteDescriptorModel',
         'click @ui.edit_btn': 'viewDescriptorModelDetails',
         'click @ui.manage_btn': 'viewDescriptorModelTypes'

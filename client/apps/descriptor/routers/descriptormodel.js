@@ -27,6 +27,7 @@ let DefaultLayout = require('../../main/views/defaultlayout');
 let LeftOneRightTwoLayout = require('../../main/views/leftonerighttwolayout');
 let TitleView = require('../../main/views/titleview');
 let ScrollingMoreView = require('../../main/views/scrollingmore');
+let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
 let Router = Marionette.AppRouter.extend({
     routes : {
@@ -43,18 +44,28 @@ let Router = Marionette.AppRouter.extend({
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of models of descriptor")}));
 
-        collection.fetch().then(function () {
-            let descriptorModelList = new DescriptorModelListView({collection : collection});
-            defaultLayout.showChildView('content', descriptorModelList);
-            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorModelList}));
+        // collection.fetch().then(function () {
+        //     let descriptorModelList = new DescriptorModelListView({collection : collection});
+        //     defaultLayout.showChildView('content', descriptorModelList);
+        //     defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorModelList}));
+        // });
+
+        // get available columns
+        let columns = application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: 'descriptor.descriptormodel'}
         });
 
-        // let descriptorModelList = new DescriptorModelListView({collection : collection});
-        // defaultLayout.showChildView('content', descriptorModelList);
-        // defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorModelList}));
-        //
-        // descriptorModelList.query();
+        columns.done(function (data) {
+            let descriptorModelList = new DescriptorModelListView({collection: collection, columns: data[0].value});
+            defaultLayout.showChildView('content', descriptorModelList);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorModelList}));
 
+            //defaultLayout.showChildView('content-bottom', new EntityListFilterView({
+//                collection: collection, columns: data[0].value}));
+
+            descriptorModelList.query();
+        });
 
         // @todo lookup for permission
         if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {

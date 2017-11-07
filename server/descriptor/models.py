@@ -1373,6 +1373,45 @@ class DescriptorModel(Entity):
     def make_search_by_name(cls, term):
         return Q(name__istartswith=term)
 
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'name': {
+                'label': _('Name'),
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'descriptor.descriptormodel'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'verbose_name': {
+                'label': _('Verbose name'),
+                'query': False,
+                'format': {
+                    'type': 'string'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'description': {
+                'label': _('Description'),
+                'query': False,
+                'format': {
+                   'type': 'string'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'num_descriptor_model_types': {
+                'label': _('Types'),
+                'field': 'descriptor_model_types',
+                'query': False,
+                'format': {
+                    'type': 'count',
+                    'fields': ['descriptor_model_types']
+                }
+            },
+        }
+
     def audit_create(self, user):
         return {
             'name': self.name,
