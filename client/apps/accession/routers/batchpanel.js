@@ -35,7 +35,7 @@ let Router = Marionette.AppRouter.extend({
         let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: _t("List of panels")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of batch panels")}));
 
         let columns = application.main.cache.lookup({
             type: 'entity_columns',
@@ -72,7 +72,7 @@ let Router = Marionette.AppRouter.extend({
                 return;
             }
 
-            defaultLayout.showChildView('title', new TitleView({title: _t("Panel"), model: panel}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Batch panel"), model: panel}));
 
             let panelLayout = new PanelLayout({model: panel, initialTab: tab.replace('/', '')});
             defaultLayout.showChildView('content', panelLayout);

@@ -26,7 +26,8 @@ let Layout = LayoutView.extend({
         descriptors_tab: 'a[aria-controls=descriptors]',
         parents_tab: 'a[aria-controls=parents]',
         batches_tab: 'a[aria-controls=batches]',
-        actions_tab: 'a[aria-controls=actions]'
+        actions_tab: 'a[aria-controls=actions]',
+        panels_tab: 'a[aria-controls=panels]',
     },
 
     regions: {
@@ -34,7 +35,9 @@ let Layout = LayoutView.extend({
         'descriptors': "div.tab-pane[name=descriptors]",
         'parents': "div.tab-pane[name=parents]",
         'batches': "div.tab-pane[name=batches]",
-        'actions': "div.tab-pane[name=actions]"
+        'actions': "div.tab-pane[name=actions]",
+        'panels': "div.tab-pane[name=panels]"
+
     },
 
     initialize: function (model, options) {
@@ -70,8 +73,19 @@ let Layout = LayoutView.extend({
         this.ui.actions_tab.parent().addClass('disabled');
     },
 
+    disablePanelsTab: function () {
+        this.ui.panels_tab.parent().addClass('disabled');
+    },
+
+    enableTabs: function() {
+        this.ui.parents_tab.parent().removeClass('disabled');
+        this.ui.batches_tab.parent().removeClass('disabled');
+        this.ui.actions_tab.parent().removeClass('disabled');
+        this.ui.panels_tab.parent().removeClass('disabled');
+    },
+
     onDescriptorMetaModelChange: function (model, value) {
-        if (value) {
+        if (value == null) {
             this.getRegion('descriptors').empty();
         } else {
             let batchLayout = this;
@@ -93,10 +107,10 @@ let Layout = LayoutView.extend({
                 });
                 batchLayout.showChildView('descriptors', batchDescriptorView);
 
-                // manually called
-                if (batchLayout.activeTab === 'descriptors') {
-                    batchDescriptorView.onShowTab();
-                }
+                // // manually called
+                // if (batchLayout.activeTab === 'descriptors') {
+                //     batchDescriptorView.onShowTab();
+                // }
             });
         }
     },
@@ -164,6 +178,37 @@ let Layout = LayoutView.extend({
                 contentBottomLayout.showChildView('content', subbatchListView);
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: subbatchListView}));
             });
+
+            // panels tab
+            let PanelCollection = require('../../collections/batchpanel');
+            let batchPanels = new PanelCollection({batch_id: this.model.get('id')});
+
+            // get available columns
+            let columns3 = application.main.cache.lookup({
+                type: 'entity_columns',
+                format: {model: 'accession.batchpanel'}
+            });
+
+            $.when(columns3, batchPanels.fetch()).then(function (data) {
+                if (!batchLayout.isRendered()) {
+                    return;
+                }
+
+                let BatchPanelListView = require('./batchpanellist');
+                let batchPanelListView  = new BatchPanelListView({
+                    collection: batchPanels, model: batchLayout.model, columns: data[0].value});
+
+                let contentBottomLayout = new ContentBottomLayout();
+                batchLayout.showChildView('panels', contentBottomLayout);
+
+                contentBottomLayout.showChildView('content', batchPanelListView);
+                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchPanelListView}));
+
+                batchPanelListView.query();
+            });
+
+            this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+            this.enableTabs();
         } else {
             // details
             let accession = new AccessionModel({id: this.model.get('accession')});

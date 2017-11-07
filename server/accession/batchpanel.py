@@ -21,6 +21,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import BatchPanel, Batch, BatchView
 from .base import RestAccession
+from .batch import RestBatchId
 
 
 class RestBatchPanel(RestAccession):
@@ -49,6 +50,16 @@ class RestBatchPanelBatches(RestBatchPanelId):
 
 
 class RestBatchPanelBatchesCount(RestBatchPanelBatches):
+    regex = r'^count/$'
+    name = "count"
+
+
+class RestBatchPanels(RestBatchId):
+    regex = r'^panels/$'
+    suffix = 'panels'
+
+
+class RestBatchPanelsCount(RestBatchPanels):
     regex = r'^count/$'
     name = "count"
 
@@ -488,6 +499,74 @@ def get_panel_batch_list_count(request, panel_id):
         cq.filter(filters)
 
     cq.inner_join(BatchPanel, batchpanel=int(panel_id))
+
+    results = {
+        'count': cq.count()
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestBatchPanels.def_auth_request(Method.GET, Format.JSON)
+def get_batch_panels(request, bat_id):
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = json.loads(request.GET.get('cursor', 'null'))
+    limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
+    batch = BatchView.objects.get(id=int(bat_id))
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(BatchPanel)
+    cq.filter(id__in=batch.panels)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+
+    panel_items = []
+
+    for panel in cq:
+        a = {
+            'id': panel.pk,
+            'name': panel.name,
+            'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
+            'descriptors': panel.descriptors,
+            'batches_amount': panel.batches.count()
+        }
+
+        panel_items.append(a)
+
+    results = {
+        'perms': [],
+        'items': panel_items,
+        'prev': cq.prev_cursor,
+        'cursor': cursor,
+        'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestBatchPanelsCount.def_auth_request(Method.GET, Format.JSON)
+def count_batch_panels(request, bat_id):
+    batch = BatchView.objects.get(id=int(bat_id))
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(BatchPanel)
+    cq.filter(id__in=batch.panels)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
 
     results = {
         'count': cq.count()

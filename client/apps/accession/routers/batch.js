@@ -5,7 +5,7 @@
  * @date 2017-02-14
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 let Marionette = require('backbone.marionette');
@@ -21,13 +21,13 @@ let TitleView = require('../../main/views/titleview');
 let BatchLayout = require('../views/batch/batchlayout');
 
 let Router = Marionette.AppRouter.extend({
-    routes : {
+    routes: {
         "app/accession/batch/": "getBatchList",
         "app/accession/accession/:id/batch/": "getAccessionBatchList",
         "app/accession/batch/:id/*tab": "getBatch"
     },
 
-    getBatchList : function(options) {
+    getBatchList: function (options) {
         options || (options = {});
 
         let collection = new BatchCollection([], {
@@ -46,7 +46,7 @@ let Router = Marionette.AppRouter.extend({
         });
 
         columns.done(function (data) {
-            let batchListView  = new BatchListView({
+            let batchListView = new BatchListView({
                 collection: collection, columns: data[0].value,
                 onRender: function () {
                     this.onShowTab();
@@ -63,7 +63,7 @@ let Router = Marionette.AppRouter.extend({
         });
     },
 
-    getAccessionBatchList : function(id) {
+    getAccessionBatchList: function (id) {
         let collection = new BatchCollection({accession_id: id});
 
         let defaultLayout = new DefaultLayout({});
@@ -78,14 +78,14 @@ let Router = Marionette.AppRouter.extend({
         });
 
         $.when(columns, collection.fetch()).then(function (data) {
-            let batchListView = new BatchListView({collection : collection, columns: data[0].value});
+            let batchListView = new BatchListView({collection: collection, columns: data[0].value});
 
             defaultLayout.showChildView('content', batchListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: batchListView}));
         });
     },
 
-    getBatch : function(id, tab) {
+    getBatch: function (id, tab) {
         tab || (tab = "");
 
         let batch = new BatchModel({id: id});
@@ -93,10 +93,13 @@ let Router = Marionette.AppRouter.extend({
         let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        let batchLayout = new BatchLayout({model: batch, initialTab: tab.replace('/', '')});
-
-        batch.fetch().then(function() {
+        batch.fetch().then(function () {
+            if (!defaultLayout.isRendered()) {
+                return;
+            }
             defaultLayout.showChildView('title', new TitleView({title: _t("Batch"), model: batch}));
+
+            let batchLayout = new BatchLayout({model: batch, initialTab: tab.replace('/', '')});
             defaultLayout.showChildView('content', batchLayout);
         });
     }
