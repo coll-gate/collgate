@@ -120,7 +120,10 @@ let Layout = LayoutView.extend({
 
             // direct classification entry sub-levels tab
             let ClassificationEntryChildrenCollection = require('../collections/classificationentrychildren');
-            let classificationEntryChildren = new ClassificationEntryChildrenCollection([], {model_id: this.model.id});
+            let classificationEntryChildren = new ClassificationEntryChildrenCollection([], {
+                model_id: this.model.id,
+                deeply: true
+            });
 
             // get available columns
             let columns = application.main.cache.lookup({
@@ -128,7 +131,7 @@ let Layout = LayoutView.extend({
                 format: {model: 'classification.classificationentry'}
             });
 
-            $.when(columns, classificationEntryChildren.fetch()).then(function(data) {
+            columns.then(function(data) {
                 if (!classificationEntryLayout.isRendered()) {
                     return;
                 }
@@ -137,7 +140,8 @@ let Layout = LayoutView.extend({
                 let classificationEntryChildrenView = new ClassificationEntryChildrenView({
                     collection: classificationEntryChildren,
                     model: classificationEntryLayout.model,
-                    columns: data[0].value});
+                    columns: data[0].value
+                });
 
                 let contentBottomLayout = new ContentBottomLayout();
                 classificationEntryLayout.showChildView('children', contentBottomLayout);
@@ -145,6 +149,8 @@ let Layout = LayoutView.extend({
                 contentBottomLayout.showChildView('content', classificationEntryChildrenView);
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({
                     targetView: classificationEntryChildrenView, collection: classificationEntryChildren}));
+
+                classificationEntryChildrenView.query();
             });
 
             // entities relating this classificationEntry tab

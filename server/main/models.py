@@ -592,15 +592,15 @@ def _cache_update(sender, instance, created, **kwargs):
     if hasattr(instance, 'on_client_cache_update'):
         for invalidator in instance.on_client_cache_update():
             messenger_module = module_manager.get_module('messenger')
-            if hasattr(messenger_module, 'tcp_client'):
-                messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, invalidator)
+            # if hasattr(messenger_module, 'tcp_client'):
+            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, invalidator)
 
     elif hasattr(instance, 'client_cache_update'):
         for invalidator in instance.client_cache_update:
             messenger_module = module_manager.get_module('messenger')
-            if hasattr(messenger_module, 'tcp_client'):
-                messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
-                    'category': invalidator, 'name': '*', 'values': None})
+            # if hasattr(messenger_module, 'tcp_client'):
+            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
+                'category': invalidator, 'name': '*', 'values': None})
 
 
 @receiver(models.signals.post_save, sender=Entity)

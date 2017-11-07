@@ -80,6 +80,15 @@ class Organisation(DescribableEntity):
                     'sortby_field': 'value0'
                 }
             },
+            'grc': {
+                'label': _('GRC'),
+                'field': 'grcs',
+                'query': False,
+                'format': {
+                    'type': 'count',
+                    'fields': ['grcs']
+                }
+            },
             'num_establishments': {
                 'label': _('Establishments'),
                 'field': 'establishments',
@@ -260,7 +269,7 @@ class GRC(models.Model):
     description = models.TextField(default="", blank=True, null=False)
 
     # list of managers organisations
-    organisations = models.ManyToManyField(Organisation)
+    organisations = models.ManyToManyField(Organisation, related_name="grcs")
 
     class Meta:
         verbose_name = _("Genetic Resource Center")

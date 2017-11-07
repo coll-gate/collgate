@@ -24,8 +24,8 @@ let View = AdvancedTable.extend({
     userSettingVersion: '1.0',
 
     defaultColumns: [
-        {name: 'name', width: 'auto', sort_by: '+0'},
-        {name: 'rank', width: 'auto', sort_by: null},
+        {name: 'name', width: 'auto', sort_by: '+1'},
+        {name: 'rank', width: 'auto', sort_by: '+0'},
         {name: 'parent', width: 'auto', sort_by: null},
         {name: 'synonym', width: 'auto', sort_by: null}
     ],

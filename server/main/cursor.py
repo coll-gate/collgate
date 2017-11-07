@@ -900,6 +900,14 @@ class CursorQuery(object):
 
             self.query_from.append(_from)
 
+        elif type(related_model) is models.fields.related_descriptors.ManyToManyDescriptor:
+            join_db_table = related_model.through._meta.db_table
+
+            on_clause = ['"%s"."id" = "%s"."%s_id"' % (db_table, related_field, self._model._meta.model_name)]
+            _from = 'LEFT JOIN "%s" AS "%s" ON (%s)' % (join_db_table, db_table_alias, " AND ".join(on_clause))
+
+            self.query_from.append(_from)
+
         elif type(related_model) is models.fields.related_descriptors.ReverseManyToOneDescriptor:
             join_db_table = related_model.rel.related_model._meta.db_table
 
@@ -1089,15 +1097,19 @@ class CursorQuery(object):
             short_db_table = self._model._meta.model_name
             self.join(related_field, [short_db_table])
         elif type(related_model) is models.fields.related_descriptors.ManyToManyDescriptor:
-            # uses a prefetch related (additional query)
-            self._prefetch_related.append(related_field)
+            # uses a left outer join
+            short_db_table = self._model._meta.model_name
+            self.join(related_field, [short_db_table])
+
+            # uses a prefetch related (additional query) no longer necessary because of the join
+            # self._prefetch_related.append(related_field)
 
     def _process_count(self):
         db_table = self._model._meta.db_table
+        add_group_by = False
 
         for related_field in self._counts:
             related_model = getattr(self._model, related_field)
-            # related_model_name = related_model.rel.target_field.model._meta.model_name
 
             if type(related_model) is models.fields.related_descriptors.ReverseManyToOneDescriptor:
                 related_field_column = related_model.rel.field.column
@@ -1105,7 +1117,16 @@ class CursorQuery(object):
                 self.query_select.append('COUNT("%s"."%s") AS "%s__count"' % (
                     related_field, related_field_column, related_field))
 
-                self.query_group_by.append('"%s"."id"' % (db_table,))
+                add_group_by = True
+
+            elif type(related_model) is models.fields.related_descriptors.ManyToManyDescriptor:
+                self.query_select.append('COUNT(DISTINCT "%s"."id") AS "%s__count"' % (
+                    related_field, related_field))
+
+                add_group_by = True
+
+        if add_group_by:
+            self.query_group_by.append('"%s"."id"' % (db_table,))
 
     def sql(self):
         """

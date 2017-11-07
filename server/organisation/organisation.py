@@ -140,7 +140,8 @@ def get_organisation_list(request):
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
     cq.set_count('establishments')
-    cq.prefetch_related('grc_set')
+    cq.set_count('grcs')
+    # cq.prefetch_related('grcs')
 
     organisation_items = []
 
@@ -152,7 +153,7 @@ def get_organisation_list(request):
             'descriptors': organisation.descriptors,
             'descriptor_meta_model': organisation.descriptor_meta_model_id,
             'num_establishments': organisation.establishments__count,
-            'grc': [x for x in organisation.grc_set.all().values_list('id', flat=True)]
+            'grc': organisation.grcs__count  # [x for x in organisation.grcs.all().values_list('id', flat=True)]
         }
 
         organisation_items.append(t)
