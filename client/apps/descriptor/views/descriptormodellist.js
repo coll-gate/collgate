@@ -14,12 +14,15 @@ let DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns
 
 let View = AdvancedTable.extend({
     template: require("../templates/descriptormodellist.html"),
-    className: "object descriptor-model-list advanced-table-container",
+    className: "descriptor-model-list advanced-table-container",
     childView: DescriptorModelView,
-    childViewContainer: 'tbody.descriptor-model-list',
-/*
+    //childViewContainer: 'tbody.descriptor-model-list',
+    childViewContainer: 'tbody.entity-list',
+    // userSettingVersion: '1.0',
+    // userSettingName: "",
+
     defaultColumns: [
-        {name: 'description', width: 'auto', sort_by: null},
+        {name: 'description', width: 'fixed', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
         {name: 'verbose_name', width: 'auto', sort_by: '+0'},
         {name: 'num_descriptor_model_types', width: 'auto', sort_by: null}
@@ -34,17 +37,32 @@ let View = AdvancedTable.extend({
         },
         'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'verbose_name': {label: _t('Verbose name'), width: 'auto', minWidth: true, event: 'view-accession-details'},
-        'num_descriptor_model_types': {label: _t('Types'), width: 'auto', minWidth: true, event: 'view-accession-details'}
+        'num_descriptor_model_types': {label: _t('Types'), width: 'auto', minWidth: true, event: 'view-descriptor-model-details'}
     },
-*/
+
+    templateContext: function () {
+        return {
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
+        }
+    },
+
+    childViewOptions: function () {
+        return {
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
+        }
+    },
+
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.collection, 'reset', this.render, this);
+        this.filters = this.getOption('filters');
+        // this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
 
 // support of descriptors columns extension
-// _.extend(View.prototype, DescriptorsColumnsView);
+_.extend(View.prototype, DescriptorsColumnsView);
 
 module.exports = View;

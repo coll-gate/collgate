@@ -417,8 +417,15 @@ class CursorQuery(object):
                     self.query_order_by.append('"%s"."%s_id" %s' % (db_table, f, order))
                 # count field
                 elif is_count:
+                    # take column name depending of the relation
+                    related_model = getattr(self._model, f)
+                    if type(related_model) is models.fields.related_descriptors.ManyToManyDescriptor:
+                        column = getattr(related_model.through, model_name).field.column
+                    else:
+                        column = related_model.rel.field.column
+
                     self.query_order_by.append('"%s__count" %s' % (f, order))
-                    self.query_group_by.append('"%s"."%s_id"' % (f, model_name))
+                    self.query_group_by.append('"%s"."%s"' % (f, column))
                 else:
                     self.query_order_by.append('"%s"."%s" %s' % (db_table, f, order))
 
