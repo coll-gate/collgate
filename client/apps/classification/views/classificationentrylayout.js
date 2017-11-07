@@ -131,7 +131,6 @@ let Layout = LayoutView.extend({
                 format: {model: 'classification.classificationentry'}
             });
 
-            // $.when(columns, classificationEntryChildren.fetch()).then(function(data) {
             columns.then(function(data) {
                 if (!classificationEntryLayout.isRendered()) {
                     return;

@@ -82,6 +82,19 @@ let View = Marionette.View.extend({
         td.html(el);
     },
 
+    organisationGRCCell: function(td) {
+        let el = $('<span></span>');
+
+        // if (this.model.get('grc').length) {
+        //     el.addClass("fa fa-check");
+        // }
+        if (this.model.get('grc')) {
+            el.addClass("fa fa-check");
+        }
+
+        td.html(el);
+    },
+
     numEstablishmentsCell: function(td) {
         let el = $('<span class="badge" style="cursor: pointer;">' + this.model.get('num_establishments') + '</span>');
         el.attr('title', _t('Manage establishments of the organisation'));
