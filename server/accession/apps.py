@@ -52,6 +52,7 @@ class CollGateAccession(ApplicationMain):
             'accessionbatch',
             'batch',
             'accessionpanel',
+            'batchpanel',
             'accessionclassificationentry'
             )
         )
@@ -119,7 +120,7 @@ class CollGateAccession(ApplicationMain):
         menu_batch.add_entry(
             MenuEntry('list-batches', _('List batches'), "#accession/batch/", icon=FaGlyph('list'), order=101))
         menu_batch.add_entry(
-            MenuEntry('panel-batches', _('Panel batches'), "#accession/batches_panel/",
+            MenuEntry('panel-batches', _('Panel batches'), "#accession/batchpanel/",
                       icon=FaGlyph('list-alt'), order=102))
 
         menu_batch.add_entry(MenuSeparator(200))

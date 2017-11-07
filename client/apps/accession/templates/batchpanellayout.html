@@ -1,0 +1,26 @@
+<!--
+ - @file batchpanellayout.html
+ - @brief 
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2017-11-07
+ - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details 
+-->
+
+<div class="column" style="height: calc(100% - 25px);">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="div.tab-pane[name=descriptors]" aria-controls="descriptors"
+                                                  role="tab" data-toggle="tab"><%= _t("Descriptors") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=batches]" aria-controls="batches" role="tab"
+                                   data-toggle="tab"><%= _t("Batches") %> <span id="batches-badge" class="badge"><%= acc_amount %></span></a>
+        </li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content" style="height: calc(100% - 41px - 10px);">
+        <div role="tabpanel" class="tab-pane active" name="descriptors"
+             style="height: 100%; overflow-y: auto; padding-right: 5px;"></div>
+        <div role="tabpanel" class="tab-pane" name="batches" style="height: 100%;"></div>
+    </div>
+</div>

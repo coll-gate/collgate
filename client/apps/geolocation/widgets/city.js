@@ -294,8 +294,8 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
             };
 
             let initSelect2 = function (ajx_mode, reset_mode) {
-                var ajx_mode = ajx_mode || false;
-                var reset_mode = reset_mode || false;
+                ajx_mode = ajx_mode || false;
+                reset_mode = reset_mode || false;
 
                 if (select.data('select2')) {
                     select.select2('destroy');
@@ -642,8 +642,8 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 };
 
                 let initSelect2 = function (ajx_mode, reset_mode) {
-                    var ajx_mode = ajx_mode || false;
-                    var reset_mode = reset_mode || false;
+                    ajx_mode = ajx_mode || false;
+                    reset_mode = reset_mode || false;
 
                     if (select.data('select2')) {
                         select.select2('destroy');

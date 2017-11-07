@@ -12,13 +12,13 @@ let Marionette = require('backbone.marionette');
 
 let BatchModel = require('../models/batch');
 let BatchCollection = require('../collections/batch');
-let BatchListView = require('../views/batchlist');
+let BatchListView = require('../views/batch/batchlist');
 let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
 let DefaultLayout = require('../../main/views/defaultlayout');
 let ScrollingMoreView = require('../../main/views/scrollingmore');
 let TitleView = require('../../main/views/titleview');
-let BatchLayout = require('../views/batchlayout');
+let BatchLayout = require('../views/batch/batchlayout');
 
 let Router = Marionette.AppRouter.extend({
     routes : {

@@ -1031,7 +1031,12 @@ class CursorQuery(object):
 
         db_table = self._model._meta.db_table
         short_db_table = self._model._meta.model_name
-        model_name_alias = self._model._meta.model_name + 's'  # plural form (could be more dynamic)
+
+        if self._model._meta.default_related_name:
+            model_name_alias = self._model._meta.default_related_name
+        else:
+            model_name_alias = self._model._meta.model_name + 's'
+
         to_model_name_alias = short_db_table
 
         # from
@@ -1152,7 +1157,8 @@ class CursorQuery(object):
         else:
             _where = "WHERE " + " OR ".join(self.query_where)
 
-        if (self.query_where or self.query_filters) and self.query_group_by and self.query_order_by and self.query_limit:
+        if (
+                    self.query_where or self.query_filters) and self.query_group_by and self.query_order_by and self.query_limit:
             sql = " ".join([_select, _from, _where, _group_by, _order_by, _limit])
         else:
             sql = _select

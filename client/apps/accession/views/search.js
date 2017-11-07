@@ -209,7 +209,8 @@ let View = Dialog.extend({
     getQuery: function (conditions, condition, parentheses_to_handle) {
         condition = (condition || 0);
         let result = [];
-        for (let i = condition; i < conditions.length; ++i) {
+        let i;
+        for (i = condition; i < conditions.length; ++i) {
             if (typeof parentheses_to_handle === 'undefined') {
                 parentheses_to_handle = conditions[i].attributes.open_group;
             }
@@ -258,6 +259,7 @@ let View = Dialog.extend({
                 }
             }
         }
+        alert(i);
         return {result: result, end_index: i};
     },
 

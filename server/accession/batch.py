@@ -100,6 +100,12 @@ def create_batch(request):
     accession_id = int_arg(request.data['accession'])
     descriptors = request.data['descriptors']
 
+    # batch selection
+    selection = request.data['selection']['select']
+    related_entity = request.data['selection']['from']
+    search = request.data['selection']['search']
+    filters = request.data['selection']['filters']
+
     # check uniqueness of the name
     if Batch.objects.filter(name=name).exists():
         raise SuspiciousOperation(_("The name of the batch is already used"))
@@ -107,7 +113,20 @@ def create_batch(request):
     content_type = get_object_or_404(ContentType, app_label="accession", model="batch")
     dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
 
-    parent_batch_list = []
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Batch)
+
+    if search:
+        cq.filter(search)
+
+    if filters:
+        cq.filter(filters)
+
+    if related_entity:
+        label, model = related_entity['content_type'].split('.')
+        content_type = get_object_or_404(ContentType, app_label=label, model=model)
+        model_class = content_type.model_class()
+        cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
 
     try:
         with transaction.atomic():
@@ -128,6 +147,17 @@ def create_batch(request):
 
             batch.save()
 
+            # parent batches
+            if isinstance(selection, bool):
+                if selection is True:
+                    batch.batches.add(*cq)
+
+            elif selection['op'] == 'in':
+                batch.batches.add(*cq.filter(id__in=selection['value']))
+
+            elif selection['op'] == 'notin':
+                batch.batches.add(*cq.filter(id__notin=selection['value']))
+
             # update owner on external descriptors
             descriptors_builder.update_associations()
     except IntegrityError as e:
@@ -139,7 +169,6 @@ def create_batch(request):
         'name': batch.name,
         'descriptor_meta_model': dmm.id,
         'accession': accession.id,
-        'batches': parent_batch_list,
         'descriptors': descriptors
     }
 
@@ -204,12 +233,14 @@ def patch_batch(request, bat_id):
 
 
 @RestBatchId.def_auth_request(Method.DELETE, Format.JSON, perms={
-    'batch.delete_batch': _("You are not allowed to delete a batch"),
+    'accession.delete_batch': _("You are not allowed to delete a batch"),
 })
 def delete_batch(request, bat_id):
     batch = get_object_or_404(Batch, id=int(bat_id))
 
     # @todo should not delete... archive, maybee delete when no children and just introduction batch ?
+
+    print(batch)
 
     batch.delete()
 

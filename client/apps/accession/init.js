@@ -70,10 +70,12 @@ AccessionModule.prototype = {
 
         let AccessionController = require('./controllers/accession');
         let BatchController = require('./controllers/batch');
-        let PanelController = require('./controllers/panel');
+        let AccessionPanelController = require('./controllers/accessionpanel');
+        let BatchPanelController = require('./controllers/batchpanel');
         this.controllers.accession = new AccessionController();
         this.controllers.batch = new BatchController();
-        this.controllers.panel = new PanelController();
+        this.controllers.accessionpanel = new AccessionPanelController();
+        this.controllers.batchpanel = new BatchPanelController();
 
         //
         // routers
@@ -85,8 +87,11 @@ AccessionModule.prototype = {
         let BatchRouter = require('./routers/batch');
         this.routers.batch = new BatchRouter();
 
-        let PanelRouter = require('./routers/panel');
-        this.routers.panel = new PanelRouter();
+        let AccessionPanelRouter = require('./routers/accessionpanel');
+        this.routers.accessionpanel = new AccessionPanelRouter();
+
+        let BatchPanelRouter = require('./routers/batchpanel');
+        this.routers.batchpanel = new BatchPanelRouter();
 
     },
 

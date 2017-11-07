@@ -12,13 +12,13 @@ let Marionette = require('backbone.marionette');
 
 let AccessionModel = require('../models/accession');
 let AccessionCollection = require('../collections/accession');
-let AccessionListView = require('../views/accessionlist');
+let AccessionListView = require('../views/accession/accessionlist');
 let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
 let DefaultLayout = require('../../main/views/defaultlayout');
 let ScrollingMoreView = require('../../main/views/scrollingmore');
 let TitleView = require('../../main/views/titleview');
-let AccessionLayout = require('../views/accessionlayout');
+let AccessionLayout = require('../views/accession/accessionlayout');
 
 let Router = Marionette.AppRouter.extend({
     routes : {

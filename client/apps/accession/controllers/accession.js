@@ -17,7 +17,7 @@ let TitleView = require('../../main/views/titleview');
 let Dialog = require('../../main/views/dialog');
 let Search = require('../../main/utils/search');
 
-let AccessionLayout = require('../views/accessionlayout');
+let AccessionLayout = require('../views/accession/accessionlayout');
 let SearchEntityDialog = require('../views/search');
 
 let Controller = Marionette.Object.extend({

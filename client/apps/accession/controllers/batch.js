@@ -17,11 +17,52 @@ let TitleView = require('../../main/views/titleview');
 let Dialog = require('../../main/views/dialog');
 let Search = require('../../main/utils/search');
 
-let BatchLayout = require('../views/batchlayout');
+let BatchLayout = require('../views/batch/batchlayout');
 let SearchEntityDialog = require('../views/search');
 
 let Controller = Marionette.Object.extend({
-    create: function () {
+    delete: function (model) {
+        let DeletePanelDialog = Dialog.extend({
+            template: require('../../main/templates/confirm.html'),
+            templateContext: function () {
+                return {
+                    title: _t("Delete batch"),
+                    message: _t("Do you really want to delete this batch?"),
+                    confirm_txt: _("Yes"),
+                    confirm_class: 'danger',
+                    cancel_txt: _("No"),
+                    cancel_class: 'default'
+                }
+            },
+            ui: {
+                confirm: "button.confirm"
+            },
+            events: {
+                'click @ui.confirm': 'onDelete'
+            },
+
+            initialize: function () {
+                DeletePanelDialog.__super__.initialize.apply(this);
+            },
+
+            onDelete: function () {
+                model.destroy({wait: true});
+                this.destroy();
+                return false;
+            }
+
+        });
+
+        let deletePanelDialog = new DeletePanelDialog();
+        deletePanelDialog.render();
+    },
+
+    create: function (selection, related_entity, filters, search) {
+        selection || (selection = false);
+        related_entity || (related_entity = null);
+        filters || (filters = {});
+        search || (search = {});
+
         $.ajax({
             type: "GET",
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.batch']),
@@ -104,7 +145,6 @@ let Controller = Marionette.Object.extend({
                                     return;
                                 }
                             }
-
                             $(this.el).validateField('ok');
                         });
                     }
@@ -156,7 +196,13 @@ let Controller = Marionette.Object.extend({
                         let model = new BatchModel({
                             name: name,
                             accession: accession,
-                            descriptor_meta_model: metaModel
+                            descriptor_meta_model: metaModel,
+                            selection: {
+                                select: selection,
+                                from: related_entity,
+                                filters: filters,
+                                search: search
+                            },
                         });
 
                         view.destroy();
@@ -177,6 +223,41 @@ let Controller = Marionette.Object.extend({
 
             let createBatchView = new CreateBatchView();
             createBatchView.render();
+        });
+    },
+
+    unlinkBatches: function (view) {
+        if (!view.getSelection('select')) {
+            $.alert.warning(_t("No batch selected"));
+            return;
+        }
+
+        $.ajax({
+                type: 'PATCH',
+                url: window.application.url(['accession', 'batch', view.model.id, 'batch']),
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    'action': 'remove',
+                    'selection': {
+                        'select': view.getSelection('select'),
+                        'from': {
+                            'content_type': 'accession.batch',
+                            'id': view.model.id
+                        },
+                        'filters': view.collection.filters
+                        // 'search': search
+                    }
+                })
+            }
+        ).done(function () {
+            if (view.getSelection('select').op === 'in') {
+                // this condition by pass auto-request loop to retrieve last user position in the table
+                view.collection.remove(view.getSelection('select').value);
+            } else {
+                view.collection.fetch();
+            }
+            view.collection.count();
         });
     },
 

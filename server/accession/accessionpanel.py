@@ -17,11 +17,9 @@ from igdectk.rest.response import HttpResponseRest
 from django.core.exceptions import SuspiciousOperation
 from django.db import transaction, IntegrityError
 from django.shortcuts import get_object_or_404
-# from permission.utils import get_permissions_for
 from django.utils.translation import ugettext_lazy as _
 
-from permission.utils import get_permissions_for
-from .models import AccessionPanel, Accession, AccessionSynonym, BatchPanel, Batch, AccessionView
+from .models import AccessionPanel, Accession, AccessionSynonym, AccessionView
 from .base import RestAccession
 from .accession import RestAccessionId
 
@@ -31,27 +29,17 @@ class RestAccessionPanel(RestAccession):
     name = "accessionpanel"
 
 
-class RestAccessionId(RestAccessionId):
+class RestAccessionPanels(RestAccessionId):
     regex = r'^panels/$'
     suffix = 'panels'
 
 
-class RestAccessionIdCount(RestAccessionId):
+class RestAccessionPanelsCount(RestAccessionPanels):
     regex = r'^count/$'
     name = "count"
 
 
-class RestBatchPanel(RestAccession):
-    regex = r'^batchpanel/$'
-    name = "batchpanel"
-
-
 class RestAccessionPanelSearch(RestAccessionPanel):
-    regex = r'^search/$'
-    suffix = 'search'
-
-
-class RestBatchPanelSearch(RestBatchPanel):
     regex = r'^search/$'
     suffix = 'search'
 
@@ -61,17 +49,7 @@ class RestAccessionPanelCount(RestAccessionPanel):
     name = "count"
 
 
-class RestBatchPanelCount(RestBatchPanel):
-    regex = r'^count/$'
-    name = "count"
-
-
 class RestAccessionPanelId(RestAccessionPanel):
-    regex = r'^(?P<panel_id>[0-9]+)/$'
-    suffix = 'id'
-
-
-class RestBatchPanelId(RestBatchPanel):
     regex = r'^(?P<panel_id>[0-9]+)/$'
     suffix = 'id'
 
@@ -81,22 +59,12 @@ class RestAccessionPanelAccessions(RestAccessionPanelId):
     name = "accessions"
 
 
-class RestBatchPanelBatches(RestBatchPanelId):
-    regex = r'^batches/$'
-    name = "batches"
-
-
 class RestAccessionPanelAccessionsCount(RestAccessionPanelAccessions):
     regex = r'^count/$'
     name = "count"
 
 
-class RestBatchPanelBatchesCount(RestBatchPanelBatches):
-    regex = r'^count/$'
-    name = "count"
-
-
-@RestAccessionId.def_auth_request(Method.GET, Format.JSON)
+@RestAccessionPanels.def_auth_request(Method.GET, Format.JSON)
 def get_accession_panels(request, acc_id):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
@@ -145,7 +113,7 @@ def get_accession_panels(request, acc_id):
     return HttpResponseRest(request, results)
 
 
-@RestAccessionIdCount.def_auth_request(Method.GET, Format.JSON)
+@RestAccessionPanelsCount.def_auth_request(Method.GET, Format.JSON)
 def count_accession_panels(request, acc_id):
     accession = AccessionView.objects.get(id=int(acc_id))
 
@@ -159,134 +127,6 @@ def count_accession_panels(request, acc_id):
 
     results = {
         'count': cq.count()
-    }
-
-    return HttpResponseRest(request, results)
-
-
-@RestBatchPanel.def_auth_request(Method.POST, Format.JSON, content={
-    "type": "object",
-    "properties": {
-        "name": BatchPanel.NAME_VALIDATOR,
-        "selection": {
-            "type": "object",
-            "properties": {
-                "select": {
-                    "type": [
-                        {
-                            "type": "object",
-                            "properties": {
-                                "op": {"enum": ['in', 'notin']},
-                                "term": {"type": "string"},
-                                "value": {"type": "array"},
-                            },
-                        },
-                        {
-                            "type": "boolean"
-                        }
-                    ]
-                },
-
-            },
-            "additionalProperties": {
-                "from": {
-                    "type": "object",
-                    "properties": {
-                        "content_type": {"type": "string"},
-                        "id": {"type": "integer"}
-                    }
-                },
-                "search": {"type": "object"},
-                "filters": {"type": "object"}
-            }
-        }
-    }
-}, perms={
-    'accession.add_batchpanel': _("You are not allowed to create a batch panel")
-})
-def create_batch_panel(request):
-    name = request.data['name']
-    selection = request.data['selection']['select']
-    related_entity = request.data['selection']['from']
-    search = request.data['selection']['search']
-    filters = request.data['selection']['filters']
-    dmm_id = request.data['descriptor_meta_model']
-    descriptors = request.data['descriptors']
-
-    dmm = None
-
-    # check uniqueness of the name
-    if BatchPanel.objects.filter(name=name).exists():
-        raise SuspiciousOperation(_("The name of the panel is already used"))
-
-    if dmm_id is not None:
-        content_type = get_object_or_404(ContentType, app_label="accession", model="batchpanel")
-        dmm = get_object_or_404(DescriptorMetaModel, id=int_arg(dmm_id), target=content_type)
-
-    from main.cursor import CursorQuery
-    cq = CursorQuery(Batch)
-
-    if search:
-        cq.filter(search)
-
-    if filters:
-        cq.filter(filters)
-
-    if related_entity:
-        label, model = related_entity['content_type'].split('.')
-        content_type = get_object_or_404(ContentType, app_label=label, model=model)
-        model_class = content_type.model_class()
-        cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
-
-    try:
-        with transaction.atomic():
-            panel = BatchPanel(name=name)
-
-            panel.descriptor_meta_model = dmm
-
-            # descriptors
-            descriptors_builder = DescriptorsBuilder(panel)
-
-            descriptors_builder.check_and_update(dmm, descriptors)
-            panel.descriptors = descriptors_builder.descriptors
-
-            panel.save()
-
-            # update owner on external descriptors
-            descriptors_builder.update_associations()
-
-            if isinstance(selection, bool):
-                if selection is True:
-                    panel.batches.add(*cq)
-
-            elif selection['op'] == 'in':
-                panel.batches.add(*cq.filter(id__in=selection['value']))
-
-            elif selection['op'] == 'notin':
-                panel.batches.add(*cq.filter(id__notin=selection['value']))
-
-    except IntegrityError as e:
-        DescriptorModelType.integrity_except(BatchPanel, e)
-
-    response = {
-        'id': panel.pk,
-        'name': panel.name,
-        'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
-        'descriptors': panel.descriptors
-    }
-
-    return HttpResponseRest(request, response)
-
-
-@RestBatchPanelId.def_request(Method.GET, Format.JSON)
-def get_panel(request, panel_id):
-    panel = BatchPanel.objects.get(id=int_arg(panel_id))
-
-    results = {
-        'id': panel.pk,
-        'name': panel.name,
-        'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
-        'descriptors': panel.descriptors
     }
 
     return HttpResponseRest(request, results)
