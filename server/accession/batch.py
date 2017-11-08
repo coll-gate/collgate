@@ -19,10 +19,9 @@ from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from main.models import EntityStatus
 from permission.utils import get_permissions_for
 
-from .models import Accession, Batch
+from .models import Accession, Batch, BatchView
 from .base import RestAccession
 
 from django.utils.translation import ugettext_lazy as _
@@ -476,6 +475,13 @@ def get_batch_list(request):
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
+
+        for criteria in search:
+            if criteria.get('field') == 'panels':
+                BatchView._meta.model_name = "batch"
+                cq = CursorQuery(BatchView)
+                break
+
         cq.filter(search)
 
     if request.GET.get('filters'):
@@ -518,6 +524,13 @@ def get_batch_list_count(request):
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
+
+        for criteria in search:
+            if criteria.get('field') == 'panels':
+                BatchView._meta.model_name = "batch"
+                cq = CursorQuery(BatchView)
+                break
+
         cq.filter(search)
 
     if request.GET.get('filters'):

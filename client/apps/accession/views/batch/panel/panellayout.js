@@ -17,7 +17,7 @@ let Layout = LayoutView.extend({
     template: require("../../../templates/batchpanellayout.html"),
     templateContext: function () {
         return {
-            acc_amount: this.model.get('batches_amount')
+            bat_amount: this.model.get('batches_amount')
         }
     },
 
@@ -151,6 +151,7 @@ let Layout = LayoutView.extend({
             }));
 
             batchListView.query();
+            batchListView.updateAmount(); // todo: temporary fix
 
             if (panelLayout.initialTab === 'batches') {
                 batchListView.onShowTab();

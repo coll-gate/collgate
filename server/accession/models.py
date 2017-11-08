@@ -140,7 +140,7 @@ class Accession(DescribableEntity):
                     'not_overlap'
                 ],
 
-                'column_display': False,
+                'column_display': True,
                 # 'search_only': True
             }
         }
@@ -273,6 +273,24 @@ class Batch(DescribableEntity):
                     'model': 'accession.batch'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'panels': {
+                'label': _('Linked panels'),
+                'field': 'name',
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'entity',
+                    'model': 'accession.batchpanel'
+                },
+                'available_operators': [
+                    'contains',
+                    'not_contains',
+                    'overlap',
+                    'not_overlap'
+                ],
+
+                'column_display': True,
+                # 'search_only': True
             }
         }
 

@@ -670,3 +670,13 @@ def count_batch_panels(request, bat_id):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestBatchPanelId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'accession.delete_batchpanel': _("You are not allowed to delete batch panel")
+})
+def delete_panel(request, panel_id):
+    panel = get_object_or_404(BatchPanel, id=int(panel_id))
+    panel.delete()
+
+    return HttpResponseRest(request, {})

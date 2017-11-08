@@ -27,7 +27,7 @@ let Collection = CountableCollection.extend({
 
         Collection.__super__.initialize.apply(this, arguments);
 
-        this.panel_id = (options.panel_id || null);
+        this.panel_id = options.panel_id;
     },
 });
 

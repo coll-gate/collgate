@@ -36,10 +36,10 @@ let Collection = CountableCollection.extend({
 
         Collection.__super__.initialize.apply(this, arguments);
 
-        this.batch_type = options.batch_type || '';
+        this.batch_type = options.batch_type;
         this.accession_id = options.accession_id;
         this.batch_id = options.batch_id;
-        this.panel_id = (options.panel_id || null);
+        this.panel_id = options.panel_id;
     }
 });
 
