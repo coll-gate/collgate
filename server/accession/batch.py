@@ -237,11 +237,7 @@ def patch_batch(request, bat_id):
 })
 def delete_batch(request, bat_id):
     batch = get_object_or_404(Batch, id=int(bat_id))
-
     # @todo should not delete... archive, maybee delete when no children and just introduction batch ?
-
-    print(batch)
-
     batch.delete()
 
     return HttpResponseRest(request, {})

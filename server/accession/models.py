@@ -692,10 +692,10 @@ class BatchView(models.Model):
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
     # parent accession
-    accession = models.ForeignKey('Accession', related_name='batches_view')
+    accession = models.ForeignKey('Accession', related_name='batches_view', on_delete=models.DO_NOTHING)
 
     # direct parent batches
-    batches = models.ManyToManyField('Batch', related_name='children_view')
+    batches = models.ManyToManyField('BatchView', related_name='children_view')
 
     # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
     descriptors = JSONField(default={})

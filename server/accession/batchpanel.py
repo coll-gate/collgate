@@ -240,6 +240,103 @@ def get_batch_panel(request, panel_id):
     return HttpResponseRest(request, results)
 
 
+@RestBatchPanelId.def_auth_request(Method.PATCH, Format.JSON, perms={
+    'accession.change_batchpanel': _("You are not allowed to modify batch panel")
+},
+                                       content={
+                                           "type": "object",
+                                           "properties": {
+                                               "descriptor_meta_model": {"type": ["integer", "null"],
+                                                                         'required': False},
+                                               "descriptors": {"type": "object", "required": False},
+                                           },
+                                           "additionalProperties": {
+                                               "name": BatchPanel.NAME_VALIDATOR
+                                           }
+                                       })
+def modify_panel(request, panel_id):
+    panel = get_object_or_404(BatchPanel, id=int(panel_id))
+    descriptors = request.data.get("descriptors")
+
+    result = {
+        'id': panel.id
+    }
+
+    try:
+        with transaction.atomic():
+            if 'name' in request.data:
+                name = request.data['name']
+
+                if BatchPanel.objects.filter(name=name).exists():
+                    raise SuspiciousOperation(_("The name of the panel is already used"))
+
+                panel.name = name
+                result['name'] = name
+
+            if 'descriptor_meta_model' in request.data:
+                dmm_id = request.data["descriptor_meta_model"]
+
+                # changing of meta model erase all previous descriptors values
+                if dmm_id is None and panel.descriptor_meta_model is not None:
+                    # clean previous descriptors and owns
+                    descriptors_builder = DescriptorsBuilder(panel)
+
+                    descriptors_builder.clear(panel.descriptor_meta_model)
+
+                    panel.descriptor_meta_model = None
+                    panel.descriptors = {}
+
+                    descriptors_builder.update_associations()
+
+                    result['descriptor_meta_model'] = None
+                    result['descriptors'] = {}
+
+                elif dmm_id is not None:
+                    # existing descriptors and new meta-model is different : first clean previous descriptors
+                    if panel.descriptor_meta_model is not None and panel.descriptor_meta_model.pk != dmm_id:
+                        # clean previous descriptors and owns
+                        descriptors_builder = DescriptorsBuilder(panel)
+
+                        descriptors_builder.clear(panel.descriptor_meta_model)
+
+                        panel.descriptor_meta_model = None
+                        panel.descriptors = {}
+
+                        descriptors_builder.update_associations()
+
+                    # and set the new one
+                    content_type = get_object_or_404(ContentType, app_label="accession", model="batchpanel")
+                    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+
+                    panel.descriptor_meta_model = dmm
+                    panel.descriptors = {}
+
+                    result['descriptor_meta_model'] = dmm.id
+                    result['descriptors'] = {}
+
+                    panel.update_field(['descriptor_meta_model', 'descriptors'])
+
+            if descriptors is not None:
+                # update descriptors
+                descriptors_builder = DescriptorsBuilder(panel)
+
+                descriptors_builder.check_and_update(panel.descriptor_meta_model, descriptors)
+
+                panel.descriptors = descriptors_builder.descriptors
+                result['descriptors'] = panel.descriptors
+
+                descriptors_builder.update_associations()
+
+                panel.descriptors_diff = descriptors
+                panel.update_field('descriptors')
+
+            panel.save()
+    except IntegrityError as e:
+        DescriptorModelType.integrity_except(Batch, e)
+
+    return HttpResponseRest(request, result)
+
+
 @RestBatchPanelCount.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_batchpanel': _("You are not allowed to list the batch panels")
 })

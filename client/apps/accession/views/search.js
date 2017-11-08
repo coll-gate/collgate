@@ -259,7 +259,6 @@ let View = Dialog.extend({
                 }
             }
         }
-        alert(i);
         return {result: result, end_index: i};
     },
 
