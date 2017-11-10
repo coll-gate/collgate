@@ -12,7 +12,6 @@ let LayoutView = require('../../../main/views/layout');
 let AccessionModel = require('../../models/accession');
 let ScrollingMoreView = require('../../../main/views/scrollingmore');
 let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
-let BatchPathView = require('./batchpath');
 let BatchDescriptorEditView = require('./batchdescriptoredit');
 
 let Layout = LayoutView.extend({
@@ -31,7 +30,6 @@ let Layout = LayoutView.extend({
     },
 
     regions: {
-        'details': "div[name=details]",
         'descriptors': "div.tab-pane[name=descriptors]",
         'parents': "div.tab-pane[name=parents]",
         'batches': "div.tab-pane[name=batches]",
@@ -119,19 +117,6 @@ let Layout = LayoutView.extend({
         let batchLayout = this;
 
         if (!this.model.isNew()) {
-            // details
-            let accession = new AccessionModel({id: this.model.get('accession')});
-            accession.fetch().then(function () {
-                if (!batchLayout.isRendered()) {
-                    return;
-                }
-
-                batchLayout.showChildView('details', new BatchPathView({
-                    model: batchLayout.model,
-                    accession: accession
-                }));
-            });
-
             // get available columns
             let columns = application.main.cache.lookup({
                 type: 'entity_columns',
@@ -152,11 +137,11 @@ let Layout = LayoutView.extend({
                     collection: parentBatches, model: batchLayout.model, columns: data[0].value
                 });
 
-                let contentBottomLayout = new ContentBottomLayout();
-                batchLayout.showChildView('parents', contentBottomLayout);
+                let contentBottomFooterLayout = new ContentBottomLayout();
+                batchLayout.showChildView('parents', contentBottomFooterLayout);
 
-                contentBottomLayout.showChildView('content', batchListView);
-                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchListView}));
+                contentBottomFooterLayout.showChildView('content', batchListView);
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchListView}));
             });
 
             // children batches tab
@@ -207,21 +192,11 @@ let Layout = LayoutView.extend({
                 batchPanelListView.query();
             });
 
+
+
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
             this.enableTabs();
         } else {
-            // details
-            let accession = new AccessionModel({id: this.model.get('accession')});
-            accession.fetch().then(function () {
-                if (!batchLayout.isRendered()) {
-                    return;
-                }
-
-                batchLayout.showChildView('details', new BatchPathView({
-                    model: batchLayout.model, accession: accession, noLink: true
-                }));
-            });
-
             // descriptors edit tab
             $.ajax({
                 method: "GET",

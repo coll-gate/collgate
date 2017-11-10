@@ -38,7 +38,7 @@ let Router = Marionette.AppRouter.extend({
         let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: _t("List of all batches")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of batches")}));
 
         let columns = application.main.cache.lookup({
             type: 'entity_columns',

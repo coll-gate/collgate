@@ -49,6 +49,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     content_type = get_object_or_404(ContentType, app_label=app_label, model=model_name)
 
     dmms_list = request.GET.get('descriptor_meta_models')
+    mode = request.GET.get('mode')
     dmms_ids = None
 
     if dmms_list:
@@ -58,13 +59,21 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
         dmms_ids = [int(x) for x in dmms_list.split(',')]
         dmms_ids.sort()
 
-        cache_name = cache_manager.make_cache_name(content_type_name, ','.join(map(str, dmms_ids)))
+        if mode == 'search':
+            cache_name = cache_manager.make_cache_name(content_type_name, ','.join(map(str, dmms_ids)), mode)
+        else:
+            cache_name = cache_manager.make_cache_name(content_type_name, ','.join(map(str, dmms_ids)))
+
     else:
-        cache_name = cache_manager.make_cache_name(content_type_name)
+        if mode == 'search':
+            cache_name = cache_manager.make_cache_name(content_type_name, mode)
+        else:
+            cache_name = cache_manager.make_cache_name(content_type_name)
 
     results = cache_manager.get('entity_columns', cache_name)
 
     if results is not None:
+        # pass
         return HttpResponseRest(request, results)
 
     dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
@@ -89,7 +98,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
         if dft.display_fields is not None and 'display_fields' not in descriptor_format:
             descriptor_format['display_fields'] = dft.display_fields
 
-        if dft.column_display is True:
+        if (dft.column_display is True and not mode) or (dft.search_display is True and mode == 'search'):
             columns['#' + dmt.name] = {
                 'group': dmt.descriptor_type.group_id,
                 'type': dmt.descriptor_type_id,
@@ -115,7 +124,9 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
                 descriptor_type_group_id = 0
                 descriptor_type_id = 0
 
-            if column.get('column_display', True):
+            # if column.get('column_display', True):
+            if (column.get('column_display', True) and not mode) or (
+                        column.get('search_display', True) and mode == 'search'):
                 columns[name] = {
                     'group': descriptor_type_group_id,
                     'type': descriptor_type_id,
@@ -133,7 +144,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     }
 
     # cache for 1 day
-    cache_manager.set('entity_columns', cache_name, results, 60*60*24)
+    cache_manager.set('entity_columns', cache_name, results, 60 * 60 * 24)
 
     return HttpResponseRest(request, results)
 
@@ -169,6 +180,6 @@ def get_description(model):
         }
 
     # cache for 1 day
-    cache_manager.set('descriptor', cache_name, results, 60*60*24)
+    cache_manager.set('descriptor', cache_name, results, 60 * 60 * 24)
 
     return results

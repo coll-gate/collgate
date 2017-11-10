@@ -51,7 +51,7 @@ let View = Dialog.extend({
     onRender: function () {
         View.__super__.onRender.apply(this);
 
-        this.ui.entity_type.selectpicker({}).selectpicker('val', 'accession.accession');
+        this.ui.entity_type.selectpicker({}).selectpicker('val', this.getOption('entity'));
         this.ui.meta_model.selectpicker({});
 
         this.getRegion('conditions').show(new ConditionCollection({
@@ -81,7 +81,7 @@ let View = Dialog.extend({
         $.ajax({
             type: "GET",
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', entityType]),
-            dataType: 'json'
+            dataType: 'json',
         }).done(function (data) {
             view.ui.meta_model.children('option').remove();
 
@@ -141,7 +141,7 @@ let View = Dialog.extend({
 
         application.main.cache.lookup({
             type: 'entity_columns',
-            format: {model: entityType, descriptor_meta_models: descriptorMetaModels}
+            format: {model: entityType, descriptor_meta_models: descriptorMetaModels, mode: 'search'}
 
         }).done(function (data) {
             $(selects).children('option').remove().end();

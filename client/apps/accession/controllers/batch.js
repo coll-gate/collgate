@@ -75,7 +75,9 @@ let Controller = Marionette.Object.extend({
                 template: require('../templates/navbatchcreate.html'),
                 templateContext: function () {
                     return {
-                        meta_models: data
+                        meta_models: data,
+                        title: (!selection) ? _t("Introduce a batch") : _t("Introduce a sub-batch"),
+                        name: (!selection) ? _t("Name of the batch") : _t("Name of the sub-batch")
                     };
                 },
 
@@ -262,7 +264,7 @@ let Controller = Marionette.Object.extend({
     },
 
     search: function () {
-        let searchEntityDialog = new SearchEntityDialog();
+        let searchEntityDialog = new SearchEntityDialog({entity: 'accession.batch'});
         searchEntityDialog.render();
     }
 });

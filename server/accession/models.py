@@ -140,8 +140,8 @@ class Accession(DescribableEntity):
                     'not_overlap'
                 ],
 
-                'column_display': True,
-                # 'search_only': True
+                'column_display': False,
+                'search_display': True
             }
         }
 
@@ -289,8 +289,8 @@ class Batch(DescribableEntity):
                     'not_overlap'
                 ],
 
-                'column_display': True,
-                # 'search_only': True
+                'column_display': False,
+                'search_display': True
             }
         }
 

@@ -338,7 +338,7 @@ let Controller = Marionette.Object.extend({
     },
 
     search: function () {
-        let searchEntityDialog = new SearchEntityDialog();
+        let searchEntityDialog = new SearchEntityDialog({entity: 'accession.accession'});
         searchEntityDialog.render();
      }
 });

@@ -60,7 +60,7 @@ let Router = Marionette.AppRouter.extend({
     },
 
     getPanel: function (id, tab) {
-        tab || (tab = "descriptors");
+        tab || (tab = "batches");
 
         let panel = new PanelModel({id: id});
 

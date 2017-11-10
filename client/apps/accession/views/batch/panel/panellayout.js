@@ -151,7 +151,7 @@ let Layout = LayoutView.extend({
             }));
 
             batchListView.query();
-            batchListView.updateAmount(); // todo: temporary fix
+            batchListView.updateAmount(); // todo: temporary fix... not necessary for ../accession/panellayout.js! why?
 
             if (panelLayout.initialTab === 'batches') {
                 batchListView.onShowTab();

@@ -25,13 +25,19 @@ ColumnCacheFetcher.prototype.constructor = ColumnCacheFetcher;
  */
 ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     let name = options.format.model;
+    let queryData = {};
     if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
         name += ':' + options.format.descriptor_meta_models.sort().toString();
+        queryData.descriptor_meta_models = options.format.descriptor_meta_models.toString();
+    }
+
+    if (options.format.mode === 'search') {
+        name += ':' + options.format.mode;
+        queryData.mode = options.format.mode;
     }
 
     let cache = cacheManager.get('entity_columns', name);
 
-    let queryData = {};
     let doFetch = false;
     let now = Date.now();
 
@@ -48,10 +54,6 @@ ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     }
 
     let url = window.application.url(['descriptor', 'columns', options.format.model]);
-
-    if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
-        queryData.descriptor_meta_models = options.format.descriptor_meta_models.toString();
-    }
 
     if (doFetch) {
         let promise = $.ajax({
@@ -89,6 +91,9 @@ ColumnCacheFetcher.prototype.get = function(cacheManager, options) {
     let name = options.format.model;
     if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
         name += ':' + options.format.descriptor_meta_models.sort().toString();
+    }
+    if (options.format.mode === 'search') {
+        name += ':' + options.format.mode;
     }
 
     return cacheManager.get('entity_columns', name);
