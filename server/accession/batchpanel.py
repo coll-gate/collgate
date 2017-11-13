@@ -240,20 +240,18 @@ def get_batch_panel(request, panel_id):
     return HttpResponseRest(request, results)
 
 
-@RestBatchPanelId.def_auth_request(Method.PATCH, Format.JSON, perms={
+@RestBatchPanelId.def_auth_request(Method.PATCH, Format.JSON, content={
+   "type": "object",
+   "properties": {
+       "descriptor_meta_model": {"type": ["integer", "null"], 'required': False},
+       "descriptors": {"type": "object", "required": False},
+   },
+   "additionalProperties": {
+       "name": BatchPanel.NAME_VALIDATOR
+   }
+}, perms={
     'accession.change_batchpanel': _("You are not allowed to modify batch panel")
-},
-                                       content={
-                                           "type": "object",
-                                           "properties": {
-                                               "descriptor_meta_model": {"type": ["integer", "null"],
-                                                                         'required': False},
-                                               "descriptors": {"type": "object", "required": False},
-                                           },
-                                           "additionalProperties": {
-                                               "name": BatchPanel.NAME_VALIDATOR
-                                           }
-                                       })
+})
 def modify_panel(request, panel_id):
     panel = get_object_or_404(BatchPanel, id=int(panel_id))
     descriptors = request.data.get("descriptors")
@@ -273,6 +271,8 @@ def modify_panel(request, panel_id):
                 panel.name = name
                 result['name'] = name
 
+                panel.update_field('name')
+
             if 'descriptor_meta_model' in request.data:
                 dmm_id = request.data["descriptor_meta_model"]
 
@@ -290,6 +290,8 @@ def modify_panel(request, panel_id):
 
                     result['descriptor_meta_model'] = None
                     result['descriptors'] = {}
+
+                    panel.update_field(['descriptor_meta_model', 'descriptors'])
 
                 elif dmm_id is not None:
                     # existing descriptors and new meta-model is different : first clean previous descriptors
