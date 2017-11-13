@@ -23,7 +23,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            let input = this._createStdInput(parent, "glyphicon-font");
+            let input = this._createStdInput(parent, "fa-font");
 
             // hard limit to 1024 characters
             input.attr('maxlength', 1024);

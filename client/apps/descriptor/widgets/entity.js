@@ -30,7 +30,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
         });
 
         if (readOnly) {
-            let input = this._createStdInput(parent, "glyphicon-share");
+            let input = this._createStdInput(parent, "fa-share");
 
             this.parent = parent;
             this.readOnly = true;
@@ -40,7 +40,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = true;
 
                 let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-                this.groupEl = this._createInputGroup(parent, "glyphicon-share", select);
+                this.groupEl = this._createInputGroup(parent, "fa-share", select);
 
                 // init the autocomplete
                 let url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
@@ -110,7 +110,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = false;
 
                 let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-                this.groupEl = this._createInputGroup(parent, "glyphicon-share", select);
+                this.groupEl = this._createInputGroup(parent, "fa-share", select);
 
                 select.selectpicker({container: 'body', style: 'btn-default'});
 

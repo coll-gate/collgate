@@ -27,7 +27,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         });
 
         if (readOnly) {
-            let input = this._createStdInput(parent, "glyphicon-map-marker");
+            let input = this._createStdInput(parent, "fa-globe");
 
             this.parent = parent;
             this.readOnly = true;
@@ -36,7 +36,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         } else {
             let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             parent.append(select);
-            this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
+            this.groupEl = this._createInputGroup(parent, "fa-globe", select);
 
             // init the autocomplete
             let url = window.application.url(['geolocation', 'country', 'search']);

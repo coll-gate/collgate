@@ -23,7 +23,7 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            let input = this._createStdInput(parent, "glyphicon-calendar");
+            let input = this._createStdInput(parent, "fa-calendar-times-o");
 
             this.parent = parent;
             this.readOnly = true;
@@ -31,7 +31,7 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
         } else {
             let group = $('<div class="input-group"></div>');
             let input = $('<input class="form-control" width="100%">');
-            let glyph = $('<span class="input-group-addon"><span class="fa fa-calendar"></span></span>').css('cursor', 'pointer');;
+            let glyph = $('<span class="input-group-addon"><span class="fa fa-calendar-times-o"></span></span>').css('cursor', 'pointer');
 
             group.append(input);
             group.append(glyph);

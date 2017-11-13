@@ -23,7 +23,7 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            let input = this._createStdInput(parent, "glyphicon-calendar");
+            let input = this._createStdInput(parent, "fa-calendar");
 
             this.parent = parent;
             this.readOnly = true;

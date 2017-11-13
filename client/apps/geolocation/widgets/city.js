@@ -27,7 +27,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         options.extended_search === false || (options.extended_search = true);
 
         if (readOnly) {
-            let input = this._createStdInput(parent, "glyphicon-map-marker");
+            let input = this._createStdInput(parent, "fa-map-signs");
 
             this.parent = parent;
             this.readOnly = true;
@@ -36,7 +36,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         } else if (options.extended_search === false) {
             let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             parent.append(select);
-            this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
+            this.groupEl = this._createInputGroup(parent, "fa-map-signs", select);
 
             // init the autocomplete
             let url = window.application.url(['geolocation', 'city', 'search']);
@@ -113,7 +113,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         } else {
             let select = $('<select style="width: 100%;"></select>');
             parent.append(select);
-            this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
+            this.groupEl = this._createInputGroup(parent, "fa-map-signs", select);
 
             // init the autocomplete
             let url = window.application.url('geolocation');

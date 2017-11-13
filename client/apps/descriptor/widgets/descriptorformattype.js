@@ -21,6 +21,10 @@ let DescriptorFormatType = function() {
     // standard css style for span
     this.spanStyle = {"padding-top": "3px", "padding-bottom": "3px"};
 
+    // standard css style for span
+    this.historySpanStyle = {
+        "padding-top": "3px", "padding-bottom": "3px", "padding-left": "6px", "padding-right": "6px"};
+
     // standard css style for input or select
     this.inputStyle = {"width": "100%", "height": "24px", "padding-top": "3px", "padding-bottom": "3px"};
 };
@@ -38,15 +42,41 @@ DescriptorFormatType.prototype = {
      * @returns {*|jQuery|HTMLElement} input
      * @private
      */
-    _createStdInput: function(parent, glyphicon) {
+    _createStdInput: function(parent, glyphicon, history) {
+        history = typeof history === "undefined" ? true : history;
+
         let group = $('<div class="input-group"></div>');
-        let glyph = $('<span class="input-group-addon"><span class="glyphicon ' + glyphicon + '"></span></span>');
+        let glyph = $('<span class="input-group-addon"></span>');
+
+        if (glyphicon.startsWith("fa-")) {
+            glyph.append('<span class="fa fa-fw ' + glyphicon + '"></span>');
+        } else if (glyphicon.startsWith("glyphicon-")) {
+            glyph.append('<span class="glyphicon ' + glyphicon + '"></span>');
+        } else {
+            glyph.append('<span class="fa fa-fw fa-question"></span>');
+        }
+
         glyph.css(this.spanStyle);
 
         let input = $('<input class="form-control" readonly="">');
         input.css(this.inputStyle);
 
         group.append(input);
+
+        // want history
+        if (history) {
+            let history = $('<span class="input-group-addon btn btn-xs btn-default"><span class="fa fa-line-chart"></span></span>');
+            history.attr("title", _t("Show history of the value"));
+            history.css(this.historySpanStyle)
+                .css('cursor', 'pointer')
+                .css('border-left-width', '0px');  // avoid double border
+
+            group.append(history);
+
+            // click event
+            history.on("click", $.proxy(this.showHistory, this));
+        }
+
         group.append(glyph);
 
         parent.append(group);
@@ -61,15 +91,34 @@ DescriptorFormatType.prototype = {
      * @param input Input element to bind into the group
      * @return {*|jQuery|HTMLElement} The created group
      */
-    _createInputGroup: function(parent, glyphicon, input) {
+    _createInputGroup: function(parent, glyphicon, input, history) {
+        history = typeof history === "undefined" ? true : history;
+
         let group = $('<div class="input-group"></div>');
-        let glyph = $('<span class="input-group-addon"><span class="glyphicon ' + glyphicon + '"></span></span>');
-        glyph.css(this.spanStyle);
+        let glyph = $('<span class="input-group-addon"></span>');
+
+        if (glyphicon.startsWith("fa-")) {
+            glyph.append('<span class="fa fa-fw ' + glyphicon + '"></span>');
+        } else if (glyphicon.startsWith("glyphicon-")) {
+            glyph.append('<span class="glyphicon ' + glyphicon + '"></span>');
+        } else {
+            glyph.append('<span class="fa fa-fw fa-question"></span>');
+        }
 
         input.addClass('form-control');
-        // input.css(this.inputStyle);
-
         group.append(input);
+
+        // want history
+        if (history) {
+            let history = $('<span class="input-group-addon btn btn-xs btn-default"><span class="fa fa-history"></span></span>');
+            history.css('border-left-width', '0px');  // avoid double border
+
+            group.append(history);
+
+            // click event
+            history.on("click", $.proxy(this.showHistory, this));
+        }
+
         group.append(glyph);
 
         parent.append(group);
@@ -128,6 +177,10 @@ DescriptorFormatType.prototype = {
 
     bindConditionListener: function(listeners, condition, values) {
         /* bind an array of widget that are shown or hidden according the the given condition and values */
+    },
+
+    showHistory: function() {
+        alert("@todo");
     }
 };
 

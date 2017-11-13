@@ -33,9 +33,9 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
             // autocomplete or dropdown
             if (format.list_type === "autocomplete") {
-                input = this._createStdInput(parent, "glyphicon-list");
+                input = this._createStdInput(parent, "fa-list");
             } else if (format.list_type === "dropdown") {
-                input = this._createStdInput(parent, "glyphicon-list");
+                input = this._createStdInput(parent, "fa-list");
             }
 
             this.parent = parent;
@@ -46,7 +46,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = true;
 
                 let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-                this.groupEl = this._createInputGroup(parent, "glyphicon-list", select);
+                this.groupEl = this._createInputGroup(parent, "fa-list", select);
 
                 // init the autocomplete
                 let url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
@@ -110,7 +110,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = false;
 
                 let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-                this.groupEl = this._createInputGroup(parent, "glyphicon-list", select);
+                this.groupEl = this._createInputGroup(parent, "fa-list", select);
 
                 select.selectpicker({container: 'body', style: 'btn-default'});
 

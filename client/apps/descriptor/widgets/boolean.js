@@ -23,14 +23,14 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            let input = this._createStdInput(parent, "glyphicon-check");
+            let input = this._createStdInput(parent, "fa-check");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
             let select = $('<select data-width="100%"></select>');
-            this.groupEl = this._createInputGroup(parent, "glyphicon-check", select);
+            this.groupEl = this._createInputGroup(parent, "fa-check", select);
 
             // true
             let option = $("<option></option>");

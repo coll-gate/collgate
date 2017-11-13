@@ -28,7 +28,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         }
 
         if (readOnly) {
-            let input = this._createStdInput(parent, "glyphicon-option-vertical");
+            let input = this._createStdInput(parent, "fa-ellipsis-v");
 
             this.parent = parent;
             this.readOnly = true;
@@ -36,7 +36,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         } else {
             if (this.isInput) {
                 let input = $('<input" width="100%">');
-                this.groupEl = this._createInputGroup(parent, "glyphicon-option-vertical", input);
+                this.groupEl = this._createInputGroup(parent, "fa-ellipsis-v", input);
 
                 input.numeric({
                     allowPlus: false,
@@ -56,7 +56,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
             } else {
                 // ordinal with at max 256 values as a dropdown
                 let select = $('<select data-width="100%"></select>');
-                this.groupEl = this._createInputGroup(parent, "glyphicon-option-vertical", select);
+                this.groupEl = this._createInputGroup(parent, "fa-ellipsis-v", select);
 
                 for (let i = format.range[0]; i <= format.range[1]; ++i) {
                     let option = $("<option></option>");
@@ -251,4 +251,3 @@ Ordinal.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
 });
 
 module.exports = Ordinal;
-

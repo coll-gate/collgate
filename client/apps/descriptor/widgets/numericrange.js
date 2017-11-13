@@ -22,7 +22,7 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            let input = this._createStdInput(parent, "glyphicon-cog");
+            let input = this._createStdInput(parent, "fa-cog");
 
             this.parent = parent;
             this.readOnly = true;
@@ -196,4 +196,3 @@ NumericRange.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.exten
 });
 
 module.exports = NumericRange;
-

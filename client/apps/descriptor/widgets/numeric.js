@@ -23,7 +23,7 @@ _.extend(Numeric.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            let input = this._createStdInput(parent, "glyphicon-cog");
+            let input = this._createStdInput(parent, "fa-cog");
 
             this.parent = parent;
             this.readOnly = true;
