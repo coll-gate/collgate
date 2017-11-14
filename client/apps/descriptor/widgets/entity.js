@@ -23,14 +23,15 @@ let Entity = function () {
 };
 
 _.extend(Entity.prototype, DescriptorFormatType.prototype, {
-    create: function (format, parent, readOnly, descriptorTypeGroup, descriptorTypeId, options) {
-        readOnly || (readOnly = false);
+    create: function (format, parent, options) {
         options || (options = {
+            history: false,
+            readOnly: false,
             multiple: false
         });
 
-        if (readOnly) {
-            let input = this._createStdInput(parent, "fa-share");
+        if (options.readOnly) {
+            let input = this._createStdInput(parent, "fa-share", options.history);
 
             this.parent = parent;
             this.readOnly = true;
@@ -40,7 +41,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = true;
 
                 let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-                this.groupEl = this._createInputGroup(parent, "fa-share", select);
+                this.groupEl = this._createInputGroup(parent, "fa-share", select, options.history);
 
                 // init the autocomplete
                 let url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
@@ -110,7 +111,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = false;
 
                 let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-                this.groupEl = this._createInputGroup(parent, "fa-share", select);
+                this.groupEl = this._createInputGroup(parent, "fa-share", select, options.history);
 
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
@@ -178,7 +179,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues, options) {
         if (!this.el || !this.parent) {
             return;
         }

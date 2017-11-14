@@ -72,8 +72,9 @@ class CollGateAudit(ApplicationMain):
 
         audit_module = Module('audit', base_url='coll-gate')
         audit_module.include_urls((
-            'base',)
-        )
+            'base',
+            'history'
+        ))
 
         # ignore audit from content types
         audit_module.ignored_content_types = [

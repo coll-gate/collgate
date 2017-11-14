@@ -22,20 +22,22 @@ let EnumSingle = function() {
 };
 
 _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, descriptorTypeGroup, descriptorTypeId, options) {
-        readOnly || (readOnly = false);
+    create: function(format, parent, options) {
         options || (options = {
-            multiple: false
+            readOnly: false,
+            history: false,
+            multiple: false,
+            descriptorTypeId: 0
         });
 
-        if (readOnly) {
+        if (options.readOnly) {
             let input = null;
 
             // autocomplete or dropdown
             if (format.list_type === "autocomplete") {
-                input = this._createStdInput(parent, "fa-list");
+                input = this._createStdInput(parent, "fa-list", options.history);
             } else if (format.list_type === "dropdown") {
-                input = this._createStdInput(parent, "fa-list");
+                input = this._createStdInput(parent, "fa-list", options.history);
             }
 
             this.parent = parent;
@@ -46,10 +48,10 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = true;
 
                 let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-                this.groupEl = this._createInputGroup(parent, "fa-list", select);
+                this.groupEl = this._createInputGroup(parent, "fa-list", select, options.history);
 
                 // init the autocomplete
-                let url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
+                let url = window.application.url(['descriptor', 'type', options.descriptorTypeId]);
                 let initials = [];
 
                 let container = parent.closest('div.modal-dialog').parent();
@@ -115,7 +117,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
                 // init the selectpicker
-                let url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
+                let url = window.application.url(['descriptor', 'type', options.descriptorTypeId]);
 
                 // refresh values
                 this.promise = $.ajax({
@@ -191,14 +193,18 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues, options) {
+        options || (options = {
+            descriptorTypeId: 0
+        });
+
         if (!this.el || !this.parent) {
             return;
         }
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        let url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
+        let url = window.application.url(['descriptor', 'type', options.descriptorTypeId]);
 
         if (this.readOnly) {
             let type = this;

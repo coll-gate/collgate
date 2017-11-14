@@ -13,6 +13,7 @@ let ItemView = require('../../main/views/itemview');
 let View = ItemView.extend({
     tagName: 'div',
     template: require('../templates/describabledetails.html'),
+
     templateContext: function () {
         return {
             panels: this.descriptorMetaModelLayout.panels,
@@ -22,15 +23,16 @@ let View = ItemView.extend({
 
     ui: {
         "descriptor": "tr.descriptor",
-        "modify": "button.modify"
+        "modify": "button.modify",
+        "showDescriptorHistory": "span.show-descriptor-history"
     },
 
     triggers: {
-
     },
 
     events: {
-        "click @ui.modify": "onModify"
+        "click @ui.modify": "onModify",
+        "click @ui.showDescriptorHistory": "onShowDescriptorHistory"
     },
 
     initialize: function(options) {
@@ -59,8 +61,13 @@ let View = ItemView.extend({
 
             let widget = application.descriptor.widgets.newElement(format.type);
             if (widget) {
-                widget.create(format, el.children('td.descriptor-value'), true, descriptorType.group, descriptorType.id);
-                widget.set(format, true, values, descriptorType.group, descriptorType.id);
+                widget.create(format, el.children('td.descriptor-value'), {
+                    readOnly: true,
+                    history: true,
+                    descriptorTypeId: descriptorType.id
+                });
+
+                widget.set(format, true, values, {descriptorTypeId: descriptorType.id});
             }
 
             // save the descriptor format type widget instance
@@ -111,6 +118,30 @@ let View = ItemView.extend({
 
     onModify: function () {
 
+    },
+
+    onShowHistory: function() {
+
+    },
+
+    onShowDescriptorHistory: function(e) {
+        let tr = $(e.target).closest("tr");
+        let panelIndex = tr.attr("panel-index");
+        let index = tr.attr("index");
+
+        let dmt = this.descriptorMetaModelLayout.panels[panelIndex].descriptor_model.descriptor_model_types[index];
+        if (dmt && dmt.widget) {
+            let tokens = this.model.url().split('/');
+
+            let appLabel = tokens[tokens.length-4];
+            let modelName = tokens[tokens.length-3];
+            let objectId = tokens[tokens.length-2];
+            let valueName = '#' + dmt.name;
+
+            let options = {};
+
+            dmt.widget.showHistory(appLabel, modelName, objectId, valueName, dmt, options);
+        }
     }
 });
 

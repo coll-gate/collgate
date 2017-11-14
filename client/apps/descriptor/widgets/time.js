@@ -19,11 +19,14 @@ let TimeType = function() {
 };
 
 _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly) {
-        readOnly || (readOnly = false);
+    create: function(format, parent, options) {
+        options || (options = {
+            readOnly: false,
+            history: false
+        });
 
-        if (readOnly) {
-            let input = this._createStdInput(parent, "fa-clock-o");
+        if (options.readOnly) {
+            let input = this._createStdInput(parent, "fa-clock-o", options.history);
 
             this.parent = parent;
             this.readOnly = true;
@@ -35,6 +38,10 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
 
             group.append(input);
             group.append(glyph);
+
+            if (options.history) {
+                // @todo
+            }
 
             parent.append(group);
 
@@ -101,7 +108,7 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues) {
         if (!this.el || !this.parent) {
             return;
         }

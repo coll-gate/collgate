@@ -563,10 +563,15 @@ let View = Marionette.View.extend({
                             }
 
                             let widget = application.descriptor.widgets.newElement(format.type);
-                            widget.create(format, view.ui.condition_values, false, view.descriptorType.group, view.descriptorType.id);
+                            widget.create(format, view.ui.condition_values, {
+                                readOnly: false,
+                                descriptorTypeId: view.descriptorType.id
+                            });
 
                             if (view.definesValues) {
-                                widget.set(format, view.definesValues, view.defaultValues, view.descriptorType.group, view.descriptorType.id);
+                                widget.set(format, view.definesValues, view.defaultValues, {
+                                    descriptorTypeId: view.descriptorType.id
+                                });
                             }
 
                             // save the descriptor format type widget instance

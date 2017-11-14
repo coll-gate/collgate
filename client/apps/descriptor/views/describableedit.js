@@ -75,8 +75,12 @@ let View = ItemView.extend({
 
             let widget = application.descriptor.widgets.newElement(format.type);
             if (widget) {
-                widget.create(format, el.children('td.descriptor-value'), false, descriptorType.group, descriptorType.id);
-                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+                widget.create(format, el.children('td.descriptor-value'), {
+                    readOnly: false,
+                    descriptorTypeId: descriptorType.id
+                });
+
+                widget.set(format, definesValues, defaultValues, {descriptorTypeId: descriptorType.id});
 
                 if (descriptorModelType.set_once && exists) {
                     widget.disable();

@@ -19,11 +19,14 @@ let DateTimeType = function() {
 };
 
 _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly) {
-        readOnly || (readOnly = false);
+    create: function(format, parent, options) {
+        options || (options = {
+            history: false,
+            readOnly: false
+        });
 
-        if (readOnly) {
-            let input = this._createStdInput(parent, "fa-calendar-times-o");
+        if (options.readOnly) {
+            let input = this._createStdInput(parent, "fa-calendar-times-o", options.history);
 
             this.parent = parent;
             this.readOnly = true;
@@ -32,6 +35,10 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
             let group = $('<div class="input-group"></div>');
             let input = $('<input class="form-control" width="100%">');
             let glyph = $('<span class="input-group-addon"><span class="fa fa-calendar-times-o"></span></span>').css('cursor', 'pointer');
+
+            if (options.history) {
+                // @todo
+            }
 
             group.append(input);
             group.append(glyph);
@@ -101,7 +108,7 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues, options) {
         if (!this.el || !this.parent) {
             return;
         }

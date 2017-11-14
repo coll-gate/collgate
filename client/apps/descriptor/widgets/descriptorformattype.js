@@ -8,6 +8,8 @@
  * @details 
  */
 
+let DescribableValueHistoryDialog = require('../views/describablevaluehistory');
+
 let DescriptorFormatType = function() {
     this.name = "";         // format type name
     this.group = "";        // related informal group name
@@ -43,7 +45,7 @@ DescriptorFormatType.prototype = {
      * @private
      */
     _createStdInput: function(parent, glyphicon, history) {
-        history = typeof history === "undefined" ? true : history;
+        history || (history = false);
 
         let group = $('<div class="input-group"></div>');
         let glyph = $('<span class="input-group-addon"></span>');
@@ -65,16 +67,13 @@ DescriptorFormatType.prototype = {
 
         // want history
         if (history) {
-            let history = $('<span class="input-group-addon btn btn-xs btn-default"><span class="fa fa-line-chart"></span></span>');
+            let history = $('<span class="input-group-addon btn btn-xs btn-default show-descriptor-history"><span class="fa fa-line-chart"></span></span>');
             history.attr("title", _t("Show history of the value"));
             history.css(this.historySpanStyle)
                 .css('cursor', 'pointer')
                 .css('border-left-width', '0px');  // avoid double border
 
             group.append(history);
-
-            // click event
-            history.on("click", $.proxy(this.showHistory, this));
         }
 
         group.append(glyph);
@@ -92,7 +91,7 @@ DescriptorFormatType.prototype = {
      * @return {*|jQuery|HTMLElement} The created group
      */
     _createInputGroup: function(parent, glyphicon, input, history) {
-        history = typeof history === "undefined" ? true : history;
+        history || (history = false);
 
         let group = $('<div class="input-group"></div>');
         let glyph = $('<span class="input-group-addon"></span>');
@@ -110,13 +109,10 @@ DescriptorFormatType.prototype = {
 
         // want history
         if (history) {
-            let history = $('<span class="input-group-addon btn btn-xs btn-default"><span class="fa fa-history"></span></span>');
+            let history = $('<span class="input-group-addon btn btn-xs btn-default show-descriptor-history"><span class="fa fa-history"></span></span>');
             history.css('border-left-width', '0px');  // avoid double border
 
             group.append(history);
-
-            // click event
-            history.on("click", $.proxy(this.showHistory, this));
         }
 
         group.append(glyph);
@@ -126,7 +122,15 @@ DescriptorFormatType.prototype = {
         return group;
     },
 
-    create: function(format, parent, readOnly) {
+    /**
+     * Create the widget.
+     * @param format
+     * @param parent
+     * @param options An object of options :
+     *  - bool readOnly For reading only if true
+     *  - bool history History button
+     */
+    create: function(format, parent, options) {
         /* create/init the widget */
     },
 
@@ -148,7 +152,7 @@ DescriptorFormatType.prototype = {
         /* disable the widget */
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues, options) {
         /* define and format value(s) */
     },
 
@@ -179,8 +183,37 @@ DescriptorFormatType.prototype = {
         /* bind an array of widget that are shown or hidden according the the given condition and values */
     },
 
-    showHistory: function() {
-        alert("@todo");
+    /**
+     * Show a list with the previous value, and in edit mode gives the ability to set one.
+     * @param appLabel Name of the application of the related model name.
+     * @param modelName Model name.
+     * @param objectId Entity integer identifier.
+     * @param valueName Name of the value, of the descriptor model type.
+     * @param descriptorModelType Descriptor model type.
+     * @param options
+     */
+    showHistory: function(appLabel, modelName, objectId, valueName, descriptorModelType, options) {
+        options || (options = {});
+
+        // refresh values
+        this.promise = $.ajax({
+            url: window.application.url(['audit', 'search', 'history', 'value']),
+            dataType: 'json',
+            data: {
+                app_label: appLabel,
+                model: modelName,
+                object_id: objectId,
+                value: valueName
+            }
+        }).done(function (data) {
+            let dialog = new DescribableValueHistoryDialog({
+                entries: data.items,
+                readOnly: this.readOnly,
+                descriptorModelType: descriptorModelType
+            });
+
+            dialog.render();
+        });
     }
 };
 

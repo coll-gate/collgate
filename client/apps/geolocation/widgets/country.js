@@ -20,14 +20,15 @@ let CountryType = function () {
 };
 
 _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
-    create: function (format, parent, readOnly, descriptorTypeGroup, descriptorTypeId, options) {
-        readOnly || (readOnly = false);
+    create: function (format, parent, options) {
         options || (options = {
+            readOnly: false,
+            history: false,
             multiple: false
         });
 
-        if (readOnly) {
-            let input = this._createStdInput(parent, "fa-globe");
+        if (options.readOnly) {
+            let input = this._createStdInput(parent, "fa-globe", options.history);
 
             this.parent = parent;
             this.readOnly = true;
@@ -37,6 +38,10 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
             let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             parent.append(select);
             this.groupEl = this._createInputGroup(parent, "fa-globe", select);
+
+            if (options.history) {
+                // @todo
+            }
 
             // init the autocomplete
             let url = window.application.url(['geolocation', 'country', 'search']);
@@ -136,7 +141,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues, options) {
         if (!this.el || !this.parent) {
             return;
         }

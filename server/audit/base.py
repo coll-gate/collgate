@@ -76,7 +76,7 @@ def search_audit_for_username(request):
             entity = audit.content_type.get_object_for_this_type(id=audit.object_id)
             entity_name = entity.natural_name()
         except ObjectDoesNotExist:
-            fields = json.loads(audit.fields)
+            fields = audit.fields
 
             # get name in fields if the entity no longer exists, those are the common fields for name
             if 'name' in fields:
@@ -162,7 +162,7 @@ def search_audit_for_entity(request):
             'content_type': '.'.join(audit.content_type.natural_key()),
             'object_id': entity.id,
             'object_name': entity.natural_name(),
-            'fields': json.loads(audit.fields)
+            'fields': audit.fields
         })
 
     # prev cursor (desc order)
@@ -184,8 +184,7 @@ def search_audit_for_entity(request):
         'items': audit_list,
         'prev': prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
-        'total_count': None
+        'next': next_cursor
     }
 
     return HttpResponseRest(request, results)

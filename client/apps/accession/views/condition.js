@@ -87,12 +87,16 @@ let View = Marionette.View.extend({
                     'overlap',
                     'not_overlap'
                 ].includes(this.ui.condition.val())) {
-                this.widget.create(column.format, this.ui.field_value_group, false, column.group, column.type, {
+                this.widget.create(column.format, this.ui.field_value_group, {
+                    readOnly: false,
+                    descriptorTypeId: column.type,
                     multiple: true,
                     extended_search: false
                 });
             } else {
-                this.widget.create(column.format, this.ui.field_value_group, false, column.group, column.type, {
+                this.widget.create(column.format, this.ui.field_value_group, {
+                    readOnly: false,
+                    descriptorTypeId: column.type,
                     multiple: false,
                     extended_search: false
                 });
@@ -209,7 +213,11 @@ let View = Marionette.View.extend({
         if (column.format) {
             this.widget = application.descriptor.widgets.newElement(column.format.type);
             if (this.widget) {
-                this.widget.create(column.format, this.ui.field_value_group, false, column.group, column.type, {extended_search: false});
+                this.widget.create(column.format, this.ui.field_value_group, {
+                    readOnly: false,
+                    descriptorTypeId: column.type,
+                    extended_search: false
+                });
             }
         } else {
             let input = $('<input type="text" class="search-value form-control" name="search-value"/>');

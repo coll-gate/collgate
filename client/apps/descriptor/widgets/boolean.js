@@ -19,18 +19,21 @@ let BooleanType = function() {
 };
 
 _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly) {
-        readOnly || (readOnly = false);
+    create: function(format, parent, options) {
+        options || (options = {
+            history: false,
+            readOnly: false
+        });
 
-        if (readOnly) {
-            let input = this._createStdInput(parent, "fa-check");
+        if (options.readOnly) {
+            let input = this._createStdInput(parent, "fa-check", options.history);
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
             let select = $('<select data-width="100%"></select>');
-            this.groupEl = this._createInputGroup(parent, "fa-check", select);
+            this.groupEl = this._createInputGroup(parent, "fa-check", select, options.history);
 
             // true
             let option = $("<option></option>");
@@ -78,7 +81,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues, options) {
         if (!this.el || !this.parent) {
             return;
         }

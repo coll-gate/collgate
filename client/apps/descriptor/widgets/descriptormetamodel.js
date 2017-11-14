@@ -21,14 +21,15 @@ let DescriptorMetaModel = function () {
 };
 
 _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
-    create: function (format, parent, readOnly, descriptorTypeGroup, descriptorTypeId, options) {
-        readOnly || (readOnly = false);
+    create: function (format, parent, readOnly, options) {
         options || (options = {
+            readOnly: false,
+            history: false,
             multiple: false
         });
 
-        if (readOnly) {
-            let input = this._createStdInput(parent, "fa-folder-open");
+        if (options.readOnly) {
+            let input = this._createStdInput(parent, "fa-folder-open", options.history);
 
             this.parent = parent;
             this.readOnly = true;
@@ -36,6 +37,10 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
         } else {
             let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             this.groupEl = this._createInputGroup(parent, "fa-th-large", select);
+
+            if (options.history) {
+                // @todo
+            }
 
             // init the autocomplete
             let url = window.application.url(['descriptor', 'meta-model']);
@@ -128,7 +133,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues, options) {
         if (!this.el || !this.parent) {
             return;
         }

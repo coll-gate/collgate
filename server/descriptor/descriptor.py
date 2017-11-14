@@ -34,6 +34,46 @@ class RestDescriptor(RestHandler):
     name = 'descriptor'
 
 
+class RestDescriptorType(RestDescriptor):
+    regex = r'^type/$'
+    suffix = 'type'
+
+
+class RestDescriptorTypeId(RestDescriptorType):
+    regex = r'^(?P<typ_id>[0-9]+)/$'
+    suffix = 'id'
+
+
+class RestDescriptorTypeIdValue(RestDescriptorTypeId):
+    regex = r'^value/$'
+    suffix = 'value'
+
+
+class RestDescriptorTypeIdValueDisplay(RestDescriptorTypeIdValue):
+    regex = r'^display/$'
+    suffix = 'display'
+
+
+class RestDescriptorTypeIdValueDisplaySearch(RestDescriptorTypeIdValueDisplay):
+    regex = r'^search/$'
+    suffix = 'search'
+
+
+class RestDescriptorTypeIdValueId(RestDescriptorTypeIdValue):
+    regex = r'^(?P<val_id>[a-zA-Z0-9:_\.]+)/$'
+    suffix = 'id'
+
+
+class RestDescriptorTypeIdValueIdField(RestDescriptorTypeIdValueId):
+    regex = r'^(?P<field>value0|value1)/$'
+    suffix = 'field'
+
+
+class RestDescriptorTypeIdValueIdDisplay(RestDescriptorTypeIdValueId):
+    regex = r'^display/$'
+    suffix = 'display'
+
+
 class RestDescriptorGroup(RestDescriptor):
     regex = r'^group/$'
     suffix = 'group'
@@ -74,12 +114,12 @@ class RestDescriptorGroupIdTypeIdValue(RestDescriptorGroupIdTypeId):
     suffix = 'value'
 
 
-class RestDescriptorModelIdTypeIdValueDisplay(RestDescriptorGroupIdTypeIdValue):
+class RestDescriptorGroupIdTypeIdValueDisplay(RestDescriptorGroupIdTypeIdValue):
     regex = r'^display/$'
     suffix = 'display'
 
 
-class RestDescriptorModelIdTypeIdValueDisplaySearch(RestDescriptorModelIdTypeIdValueDisplay):
+class RestDescriptorGroupIdTypeIdValueDisplaySearch(RestDescriptorGroupIdTypeIdValueDisplay):
     regex = r'^search/$'
     suffix = 'search'
 
@@ -403,6 +443,27 @@ def search_descriptor_types_for_group(request, grp_id):
     return HttpResponseRest(request, response)
 
 
+@RestDescriptorTypeId.def_auth_request(Method.GET, Format.JSON)
+def get_descriptor_type(request, typ_id):
+    descr_type = get_object_or_404(DescriptorType, id=int(typ_id))
+
+    count = descr_type.count_num_values()
+
+    response = {
+        'id': descr_type.id,
+        'name': descr_type.name,
+        'code': descr_type.code,
+        'description': descr_type.description,
+        'group': descr_type.group_id,
+        'num_descriptor_values': count,
+        'format': descr_type.format,
+        'can_delete': descr_type.can_delete,
+        'can_modify': descr_type.can_modify
+    }
+
+    return HttpResponseRest(request, response)
+
+
 @RestDescriptorGroupIdTypeId.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_type_for_group(request, grp_id, typ_id):
     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
@@ -619,7 +680,7 @@ def update_descriptor_type(request, grp_id, typ_id):
 
 
 @RestDescriptorGroupIdTypeIdValue.def_auth_request(Method.GET, Format.JSON)
-def get_descriptor_values_for_type(request, grp_id, typ_id):
+def get_descriptor_values_for_group_and_type(request, grp_id, typ_id):
     """
     Get the list of values for a given group and type of descriptor and according to the current language.
     """
@@ -630,6 +691,43 @@ def get_descriptor_values_for_type(request, grp_id, typ_id):
     sort_by = request.GET.get('sort_by', 'id')
 
     descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+
+    if sort_by.startswith('-'):
+        order_by = sort_by[1:]
+        reverse = True
+    elif sort_by.startswith('+'):
+        order_by = sort_by[1:]
+        reverse = False
+    else:
+        order_by = sort_by
+        reverse = False
+
+    prev_cursor, next_cursor, values_list = descr_type.get_values(order_by, reverse, cursor, limit)
+
+    results = {
+        'sort_by': sort_by,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+        'format': descr_type.format,
+        'items': values_list,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorTypeIdValue.def_auth_request(Method.GET, Format.JSON)
+def get_descriptor_values_for_type(request, typ_id):
+    """
+    Get the list of values for a given type of descriptor and according to the current language.
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    sort_by = request.GET.get('sort_by', 'id')
+
+    descr_type = get_object_or_404(DescriptorType, id=int(typ_id))
 
     if sort_by.startswith('-'):
         order_by = sort_by[1:]
@@ -854,7 +952,7 @@ def delete_value_for_descriptor_type(request, grp_id, typ_id, val_id):
 
 
 @RestDescriptorGroupIdTypeIdValueId.def_auth_request(Method.GET, Format.JSON)
-def get_value_for_descriptor_type(request, grp_id, typ_id, val_id):
+def get_value_for_descriptor_group_and_type(request, grp_id, typ_id, val_id):
     """
     Get a single value for a type of descriptor.
     """
@@ -871,8 +969,26 @@ def get_value_for_descriptor_type(request, grp_id, typ_id, val_id):
     return HttpResponseRest(request, result)
 
 
+@RestDescriptorTypeIdValueId.def_auth_request(Method.GET, Format.JSON)
+def get_value_for_descriptor_type(request, typ_id, val_id):
+    """
+    Get a single value for a type of descriptor.
+    """
+    descr_type = get_object_or_404(DescriptorType, id=int(typ_id))
+    value = descr_type.get_value(val_id)
+
+    result = {
+        'parent': value[0],
+        'ordinal': value[1],
+        'value0': value[2],
+        'value1': value[3]
+    }
+
+    return HttpResponseRest(request, result)
+
+
 @RestDescriptorGroupIdTypeIdValueIdDisplay.def_auth_request(Method.GET, Format.JSON)
-def get_display_value_for_descriptor_type(request, grp_id, typ_id, val_id):
+def get_display_value_for_descriptor_type_and_group(request, grp_id, typ_id, val_id):
     """
     Get a single value for a type of descriptor.
     """
@@ -925,9 +1041,63 @@ def get_display_value_for_descriptor_type(request, grp_id, typ_id, val_id):
     return HttpResponseRest(request, result)
 
 
+@RestDescriptorTypeIdValueIdDisplay.def_auth_request(Method.GET, Format.JSON)
+def get_display_value_for_descriptor_type(request, typ_id, val_id):
+    """
+    Get a single value for a type of descriptor.
+    """
+    descr_type = get_object_or_404(DescriptorType, id=int(typ_id))
+
+    format_type = descr_type.format
+    list_type = format_type.get('list_type', '')
+
+    if not list_type:
+        raise SuspiciousOperation(_("This type of descriptor does not contains a list"))
+
+    value = descr_type.get_value(val_id)
+
+    if format_type['display_fields'] == 'value0':
+        result = {
+            'id': val_id,
+            'value': val_id,
+            'label': value[2]
+        }
+    elif format_type['display_fields'] == 'value1':
+        result = {
+            'id': val_id,
+            'value': val_id,
+            'label': value[3]
+        }
+    elif format_type['display_fields'] == 'value0-value1':
+        result = {
+            'id': val_id,
+            'value': val_id,
+            'label': "%s - %s" % (value[2], value[3])
+        }
+    elif format_type['display_fields'] == 'ordinal-value0':
+        result = {
+            'id': val_id,
+            'value': val_id,
+            'label': "%i - %s" % (value[1], value[2])
+        }
+    elif format_type['display_fields'] == 'hier0-value1':
+        shift_size = value[2].count('.')
+
+        result = {
+            'id': val_id,
+            'value': val_id,
+            'label': value[3],
+            'offset': shift_size
+        }
+    else:
+        result = {}
+
+    return HttpResponseRest(request, result)
+
+
 @RestDescriptorGroupIdTypeIdValueIdField.def_auth_request(
     Method.GET, Format.JSON)
-def get_labels_for_descriptor_type_field(request, grp_id, typ_id, val_id, field):
+def get_labels_for_descriptor_type_group_and_field(request, grp_id, typ_id, val_id, field):
     """
     Get all translations for a specific field of a value of descriptor.
     """
@@ -935,6 +1105,49 @@ def get_labels_for_descriptor_type_field(request, grp_id, typ_id, val_id, field)
         raise SuspiciousOperation(_('Field name must be value0 or value1'))
 
     descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+
+    format_type = descr_type.format
+
+    results = {}
+
+    # internally stored values
+    if descr_type.values is not None:
+        values = descr_type.values
+
+        if format_type['trans']:
+            for lang, lvalues in values.items():
+                if lvalues.get(val_id):
+                    results[lang] = lvalues[val_id].get(field)
+        else:
+            results['en'] = values[val_id][field]
+    else:
+        # data stored in table of values
+        descr_values = descr_type.values_set.filter(code=val_id)
+
+        for v in descr_values:
+            if field == 'value0':
+                results[v.language] = v.value0
+            elif field == 'value1':
+                results[v.language] = v.value1
+
+    # complete with missing languages
+    for lang, lang_label in InterfaceLanguages.choices():
+        if lang not in results:
+            results[lang] = ""
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorTypeIdValueIdField.def_auth_request(
+    Method.GET, Format.JSON)
+def get_labels_for_descriptor_type_field(request, typ_id, val_id, field):
+    """
+    Get all translations for a specific field of a value of descriptor.
+    """
+    if field not in ('value0', 'value1'):
+        raise SuspiciousOperation(_('Field name must be value0 or value1'))
+
+    descr_type = get_object_or_404(DescriptorType, id=int(typ_id))
 
     format_type = descr_type.format
 
@@ -1035,8 +1248,8 @@ def set_values_for_descriptor_type(request, grp_id, typ_id, val_id, field):
 
 
 @cache_page(60 * 60 * 24)
-@RestDescriptorModelIdTypeIdValueDisplay.def_auth_request(Method.GET, Format.JSON)
-def get_all_display_values_for_descriptor_type(request, grp_id, typ_id):
+@RestDescriptorGroupIdTypeIdValueDisplay.def_auth_request(Method.GET, Format.JSON)
+def get_all_display_values_for_descriptor_group_and_type(request, grp_id, typ_id):
     """
     Returns all the value of the related type of descriptor order and formatted as described.
     """
@@ -1102,8 +1315,76 @@ def get_all_display_values_for_descriptor_type(request, grp_id, typ_id):
     return HttpResponseRest(request, values)
 
 
-@RestDescriptorModelIdTypeIdValueDisplaySearch.def_auth_request(Method.GET, Format.JSON, parameters=('value',))
-def search_display_value_for_descriptor_type(request, grp_id, typ_id):
+@cache_page(60 * 60 * 24)
+@RestDescriptorTypeIdValueDisplay.def_auth_request(Method.GET, Format.JSON)
+def get_all_display_values_for_descriptor_type(request, typ_id):
+    """
+    Returns all the value of the related type of descriptor order and formatted as described.
+    """
+    dt = get_object_or_404(DescriptorType, id=int(typ_id))
+
+    limit = 30
+
+    format_type = dt.format
+    list_type = format_type.get('list_type', '')
+
+    # safe limitation
+    if not list_type:
+        raise SuspiciousOperation(_("This type of descriptor does not contains a list"))
+    elif list_type == 'dropdown':
+        limit = 512
+    elif list_type == 'autocomplete':
+        raise SuspiciousOperation(_("List of values are not available for drop-down"))
+
+    sort_by = format_type.get('sortby_field', 'id')
+    values = []
+
+    c, n, values_list = dt.get_values(sort_by, False, None, limit)
+
+    if format_type['display_fields'] == 'value0':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value0']
+            })
+    elif format_type['display_fields'] == 'value1':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value1']
+            })
+    elif format_type['display_fields'] == 'value0-value1':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': "%s - %s" % (value['value0'], value['value1'])
+            })
+    elif format_type['display_fields'] == 'ordinal-value0':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': "%i - %s" % (value['ordinal'], value['value0'])
+            })
+    elif format_type['display_fields'] == 'hier0-value1':
+        for value in values_list:
+            shift_size = value['value0'].count('.')
+
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value1'],
+                'offset': shift_size
+            })
+
+    return HttpResponseRest(request, values)
+
+
+@RestDescriptorGroupIdTypeIdValueDisplaySearch.def_auth_request(Method.GET, Format.JSON, parameters=('value',))
+def search_display_value_for_descriptor_group_and_type(request, grp_id, typ_id):
     """
     Search and returns a list of value from the related type of descriptor and formatted as described.
     """
@@ -1112,6 +1393,79 @@ def search_display_value_for_descriptor_type(request, grp_id, typ_id):
     limit = results_per_page
 
     dt = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+
+    format_type = dt.format
+    list_type = format_type.get('list_type', '')
+
+    if not list_type:
+        raise SuspiciousOperation(_("This type of descriptor does not contains a list"))
+
+    search_field = format_type.get('search_field', 'value0')
+    value = request.GET['value']
+
+    values = []
+
+    prev_cursor, next_cursor, values_list = dt.search_values(value, search_field, cursor, limit)
+
+    if format_type['display_fields'] == 'value0':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value0']
+            })
+    elif format_type['display_fields'] == 'value1':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value1']
+            })
+    elif format_type['display_fields'] == 'value0-value1':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': "%s - %s" % (value['value0'], value['value1'])
+            })
+    elif format_type['display_fields'] == 'ordinal-value0':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': "%i - %s" % (value['ordinal'], value['value0'])
+            })
+    elif format_type['display_fields'] == 'hier0-value1':
+        for value in values_list:
+            shift_size = value['value0'].count('.')
+
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value1'],
+                'offset': shift_size
+            })
+
+    results = {
+        'items': values,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorTypeIdValueDisplaySearch.def_auth_request(Method.GET, Format.JSON, parameters=('value',))
+def search_display_value_for_descriptor_group_and_type(request, typ_id):
+    """
+    Search and returns a list of value from the related type of descriptor and formatted as described.
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    dt = get_object_or_404(DescriptorType, id=int(typ_id))
 
     format_type = dt.format
     list_type = format_type.get('list_type', '')

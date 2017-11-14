@@ -20,14 +20,16 @@ let CityType = function () {
 };
 
 _.extend(CityType.prototype, DescriptorFormatType.prototype, {
-    create: function (format, parent, readOnly, descriptorTypeGroup, descriptorTypeId, options) {
-        readOnly || (readOnly = false);
-        options || (options = {});
-        options.multiple || (options.multiple = false);
-        options.extended_search === false || (options.extended_search = true);
+    create: function (format, parent, options) {
+        options || (options = {
+            readOnly: false,
+            history: false,
+            multiple: false,
+            extended_search: true
+        });
 
-        if (readOnly) {
-            let input = this._createStdInput(parent, "fa-map-signs");
+        if (options.readOnly) {
+            let input = this._createStdInput(parent, "fa-map-signs", options.history);
 
             this.parent = parent;
             this.readOnly = true;
@@ -37,6 +39,10 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
             let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             parent.append(select);
             this.groupEl = this._createInputGroup(parent, "fa-map-signs", select);
+
+            if (options.history) {
+                // @todo
+            }
 
             // init the autocomplete
             let url = window.application.url(['geolocation', 'city', 'search']);
@@ -113,7 +119,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         } else {
             let select = $('<select style="width: 100%;"></select>');
             parent.append(select);
-            this.groupEl = this._createInputGroup(parent, "fa-map-signs", select);
+            this.groupEl = this._createInputGroup(parent, "fa-map-signs", select, options.history);
 
             // init the autocomplete
             let url = window.application.url('geolocation');
@@ -415,7 +421,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues, options) {
         if (!this.el || !this.parent) {
             return;
         }

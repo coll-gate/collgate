@@ -19,15 +19,22 @@ let Media = function() {
 };
 
 _.extend(Media.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, entityModel) {
-        readOnly || (readOnly = false);
+    create: function(format, parent, options) {
+        options || (options = {
+            readOnly: false,
+            history: false
+        });
 
         this.value = null;
 
-        if (readOnly) {
+        if (options.readOnly) {
             let group = $('<div class="input-group"></div>');
             let glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
             glyph.css(this.spanStyle);
+
+            if (options.history) {
+                // @todo
+            }
 
             if (format.media_inline) {
                 /* miniature + download */
@@ -145,6 +152,10 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             let progress = $('<span class="input-group-addon progress"><span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">0%</span></span>');
             let fileName = $('<input type="text" class="form-control" readonly>');
             let glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
+
+            if (options.history) {
+                // @todo
+            }
 
             progress.css({
                 'width': '30%',
@@ -380,7 +391,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues) {
+    set: function (format, definesValues, defaultValues, options) {
         if (!this.el || !this.parent) {
             return;
         }

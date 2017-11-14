@@ -18,8 +18,11 @@ let Ordinal = function() {
 };
 
 _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly) {
-        readOnly || (readOnly = false);
+    create: function(format, parent, options) {
+        options || (options = {
+            readOnly: false,
+            history: false
+        });
 
         if ((format.range[1] - format.range[0] + 1) <= 256) {
             this.isInput = false;
@@ -27,8 +30,8 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
             this.isInput = true;
         }
 
-        if (readOnly) {
-            let input = this._createStdInput(parent, "fa-ellipsis-v");
+        if (options.readOnly) {
+            let input = this._createStdInput(parent, "fa-ellipsis-v", options.history);
 
             this.parent = parent;
             this.readOnly = true;
@@ -36,7 +39,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         } else {
             if (this.isInput) {
                 let input = $('<input" width="100%">');
-                this.groupEl = this._createInputGroup(parent, "fa-ellipsis-v", input);
+                this.groupEl = this._createInputGroup(parent, "fa-ellipsis-v", input, options.history);
 
                 input.numeric({
                     allowPlus: false,
@@ -110,7 +113,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues, options) {
         if (!this.el || !this.parent) {
             return;
         }

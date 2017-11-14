@@ -9,6 +9,7 @@
  */
 
 let DescriptorFormatType = require('./descriptorformattype');
+let DescribableValueHistoryDialog = require('../views/describablevaluehistory');
 let Marionette = require('backbone.marionette');
 
 let StringType = function() {
@@ -19,11 +20,14 @@ let StringType = function() {
 };
 
 _.extend(StringType.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly) {
-        readOnly || (readOnly = false);
+    create: function(format, parent, options) {
+        options || (options = {
+            readOnly: false,
+            history: false
+        });
 
-        if (readOnly) {
-            let input = this._createStdInput(parent, "fa-font");
+        if (options.readOnly) {
+            let input = this._createStdInput(parent, "fa-font", options.history);
 
             // hard limit to 1024 characters
             input.attr('maxlength', 1024);
@@ -36,6 +40,10 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
             let input = $('<input class="form-control" width="100%">');
             let glyph = $('<span class="input-group-addon"><span class="fa fa-font"></span></span>');
             let clean = $('<span class="form-clean-btn action fa fa-eraser"></span>');
+
+            if (options.history) {
+                // @todo
+            }
 
             group.append(input);
             group.append(clean);
@@ -208,6 +216,30 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
             help.text("");
         }
     },
+
+    showHistory: function(appLabel, modelName, objectId, valueName, descriptorModelType, options) {
+        options || (options = {});
+
+        // refresh values
+        this.promise = $.ajax({
+            url: window.application.url(['audit', 'search', 'history', 'value']),
+            dataType: 'json',
+            data: {
+                app_label: appLabel,
+                model: modelName,
+                object_id: objectId,
+                value: valueName
+            }
+        }).done(function (data) {
+            let dialog = new DescribableValueHistoryDialog({
+                entries: data.items,
+                readOnly: this.readOnly,
+                descriptorModelType: descriptorModelType
+            });
+
+            dialog.render();
+        });
+    }
 });
 
 StringType.DescriptorTypeDetailsView = Marionette.View.extend({

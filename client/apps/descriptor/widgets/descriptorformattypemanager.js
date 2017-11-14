@@ -18,8 +18,7 @@ DescriptorFormatTypeManager.prototype = {
     },
 
     getElement: function(formatType) {
-        let element = this.descriptorFormatType[formatType];
-        return element;
+        return this.descriptorFormatType[formatType];
     },
 
     newElement: function(formatType) {

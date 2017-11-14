@@ -13,3 +13,30 @@ div.descriptor-column.unselected span.glyphicon-ok {
 div.descriptor-column.unselected span.glyphicon-plus {
     display: inline;
 }
+
+ul.descriptor-value-history {
+    padding-left: 0px;
+}
+
+span.history-details h4{
+    margin-bottom: 0px;
+}
+
+span.history-date, span.history-username {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+span.history-username {
+    float: right;
+    right: 15px;
+    position: absolute;
+}
+
+span.history-value input {
+    border-top-left-radius: 0px;
+}
+
+span.history-value span.input-group-addon {
+    border-top-right-radius: 0px;
+}

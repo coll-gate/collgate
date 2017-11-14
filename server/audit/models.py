@@ -8,14 +8,13 @@
 # @license MIT (see LICENSE file)
 # @details 
 
-import json
-
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import models, connection
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.postgres.fields import JSONField
 
 from main.models import ChoiceEnum, EntityStatus
 from main.models import IntegerChoice
@@ -113,7 +112,7 @@ class AuditManager(models.Manager):
             content_type=content_type,
             object_id=object_id,
             type=audit_type,
-            fields=json.dumps(fields))
+            fields=fields)
 
         audit.save()
 
@@ -165,7 +164,7 @@ class Audit(models.Model):
 
     type = models.IntegerField(null=False, blank=False, choices=AuditType.choices(), default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
-    fields = models.TextField(null=False, blank=True)
+    fields = JSONField(default={}, null=False, blank=False)
 
     objects = AuditManager()
 

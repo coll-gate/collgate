@@ -40,9 +40,9 @@ let View = Marionette.View.extend({
         this.classificationEntryWidget = application.descriptor.widgets.newElement('entity');
         this.classificationEntryWidget.create(
             {model: 'classification.classificationentry'},
-            this.ui.add_entity_group,
-            false,
-            0, 0);
+            this.ui.add_entity_group, {
+                readOnly: false
+            });
     },
 
     addClassificationEntry: function () {

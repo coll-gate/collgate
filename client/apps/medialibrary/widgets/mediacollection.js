@@ -19,17 +19,23 @@ let MediaCollection = function() {
 };
 
 _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly) {
-        readOnly || (readOnly = false);
+    create: function(format, parent, options) {
+        options || (options = {
+            readOnly: false,
+            history: false
+        });
 
-        if (readOnly) {
-            let input = this._createStdInput(parent, "fa-check-square-o");
+        if (options.readOnly) {
+            let input = this._createStdInput(parent, "fa-check-square-o", options.history);
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
             /* @todo */
+            if (options.history) {
+                // @todo
+            }
 
             this.parent = parent;
             this.el = select;
@@ -62,7 +68,7 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues) {
+    set: function (format, definesValues, defaultValues, options) {
         if (!this.el || !this.parent) {
             return;
         }
@@ -217,4 +223,3 @@ MediaCollection.DescriptorTypeDetailsView = Marionette.View.extend({
 });
 
 module.exports = MediaCollection;
-
