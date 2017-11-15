@@ -184,8 +184,8 @@ class Accession(DescribableEntity):
                 result['primary_classification_entry'] = self.primary_classification_entry_id
 
             if 'descriptors' in self.updated_fields:
-                if hasattr(self, 'descriptors_diff'):
-                    result['descriptors'] = self.descriptors_diff
+                if hasattr(self, 'updated_descriptors'):
+                    result['descriptors'] = self.updated_descriptors
                 else:
                     result['descriptors'] = self.descriptors
 
@@ -327,8 +327,8 @@ class Batch(DescribableEntity):
                 result['name'] = self.name
 
             if 'descriptors' in self.updated_fields:
-                if hasattr(self, 'descriptors_diff'):
-                    result['descriptors'] = self.descriptors_diff
+                if hasattr(self, 'updated_descriptors'):
+                    result['descriptors'] = self.updated_descriptors
                 else:
                     result['descriptors'] = self.descriptors
 
@@ -385,8 +385,8 @@ class Sample(DescribableEntity):
                 result['name'] = self.name
 
             if 'descriptors' in self.updated_fields:
-                if hasattr(self, 'descriptors_diff'):
-                    result['descriptors'] = self.descriptors_diff
+                if hasattr(self, 'updated_descriptors'):
+                    result['descriptors'] = self.updated_descriptors
                 else:
                     result['descriptors'] = self.descriptors
 

@@ -220,7 +220,7 @@ def patch_batch(request, bat_id):
 
                 descriptors_builder.update_associations()
 
-                batch.descriptors_diff = descriptors
+                batch.update_descriptors(descriptors_builder.changed_descriptors())
                 batch.update_field('descriptors')
 
                 batch.save()
@@ -236,7 +236,7 @@ def patch_batch(request, bat_id):
 })
 def delete_batch(request, bat_id):
     batch = get_object_or_404(Batch, id=int(bat_id))
-    # @todo should not delete... archive, maybee delete when no children and just introduction batch ?
+    # @todo should not delete... archive, maybe delete when no children and just introduction batch ?
     batch.delete()
 
     return HttpResponseRest(request, {})

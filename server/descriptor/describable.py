@@ -56,6 +56,7 @@ class DescriptorsBuilder(object):
         self.entity = entity
         self.own_list = []
         self._descriptors = {}
+        self._changed_descriptors = {}
 
     @property
     def descriptors(self):
@@ -207,6 +208,10 @@ class DescriptorsBuilder(object):
                 # use new value if defined, else reuse current
                 self._descriptors[dmt.name] = src_value if src_defined else acc_value
 
+                # keep trace of changed descriptors
+                if src_defined and src_value != acc_value:
+                    self._changed_descriptors[dmt.name] = src_value
+
                 # make the list of descriptors that need to perform a call to own
                 if DescriptorFormatTypeManager.has_external(dt_format):
                     self.own_list.append((dt_format, acc_value, merged_value))
@@ -218,3 +223,10 @@ class DescriptorsBuilder(object):
         """
         for dt_format, old_value, new_value in self.own_list:
             DescriptorFormatTypeManager.own(dt_format, self.entity, old_value, new_value)
+
+    def changed_descriptors(self):
+        """
+        Returns a dict of changed descriptors.
+        :return:
+        """
+        return self._changed_descriptors

@@ -376,8 +376,8 @@ class ClassificationEntry(Entity):
                 result['descriptor_meta_model'] = self.descriptor_meta_model_id
 
             if 'descriptors' in self.updated_fields:
-                if hasattr(self, 'descriptors_diff'):
-                    result['descriptors'] = self.descriptors_diff
+                if hasattr(self, 'updated_descriptors'):
+                    result['descriptors'] = self.updated_descriptors
                 else:
                     result['descriptors'] = self.descriptors
 

@@ -436,7 +436,7 @@ def modify_panel(request, panel_id):
 
                 descriptors_builder.update_associations()
 
-                panel.descriptors_diff = descriptors
+                panel.update_descriptors(descriptors_builder.changed_descriptors())
                 panel.update_field('descriptors')
 
             panel.save()

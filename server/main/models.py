@@ -219,7 +219,6 @@ class Entity(models.Model):
         """
         Update the updated fields with a single or a list of field names.
         :param field_name: String or tuple or list or field names
-        :return:
         """
         if not hasattr(self, 'updated_fields'):
             self.updated_fields = []
@@ -229,6 +228,13 @@ class Entity(models.Model):
                 self.updated_fields.append(field_name)
         elif isinstance(field_name, list) or isinstance(field_name, tuple):
             self.updated_fields += [name for name in field_name if name not in self.updated_fields]
+
+    def update_descriptors(self, descriptors):
+        """
+        Setup the diff of changed descriptors.
+        :param descriptors: Dict of descriptors.
+        """
+        self.updated_descriptors = descriptors
 
     @classmethod
     def is_name_valid(cls, name):

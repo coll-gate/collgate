@@ -314,7 +314,7 @@ def patch_establishment(request, est_id):
 
                 descriptors_builder.update_associations()
 
-                establishment.descriptors_diff = descriptors
+                establishment.update_descriptors(descriptors_builder.changed_descriptors())
                 establishment.update_field('descriptors')
 
             establishment.save()

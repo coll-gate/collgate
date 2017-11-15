@@ -505,7 +505,7 @@ def patch_classification_entry(request, cls_id):
 
                 result['descriptors'] = classification_entry.descriptors
 
-                classification_entry.descriptors_diff = descriptors
+                classification_entry.update_descriptors(descriptors_builder.changed_descriptors())
                 classification_entry.update_field('descriptors')
 
             classification_entry.save()

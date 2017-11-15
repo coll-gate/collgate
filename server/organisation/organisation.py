@@ -331,7 +331,7 @@ def patch_organisation(request, org_id):
 
                 descriptors_builder.update_associations()
 
-                organisation.descriptors_diff = descriptors
+                organisation.update_descriptors(descriptors_builder.changed_descriptors())
                 organisation.update_field('descriptors')
 
             organisation.save()

@@ -88,23 +88,39 @@ def search_audit_value_history_for_entity(request):
     audit_list = []
 
     for audit in audits:
-        # @todo could be in query filter
-        if is_descriptor:
-            descriptors = audit.fields.get("descriptors")
-            if descriptors is None:
-                continue
+        if audit.type == AuditType.CREATE.value:
+            if is_descriptor:
+                descriptors = audit.fields.get("descriptors")
+                if descriptors is None:
+                    continue
 
-            if value_name not in descriptors:
-                continue
+                if value_name not in descriptors:
+                    continue
 
-            # if "descriptors" in audit.fields.get("updated_fields", []):
+                value = descriptors.get(value_name)
+            else:
+                if value_name not in audit.fields:
+                    continue
 
-            value = descriptors.get(value_name)
+                value = audit.fields.get(value_name)
+
+        elif "descriptors" in audit.fields.get("updated_fields", []):
+            if is_descriptor:
+                descriptors = audit.fields.get("descriptors")
+                if descriptors is None:
+                    continue
+
+                if value_name not in descriptors:
+                    continue
+
+                value = descriptors.get(value_name)
+            else:
+                if value_name not in audit.fields:
+                    continue
+
+                value = audit.fields.get(value_name)
         else:
-            if value_name not in audit.fields:
-                continue
-
-            value = audit.fields.get(value_name)
+            continue
 
         audit_list.append({
             'id': audit.id,

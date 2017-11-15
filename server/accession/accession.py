@@ -62,8 +62,7 @@ class RestAccessionId(RestAccessionAccession):
     },
 }, perms={
     'accession.add_accession': _("You are not allowed to create an accession")
-}
-                                         )
+})
 def create_accession(request):
     name = request.data['name']
     code = request.data['code']
@@ -496,7 +495,7 @@ def patch_accession(request, acc_id):
 
                 descriptors_builder.update_associations()
 
-                accession.descriptors_diff = descriptors
+                accession.update_descriptors(descriptors_builder.changed_descriptors())
                 accession.update_field('descriptors')
 
             accession.save()
