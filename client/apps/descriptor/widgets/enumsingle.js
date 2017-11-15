@@ -114,6 +114,10 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
                 this.groupEl = this._createInputGroup(parent, "fa-list", select);
 
+                // undefined value
+                let undefinedOption = $('<option value="null"> - ' + _t("Undefined") + ' - </option>');
+                select.append(undefinedOption);
+
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
                 // init the selectpicker
@@ -257,85 +261,15 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                             });
                         });
                     }
-
-                    // // need to re-init the select2 widget
-                    // this.el.select2('destroy');
-                    //
-                    // // init the autocomplete
-                    // let initials = [];
-                    //
-                    // let container = this.parent.closest('div.modal-dialog').parent();
-                    // if (container.length === 0) {
-                    //     container = this.groupEl;  // parent.closest('div.panel');
-                    // }
-                    //
-                    // let params = {
-                    //     data: initials,
-                    //     dropdownParent: container,
-                    //     ajax: {
-                    //         url: url + 'value/display/search/',
-                    //         dataType: 'json',
-                    //         delay: 250,
-                    //         data: function (params) {
-                    //             params.term || (params.term = '');
-                    //
-                    //             return {
-                    //                 cursor: params.next,
-                    //                 value: params.term
-                    //             };
-                    //         },
-                    //         processResults: function (data, params) {
-                    //             params.next = null;
-                    //
-                    //             if (data.items.length >= 30) {
-                    //                 params.next = data.next || null;
-                    //             }
-                    //
-                    //             let results = [];
-                    //
-                    //             for (let i = 0; i < data.items.length; ++i) {
-                    //                 results.push({
-                    //                     id: data.items[i].id,
-                    //                     text: data.items[i].label
-                    //                 });
-                    //             }
-                    //
-                    //             return {
-                    //                 results: results,
-                    //                 pagination: {
-                    //                     more: params.next != null
-                    //                 }
-                    //             };
-                    //         },
-                    //         cache: true
-                    //     },
-                    //     allowClear: true,
-                    //     minimumInputLength: 3,
-                    //     placeholder: _t("Enter a value.")
-                    // };
-                    //
-                    // // defines temporary value (before waiting)
-                    // this.el.attr('value', defaultValues);
-                    //
-                    // // autoselect the initial value
-                    // $.ajax({
-                    //     type: "GET",
-                    //     url: url + 'value/' + defaultValues + '/display/',
-                    //     dataType: 'json'
-                    // }).done(function (data) {
-                    //     initials.push({id: data.id, text: data.label});
-                    //
-                    //     params.data = initials;
-                    //
-                    //     type.el.select2(params).fixSelect2Position();
-                    //     type.el.val(defaultValues).trigger('change');
-                    //
-                    //     // remove temporary value
-                    //     type.el.removeAttr('value');
-                    // });
                 } else {
                     // defines temporary value (before waiting)
                     this.el.attr('value', defaultValues);
+
+                    // undefined value
+                    if (_.isUndefined(defaultValues) || _.isNull(defaultValues)) {
+                        type.el.val("null").trigger('change');
+                        type.el.selectpicker('refresh');
+                    }
 
                     $.when(this.promise).done(function (data) {
                         type.el.val(defaultValues).trigger('change');
@@ -357,7 +291,8 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 if (this.el.attr('value') !== undefined) {
                     return this.el.attr('value');
                 } else {
-                    return this.el.val();
+                    let val = this.el.val();
+                    return val !== "null" ? val : null;
                 }
             }
         }
