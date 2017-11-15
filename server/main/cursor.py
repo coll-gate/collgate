@@ -501,8 +501,8 @@ class CursorQuery(object):
         self._cursor_built = True
 
     def _parse_and_add_filters(self, filters, depth):
-        if depth >= 3:
-            raise CursorQueryError('Filter max depth allowed is 3')
+        if depth >= 4:
+            raise CursorQueryError('Filter max depth allowed is 4')
 
         select_related = []
 
@@ -603,8 +603,8 @@ class CursorQuery(object):
         if filters is None:
             filters = self._filter_clauses
 
-        if depth >= 3:
-            raise CursorQueryError('Filter max depth allowed is 3')
+        if depth >= 4:
+            raise CursorQueryError('Filter max depth allowed is 4')
 
         db_table = self._model._meta.db_table
         lqs = []

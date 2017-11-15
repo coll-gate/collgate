@@ -27,6 +27,8 @@ let Layout = LayoutView.extend({
         batches_tab: 'a[aria-controls=batches]',
         actions_tab: 'a[aria-controls=actions]',
         panels_tab: 'a[aria-controls=panels]',
+        accessions_tab: 'a[aria-controls=accessions]',
+
     },
 
     regions: {
@@ -34,7 +36,8 @@ let Layout = LayoutView.extend({
         'parents': "div.tab-pane[name=parents]",
         'batches': "div.tab-pane[name=batches]",
         'actions': "div.tab-pane[name=actions]",
-        'panels': "div.tab-pane[name=panels]"
+        'panels': "div.tab-pane[name=panels]",
+        'accessions': "div.tab-pane[name=accessions]"
 
     },
 
@@ -75,7 +78,7 @@ let Layout = LayoutView.extend({
         this.ui.panels_tab.parent().addClass('disabled');
     },
 
-    enableTabs: function() {
+    enableTabs: function () {
         this.ui.parents_tab.parent().removeClass('disabled');
         this.ui.batches_tab.parent().removeClass('disabled');
         this.ui.actions_tab.parent().removeClass('disabled');
@@ -180,8 +183,9 @@ let Layout = LayoutView.extend({
                 }
 
                 let BatchPanelListView = require('./batchpanellist');
-                let batchPanelListView  = new BatchPanelListView({
-                    collection: batchPanels, model: batchLayout.model, columns: data[0].value});
+                let batchPanelListView = new BatchPanelListView({
+                    collection: batchPanels, model: batchLayout.model, columns: data[0].value
+                });
 
                 let contentBottomLayout = new ContentBottomLayout();
                 batchLayout.showChildView('panels', contentBottomLayout);
@@ -192,6 +196,50 @@ let Layout = LayoutView.extend({
                 batchPanelListView.query();
             });
 
+            // accessions tab
+            let AccessionCollection = require('../../collections/accession');
+
+            let accession = new AccessionModel({id: this.model.get('accession')});
+            accession.fetch().then(function () {
+                if (!batchLayout.isRendered()) {
+                    return;
+                }
+
+                let accessions = new AccessionCollection([], {
+                    filters: [{
+                        "type": "term",
+                        "field": "code",
+                        "value": accession.attributes.code,
+                        "op": "eq"
+                    }]
+                });
+
+                // get available columns
+                let columns4 = application.main.cache.lookup({
+                    type: 'entity_columns',
+                    format: {model: 'accession.accession'}
+                });
+
+                $.when(columns4, accessions.fetch()).then(function (data) {
+                    if (!batchLayout.isRendered()) {
+                        return;
+                    }
+
+                    let BatchAccessionListView = require('./../accession/accessionlist');
+                    let batchAccessionListView = new BatchAccessionListView({
+                        collection: accessions, model: batchLayout.model, columns: data[0].value
+                    });
+
+                    let contentBottomLayout = new ContentBottomLayout();
+                    batchLayout.showChildView('accessions', contentBottomLayout);
+
+                    contentBottomLayout.showChildView('content', batchAccessionListView);
+                    contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchAccessionListView}));
+
+                    batchAccessionListView.query();
+                });
+
+            });
 
 
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
