@@ -35,8 +35,16 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
             let select = $('<select data-width="100%"></select>');
             this.groupEl = this._createInputGroup(parent, "fa-check", select, options.history);
 
-            // true
+            // undefined
             let option = $("<option></option>");
+
+            option.attr("value", "null");
+            option.html(' - ' + _t('Undefined') + ' - ');
+
+            select.append(option);
+
+            // true
+            option = $("<option></option>");
 
             option.attr("value", "true");
             option.html(_t('Yes'));
@@ -92,15 +100,20 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
             if (definesValues) {
                 this.el.val(defaultValues ? _t('Yes') : _t('No')).attr('value', defaultValues);
 
-                if (defaultValues) {
+                if (defaultValues === true) {
                     this.el.parent().children('span').children('span').addClass('fa-check-square-o');
                 } else {
                     this.el.parent().children('span').children('span').addClass('fa-square-o');
                 }
+            } else {
+                this.el.val("").attr("null");
+                this.el.parent().children('span').children('span').addClass('fa-square-o');
             }
         } else {
             if (definesValues) {
                 this.el.val(defaultValues ? "true" : "false").trigger('change');
+            } else {
+                this.el.val("null");
             }
 
             this.el.selectpicker('refresh');
@@ -110,9 +123,19 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                return this.el.attr("value") === "true";
+                let attr = this.el.attr("value");
+                if (attr === "null") {
+                    return null;
+                } else {
+                    return attr === "true";
+                }
             } else {
-                return this.el.val() === "true";
+                let val = this.el.val();
+                if (val === "null") {
+                    return null;
+                } else {
+                    return val === "true";
+                }
             }
         }
 
@@ -122,9 +145,9 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
     checkCondition: function(condition, values) {
         switch (condition) {
             case 0:
-                return false;  // a boolean is always defined
+                return this.values() === null;   // false;  // a boolean is always defined
             case 1:
-                return true;   // a boolean is always defined
+                return this.value() !== null;   // true;   // a boolean is always defined
             case 2:
                 return this.values() === values;
             case 3:

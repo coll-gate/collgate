@@ -118,7 +118,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues, options) {
         if (!this.el || !this.parent) {
             return;
         }
@@ -128,10 +128,14 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
         if (this.readOnly) {
             if (definesValues) {
                 this.el.val(defaultValues);
+            } else {
+                this.el.val("");
             }
         } else {
             if (definesValues) {
                 this.el.val(defaultValues);
+            } else {
+                this.el.val("");
             }
         }
     },

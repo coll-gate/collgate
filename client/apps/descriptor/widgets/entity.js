@@ -201,12 +201,14 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 }).done(function (data) {
                     type.el.val(data.name);
                 });
+            } else {
+                this.el.attr('value', "").val("");
             }
         } else {
-            if (definesValues) {
-                let type = this;
+            let type = this;
 
-                if (this.autocomplete) {
+            if (this.autocomplete) {
+                if (definesValues) {
                     let initials = [];
 
                     // @todo multiple ?
@@ -240,6 +242,10 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                         });
                     }
                 } else {
+                    this.el.val(null).trigger('change');
+                }
+            } else {
+                if (definesValues) {
                     // defines temporary value (before waiting)
                     this.el.attr('value', defaultValues);
 
@@ -250,6 +256,8 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                         // remove temporary vale
                         type.el.removeAttr('value');
                     });
+                } else {
+                    this.el.val(null).trigger('change');
                 }
             }
         }

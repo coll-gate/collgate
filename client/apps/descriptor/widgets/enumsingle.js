@@ -223,15 +223,20 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 }).done(function (data) {
                     type.el.val(data.label);
                 });
+            } else {
+                type.el.val("");
             }
         } else {
-            if (definesValues) {
-                let type = this;
+            let type = this;
+            let multiple = this.el.prop("multiple");
 
-                if (this.autocomplete) {
+            if (this.autocomplete) {
+                if (definesValues) {
                     let initials = [];
 
-                    // @todo multiple ?
+                    if (multiple && _.isArray(defaultValues)) {
+                        // @todo multiple ?
+                    }
 
                     // is the option exists
                     if (type.el.children('option[value=' + defaultValues + ']').length) {
@@ -262,11 +267,20 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                         });
                     }
                 } else {
+                    // clear value(s)
+                    type.el.val(null).trigger('change');
+                }
+            } else {
+                if (definesValues) {
                     // defines temporary value (before waiting)
                     this.el.attr('value', defaultValues);
 
+                    if (multiple && _.isArray(defaultValues)) {
+                        // @todo multiple ?
+                    }
+
                     // undefined value
-                    if (_.isUndefined(defaultValues) || _.isNull(defaultValues)) {
+                    if (_.isUndefined(defaultValues)) {
                         type.el.val("null").trigger('change');
                         type.el.selectpicker('refresh');
                     }
@@ -278,6 +292,9 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                         // remove temporary vale
                         type.el.removeAttr('value');
                     });
+                } else {
+                    // clear value(s)
+                    type.el.val("null").trigger('change');
                 }
             }
         }
@@ -303,9 +320,9 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values() == null;
+                return this.values() === null;
             case 1:
-                return this.values() != null;
+                return this.values() !== null;
             case 2:
                 return this.values() === values;
             case 3:

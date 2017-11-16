@@ -15,6 +15,8 @@ let NumericRange = function() {
 
     this.name = "numeric_range";
     this.group = "single";
+
+    this.precision = 0;
 };
 
 _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
@@ -23,6 +25,8 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
             readOnly: false,
             history: false
         });
+
+        this.precision = format.precision;
 
         if (options.readOnly) {
             let input = this._createStdInput(parent, "fa-cog", options.history);
@@ -94,18 +98,22 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
         if (this.readOnly) {
             if (definesValues) {
                 this.el.val(defaultValues);
+            } else {
+                this.el.val("");
             }
         } else {
             if (definesValues) {
                 this.el.val(defaultValues);
+            } else {
+                this.el.val("");
             }
         }
     },
 
     values: function() {
         if (this.el && this.parent) {
-            let value = this.el.val();
-            return value !== "" ? value : null;
+            let value = parseFloat(this.el.val());
+            return _.isNaN(value) ? null : value.toFixed(this.precision);
         }
 
         return null;

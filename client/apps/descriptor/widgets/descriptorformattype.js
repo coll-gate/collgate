@@ -34,7 +34,7 @@ let DescriptorFormatType = function() {
 DescriptorFormatType.prototype = {
     // return true if the there is one or more defaults values
     isValueDefined: function (definesValues, defaultValues) {
-        return !!definesValues && !!defaultValues && defaultValues != null;
+        return !!definesValues && defaultValues !== null;
     },
 
     /**

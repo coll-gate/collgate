@@ -193,13 +193,13 @@ let View = ItemView.extend({
                     values = descriptorModelType.widget.values();
                 }
 
-                if (mandatory && values == null) {
+                if (mandatory && values === null) {
                     $.alert.error(_t("Field " + descriptorModelType.label + " is required"));
                     return null;
                 }
 
                 let write = true;
-                if (descriptorModelType.set_once && currValue != null) {
+                if (descriptorModelType.set_once && currValue !== null) {
                     write = false;
                 }
 

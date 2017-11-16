@@ -120,11 +120,16 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
                 // HH:mm:ss
                 this.el.val(defaultValues);
                 this.el.attr('value', defaultValues);
+            } else {
+                this.el.val("");
+                this.el.attr('value', "");
             }
         } else {
             if (definesValues) {
                 let date = moment(defaultValues, "HH:mm:ss");
                 this.el.data('DateTimePicker').date(date);
+            } else {
+                this.el.data('DateTimePicker').clear();
             }
         }
     },

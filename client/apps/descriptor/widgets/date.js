@@ -126,11 +126,16 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
                 let date = moment(defaultValues);
                 this.el.val(date.format("L"));
                 this.el.attr('value', defaultValues);
+            } else {
+                this.el.val("");
+                this.el.attr('value', "");
             }
         } else {
             if (definesValues) {
                 let date = moment(defaultValues);
                 this.el.data('DateTimePicker').date(date);
+            } else {
+                this.el.data('DateTimePicker').clear();
             }
         }
     },

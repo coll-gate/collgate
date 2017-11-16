@@ -120,11 +120,16 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
                 let date = moment(defaultValues);
                 this.el.val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
                 this.el.attr('value', defaultValues);
+            } else {
+                this.el.val("");
+                this.el.attr('value', "");
             }
         } else {
             if (definesValues) {
                 let date = moment(defaultValues);
                 this.el.data('DateTimePicker').date(date);
+            } else {
+                this.el.data('DateTimePicker').clear();
             }
         }
     },

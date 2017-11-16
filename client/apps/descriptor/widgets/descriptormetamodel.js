@@ -155,85 +155,44 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
                 }).done(function (data) {
                     type.el.val(data.name);
                 });
+            } else {
+                this.el.attr('value', "").val("");
             }
         } else {
             if (definesValues) {
                 let type = this;
-
-                // need to re-init the select2 widget
-                this.el.select2('destroy');
-
-                // init the autocomplete
                 let initials = [];
 
-                let container = this.parent.closest('div.modal-dialog').parent();
-                if (container.length === 0) {
-                    container = this.groupEl;  // this.parent.closest('div.panel');
+                // is the option exists
+                if (type.el.children('option[value=' + defaultValues + ']').length) {
+                    type.el.trigger({
+                        type: 'select2:select',
+                        params: {
+                            data: initials
+                        }
+                    });
+                } else {
+                    // autoselect the initial value
+                    $.ajax({
+                        type: "GET",
+                        url: url + defaultValues + '/',
+                        dataType: 'json'
+                    }).done(function (data) {
+                        initials.push({id: data.id, text: data.name});
+
+                        let option = new Option(data.name, data.id, true, true);
+                        type.el.append(option).trigger('change');
+
+                        type.el.trigger({
+                            type: 'select2:select',
+                            params: {
+                                data: initials
+                            }
+                        });
+                    });
                 }
-
-                let params = {
-                    data: initials,
-                    dropdownParent: container,
-                    ajax: {
-                        url: url + 'search/',
-                        dataType: 'json',
-                        delay: 250,
-                        data: function (params) {
-                            params.term || (params.term = '');
-
-                            return {
-                                filters: JSON.stringify({
-                                    method: 'icontains',
-                                    fields: ['name_or_label', 'model'],
-                                    name: params.term,
-                                    model: format.model
-                                }),
-                                cursor: params.next
-                            };
-                        },
-                        processResults: function (data, params) {
-                            params.next = null;
-
-                            if (data.items.length >= 30) {
-                                params.next = data.next || null;
-                            }
-
-                            let results = [];
-
-                            for (let i = 0; i < data.items.length; ++i) {
-                                results.push({
-                                    id: data.items[i].id,
-                                    text: data.items[i].label
-                                });
-                            }
-
-                            return {
-                                results: results,
-                                pagination: {
-                                    more: params.next != null
-                                }
-                            };
-                        },
-                        cache: true
-                    },
-                    allowClear: true,
-                    minimumInputLength: 3,
-                    placeholder: _t("Enter a value.")
-                };
-
-                // autoselect the initial value
-                $.ajax({
-                    type: "GET",
-                    url: url + defaultValues + '/',
-                    dataType: 'json'
-                }).done(function (data) {
-                    initials.push({id: data.id, text: data.name});
-
-                    params.data = initials;
-
-                    type.el.select2(params).fixSelect2Position();
-                    type.el.val(defaultValues).trigger('change');
-                });
+            } else {
+                this.el.val(null).trigger('change');
             }
         }
     },

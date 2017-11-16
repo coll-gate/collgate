@@ -298,6 +298,9 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                     date.date(defaultValues[2]);
                     this.el.val(date.format("L"));
                 }
+            } else {
+                this.el.val("");
+                this.el.attr('value', "");
             }
         } else {
             if (definesValues) {
@@ -322,6 +325,8 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                     this.display_el.val(date.format("L"));
                 }
                 this.el.data('DateTimePicker').date(date);
+            } else {
+                this.el.data('DateTimePicker').clear();
             }
         }
     },

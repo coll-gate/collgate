@@ -24,11 +24,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
             history: false
         });
 
-        if ((format.range[1] - format.range[0] + 1) <= 256) {
-            this.isInput = false;
-        } else {
-            this.isInput = true;
-        }
+        this.isInput = (format.range[1] - format.range[0] + 1) > 256;
 
         if (options.readOnly) {
             let input = this._createStdInput(parent, "fa-ellipsis-v", options.history);
@@ -61,8 +57,16 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
                 let select = $('<select data-width="100%"></select>');
                 this.groupEl = this._createInputGroup(parent, "fa-ellipsis-v", select);
 
+                // undefined
+                let option = $("<option></option>");
+
+                option.attr("value", "");
+                option.html(' - ' + _t("Undefined") + ' - ');
+
+                select.append(option);
+
                 for (let i = format.range[0]; i <= format.range[1]; ++i) {
-                    let option = $("<option></option>");
+                    option = $("<option></option>");
 
                     option.attr("value", i);
                     option.html(i);
@@ -123,6 +127,8 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         if (this.readOnly) {
             if (definesValues) {
                 this.el.val(defaultValues);
+            } else {
+                this.el.val("");
             }
         } else {
             if (definesValues) {
@@ -132,6 +138,14 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
                     this.el.val(defaultValues.toString()).trigger('change');
                     this.el.selectpicker('refresh');
                 }
+            } else {
+                if (this.isInput) {
+                    this.el.val("");
+                } else {
+                    this.el.val("").trigger('change');
+                    this.el.selectpicker('refresh');
+                }
+
             }
         }
     },
@@ -152,9 +166,9 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values() == null;
+                return this.values() === null;
             case 1:
-                return this.values() != null;
+                return this.values() !== null;
             case 2:
                 return this.values() === values;
             case 3:
