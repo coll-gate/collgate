@@ -18,7 +18,7 @@ let Accession = DescriptorMetaModelType.extend({
         'batch_descriptor_meta_models_group': 'div.batch-descriptor-meta-models-group'
     },
 
-    onRender: function() {
+    onRender: function () {
         let primaryClassification = this.ui.primary_classification;
 
         // classifications list according to the related meta model of accession
@@ -42,17 +42,17 @@ let Accession = DescriptorMetaModelType.extend({
         this.batchesWidget = application.descriptor.widgets.newElement('descriptor_meta_model');
         this.batchesWidget.create(
             {model: 'accession.batch'},
-            this.ui.batch_descriptor_meta_models_group, {
-                read: false,
-                multiple: true
-            });
+            this.ui.batch_descriptor_meta_models_group,
+            false,
+            {multiple: true}
+        );
 
         if (batchesListValues.length) {
             this.batchesWidget.set({model: 'accession.batch'}, true, batchesListValues);
         }
     },
 
-    getData: function() {
+    getData: function () {
         return {
             'primary_classification': parseInt(this.ui.primary_classification.val()),
             'batch_descriptor_meta_models': this.batchesWidget.values() || []
