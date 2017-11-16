@@ -430,41 +430,44 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
         let type = this;
 
-        if (this.readOnly && defaultValues) {
-            // defines value as attribute
-            this.el.attr('value', defaultValues);
+        if (this.readOnly) {
+            if (definesValues) {
+                // defines value as attribute
+                this.el.attr('value', defaultValues);
 
-            $.ajax({
-                type: "GET",
-                url: window.application.url(['geolocation', 'city', defaultValues]),
-                dataType: 'json'
-            }).done(function (data) {
-                let country_data = data.country;
-                let display = '';
+                $.ajax({
+                    type: "GET",
+                    url: window.application.url(['geolocation', 'city', defaultValues]),
+                    dataType: 'json'
+                }).done(function (data) {
+                    let country_data = data.country;
+                    let display = '';
 
-                if (data.preferred_names) {
-                    display = data.preferred_names;
-                } else if (data.short_names) {
-                    display = data.short_names;
-                } else if (data.display_names) {
-                    display = data.display_names;
-                } else {
-                    display = data.name;
-                }
+                    if (data.preferred_names) {
+                        display = data.preferred_names;
+                    } else if (data.short_names) {
+                        display = data.short_names;
+                    } else if (data.display_names) {
+                        display = data.display_names;
+                    } else {
+                        display = data.name;
+                    }
 
-                if (country_data.preferred_names) {
-                    display += ', ' + country_data.preferred_names;
-                } else if (country_data.short_names) {
-                    display += ', ' + country_data.short_names;
-                } else if (country_data.display_names) {
-                    display += ', ' + country_data.display_names;
-                } else {
-                    display += ', ' + country_data.name;
-                }
+                    if (country_data.preferred_names) {
+                        display += ', ' + country_data.preferred_names;
+                    } else if (country_data.short_names) {
+                        display += ', ' + country_data.short_names;
+                    } else if (country_data.display_names) {
+                        display += ', ' + country_data.display_names;
+                    } else {
+                        display += ', ' + country_data.name;
+                    }
 
-                type.el.val(display);
-            });
-
+                    type.el.val(display);
+                });
+            } else {
+                this.el.attr('value', "").el.val("");
+            }
         } else {
             if (definesValues) {
                 // defines value as attribute
@@ -796,6 +799,8 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                     // remove temporary value
                     select.removeAttr('value');
                 });
+            } else {
+                this.el.val(null).trigger('change');
             }
         }
     },

@@ -150,29 +150,33 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
         let type = this;
 
-        if (this.readOnly && defaultValues) {
-            // defines value as attribute
-            this.el.attr('value', defaultValues);
+        if (this.readOnly) {
+            if (defaultValues) {
+                // defines value as attribute
+                this.el.attr('value', defaultValues);
 
-            $.ajax({
-                type: "GET",
-                url: window.application.url(['geolocation', 'country', defaultValues]),
-                dataType: 'json'
-            }).done(function (data) {
-                let display = '';
+                $.ajax({
+                    type: "GET",
+                    url: window.application.url(['geolocation', 'country', defaultValues]),
+                    dataType: 'json'
+                }).done(function (data) {
+                    let display = '';
 
-                if (data.preferred_names) {
-                    display = data.preferred_names;
-                } else if (data.short_names) {
-                    display = data.short_names;
-                } else if (data.display_names) {
-                    display = data.display_names;
-                } else {
-                    display = data.name;
-                }
+                    if (data.preferred_names) {
+                        display = data.preferred_names;
+                    } else if (data.short_names) {
+                        display = data.short_names;
+                    } else if (data.display_names) {
+                        display = data.display_names;
+                    } else {
+                        display = data.name;
+                    }
 
-                type.el.val(display);
-            });
+                    type.el.val(display);
+                });
+            } else {
+                this.el.attr('value', "").el.val("");
+            }
         } else {
             if (definesValues) {
                 // defines value as attribute
@@ -273,8 +277,8 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                     // remove temporary value
                     type.el.removeAttr('value');
                 });
-
-
+            } else {
+                this.el.val(null).trigger('change');
             }
         }
     },

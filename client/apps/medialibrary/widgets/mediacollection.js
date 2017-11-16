@@ -107,7 +107,7 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
             return false;
         }
 
-        if (a.length != b.length) {
+        if (a.length !== b.length) {
             return false;
         }
 
@@ -131,9 +131,9 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
     checkCondition: function(condition, values) {
         switch (condition) {
             case 0:
-                return this.values == null || this.values.length == 0;
+                return this.values === null || this.values.length === 0;
             case 1:
-                return this.values != null && this.values.length > 0;
+                return this.values !== null && this.values.length > 0;
             case 2:
                 return this.compare(this.values, values);
             case 3:
