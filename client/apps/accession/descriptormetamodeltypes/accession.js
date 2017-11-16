@@ -42,10 +42,10 @@ let Accession = DescriptorMetaModelType.extend({
         this.batchesWidget = application.descriptor.widgets.newElement('descriptor_meta_model');
         this.batchesWidget.create(
             {model: 'accession.batch'},
-            this.ui.batch_descriptor_meta_models_group,
-            false,
-            {multiple: true}
-        );
+            this.ui.batch_descriptor_meta_models_group, {
+                readOnly: false,
+                multiple: true
+            });
 
         if (batchesListValues.length) {
             this.batchesWidget.set({model: 'accession.batch'}, true, batchesListValues);

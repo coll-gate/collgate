@@ -21,7 +21,7 @@ let DescriptorMetaModel = function () {
 };
 
 _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
-    create: function (format, parent, readOnly, options) {
+    create: function (format, parent, options) {
         options || (options = {
             readOnly: false,
             history: false,
