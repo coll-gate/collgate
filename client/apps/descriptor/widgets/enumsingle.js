@@ -123,7 +123,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 // init the selectpicker
                 let url = window.application.url(['descriptor', 'type', options.descriptorTypeId]);
 
-                // refresh values
+                // refresh values (@todo could be cached but how)
                 this.promise = $.ajax({
                     url: url + 'value/display/',
                     dataType: 'json'
@@ -141,7 +141,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                                 offset += "&#160;&#160;&#160;&#160;";
                             }
 
-                            if (session.languageDirection === "ltr") {
+                            if (window.session.languageDirection === "ltr") {
                                 option.html(offset + data[i].label);
                             } else {
                                 option.html(data[i].label + offset);
@@ -199,7 +199,8 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
     set: function (format, definesValues, defaultValues, options) {
         options || (options = {
-            descriptorTypeId: 0
+            descriptorTypeId: 0,
+            descriptorModelType: null
         });
 
         if (!this.el || !this.parent) {
@@ -214,15 +215,32 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             let type = this;
 
             if (definesValues) {
-                this.el.attr('value', defaultValues);
+                if (this.allow_multiple && Array.isArray(defaultValues)) {
+                    let keys = defaultValues;
+                    this.el.attr('value', defaultValues);
 
-                $.ajax({
-                    type: "GET",
-                    url: url + 'value/' + defaultValues + '/display/',
-                    dataType: 'json'
-                }).done(function (data) {
-                    type.el.val(data.label);
-                });
+                    window.application.main.cache.lookup({
+                        type: "descriptors",
+                        format: {name: options.descriptorModelType.name}
+                    }, keys).done(function (data) {
+                        let results = [];
+
+                        for (let i = 0; i < defaultValues.length; ++i) {
+                            results.push(data[defaultValues[i]].value);
+                        }
+                        type.el.val(results.join(', '));
+                    });
+                } else {
+                    let keys = [defaultValues];
+                    this.el.attr('value', defaultValues);
+
+                    window.application.main.cache.lookup({
+                        type: "descriptors",
+                        format: {name: options.descriptorModelType.name}
+                    }, keys).done(function (data) {
+                        type.el.val(data[defaultValues].value);
+                    });
+                }
             } else {
                 type.el.val("");
             }
@@ -234,7 +252,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 if (definesValues) {
                     let initials = [];
 
-                    if (multiple && _.isArray(defaultValues)) {
+                    if (this.allow_multiple && Array.isArray(defaultValues)) {
                         // @todo multiple ?
                     }
 
@@ -275,8 +293,8 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                     // defines temporary value (before waiting)
                     this.el.attr('value', defaultValues);
 
-                    if (multiple && _.isArray(defaultValues)) {
-                        // @todo multiple ?
+                    if (this.allow_multiple && Array.isArray(defaultValues)) {
+                        // @todo multiple
                     }
 
                     // undefined value

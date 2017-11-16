@@ -21,7 +21,7 @@ let DescriptorMetaModel = function () {
 };
 
 _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
-    create: function (format, parent, readOnly, options) {
+    create: function (format, parent, options) {
         options || (options = {
             readOnly: false,
             history: false,
@@ -144,13 +144,17 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
             if (definesValues) {
                 this.el.attr('value', defaultValues);
 
-                $.ajax({
-                    type: "GET",
-                    url: window.application.url([url, defaultValues]),
-                    dataType: 'json'
-                }).done(function (data) {
-                    type.el.val(data.name);
-                });
+                if (this.allow_multiple && Array.isArray(defaultValues)) {
+                    // @todo
+                } else {
+                    $.ajax({
+                        type: "GET",
+                        url: window.application.url([url, defaultValues]),
+                        dataType: 'json'
+                    }).done(function (data) {
+                        type.el.val(data.name);
+                    });
+                }
             } else {
                 this.el.attr('value', "").val("");
             }

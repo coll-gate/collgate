@@ -23,12 +23,14 @@ let View = ItemView.extend({
     ui: {
         "descriptor": "tr.descriptor",
         "cancel": "button.cancel",
-        "apply": "button.apply"
+        "apply": "button.apply",
+        "showDescriptorHistory": "span.show-descriptor-history"
     },
 
     events: {
         "click @ui.cancel": "onCancel",
         "click @ui.apply": "onApply",
+        "click @ui.showDescriptorHistory": "onShowDescriptorHistory"
     },
 
     initialize: function(options) {
@@ -81,7 +83,10 @@ let View = ItemView.extend({
                     descriptorTypeId: descriptorType.id
                 });
 
-                widget.set(format, definesValues, defaultValues, {descriptorTypeId: descriptorType.id});
+                widget.set(format, definesValues, defaultValues, {
+                    descriptorTypeId: descriptorType.id,
+                    descriptorModelType: descriptorModelType
+                });
 
                 if (descriptorModelType.set_once && exists) {
                     widget.disable();
@@ -248,6 +253,26 @@ let View = ItemView.extend({
         this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
             Backbone.history.loadUrl();
         });
+    },
+
+    onShowDescriptorHistory: function(e) {
+        let tr = $(e.target).closest("tr");
+        let panelIndex = tr.attr("panel-index");
+        let index = tr.attr("index");
+
+        let dmt = this.descriptorMetaModelLayout.panels[panelIndex].descriptor_model.descriptor_model_types[index];
+        if (dmt && dmt.widget) {
+            let tokens = this.model.url().split('/');
+
+            let appLabel = tokens[tokens.length-4];
+            let modelName = tokens[tokens.length-3];
+            let objectId = tokens[tokens.length-2];
+            let valueName = '#' + dmt.name;
+
+            let options = {};
+
+            dmt.widget.showHistory(appLabel, modelName, objectId, valueName, dmt, options);
+        }
     }
 });
 

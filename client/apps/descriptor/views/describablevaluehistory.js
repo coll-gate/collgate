@@ -78,7 +78,10 @@ let View = Dialog.extend({
                     descriptorTypeId: descriptorType.id
                 });
 
-                widget.set(format, true, self.entries[i].value, {descriptorTypeId: descriptorType.id});
+                widget.set(format, true, self.entries[i].value, {
+                    descriptorTypeId: descriptorType.id,
+                    descriptorModelType: self.descriptorModelType
+                });
             }
         });
     },

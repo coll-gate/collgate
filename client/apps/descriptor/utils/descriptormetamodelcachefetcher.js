@@ -90,9 +90,9 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
                 };
             }
 
-            session.logger.debug("Cache miss for descriptor meta model " + options.format.model + ".");
+            window.session.logger.debug("Cache miss for descriptor meta model " + options.format.model + ".");
         }).fail(function () {
-           session.logger.debug("Cache failure for descriptor meta model " + options.format.model + ".");
+           window.session.logger.debug("Cache failure for descriptor meta model " + options.format.model + ".");
         });
 
         return promise;

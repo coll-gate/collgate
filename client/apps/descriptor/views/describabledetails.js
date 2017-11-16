@@ -67,7 +67,10 @@ let View = ItemView.extend({
                     descriptorTypeId: descriptorType.id
                 });
 
-                widget.set(format, true, values, {descriptorTypeId: descriptorType.id});
+                widget.set(format, true, values, {
+                    descriptorTypeId: descriptorType.id,
+                    descriptorModelType: descriptorModelType
+                });
             }
 
             // save the descriptor format type widget instance
@@ -121,7 +124,8 @@ let View = ItemView.extend({
     },
 
     onShowHistory: function() {
-
+        // @todo
+        alert("@todo");
     },
 
     onShowDescriptorHistory: function(e) {
