@@ -77,6 +77,7 @@ let View = ItemView.extend({
             if (widget) {
                 widget.create(format, el.children('td.descriptor-value'), {
                     readOnly: false,
+                    history: true,
                     descriptorTypeId: descriptorType.id
                 });
 

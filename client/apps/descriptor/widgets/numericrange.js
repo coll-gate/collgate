@@ -35,18 +35,20 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
             this.readOnly = true;
             this.el = input;
         } else {
-            let group = $('<div class="input-group"></div>');
             let input = $('<input class="form-control" width="100%">');
-            let glyph = $('<span class="input-group-addon"><span class="fa fa-cog"></span></span>');
+            let clean = $('<span class="form-clean-btn action fa fa-eraser"></span>');
+            this.groupEl = this._createInputGroup(parent, "fa-cog", input, options.history);
 
-            group.append(input);
-            group.append(glyph);
+            clean.insertAfter(input);
 
             if (options.history) {
-                // @todo
+                // adjust position
+                clean.css('right', '90px');
             }
-            
-            parent.append(group);
+
+            clean.on('click', function() {
+               input.val("");
+            });
 
             input.numeric({
                 allowPlus           : false,

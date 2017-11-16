@@ -147,7 +147,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
             case 0:
                 return this.values() === null;   // false;  // a boolean is always defined
             case 1:
-                return this.value() !== null;   // true;   // a boolean is always defined
+                return this.value() !== null;    // true;   // a boolean is always defined
             case 2:
                 return this.values() === values;
             case 3:

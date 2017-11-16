@@ -112,7 +112,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = false;
 
                 let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-                this.groupEl = this._createInputGroup(parent, "fa-list", select);
+                this.groupEl = this._createInputGroup(parent, "fa-list", select, options.history);
 
                 // undefined value
                 let undefinedOption = $('<option value="null"> - ' + _t("Undefined") + ' - </option>');

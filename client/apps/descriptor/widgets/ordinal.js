@@ -35,7 +35,19 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         } else {
             if (this.isInput) {
                 let input = $('<input" width="100%">');
+                let clean = $('<span class="form-clean-btn action fa fa-eraser"></span>');
                 this.groupEl = this._createInputGroup(parent, "fa-ellipsis-v", input, options.history);
+
+                clean.insertAfter(input);
+
+                if (options.history) {
+                    // adjust position
+                    clean.css('right', '90px');
+                }
+
+                clean.on('click', function() {
+                   input.val("");
+                });
 
                 input.numeric({
                     allowPlus: false,
@@ -55,7 +67,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
             } else {
                 // ordinal with at max 256 values as a dropdown
                 let select = $('<select data-width="100%"></select>');
-                this.groupEl = this._createInputGroup(parent, "fa-ellipsis-v", select);
+                this.groupEl = this._createInputGroup(parent, "fa-ellipsis-v", select, options.history);
 
                 // undefined
                 let option = $("<option></option>");

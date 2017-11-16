@@ -37,11 +37,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         } else {
             let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             parent.append(select);
-            this.groupEl = this._createInputGroup(parent, "fa-globe", select);
-
-            if (options.history) {
-                // @todo
-            }
+            this.groupEl = this._createInputGroup(parent, "fa-globe", select, options.history);
 
             // init the autocomplete
             let url = window.application.url(['geolocation', 'country', 'search']);

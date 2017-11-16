@@ -36,11 +36,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-            this.groupEl = this._createInputGroup(parent, "fa-th-large", select);
-
-            if (options.history) {
-                // @todo
-            }
+            this.groupEl = this._createInputGroup(parent, "fa-th-large", select, options.history);
 
             // init the autocomplete
             let url = window.application.url(['descriptor', 'meta-model']);

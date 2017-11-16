@@ -104,19 +104,24 @@ DescriptorFormatType.prototype = {
             glyph.append('<span class="fa fa-fw fa-question"></span>');
         }
 
-        input.addClass('form-control');
-        group.append(input);
+        if (Array.isArray(input)) {
+            for (let i = 0; i < input.length; ++i) {
+                input[i].addClass('form-control');
+                group.append(input[i]);
+            }
+        } else {
+            input.addClass('form-control');
+            group.append(input);
+        }
 
         // want history
         if (history) {
             let history = $('<span class="input-group-addon btn btn-xs btn-default show-descriptor-history"><span class="fa fa-history"></span></span>');
             history.css('border-left-width', '0px');  // avoid double border
-
             group.append(history);
         }
 
         group.append(glyph);
-
         parent.append(group);
 
         return group;

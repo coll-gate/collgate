@@ -33,31 +33,27 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
             this.readOnly = true;
             this.el = input;
         } else {
-            let group = $('<div class="input-group"></div>');
+            // hidden input
             let input = $('<input class="form-control" width="100%">').css({
                     height: '0px',
                     visibility: 'hidden',
                     padding: '0px',
-                    border: 'none'}); // element to hide
+                    border: 'none'
+            });
+
+            // proxy input
             let display_input = $('<input class="form-control" width="100%" pattern="[0-9\/\s]+">');
-            let glyph = $('<span class="input-group-addon"><span class="fa fa-calendar"></span></span>').css('cursor', 'pointer');
+            this.groupEl = this._createInputGroup(parent, "fa-calendar", [display_input, input], options.history);
 
-            group.append(display_input);
-            group.append(input);
-            group.append(glyph);
+            //
+            // Partial datetime
+            //
 
-            if (options.history) {
-                // @todo
-            }
-
-            parent.append(group);
-
-            /// Partial datetime ///
             let accuracy = null; // 0: nothing, 1: year, 2: year-month, 3: year-month-day
             let current_date = null;
 
             let el = input.datetimepicker({
-                locale: session.language,
+                locale: window.session.language,
                 showClose: true,
                 format: "L",
                 showTodayButton: true,

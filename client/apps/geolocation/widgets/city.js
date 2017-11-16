@@ -38,11 +38,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         } else if (options.extended_search === false) {
             let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             parent.append(select);
-            this.groupEl = this._createInputGroup(parent, "fa-map-signs", select);
-
-            if (options.history) {
-                // @todo
-            }
+            this.groupEl = this._createInputGroup(parent, "fa-map-signs", select, options.history);
 
             // init the autocomplete
             let url = window.application.url(['geolocation', 'city', 'search']);

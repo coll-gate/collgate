@@ -32,18 +32,8 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
             this.readOnly = true;
             this.el = input;
         } else {
-            let group = $('<div class="input-group"></div>');
             let input = $('<input class="form-control" width="100%">');
-            let glyph = $('<span class="input-group-addon"><span class="fa fa-calendar-times-o"></span></span>').css('cursor', 'pointer');
-
-            if (options.history) {
-                // @todo
-            }
-
-            group.append(input);
-            group.append(glyph);
-
-            parent.append(group);
+            this.groupEl = this._createInputGroup(parent, "fa-calendar-times-o", input, options.history);
 
             input.datetimepicker({
                 locale: session.language,
