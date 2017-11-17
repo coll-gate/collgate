@@ -214,7 +214,7 @@ span.url {
     -o-user-select: none;
 }
 
-tr.element:hover, div.element:hover {
+tr.element:hover, div.element:hover, span.element:hover input {
     background: #5cb85c !important;
 }
 

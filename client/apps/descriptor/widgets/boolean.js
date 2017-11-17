@@ -106,14 +106,20 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
                     this.el.parent().children('span').children('span').addClass('fa-square-o');
                 }
             } else {
-                this.el.val("").attr("null");
+                this.el.val("").attr('value', "null");
                 this.el.parent().children('span').children('span').addClass('fa-square-o');
             }
         } else {
             if (definesValues) {
-                this.el.val(defaultValues ? "true" : "false").trigger('change');
+                if (defaultValues === true) {
+                    this.el.val("true").trigger('change');
+                } else if (defaultValues === false) {
+                    this.el.val("false").trigger('change');
+                } else {
+                    this.el.val("null").trigger('change');
+                }
             } else {
-                this.el.val("null");
+                this.el.val("null").trigger('change');
             }
 
             this.el.selectpicker('refresh');
@@ -202,5 +208,13 @@ BooleanType.DescriptorTypeDetailsView = Marionette.View.extend({
         }
     }
 });
+
+BooleanType.format = function(value) {
+    if (value === null || value === undefined) {
+        return "";
+    } else {
+        return value === true ? _t("Yes") : _t("No");
+    }
+};
 
 module.exports = BooleanType;

@@ -215,12 +215,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
                     // is the option exists
                     if (type.el.children('option[value=' + defaultValues + ']').length) {
-                        type.el.trigger({
-                            type: 'select2:select',
-                            params: {
-                                data: initials
-                            }
-                        });
+                        type.el.val(defaultValues).trigger('change');
                     } else {
                         // autoselect the initial value
                         $.ajax({

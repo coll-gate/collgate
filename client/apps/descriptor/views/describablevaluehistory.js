@@ -51,6 +51,7 @@ let View = Dialog.extend({
         }
 
         this.model = options.model;
+        this.readOnly = options.readOnly;
     },
 
     onRender: function () {
@@ -81,6 +82,17 @@ let View = Dialog.extend({
                 widget.set(format, true, self.entries[i].value, {
                     descriptorTypeId: descriptorType.id,
                     descriptorModelType: self.descriptorModelType
+                });
+            }
+
+            if (!self.readOnly) {
+                $(elt).addClass('element').css('cursor', 'pointer').on('click', function(e) {
+                    self.descriptorModelType.widget.set(
+                        self.descriptorModelType.descriptor_type.format,
+                        true,
+                        widget.values());
+
+                    self.destroy();
                 });
             }
         });

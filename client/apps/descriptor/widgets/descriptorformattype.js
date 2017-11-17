@@ -199,6 +199,7 @@ DescriptorFormatType.prototype = {
      */
     showHistory: function(appLabel, modelName, objectId, valueName, descriptorModelType, options) {
         options || (options = {});
+        let self = this;
 
         // refresh values
         this.promise = $.ajax({
@@ -213,7 +214,7 @@ DescriptorFormatType.prototype = {
         }).done(function (data) {
             let dialog = new DescribableValueHistoryDialog({
                 entries: data.items,
-                readOnly: this.readOnly,
+                readOnly: self.readOnly,
                 descriptorModelType: descriptorModelType
             });
 
