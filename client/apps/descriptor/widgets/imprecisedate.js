@@ -274,7 +274,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
         let date = null;
 
         if (this.readOnly) {
-            if (definesValues) {
+            if (definesValues && defaultValues) {
                 // defaultValues
                 date = moment();
                 date.locale(session.language);
