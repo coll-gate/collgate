@@ -13,7 +13,7 @@ let Marionette = require('backbone.marionette');
 let View = Marionette.View.extend({
     tagName: 'div',
     template: require('../../../main/templates/contextmenu.html'),
-    className: "context batch",
+    className: "context batch-list",
     templateContext: function () {
         return {
             actions: this.getOption('actions'),

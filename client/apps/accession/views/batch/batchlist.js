@@ -13,7 +13,6 @@ let AdvancedTable = require('../../../main/views/advancedtable');
 let DescriptorsColumnsView = require('../../../descriptor/mixins/descriptorscolumns');
 
 let View = AdvancedTable.extend({
-    template: require("../../../descriptor/templates/entitylist.html"),
     className: "batch-list advanced-table-container",
     childView: BatchView,
     childViewContainer: 'tbody.entity-list',
@@ -65,8 +64,6 @@ let View = AdvancedTable.extend({
     },
 
     onShowTab: function () {
-        View.__super__.onShowTab.apply(this);
-
         // context only for children (sub-batches)
         if (this.collection.batch_type !== 'parents') {
             let view = this;
@@ -102,6 +99,8 @@ let View = AdvancedTable.extend({
                 view.onLinkToPanel();
             });
         }
+
+        View.__super__.onShowTab.apply(this);
     },
 
     onCreatePanel: function () {
@@ -110,6 +109,10 @@ let View = AdvancedTable.extend({
         } else {
             application.accession.controllers.batchpanel.create(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
         }
+    },
+
+    onBeforeDetach: function () {
+        application.main.defaultRightView();
     },
 
     onLinkToPanel: function () {

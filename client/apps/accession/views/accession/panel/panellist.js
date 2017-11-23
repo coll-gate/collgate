@@ -72,6 +72,10 @@ let View = AdvancedTable.extend({
         application.accession.controllers.accessionpanel.create();
     },
 
+    onBeforeDetach: function () {
+        application.main.defaultRightView();
+    },
+
     onShowTab: function () {
         let view = this;
 
