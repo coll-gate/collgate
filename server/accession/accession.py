@@ -332,13 +332,13 @@ def get_accession_details_json(request, acc_id):
             'accessions_amount': panel.accessions.count()
         })
 
-    # for s in accession.synonyms.all().order_by('synonym_type', 'language'):
-    #     result['synonyms'].append({
-    #         'id': s.id,
-    #         'name': s.name,
-    #         'synonym_type': s.synonym_type_id,
-    #         'language': s.language,
-    #     })
+    for s in AccessionSynonym.objects.filter(entity=accession.id).order_by('synonym_type', 'language'):
+        result['synonyms'].append({
+            'id': s.id,
+            'name': s.name,
+            'synonym_type': s.synonym_type_id,
+            'language': s.language,
+        })
 
     return HttpResponseRest(request, result)
 
