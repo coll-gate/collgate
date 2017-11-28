@@ -137,7 +137,7 @@ let Router = Marionette.AppRouter.extend({
                     });
                 }
 
-                if (valueListView != null) {
+                if (valueListView) {
                     defaultLayout.showChildView('content', valueListView);
                     defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: valueListView, more: -1}));
                 }

@@ -15,12 +15,6 @@ GROUPS = {
         'can_delete': False,
         'can_modify': False,
     },
-    'accession': {
-        'id': None,
-        'name': 'accession',
-        'can_delete': False,
-        'can_modify': False,
-    },
     'MCPD': {
         'id': None,
         'name': 'MCPD',

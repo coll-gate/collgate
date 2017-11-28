@@ -854,7 +854,6 @@ class CursorQuery(object):
         model_fields = {}
         db_table = self._model._meta.db_table
         db_table_alias = related_field
-
         related_model = getattr(self._model, related_field)
 
         if type(related_model) is ForwardManyToOneDescriptor:
@@ -989,7 +988,7 @@ class CursorQuery(object):
 
                 yield instance
         except ProgrammingError as e:
-            raise CursorQueryError('Invalid query arguments')
+            raise CursorQueryError('Invalid query arguments: ' + str(e))
 
     def add_select_related(self, fields):
         if isinstance(self._select_related, bool):

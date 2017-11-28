@@ -52,18 +52,10 @@ let View = AdvancedTable.extend({
         let sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
 
         if (sort_by[1] === '-') {
-            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
-                sort_el.addClass('fa-sort-numeric-desc');
-            } else {
-                sort_el.addClass('fa-sort-alpha-desc');
-            }
+            sort_el.addClass('fa-sort-desc');
             sort_el.attr('sort-direction', 'desc');
         } else {
-            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
-                sort_el.addClass('fa-sort-numeric-asc');
-            } else {
-                sort_el.addClass('fa-sort-alpha-asc');
-            }
+            sort_el.addClass('fa-sort-asc');
             sort_el.attr('sort-direction', 'asc');
         }
 

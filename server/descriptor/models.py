@@ -304,7 +304,7 @@ class DescriptorType(Entity):
                 # sort by id (code)
                 # name are unique so its a trivial case
                 if reverse:
-                    cursor_code = str(cursor.rsplit('/', 1)[0]) if cursor else "~"
+                    cursor_code = cursor[1] if cursor else "~"
 
                     for k, v in values.items():
                         if k < cursor_code:
@@ -316,7 +316,7 @@ class DescriptorType(Entity):
                                 'value1': v.get('value1', None),
                             })
                 else:
-                    cursor_code = str(cursor.rsplit('/', 1)[0]) if cursor else ""
+                    cursor_code = cursor[0] if cursor else ""
 
                     for k, v in values.items():
                         if k > cursor_code:
@@ -335,7 +335,7 @@ class DescriptorType(Entity):
                 # blank value are not allowed.
                 # null values are supported.
                 # duplicated values are supported by string concatenation of ordinal+code during sorting.
-                cursor_ordinal, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
+                cursor_ordinal, cursor_code = cursor if cursor else (None, None)
 
                 if cursor_code is None:
                     cursor_code = ""
@@ -455,7 +455,7 @@ class DescriptorType(Entity):
                 # blank value are not allowed.
                 # null values are supported.
                 # duplicated values are supported by string concatenation of value+code during sorting.
-                cursor_value, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
+                cursor_value, cursor_code = cursor if cursor else (None, None)
 
                 if cursor_code is None:
                     cursor_code = ""
@@ -580,7 +580,7 @@ class DescriptorType(Entity):
                 qs = self.values_set.all()
 
             if sort_by == 'id':
-                cursor_code = str(cursor.rsplit('/', 1)[0]) if cursor else None
+                cursor_code = cursor[1] if cursor else None
 
                 # code is unique (per language)
                 if reverse:
@@ -594,7 +594,7 @@ class DescriptorType(Entity):
 
                     qs = qs.order_by('code')
             elif sort_by == 'ordinal':
-                cursor_ordinal, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
+                cursor_ordinal, cursor_code = cursor if cursor else (None, None)
 
                 if cursor_ordinal:
                     cursor_ordinal = int(cursor_ordinal)
@@ -611,7 +611,7 @@ class DescriptorType(Entity):
 
                     qs = qs.order_by('ordinal', 'code')
             elif sort_by == 'value0':
-                cursor_value0, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
+                cursor_value0, cursor_code = cursor if cursor else (None, None)
 
                 # value0 can be non unique
                 if reverse:
@@ -627,7 +627,7 @@ class DescriptorType(Entity):
 
                     qs = qs.order_by('value0', 'code')
             elif sort_by == 'value1':
-                cursor_value1, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
+                cursor_value1, cursor_code = cursor if cursor else (None, None)
 
                 # value1 can be non unique
                 if reverse:
@@ -658,15 +658,15 @@ class DescriptorType(Entity):
         if len(values_list) > 0:
             val = values_list[0]
             if val[sort_by]:
-                prev_cursor = "%s/%s" % (val[sort_by], val['id'])
+                prev_cursor = (val[sort_by], val['id'])
             else:
-                prev_cursor = "/%s" % val['id']
+                prev_cursor = (None, val['id'])
 
             val = values_list[-1]
             if val[sort_by]:
-                next_cursor = "%s/%s" % (val[sort_by], val['id'])
+                next_cursor = (val[sort_by], val['id'])
             else:
-                next_cursor = "/%s" % val['id']
+                next_cursor = (None, val['id'])
 
         return prev_cursor, next_cursor, values_list
 
@@ -714,7 +714,7 @@ class DescriptorType(Entity):
         lang = translation.get_language()
         trans = self.format.get('trans', False)
 
-        cursor_value, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
+        cursor_value, cursor_code = cursor if cursor else (None, None)
 
         values_list = []
 
@@ -838,19 +838,19 @@ class DescriptorType(Entity):
         if len(values_list) > 0:
             val = values_list[0]
             if val[field_name]:
-                prev_cursor = "%s/%s" % (val[field_name], val['id'])
+                prev_cursor = (val[field_name], val['id'])
             else:
-                prev_cursor = "/%s" % val['id']
+                prev_cursor = (None, val['id'])
 
             val = values_list[-1]
             if val[field_name]:
-                next_cursor = "%s/%s" % (val[field_name], val['id'])
+                next_cursor = (val[field_name], val['id'])
             else:
-                next_cursor = "/%s" % val['id']
+                next_cursor = (None, val['id'])
 
             return prev_cursor, next_cursor, values_list
         else:
-            return "/", "/", []
+            return None, None, []
 
     def get_values_from_list(self, values, limit=100):
         """
