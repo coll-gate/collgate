@@ -477,7 +477,7 @@ def get_batch_list(request):
         search = json.loads(request.GET['search'])
 
         for criteria in search:
-            if criteria.get('field') == 'panels':
+            if 'field' in criteria and criteria.get('field') == 'panels':
                 BatchView._meta.model_name = "batch"
                 cq = CursorQuery(BatchView)
                 break
@@ -526,7 +526,7 @@ def get_batch_list_count(request):
         search = json.loads(request.GET['search'])
 
         for criteria in search:
-            if criteria.get('field') == 'panels':
+            if 'field' in criteria and criteria.get('field') == 'panels':
                 BatchView._meta.model_name = "batch"
                 cq = CursorQuery(BatchView)
                 break
