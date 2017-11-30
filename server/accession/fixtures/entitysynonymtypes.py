@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file synonymtypes.py
+# @file entitysynonymtypes.py
 # @brief Setup the type of synonyms.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-09-18
@@ -64,5 +64,11 @@ SYNONYM_TYPES = {
 }
 
 
-def fixture(fixture_manager):
-    fixture_manager.create_or_update_synonym_types('accession', 'accession', SYNONYM_TYPES)
+def fixture(fixture_manager, factory_manager):
+    from main.api.entitysynonymtype import EntitySynonymTypeFactory
+
+    factory = EntitySynonymTypeFactory()
+    factory_manager.register(factory)
+
+    # fixture_manager.create_or_update_synonym_types(SYNONYM_TYPES, 'accession', 'accession')
+    factory.create_or_update(SYNONYM_TYPES, 'accession', 'accession')

@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file batchaction.py
+# @file batchactiontype.py
 # @brief 
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03

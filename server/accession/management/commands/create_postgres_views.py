@@ -20,10 +20,24 @@ class Command(BaseCommand):
         with connection.cursor() as cursor:
             # Accession view
             cursor.execute(
-                """CREATE OR REPLACE VIEW accession_panel_list AS SELECT * FROM (SELECT DISTINCT A.*,ARRAY(SELECT AP.accessionpanel_id FROM accession_accessionpanel_accessions AP WHERE AP.accession_id = A.id) AS panels FROM accession_accession A) T ORDER BY panels;"""
+                """CREATE OR REPLACE VIEW accession_panel_list AS SELECT * 
+                      FROM (SELECT DISTINCT A.*,ARRAY(
+                          SELECT AP.accessionpanel_id
+                              FROM accession_accessionpanel_accessions AP
+                              WHERE AP.accession_id = A.id)
+                              AS panels
+                          FROM accession_accession A) T
+                      ORDER BY panels;"""
             )
 
             # Batch view
             cursor.execute(
-                """CREATE OR REPLACE VIEW batch_panel_list AS SELECT * FROM (SELECT DISTINCT A.*, ARRAY(SELECT AP.batchpanel_id FROM accession_batchpanel_batches AP WHERE AP.batch_id = A.id) AS panels FROM accession_batch A) T ORDER BY panels;"""
+                """CREATE OR REPLACE VIEW batch_panel_list AS SELECT * 
+                      FROM (SELECT DISTINCT A.*, ARRAY(
+                          SELECT AP.batchpanel_id
+                              FROM accession_batchpanel_batches AP
+                              WHERE AP.batch_id = A.id)
+                              AS panels
+                          FROM accession_batch A) T
+                    ORDER BY panels;"""
             )

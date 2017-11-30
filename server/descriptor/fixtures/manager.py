@@ -401,7 +401,7 @@ class FixtureManager:
             if descriptor is not None:
                 DescriptorType.objects.filter(name=descriptor['name']).update(values=None)
 
-    def create_or_update_synonym_types(self, app_label, model_name, synonym_types):
+    def create_or_update_synonym_types(self, synonym_types, app_label, model_name):
         sys.stdout.write("   + Create types of synonym...\n")
 
         # get related model

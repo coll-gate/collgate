@@ -9,7 +9,8 @@
 # @details coll-gate accession fixtures initialisation
 
 ORDER = [
-    'synonymtypes',
+    'entitysynonymtypes',
+    'batchactiontypes',
     'descriptorsgroups',
     'descriptorstypes',
     'mcpdtypes',
