@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from descriptor.descriptormetamodeltype import DescriptorMetaModelTypeManager
 from igdectk.common.apphelpers import ApplicationMain
-from igdectk.module import AUTH_USER
+from igdectk.module import AUTH_USER, AUTH_STAFF
 from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
@@ -134,6 +134,16 @@ class CollGateAccession(ApplicationMain):
         menu_action = ModuleMenu('action', _('Action'), auth=AUTH_USER)
 
         accession_module.add_menu(menu_action)
+
+        # accession administration menu
+        menu_administration = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
+
+        # descriptor related menus
+        menu_administration.add_entry(MenuSeparator(500))
+        menu_administration.add_entry(
+            MenuEntry('list-batch-action-type', _('Batch action types'), "#accession/batchactiontype/",
+                      icon=FaGlyph('cubes'), order=501, auth=AUTH_STAFF))
+        accession_module.add_menu(menu_administration)
 
         module_manager.register_module(accession_module)
 

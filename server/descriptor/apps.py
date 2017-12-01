@@ -112,7 +112,7 @@ class CollGateDescriptor(ApplicationMain):
         # and register them
         descriptormetamodeltype.DescriptorMetaModelTypeManager.register(self.meta_model_types)
 
-        # descriptor menu
+        # descriptor administration menu
         menu_descriptor = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
 
         # descriptor related menus
