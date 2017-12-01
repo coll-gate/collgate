@@ -41,7 +41,7 @@ class Organisation(DescribableEntity):
     # unique name of the organisation
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
-    # type of organisation is related to the type of descriptor IN_002 that is an 'enum_single'.
+    # type of organisation is related to the type of descriptor that is an 'enum_single'.
     type = models.CharField(max_length=16, default=TYPE_UNDEFINED)
 
     @classmethod

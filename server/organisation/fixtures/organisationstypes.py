@@ -16,7 +16,7 @@ from descriptor.models import DescriptorValue
 from .descriptorstypes import DESCRIPTORS
 
 
-def fixture(fixture_manager):
+def fixture(fixture_manager, factory_manager):
     sys.stdout.write("   + Create descriptors models...\n")
 
     # load JSON data

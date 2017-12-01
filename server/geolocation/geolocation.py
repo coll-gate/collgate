@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file geolocation.py
-# @brief 
+# @brief coll-gate geolocation rest handlers
 # @author Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate geolocation rest handler
-"""
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -93,18 +89,18 @@ def search_country(request):
 
     lang = get_language()
     results_per_page = int_arg(request.GET.get('more', 30))
-    str_cursor = request.GET.get('cursor')
+    cursor = request.GET.get('cursor')
     limit = results_per_page
 
     manager = instance.geolocation_app.geolocation_manager
 
-    if str_cursor:
-        cursor_name, cursor_id = str_cursor.rsplit('/', 1)
-        current_cursor = Cursor(cursor_name, int(cursor_id))
+    if cursor:
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
     else:
-        current_cursor = None
+        cursor_name = cursor_id = None
 
-    countries = manager.get_countries(cursor=current_cursor, limit=limit, lang=lang, term=term)
+    countries = manager.get_countries(cursor_name=cursor_name, limit=limit, lang=lang, term=term)
 
     country_l = []
 
@@ -124,11 +120,11 @@ def search_country(request):
     if len(country_l) > 0:
         # prev cursor (asc order)
         entity = country_l[0]
-        prev_cursor = "%s/%s" % (entity['name'], entity['id'])
+        prev_cursor = (entity['name'], entity['id'])
 
         # next cursor (asc order)
         entity = country_l[-1]
-        next_cursor = "%s/%s" % (entity['name'], entity['id'])
+        next_cursor = (entity['name'], entity['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -137,7 +133,7 @@ def search_country(request):
         'perms': [],
         'items': country_l,
         'prev': prev_cursor,
-        'cursor': str(current_cursor),
+        'cursor': cursor,
         'next': next_cursor,
     }
 
@@ -152,18 +148,18 @@ def country_list(request):
     term = request.GET.get('term')
     lang = get_language()
     results_per_page = int_arg(request.GET.get('more', 30))
-    str_cursor = request.GET.get('cursor')
+    cursor = request.GET.get('cursor')
     limit = results_per_page
 
     manager = instance.geolocation_app.geolocation_manager
 
-    if str_cursor:
-        cursor_name, cursor_id = str_cursor.rsplit('/', 1)
-        current_cursor = Cursor(cursor_name, int(cursor_id))
+    if cursor:
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
     else:
-        current_cursor = None
+        cursor_name = cursor_id = None
 
-    countries = manager.get_countries(cursor=current_cursor, limit=limit, lang=lang, term=term)
+    countries = manager.get_countries(cursor_name=cursor_name, limit=limit, lang=lang, term=term)
 
     country_l = []
 
@@ -183,11 +179,11 @@ def country_list(request):
     if len(country_l) > 0:
         # prev cursor (asc order)
         entity = country_l[0]
-        prev_cursor = "%s/%s" % (entity['name'], entity['id'])
+        prev_cursor = (entity['name'], entity['id'])
 
         # next cursor (asc order)
         entity = country_l[-1]
-        next_cursor = "%s/%s" % (entity['name'], entity['id'])
+        next_cursor = (entity['name'], entity['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -196,7 +192,7 @@ def country_list(request):
         'perms': [],
         'items': country_l,
         'prev': prev_cursor,
-        'cursor': str(current_cursor),
+        'cursor': cursor,
         'next': next_cursor,
     }
 
@@ -234,18 +230,18 @@ def search_city(request):
 
     lang = get_language()
     results_per_page = int_arg(request.GET.get('more', 30))
-    str_cursor = request.GET.get('cursor')
+    cursor = request.GET.get('cursor')
     limit = results_per_page
 
     manager = instance.geolocation_app.geolocation_manager
 
-    if str_cursor:
-        cursor_name, cursor_id = str_cursor.rsplit('/', 1)
-        current_cursor = Cursor(cursor_name, int(cursor_id))
+    if cursor:
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
     else:
-        current_cursor = None
+        cursor_name = cursor_id = None
 
-    cities = manager.get_cities(cursor=current_cursor, limit=limit, lang=lang, term=term)
+    cities = manager.get_cities(cursor_name=cursor_name, limit=limit, lang=lang, term=term)
 
     city_list = []
 
@@ -276,11 +272,11 @@ def search_city(request):
     if len(city_list) > 0:
         # prev cursor (asc order)
         entity = city_list[0]
-        prev_cursor = "%s/%s" % (entity['name'], entity['id'])
+        prev_cursor = (entity['name'], entity['id'])
 
         # next cursor (asc order)
         entity = city_list[-1]
-        next_cursor = "%s/%s" % (entity['name'], entity['id'])
+        next_cursor = (entity['name'], entity['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -289,7 +285,7 @@ def search_city(request):
         'perms': [],
         'items': city_list,
         'prev': prev_cursor,
-        'cursor': str(current_cursor),
+        'cursor': cursor,
         'next': next_cursor,
     }
 
@@ -306,7 +302,7 @@ def search_city_online(request):
 
     lang = get_language()
     results_per_page = int_arg(request.GET.get('more', 30))
-    # str_cursor = request.GET.get('cursor')
+    # cursor = request.GET.get('cursor')
     limit = results_per_page
 
     manager = instance.geolocation_app.geolocation_manager

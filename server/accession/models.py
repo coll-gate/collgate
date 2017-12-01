@@ -403,19 +403,23 @@ class Sample(DescribableEntity):
         }
 
 
-class BatchActionType(ChoiceEnum):
+class BatchActionType(models.Model):
     """
     Type of batch-action.
     """
 
-    INTRODUCTION = IntegerChoice(0, _('Introduction'))
-    MULTIPLICATION = IntegerChoice(1, _('Multiplication'))
-    REGENERATION = IntegerChoice(2, _('Regeneration'))
-    TEST = IntegerChoice(3, _('Test'))
-    CLEANUP = IntegerChoice(4, _('Clean-up'))
-    SAMPLE = IntegerChoice(5, _('Sample'))
-    DISPATCH = IntegerChoice(6, _('Dispatch'))
-    ELIMINATION = IntegerChoice(7, _('Elimination'))
+    # unique name of the action
+    name = models.CharField(unique=True, max_length=128, db_index=True)
+
+    # Customisable label of the action.
+    # It is i18nized using a JSON dict with language code as key and label as string value.
+    label = JSONField(default={})
+
+    # Format of the action (can define a lot of parameters, like input, output, process...)
+    format = JSONField(default={})
+
+    class Meta:
+        verbose_name = _("batch action type")
 
 
 class BatchAction(models.Model):
@@ -431,8 +435,7 @@ class BatchAction(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     # action type
-    type = models.IntegerField(
-        choices=BatchActionType.choices(), default=BatchActionType.INTRODUCTION.value, db_index=True)
+    type = models.ForeignKey(to=BatchActionType, on_delete=models.PROTECT)
 
     # related parent accession
     accession = models.ForeignKey(Accession, db_index=True)
@@ -453,7 +456,7 @@ class BatchAction(models.Model):
 
 class Panel(Entity):
     """
-    A Panel...
+    Panel abstract model
     """
 
     # unique name of the panel

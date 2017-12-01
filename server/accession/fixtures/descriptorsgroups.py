@@ -15,12 +15,6 @@ GROUPS = {
         'can_delete': False,
         'can_modify': False,
     },
-    'accession': {
-        'id': None,
-        'name': 'accession',
-        'can_delete': False,
-        'can_modify': False,
-    },
     'MCPD': {
         'id': None,
         'name': 'MCPD',
@@ -36,5 +30,5 @@ GROUPS = {
 }
 
 
-def fixture(fixture_manager):
+def fixture(fixture_manager, factory_manager):
     fixture_manager.create_or_update_groups(GROUPS)

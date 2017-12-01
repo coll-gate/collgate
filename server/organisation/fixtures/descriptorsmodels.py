@@ -100,5 +100,5 @@ MODELS = {
 }
 
 
-def fixture(fixture_manager):
+def fixture(fixture_manager, factory_manager):
     fixture_manager.create_or_update_models(MODELS)

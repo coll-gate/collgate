@@ -9,23 +9,6 @@
 # @details 
 
 DESCRIPTORS = {
-    'accession_synonym_types': {
-        'id': None,
-        'name': 'accession_synonym_types',
-        'code': 'ACC_SYN',
-        'group': 'accession',
-        'can_delete': False,
-        'can_modify': False,
-        'description': 'List of types of synonyms for an accession',
-        'format': {
-            'type': 'enum_single',
-            'fields': ['name'],
-            'trans': True,
-            'list_type': 'dropdown',
-            'display_fields': 'value0',
-            'sortby_field': 'value0'
-        }
-    },
     'biological_status': {
         'id': None,
         'name': 'biological_status',
@@ -153,5 +136,5 @@ DESCRIPTORS = {
 }
 
 
-def fixture(fixture_manager):
+def fixture(fixture_manager, factory_manager):
     fixture_manager.create_or_update_types(DESCRIPTORS)

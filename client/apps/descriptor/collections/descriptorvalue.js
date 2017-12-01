@@ -19,6 +19,7 @@ let Collection = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         options || (options = {});
+
         this.sort_by = "id";
         this.group_id = options.group_id;
         this.type_id = options.type_id;
@@ -42,14 +43,19 @@ let Collection = Backbone.Collection.extend({
         options || (options = {});
         let data = (options.data || {});
 
-        options.data = data;
+        let opts = _.clone(options);
+        opts.data = data;
 
-        this.cursor = options.data.cursor;
-        this.sort_by = options.data.sort_by;
+        if (data.cursor && typeof data.cursor !== 'string') {
+            opts.data.cursor = JSON.stringify(data.cursor);
+        }
 
-        return Backbone.Collection.prototype.fetch.call(this, options);
+        if (data.sort_by && typeof data.sort_by !== 'string') {
+            opts.data.sort_by = JSON.stringify(data.sort_by);
+        }
+
+        return Backbone.Collection.prototype.fetch.call(this, opts);
     }
 });
 
 module.exports = Collection;
-

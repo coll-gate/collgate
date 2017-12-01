@@ -108,10 +108,10 @@ class GeolocationManager(GeolocationInterface):
 
         return results
 
-    def get_countries(self, cursor, limit, lang, term=None):
+    def get_countries(self, cursor_name, limit, lang, term=None):
 
-        if cursor:
-            qs = Country.objects.filter(Q(name__gt=cursor.name))
+        if cursor_name:
+            qs = Country.objects.filter(Q(name__gt=cursor_name))
         else:
             qs = Country.objects.all()
 
@@ -212,10 +212,10 @@ class GeolocationManager(GeolocationInterface):
 
         return result
 
-    def get_cities(self, cursor, limit, lang, term=None):
+    def get_cities(self, cursor_name, limit, lang, term=None):
 
-        if cursor:
-            qs = City.objects.filter(Q(name__gt=cursor.name))
+        if cursor_name:
+            qs = City.objects.filter(Q(name__gt=cursor_name))
         else:
             qs = City.objects.all()
 

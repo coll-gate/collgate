@@ -92,8 +92,12 @@ class Command(BaseCommand):
             # avoid main signal during fixture processing
             main_unregister_models(module.name)
 
+        # @todo deprecated manager to remove
         from descriptor.fixtures import manager
         fixture_manager = manager.FixtureManager()
+
+        from main.api.factorymanager import FactoryManager
+        factory_manager = FactoryManager.instance()
 
         for module in module_manager.modules:
             sys.stdout.write(colorama.Fore.RESET + " - Lookups for fixtures in module '%s'\n" % module.name)
@@ -111,7 +115,7 @@ class Command(BaseCommand):
 
                         sys.stdout.write(colorama.Fore.GREEN + "  - Execute fixture '%s':" % fixture + colorama.Style.RESET_ALL + '\n')
                         # process the current fixture
-                        foo.fixture(fixture_manager)
+                        foo.fixture(fixture_manager, factory_manager)
 
                         sys.stdout.write(colorama.Fore.GREEN + "  - Done fixture '%s':" % fixture + colorama.Style.RESET_ALL + '\n')
                     except BaseException as e:

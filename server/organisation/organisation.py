@@ -14,10 +14,11 @@ from django.db import IntegrityError
 from django.db import transaction
 from django.db.models import Q, TextField, Count
 from django.shortcuts import get_object_or_404
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel, DescriptorModelType
+from descriptor.models import DescriptorMetaModel, DescriptorModelType, DescriptorValue
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cursor import CursorQuery
@@ -142,6 +143,12 @@ def get_organisation_list(request):
     cq.set_count('establishments')
     cq.set_count('grcs')
     # cq.prefetch_related('grcs')
+
+    # for order on char field referencing a descriptor value, to avoid this fixture move type to the descriptors
+    lang = translation.get_language()
+    cq.query_select.append('"descriptor_descriptorvalue"."value0" AS "type_name"')
+    cq.query_from.append('LEFT JOIN "descriptor_descriptorvalue" ON ("organisation_organisation"."type" = "descriptor_descriptorvalue"."code" AND "language" = \'%s\')' % lang)
+    cq.query_group_by.append('"type_name"')
 
     organisation_items = []
 

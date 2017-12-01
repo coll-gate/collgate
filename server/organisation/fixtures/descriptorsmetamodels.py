@@ -40,5 +40,5 @@ META_MODELS = {
 }
 
 
-def fixture(fixture_manager):
+def fixture(fixture_manager, factory_manager):
     fixture_manager.create_or_update_meta_models(META_MODELS)

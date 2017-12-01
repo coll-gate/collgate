@@ -9,8 +9,7 @@
 # @details 
 
 
-def fixture(fixture_manager):
+def fixture(fixture_manager, factory_manager):
     data = fixture_manager.load_json('accession', 'mcpdtypes.json')
 
-    # descriptor = DESCRIPTORS.get('accession_synonym_types')
     fixture_manager.create_or_update_values('biological_status', data, trans=True)
