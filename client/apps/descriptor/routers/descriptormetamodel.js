@@ -5,7 +5,7 @@
  * @date 2016-10-26
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 let Marionette = require('backbone.marionette');
@@ -29,9 +29,10 @@ let TitleView = require('../../main/views/titleview');
 let ScrollingMoreView = require('../../main/views/scrollingmore');
 
 let Router = Marionette.AppRouter.extend({
-    routes : {
+    routes: {
         "app/descriptor/meta-model/": "getDescriptorMetaModelList",
         "app/descriptor/meta-model/:id/": "getDescriptorMetaModel",
+        "app/descriptor/layout/:id/": "getDescriptorLayout",
         "app/descriptor/meta-model/:id/panel/": "getDescriptorPanelListForModel",
     },
 
@@ -44,7 +45,7 @@ let Router = Marionette.AppRouter.extend({
         defaultLayout.showChildView('title', new TitleView({title: _t("List of meta-models of descriptor")}));
 
         collection.fetch().then(function () {
-            let descriptorMetaModelList = new DescriptorMetaModelListView({collection : collection});
+            let descriptorMetaModelList = new DescriptorMetaModelListView({collection: collection});
             defaultLayout.showChildView('content', descriptorMetaModelList);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorMetaModelList}));
         });
@@ -62,12 +63,38 @@ let Router = Marionette.AppRouter.extend({
         let model = new DescriptorMetaModelModel({id: id});
 
         model.fetch().then(function () {
-            defaultLayout.showChildView('title', new TitleView({title: _t("Details for the meta-model of descriptor"), object: model.get('name')}));
-            defaultLayout.showChildView('content', new DescriptorMetaModelDetailView({model : model}));
+            defaultLayout.showChildView('title', new TitleView({
+                title: _t("Details for the meta-model of descriptor"),
+                object: model.get('name')
+            }));
+            defaultLayout.showChildView('content', new DescriptorMetaModelDetailView({model: model}));
         });
     },
 
-    getDescriptorPanelListForModel: function(id) {
+    getDescriptorLayout: function (id) {
+        // Layout editor
+
+        let panelCollection = new DescriptorPanelCollection([], {model_id: id});
+        let metaModel = new DescriptorMetaModelModel({id: id});
+
+        let defaultLayout = new DefaultLayout({});
+        application.main.showContent(defaultLayout);
+
+        metaModel.fetch().then(function () {
+            defaultLayout.showChildView('title', new TitleView({
+                title: _t("Layout editor"),
+                object: metaModel.get('name')
+            }));
+        });
+
+        let LayoutEditor = require('../views/layouteditor');
+        panelCollection.fetch().then(function () {
+            let layoutEditor = new LayoutEditor({collection: panelCollection});
+            defaultLayout.showChildView('content', layoutEditor);
+        });
+    },
+
+    getDescriptorPanelListForModel: function (id) {
         let panelCollection = new DescriptorPanelCollection([], {model_id: id});
 
         let defaultLayout = new DefaultLayout({});
@@ -79,7 +106,7 @@ let Router = Marionette.AppRouter.extend({
         defaultLayout.showChildView('content', twoColumnsLayout);
 
         panelCollection.fetch().then(function () {
-            let descriptorPanelList = new DescriptorPanelListView({collection : panelCollection});
+            let descriptorPanelList = new DescriptorPanelListView({collection: panelCollection});
             twoColumnsLayout.showChildView('left-content', descriptorPanelList);
             twoColumnsLayout.showChildView('left-bottom', new ScrollingMoreView({targetView: descriptorPanelList}));
         });

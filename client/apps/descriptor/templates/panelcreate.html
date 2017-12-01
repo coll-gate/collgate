@@ -1,0 +1,73 @@
+<!--
+ - @file panelcreate.html
+ - @brief 
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2017-11-30
+ - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details 
+-->
+
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= _t("New panel") %></h4>
+        </div>
+        <div class="modal-body">
+            <form>
+
+                <div class="panel-name form-group">
+                    <label for="panel_name"><%- _t('Panel name') %></label>
+                    <input id="panel_name" class="form-control" type="text" maxlength="255"
+                           value="">
+                </div>
+
+                <div class="panel-model form-group">
+                    <label class="control-label" for="model"><%= _t("Model") %></label>
+                    <select class="form-control model" id="model" name="model" data-live-search="true">
+                        <option value="new"><%= _t("New model") %></option>
+                    </select>
+                </div>
+
+                <div class="alert alert-warning model-alert" role="alert" hidden>
+                    <p>
+                        <span class="fa fa-lg fa-exclamation-triangle"></span>
+                        <strong><%= _t("Warning") %>: </strong>
+                        <%= _t("Adding or removing descriptors impacts all panels that inherit from this model!") %>
+                    </p>
+                </div>
+
+                <div class="panel panel-warning model-create-zone">
+                    <div class="panel-body bg-warning">
+
+                        <div class="row">
+                            <div class="model-name form-group col-md-5">
+                                <label for="model_name"><%- _t('Model name') %></label>
+                                <input id="model_name" class="form-control" type="text" maxlength="255"
+                                       value="">
+                            </div>
+                            <div class="model-verbose-name form-group col-md-7">
+                                <label for="model_verbose_name"><%- _t('Verbose name') %></label>
+                                <input id="model_verbose_name" class="form-control" type="text"
+                                       maxlength="255"
+                                       value="">
+                            </div>
+                        </div>
+
+                        <div class="model-description form-group">
+                            <label for="model_description"><%- _t('Description') %></label>
+                            <textarea id="model_description" class="form-control" maxlength="1024"
+                                      style="min-width: 100%; max-width: 100%; max-height: 45vh; min-height: 50px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
+            <button type="button" class="btn btn-success create"><%= _t("Create") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

@@ -219,7 +219,23 @@ tr.element:hover, div.element:hover, span.element:hover input {
 }
 
 [draggable=true] {
+    cursor: grab;
+    cursor: -webkit-grab;
+}
+
+[draggable=true]:active {
     cursor: move;
+}
+
+li[draggable=true]:active {
+    border: 1px dotted darkgray;
+    color: darkgray;
+    background-color: whitesmoke;
+}
+
+[draggable=true]:hover {
+    -webkit-box-shadow: inset 0px 0px 20px 3px rgba(0,0,0,.075), 0 0 6px #a9a9a9;
+    box-shadow: inset 0px 0px 20px 3px rgba(0,0,0,.075), 0 0 6px #a9a9a9;
 }
 
 [draggable] {
@@ -306,7 +322,7 @@ td.action:hover > .label, th.action:hover > .label {
 }
 
 .glyphicon.action:hover, td.action:hover > .glyphicon, th.action:hover > .glyphicon,
-.fa.action:hover, td.action:hover > .fa, th.action:hover > .fa{
+.fa.action:hover, td.action:hover > .fa, th.action:hover > .fa {
     opacity: 0.3;
 }
 
@@ -364,15 +380,15 @@ div.table-advanced-body {
     border: none;
     position: absolute;
     overflow: hidden;
-    text-overflow: ellipsis;  /* longest lines */
-    margin: -17px 0px 0px -3px;  /*margin-top: -16px; compensation for padding*/
+    text-overflow: ellipsis; /* longest lines */
+    margin: -17px 0px 0px -3px; /*margin-top: -16px; compensation for padding*/
     /* padding used to have correct background round borders */
     padding: 1px 0px 1px 3px;
 }
 
 .table.table-advanced thead tr th:first-child div {
     border-left: none;
-    min-width: 21px;  /*min-width: 32px; reduced to avoid out of cell */
+    min-width: 21px; /*min-width: 32px; reduced to avoid out of cell */
 }
 
 .table.table-advanced thead tr th:first-child {
@@ -504,6 +520,7 @@ span.parenthesis:hover {
 span.parenthesis.activated {
     opacity: 1
 }
+
 div.add-column-menu {
     min-width: 200px;
     width: 80vw;
@@ -619,4 +636,101 @@ div.cell-context-menu ul.actions-list li:hover {
 div.cell-context-menu ul.actions-list li a:hover {
     text-color: inherit;
     text-decoration: none;
+}
+
+.panel-editable {
+    border-color: #ddd;
+}
+
+.panel-editable > .panel-heading {
+    color: #333;
+    font-weight: bold;
+    /*background-color: #f5f5f5;*/
+    border-color: #ddd;
+    background: repeating-linear-gradient(
+            45deg,
+            #ddd,
+            #ddd 10px,
+            #f5f5f5 10px,
+            #f5f5f5 25px
+    );
+}
+
+.panel-editable > .panel-heading + .panel-collapse > .panel-body {
+    border-top-color: #ddd;
+}
+
+.panel-editable > .panel-heading .badge {
+    color: #f5f5f5;
+    background-color: #333;
+}
+
+.panel-editable > .panel-footer + .panel-collapse > .panel-body {
+    border-bottom-color: #ddd;
+}
+
+.panel-ghost {
+    color: #00000030;
+    border: 2px dashed #00000030;
+}
+
+.panel-ghost > .panel-heading {
+    color: #00000030;
+    font-weight: bold;
+    /*background-color: #f5f5f5;*/
+    border-bottom: 2px dashed #00000030;
+    background: repeating-linear-gradient(
+            45deg,
+            #dddddd40,
+            #dddddd40 10px,
+            #f5f5f540 10px,
+            #f5f5f540 25px
+    );
+}
+
+.panel-ghost:hover {
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px darkgray;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px darkgray;
+    /*border-color: darkgray;*/
+    /*color: darkgray;*/
+}
+
+.panel-descriptors[aria-expanded=false] {
+    /*background-color: red;*/
+    padding: 0 !important;
+}
+
+/* VERTICAL ANIMATION */
+
+@-webkit-keyframes vertical {
+  0% {
+    -webkit-transform: translate(0,-3px);
+    transform: translate(0,-3px);
+  }
+
+  30% {
+    -webkit-transform: translate(0,3px);
+    transform: translate(0,3px);
+  }
+}
+
+@keyframes vertical {
+  0% {
+    -webkit-transform: translate(0,-3px);
+    -ms-transform: translate(0,-3px);
+    transform: translate(0,-3px);
+  }
+
+  30% {
+    -webkit-transform: translate(0,3px);
+    -ms-transform: translate(0,3px);
+    transform: translate(0,3px);
+  }
+}
+
+.faa-vertical.animated,
+.faa-vertical.animated-hover:hover,
+.faa-parent.animated-hover:hover > .faa-vertical {
+  -webkit-animation: vertical 0.30s ease infinite;
+  animation: vertical 0.30s ease infinite;
 }
