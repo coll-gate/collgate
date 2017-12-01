@@ -22,6 +22,7 @@ let View = Marionette.View.extend({
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
                 edit: {title: _t("Edit label"), event: 'viewDescriptorMetaModelDetails'},
+                edit2: {display: true, title: _t("Layout editor"), event: 'viewLayoutEditor'},
                 tag: {display: true, event: 'editLabel'},
                 manage: {display: true, event: 'viewDescriptorPanels'},
                 remove: {display: true, event: 'deleteDescriptorMetaModel'}
@@ -77,6 +78,10 @@ let View = Marionette.View.extend({
 
     viewDescriptorPanels: function () {
         Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/panel/", {trigger: true});
+    },
+
+    viewLayoutEditor: function () {
+        Backbone.history.navigate("app/descriptor/layout/" + this.model.id + "/", {trigger: true});
     },
 
     deleteDescriptorMetaModel: function () {

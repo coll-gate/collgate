@@ -1,0 +1,35 @@
+<!--
+ - @file paneldescriptor.html
+ - @brief 
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2017-11-28
+ - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details 
+-->
+
+<span class="delete-descriptor-model-type action fa fa-minus-circle"></span>
+
+<%= label %>
+
+<div class="pull-right">
+    <% if (mandatory) { %>
+    <span  name="mandatory" class="action fa fa-asterisk"></span>
+    <% } else { %>
+    <span name="mandatory" style="color: #0000001a" class="action fa fa-asterisk"></span>
+    <% } %>
+
+    <% if (set_once) { %>
+    <span name="set_once" class="action fa fa-ban"></span>
+    <% } else { %>
+    <span name="set_once" style="color: #0000001a" class="action fa fa-ban"></span>
+    <% } %>
+
+    <span name="condition" class="action fa fa-wrench"></span>
+
+    <% if (index !== 0) { %>
+    <span name="index" class="action fa fa-list-ol"></span>
+    <% } else { %>
+    <span name="index" style="color: #0000001a" class="action fa fa-list-ol"></span>
+    <% } %>
+</div>
