@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models
 from django.db.models import Q
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from accession import localsettings
@@ -420,6 +421,22 @@ class BatchActionType(models.Model):
 
     class Meta:
         verbose_name = _("batch action type")
+
+    def set_label(self, lang, label):
+        """
+        Set the label for a specific language.
+        :param str lang: language code string
+        :param str label: Localized label
+        :note Model instance save() is not called.
+        """
+        self.label[lang] = label
+
+    def get_label(self):
+        """
+        Get the label for this meta model in the current regional.
+        """
+        lang = translation.get_language()
+        return self.label.get(lang, "")
 
 
 class BatchAction(models.Model):

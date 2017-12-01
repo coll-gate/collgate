@@ -37,11 +37,11 @@ def get_batch_action_type_list(request):
     """
     batch_action_types = []
 
-    for batch_action_type in BatchActionType:
+    for batch_action_type in BatchActionType.objects.all():
         batch_action_types.append({
-            'id': batch_action_type.value,
-            'value': batch_action_type.value,
-            'label': str(batch_action_type.label)
+            'id': batch_action_type.id,
+            'value': batch_action_type.name,
+            'label': batch_action_type.get_label()
         })
 
     return HttpResponseRest(request, batch_action_types)
