@@ -74,8 +74,6 @@ class Language(models.Model):
     Defines the list of configured languages for data (not UI).
     """
 
-    server_cache_update = ("main",)
-
     # code pattern
     CODE_VALIDATOR = {"type": "string", "minLength": 2, "maxLength": 5, "pattern": "^[a-zA-Z]{2}([_-][a-zA-Z]{2})*$"}
 
@@ -110,6 +108,13 @@ class Language(models.Model):
         self.label[lang] = label
 
     def on_client_cache_update(self):
+        return [{
+            'category': 'main',
+            'name': "languages:*",
+            'values': None
+        }]
+
+    def on_server_cache_update(self):
         return [{
             'category': 'main',
             'name': "languages:*",
@@ -582,18 +587,18 @@ class EntitySynonym(Entity):
 
 def _cache_update(sender, instance, created, **kwargs):
     # invalidate server cache(s)
-    if hasattr(sender, 'on_server_cache_update'):
-        from main.cache import cache_manager
-
-        # @todo about values ?
-        for invalidator in sender.on_server_cache_update():
-            cache_manager.delete(invalidator['category'], invalidator['name'])
-
     if hasattr(sender, 'server_cache_update'):
         from main.cache import cache_manager
 
         for invalidator in sender.server_cache_update:
             cache_manager.delete(invalidator, '*')
+
+    if hasattr(sender, 'on_server_cache_update'):
+        from main.cache import cache_manager
+
+        # @todo about values ?
+        for invalidator in instance.on_server_cache_update():
+            cache_manager.delete(invalidator['category'], invalidator['name'])
 
     if hasattr(instance, 'on_client_cache_update'):
         for invalidator in instance.on_client_cache_update():
@@ -602,7 +607,7 @@ def _cache_update(sender, instance, created, **kwargs):
             messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, invalidator)
 
     elif hasattr(instance, 'client_cache_update'):
-        for invalidator in instance.client_cache_update:
+        for invalidator in sender.client_cache_update:
             messenger_module = module_manager.get_module('messenger')
             # if hasattr(messenger_module, 'tcp_client'):
             messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {

@@ -38,6 +38,12 @@ AccessionModule.prototype = {
         }
 
         //
+        // cache
+        //
+
+        app.main.cache.register('batch_action_types');
+
+        //
         // main collections
         //
 

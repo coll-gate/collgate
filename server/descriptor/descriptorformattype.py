@@ -454,7 +454,7 @@ class DescriptorFormatTypeManager(object):
         # register each type into a map
         for dft in descriptor_format_types_list:
             if dft.name in cls.descriptor_format_types:
-                raise ImproperlyConfigured("Descriptor format type not already defined (%s)" % dft.name)
+                raise ImproperlyConfigured("Descriptor format type already defined (%s)" % dft.name)
 
             cls.descriptor_format_types[dft.name] = dft
 

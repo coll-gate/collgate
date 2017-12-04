@@ -438,6 +438,20 @@ class BatchActionType(models.Model):
         lang = translation.get_language()
         return self.label.get(lang, "")
 
+    def on_client_cache_update(self):
+        return [{
+            'category': 'accession',
+            'name': "batch_action_types",
+            'values': None
+        }]
+
+    def on_server_cache_update(self):
+        return [{
+            'category': 'accession',
+            'name': "batch_action_types",
+            'values': None
+        }]
+
 
 class BatchAction(models.Model):
     """

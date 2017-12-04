@@ -36,6 +36,13 @@ class CollGateAccession(ApplicationMain):
     def ready(self):
         super().ready()
 
+        # register descriptor cache category
+        from main.cache import cache_manager
+        cache_manager.register('accession')
+
+        from messenger.cache import client_cache_manager
+        client_cache_manager.register('accession')
+
         from main.models import main_register_models
         main_register_models(CollGateAccession.name)
 
@@ -47,7 +54,7 @@ class CollGateAccession(ApplicationMain):
         accession_module.include_urls((
             'base',
             'accessionsynonym',
-            'batchaction',
+            'batchactiontype',
             'accession',
             'accessionbatch',
             'batch',

@@ -105,9 +105,6 @@ def post_language(request):
         'label': label
     }
 
-    cache_manager.delete('main', 'languages:*')
-    # client_cache_manager.delete('main', 'languages:*')
-
     return HttpResponseRest(request, results)
 
 
@@ -118,9 +115,6 @@ def delete_language(request, code):
     # do we allow delete because of data consistency ?
     # it is not really a problem because the code is a standard
     language.delete()
-
-    cache_manager.delete('main', 'languages:*')
-    # client_cache_manager.delete('main', 'languages:*')
 
     return HttpResponseRest(request, {})
 
@@ -165,9 +159,6 @@ def change_language_labels(request, code):
     result = {
         'label': language.get_label()
     }
-
-    cache_manager.delete('main', 'languages:*')
-    # client_cache_manager.delete('main', 'languages:*')
 
     return HttpResponseRest(request, result)
 
