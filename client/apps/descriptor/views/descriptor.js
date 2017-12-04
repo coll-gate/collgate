@@ -10,15 +10,11 @@
 
 let Marionette = require('backbone.marionette');
 let Dialog = require('../../main/views/dialog');
+let DescriptorTypeModel = require('../models/descriptortype');
 
 let View = Marionette.View.extend({
-    tagName: 'li',
-    className: 'list-group-item',
+    className: 'descriptor-view',
     template: require('../templates/paneldescriptor.html'),
-
-    attributes: {
-        draggable: 'true'
-    },
 
     ui: {
         'delete_descriptor_model_type': '.delete-descriptor-model-type',
@@ -27,7 +23,9 @@ let View = Marionette.View.extend({
         'mandatory': '[name="mandatory"]',
         'set_once': '[name="set_once"]',
         'condition': '[name="condition"]',
-        'index': '[name="index"]'
+        'index': '[name="index"]',
+        'top_placeholder': 'li.descriptor-top-placeholder',
+        'bottom_placeholder': 'li.descriptor-bottom-placeholder',
     },
 
     events: {
@@ -56,213 +54,124 @@ let View = Marionette.View.extend({
         if (!session.user.isStaff && !session.user.isSuperUser) {
             $(this.ui.delete_descriptor_model_type).hide();
         }
-
-        if (this.model.get('mandatory')) {
-            this.ui.condition.prop('disabled', true);
-            this.ui.condition.children('span').css('color', '#ddd');
-        }
     },
 
     dragStart: function (e) {
-        if (application.main.dnd.hasView('descriptor-type descriptor-model-type')) {
+        if (e.target.classList[1] === 'descriptor-type') {
             // fix for firefox...
             e.originalEvent.dataTransfer.setData('text/plain', null);
 
             this.$el.css('opacity', '0.4');
-            application.main.dnd.set(this, 'descriptor-model-type');
+            application.main.dnd.set(this, 'descriptor-type');
+            this.triggerMethod('hide:addButton', this);
         }
     },
 
     dragEnd: function (e) {
-        if (application.main.dnd.hasView('descriptor-type descriptor-model-type')) {
-            this.$el.css('opacity', '1.0');
-            application.main.dnd.unset();
-        }
+        this.$el.css('opacity', '1.0');
+        application.main.dnd.unset();
+        this.triggerMethod('show:addButton', this);
     },
 
     dragOver: function (e) {
-        if (application.main.dnd.hasView('descriptor-type descriptor-model-type')) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
 
-            if (e.originalEvent.preventDefault) {
-                e.originalEvent.preventDefault();
-            }
-
+        if (application.main.dnd.hasView('descriptor-type')) {
             //e.originalEvent.dataTransfer.dropEffect = 'move';
             return false;
         }
+
+        // if (application.main.dnd.hasView('descriptor-panel')) {
+        //
+        //     this.dragEnterCount || (this.dragEnterCount = 1);
+        //
+        //     if (this.dragEnterCount === 1) {
+        //         if (application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
+        //             if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
+        //                 this.ui.top_placeholder.css('display', 'block');
+        //             } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
+        //                 this.ui.bottom_placeholder.css('display', 'block');
+        //             }
+        //         }
+        //     }
+        //
+        //     //e.originalEvent.dataTransfer.dropEffect = 'move';
+        //     return false;
+        //
+        // }
     },
 
     dragEnter: function (e) {
-        if (application.main.dnd.hasView('descriptor-type descriptor-model-type')) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
 
-            if (e.originalEvent.preventDefault) {
-                e.originalEvent.preventDefault();
-            }
-            if (application.main.dnd.get().$el.hasClass('descriptor-model-type')) {
-                if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
-                    this.$el.css('border-top', '5px dashed #ddd');
-                } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
-                    this.$el.css('border-bottom', '5px dashed #ddd');
+        if (application.main.dnd.hasView('descriptor-type')) {
+
+            this.dragEnterCount || (this.dragEnterCount = 0);
+            ++this.dragEnterCount;
+
+            if (this.dragEnterCount === 1) {
+
+                if (application.main.dnd.get().$el.hasClass('descriptor-view')) {
+                    if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
+                        this.ui.top_placeholder.css('display', 'block');
+                        console.log("top_fromview");
+                    } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
+                        this.ui.bottom_placeholder.css('display', 'block');
+                        console.log("bottom_fromview");
+                    }
                 }
-            } else if (application.main.dnd.get().$el.hasClass('descriptor-type')) {
-                this.$el.css('border-top', '5px dashed #ddd');
-            }
 
-            return false;
+                return false;
+            }
         }
     },
 
     dragLeave: function (e) {
-        if (application.main.dnd.hasView('descriptor-type descriptor-model-type')) {
 
-            if (e.originalEvent.preventDefault) {
-                e.originalEvent.preventDefault();
-            }
-            if (application.main.dnd.get().$el.hasClass('descriptor-model-type')) {
-                if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
-                    this.$el.css('border-top', 'initial');
-                } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
-                    this.$el.css('border-bottom', 'initial');
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
+
+        if (application.main.dnd.hasView('descriptor-type')) {
+
+            this.dragEnterCount || (this.dragEnterCount = 1);
+            --this.dragEnterCount;
+
+            if (this.dragEnterCount === 0) {
+                if (application.main.dnd.get().$el.hasClass('descriptor-view')) {
+                    if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
+                        this.ui.top_placeholder.css('display', 'none');
+                    } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
+                        this.ui.bottom_placeholder.css('display', 'none');
+                    }
                 }
-            } else if (application.main.dnd.get().$el.hasClass('descriptor-type')) {
-                this.$el.css('border-top', 'initial');
+                return false;
             }
-
-            return false;
         }
     },
 
     drop: function (e) {
-        if (application.main.dnd.hasView('descriptor-type descriptor-model-type')) {
+        if (application.main.dnd.hasView('descriptor-type')) {
             if (e.originalEvent.stopPropagation) {
                 e.originalEvent.stopPropagation();
             }
 
+            this.dragEnterCount = 0;
+
             let elt = application.main.dnd.get();
-            if (elt.$el.hasClass('descriptor-type')) {
-                // reset borders
-                this.$el.css('border-top', 'initial');
-                this.$el.css('border-bottom', 'initial');
-
-                let DefinesLabel = Dialog.extend({
-                    template: require('../templates/descriptormodeltypecreate.html'),
-
-                    attributes: {
-                        id: "dlg_define_label"
-                    },
-
-                    ui: {
-                        name: "#descriptor_model_type_name",
-                        label: "#descriptor_model_type_label"
-                    },
-
-                    events: {
-                        'input @ui.name': 'onNameInput',
-                        'input @ui.label': 'onLabelInput'
-                    },
-
-                    initialize: function (options) {
-                        DefinesLabel.__super__.initialize.apply(this);
-                    },
-
-                    onLabelInput: function () {
-                        this.validateLabel();
-                    },
-
-                    validateLabel: function () {
-                        let v = this.ui.label.val();
-
-                        if (v.length < 1) {
-                            $(this.ui.label).validateField('failed', g_t('characters_min', {count: 1}));
-                            return false;
-                        }
-
-                        $(this.ui.label).validateField('ok');
-
-                        return true;
-                    },
-
-                    onNameInput: function () {
-                        this.validateName();
-                    },
-
-                    validateName: function () {
-                        let v = this.ui.name.val();
-                        let re = /^[a-zA-Z0-9_\-]+$/i;
-
-                        if (v.length > 0 && !re.test(v)) {
-                            $(this.ui.name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
-                            return false;
-                        } else if (v.length < 3) {
-                            $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
-                            return false;
-                        }
-
-                        $(this.ui.name).validateField('ok');
-
-                        return true;
-                    },
-
-                    onApply: function () {
-                        let view = this;
-                        let collection = this.getOption('collection');
-                        let position = this.getOption('position');
-                        let code = this.getOption('code');
-
-                        if (this.validateName() && this.validateLabel()) {
-                            let to_rshift = [];
-
-                            // server will r-shift position of any model upward this new
-                            // do it locally to be consistent
-                            for (let model in collection.models) {
-                                let dmt = collection.models[model];
-                                let p = dmt.get('position');
-                                if (p >= position) {
-                                    dmt.set('position', p + 1);
-                                    to_rshift.push(dmt);
-                                }
-                            }
-
-                            collection.create({
-                                descriptor_type_code: code,
-                                name: this.ui.name.val(),
-                                label: this.ui.label.val(),
-                                position: position
-                            }, {
-                                wait: true,
-                                success: function () {
-                                    view.destroy();
-                                },
-                                error: function () {
-                                    $.alert.error(_t("Unable to create the type of model of descriptor !"));
-
-                                    // left shift (undo) for consistency with server
-                                    for (let i = 0; i < to_rshift.length; ++i) {
-                                        to_rshift[i].set('position', to_rshift[i].get('position') - 1);
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-
-                let definesLabel = new DefinesLabel({
-                    collection: this.model.collection,
-                    position: this.model.get('position'),
-                    code: elt.model.get('code')
-                });
-
-                definesLabel.render();
-            }
-            else if (elt.$el.hasClass('descriptor-model-type')) {
+            if (elt.$el.hasClass('descriptor-view')) {
                 // useless drop on himself
                 if (this === elt) {
                     return false;
                 }
 
                 // reset borders
-                this.$el.css('border-top', 'initial');
-                this.$el.css('border-bottom', 'initial');
+                this.ui.top_placeholder.css('display', 'none');
+                this.ui.bottom_placeholder.css('display', 'none');
 
                 // ajax call
                 let position = elt.model.get('position');

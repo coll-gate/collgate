@@ -9,24 +9,23 @@
  */
 
 let Marionette = require('backbone.marionette');
-let Dialog = require('../../main/views/dialog');
 let DescriptorCollection = require('../collections/descriptormodeltype');
-let DescriptorModelTypeListView = require('../views/descriptorlist');
+let PanelDescriptor = require('../views/descriptor');
 
-let View = Marionette.View.extend({
-    className: 'object descriptor-panel',
+let View = Marionette.CompositeView.extend({
+    className: 'object descriptor-panel-view',
     template: require('../templates/panel.html'),
-
-    regions: {
-        panel_descriptors: 'div.panel-descriptors'
-    },
+    childView: PanelDescriptor,
+    childViewContainer: '.descriptor-list',
 
     ui: {
         'delete_descriptor_panel': '.delete-descriptor-panel',
         'label': '.rename',
         'top_placeholder': 'div.top-placeholder',
         'bottom_placeholder': 'div.bottom-placeholder',
-        'drag_zone': 'div.panel-heading'
+        'drag_zone': 'div.panel-heading',
+        "panel_descriptors": '.panel-descriptors',
+        'add_btn': '.add-descriptor-btn'
     },
 
     events: {
@@ -42,125 +41,105 @@ let View = Marionette.View.extend({
     },
 
     onDoubleClick: function () {
-        // alert('test');
-        this.getRegion('panel_descriptors').$el.collapse('toggle')
-
+        this.ui.panel_descriptors.collapse('toggle')
     },
 
     initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
         this.collection = new DescriptorCollection([], {model_id: this.model.attributes.descriptor_model});
+        this.collection.fetch()
     },
 
     onRender: function () {
         if (!session.user.isStaff && !session.user.isSuperUser) {
             $(this.ui.delete_descriptor_panel).hide();
         }
-
-        let view = this;
-
-        $.when(view.collection.fetch()).then(function () {
-            let descriptorTypeModelList = new DescriptorModelTypeListView({
-                collection: view.collection
-            });
-
-            view.showChildView('panel_descriptors', descriptorTypeModelList);
-        });
     },
 
     dragStart: function (e) {
-        if (e.target.classList[1] === 'descriptor-panel') {
+        if (e.target.className === 'panel-heading descriptor-panel') {
 
             // fix for firefox...
             e.originalEvent.dataTransfer.setData('text/plain', null);
 
             this.$el.css('opacity', '0.4');
             application.main.dnd.set(this, 'descriptor-panel');
-
             this.triggerMethod('hide:addPanelButton', this);
         }
     },
 
     dragEnd: function (e) {
-        if (application.main.dnd.hasView('descriptor-panel')) {
-            this.$el.css('opacity', '1.0');
-            application.main.dnd.unset();
-            this.triggerMethod('show:addPanelButton', this);
-        }
+        this.$el.css('opacity', '1.0');
+        application.main.dnd.unset();
+        this.triggerMethod('show:addPanelButton', this);
     },
 
     dragEnter: function (e) {
-        if (application.main.dnd.hasView('descriptor-panel')) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
 
-            if (e.originalEvent.preventDefault) {
-                e.originalEvent.preventDefault();
-            }
+        if (application.main.dnd.hasView('descriptor-panel')) {
 
             this.dragEnterCount || (this.dragEnterCount = 0);
             ++this.dragEnterCount;
 
             if (this.dragEnterCount === 1) {
-                if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
+                if (application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
                     if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
                         this.ui.top_placeholder.css('display', 'block');
                     } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
                         this.ui.bottom_placeholder.css('display', 'block');
                     }
-                } else if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
-                    this.ui.top_placeholder.css('display', 'block');
                 }
+
+                return false;
             }
-
-            return false;
-
         }
     },
 
     dragLeave: function (e) {
-        if (application.main.dnd.hasView('descriptor-panel')) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
 
-            if (e.originalEvent.preventDefault) {
-                e.originalEvent.preventDefault();
-            }
+        if (application.main.dnd.hasView('descriptor-panel')) {
 
             this.dragEnterCount || (this.dragEnterCount = 1);
             --this.dragEnterCount;
 
             if (this.dragEnterCount === 0) {
-                if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
+
+                if (application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
                     if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
                         this.ui.top_placeholder.css('display', 'none');
                     } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
                         this.ui.bottom_placeholder.css('display', 'none');
                     }
-                } else if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
-                    this.ui.top_placeholder.css('display', 'none');
                 }
-            }
 
-            return false;
+                return false;
+            }
 
         }
     },
 
     dragOver: function (e) {
-        if (application.main.dnd.hasView('descriptor-model descriptor-panel')) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
 
-            if (e.originalEvent.preventDefault) {
-                e.originalEvent.preventDefault();
-            }
+        if (application.main.dnd.hasView('descriptor-panel')) {
 
             this.dragEnterCount || (this.dragEnterCount = 1);
 
             if (this.dragEnterCount === 1) {
-                if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
+                if (application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
                     if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
                         this.ui.top_placeholder.css('display', 'block');
                     } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
                         this.ui.bottom_placeholder.css('display', 'block');
                     }
-                } else if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
-                    this.ui.top_placeholder.css('display', 'block');
                 }
             }
 
@@ -171,107 +150,16 @@ let View = Marionette.View.extend({
     },
 
     drop: function (e) {
-        if (application.main.dnd.hasView('descriptor-model descriptor-panel')) {
+        if (e.originalEvent.stopPropagation) {
+            e.originalEvent.stopPropagation();
+        }
 
-            if (e.originalEvent.stopPropagation) {
-                e.originalEvent.stopPropagation();
-            }
+        if (application.main.dnd.hasView('descriptor-panel')) {
 
             this.dragEnterCount = 0;
 
             let elt = application.main.dnd.get();
-            if (elt.$el.hasClass('descriptor-model')) {
-                // reset placeholders
-                this.ui.top_placeholder.css('display', 'none');
-                this.ui.bottom_placeholder.css('display', 'none');
-
-                let DefinesLabel = Dialog.extend({
-                    template: require('../templates/descriptorpanelcreate.html'),
-
-                    attributes: {
-                        id: "dlg_create_panel"
-                    },
-
-                    ui: {
-                        label: "#label"
-                    },
-
-                    events: {
-                        'input @ui.label': 'onLabelInput'
-                    },
-
-                    initialize: function (options) {
-                        DefinesLabel.__super__.initialize.apply(this);
-                    },
-
-                    onLabelInput: function () {
-                        this.validateLabel();
-                    },
-
-                    validateLabel: function () {
-                        let v = this.ui.label.val();
-
-                        if (v.length < 3) {
-                            $(this.ui.label).validateField('failed', _t('characters_min', {count: 3}));
-                            return false;
-                        }
-
-                        $(this.ui.label).validateField('ok');
-
-                        return true;
-                    },
-
-                    onApply: function () {
-                        let view = this;
-                        let collection = this.getOption('collection');
-                        let position = this.getOption('position');
-                        let descriptor_model = this.getOption('descriptor_model');
-
-                        if (this.validateLabel()) {
-                            let to_rshift = [];
-
-                            // server will r-shift position of any model upward this new
-                            // do it locally to be consistent
-                            for (let model in collection.models) {
-                                let dmt = collection.models[model];
-                                let p = dmt.get('position');
-                                if (p >= position) {
-                                    dmt.set('position', p + 1);
-                                    to_rshift.push(dmt);
-                                }
-                            }
-
-                            collection.create({
-                                descriptor_model: descriptor_model,
-                                label: this.ui.label.val(),
-                                position: position
-                            }, {
-                                wait: true,
-                                success: function () {
-                                    view.destroy();
-                                },
-                                error: function () {
-                                    view.destroy();
-
-                                    // left shift (undo) for consistency with server
-                                    for (let i = 0; i < to_rshift.length; ++i) {
-                                        to_rshift[i].set('position', to_rshift[i].get('position') - 1);
-                                    }
-                                }
-                            });
-                        }
-                    },
-                });
-
-                let definesLabel = new DefinesLabel({
-                    collection: this.model.collection,
-                    position: this.model.get('position'),
-                    descriptor_model: elt.model.get('id')
-                });
-
-                definesLabel.render();
-            }
-            else if (elt.$el.hasClass('descriptor-panel')) {
+            if (elt.$el.hasClass('descriptor-panel-view')) {
                 // useless drop on himself
                 if (this === elt) {
                     return false;
@@ -383,6 +271,16 @@ let View = Marionette.View.extend({
                 collection.fetch()
             }
         });
+    },
+
+    onChildviewHideAddButton: function (childView) {
+        this.triggerMethod('hide:addPanelButton', this);
+        this.ui.add_btn.css('opacity', '0');
+    },
+
+    onChildviewShowAddButton: function (childView) {
+        this.triggerMethod('show:addPanelButton', this);
+        this.ui.add_btn.css('opacity', '1');
     }
 });
 

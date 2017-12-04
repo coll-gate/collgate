@@ -155,11 +155,11 @@ let View = Marionette.CompositeView.extend({
     },
 
     onChildviewHideAddPanelButton: function (childView) {
-        this.ui.add_panel_btn.hide();
+        this.ui.add_panel_btn.css('opacity', '0');
     },
 
     onChildviewShowAddPanelButton: function (childView) {
-        this.ui.add_panel_btn.show();
+        this.ui.add_panel_btn.css('opacity', '1');
     }
 });
 

@@ -688,6 +688,10 @@ div.cell-context-menu ul.actions-list li a:hover {
     );
 }
 
+.panel-ghost:active {
+    background-color: whitesmoke;
+}
+
 .panel-ghost:hover {
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px darkgray;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px darkgray;

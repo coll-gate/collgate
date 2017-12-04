@@ -8,28 +8,42 @@
  - @details 
 -->
 
-<span class="delete-descriptor-model-type action fa fa-minus-circle"></span>
+<li class="list-group-item descriptor-top-placeholder" style="border: 2px dashed lightgray; background-color: whitesmoke; color: lightgray; display: none;">
+    <div style="text-align: center !important;">
+        <span class="fa fa-lg fa-angle-double-down faa-vertical animated"></span>
+    </div>
+</li>
 
-<%= label %>
+<li class="list-group-item descriptor-type" draggable="true">
+    <span class="delete-descriptor-model-type action fa fa-minus-circle"></span>
 
-<div class="pull-right">
-    <% if (mandatory) { %>
-    <span  name="mandatory" class="action fa fa-asterisk"></span>
-    <% } else { %>
-    <span name="mandatory" style="color: #0000001a" class="action fa fa-asterisk"></span>
-    <% } %>
+    <%= label %>
 
-    <% if (set_once) { %>
-    <span name="set_once" class="action fa fa-ban"></span>
-    <% } else { %>
-    <span name="set_once" style="color: #0000001a" class="action fa fa-ban"></span>
-    <% } %>
+    <div class="pull-right">
+        <% if (mandatory) { %>
+        <span name="mandatory" class="action fa fa-asterisk"></span>
+        <% } else { %>
+        <span name="mandatory" style="color: #0000001a" class="action fa fa-asterisk"></span>
+        <% } %>
 
-    <span name="condition" class="action fa fa-wrench"></span>
+        <% if (set_once) { %>
+        <span name="set_once" class="action fa fa-ban"></span>
+        <% } else { %>
+        <span name="set_once" style="color: #0000001a" class="action fa fa-ban"></span>
+        <% } %>
 
-    <% if (index !== 0) { %>
-    <span name="index" class="action fa fa-list-ol"></span>
-    <% } else { %>
-    <span name="index" style="color: #0000001a" class="action fa fa-list-ol"></span>
-    <% } %>
-</div>
+        <span name="condition" class="action fa fa-wrench"></span>
+
+        <% if (index !== 0) { %>
+        <span name="index" class="action fa fa-list-ol"></span>
+        <% } else { %>
+        <span name="index" style="color: #0000001a" class="action fa fa-list-ol"></span>
+        <% } %>
+    </div>
+</li>
+
+<li class="list-group-item descriptor-bottom-placeholder" style="border: 2px dashed lightgray; background-color: whitesmoke; color: lightgray; display: none">
+    <div style="text-align: center !important;">
+        <span class="fa fa-lg fa-angle-double-down faa-vertical animated"></span>
+    </div>
+</li>
