@@ -97,7 +97,7 @@ let Controller = Marionette.Object.extend({
                     this.ui.primary_classification.selectpicker('destroy');
 
                     if (this.ui.primary_classification_entry.data('select2')) {
-                        this.ui.primary_classification_entry.select2('destroy');
+                        $(this.ui.primary_classification_entry).select2('destroy');
                     }
 
                     CreateAccessionDialog.__super__.onBeforeDestroy.apply(this);

@@ -49,7 +49,7 @@ class DescriptorFormatUnitManager(object):
         # register each unit into a map
         for dfu in descriptor_format_units_list:
             if dfu.name in cls.descriptor_format_units:
-                raise ImproperlyConfigured("Descriptor format unit not already defined (%s)" % dfu.name)
+                raise ImproperlyConfigured("Descriptor format unit already defined (%s)" % dfu.name)
 
             cls.descriptor_format_units[dfu.name] = dfu
 

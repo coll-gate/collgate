@@ -14,9 +14,9 @@ module.exports = Backbone.Model.extend({
     defaults: function() {
         return {
             id: 0,
-            value: 0,
-            label: ''
+            name: '',
+            label: '',
+            format: {}
         }
     }
 });
-

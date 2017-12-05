@@ -1,48 +1,118 @@
 # -*- coding: utf-8; -*-
 #
-# @file batchactiontype.py
-# @brief 
+# @file batchaction
+# @brief collgate batch action base class
 # @author Frédéric SCHERMA (INRA UMR1095)
-# @date 2017-01-03
+# @date 2017-12-04
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details
 
-"""
-coll-gate batch-action rest handler
-"""
-
-from django.views.decorators.cache import cache_page
-
-from igdectk.rest.handler import *
-from igdectk.rest.response import HttpResponseRest
-
-from .models import BatchActionType
-from .base import RestAccession
-
-from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ImproperlyConfigured
 
 
-class RestBatchActionType(RestAccession):
-    regex = r'^batch-action-type/$'
-    name = 'batch-action-type'
-
-
-@cache_page(60*60*24)
-@RestBatchActionType.def_request(Method.GET, Format.JSON)
-def get_batch_action_type_list(request):
+class BatchAction(object):
     """
-    Get the list of type of batch-action in JSON
-    @todo how to refresh the cache and clients if values of descriptors changed ?
+    Batch action base class.
     """
-    batch_action_types = []
 
-    for batch_action_type in BatchActionType:
-        batch_action_types.append({
-            'id': batch_action_type.value,
-            'value': batch_action_type.value,
-            'label': str(batch_action_type.label)
-        })
+    def __init__(self):
+        # name referred as a code, stored in format.type.
+        self.name = ''
 
-    return HttpResponseRest(request, batch_action_types)
+        # i18n verbose name displayable for the client
+        self.verbose_name = ''
 
+        # list of related field into format.*.
+        self.format_fields = ["type"]
+
+    def validate(self, batch_action_type_format, value):
+        """
+        Validate the value according the format.
+        :param batch_action_type_format: Format of the related batch action type
+        :param value: Value to validate
+        :return: None if the validation is done, else a string with the error detail
+        """
+        return None
+
+    def check(self, batch_action_type_format):
+        """
+        Check the format of a descriptor type, if it is valid for a specific type of format.
+        :param batch_action_type_format: Format of type of the related batch action type to check
+        :return: None if the check is done, else a string with the error detail
+        """
+        return None
+
+
+class BatchActionTypeManager(object):
+    """
+    Singleton manager of set of batch action types.
+    """
+
+    action_types = {}
+
+    @classmethod
+    def register(cls, batch_action_types_list):
+        """
+        Register a list of batch action types.
+        :param batch_action_types_list: An array of batch action type
+        """
+        # register each type into a map
+        for dft in batch_action_types_list:
+            if dft.name in cls.action_types:
+                raise ImproperlyConfigured("Batch action type already defined (%s)" % dft.name)
+
+            cls.action_types[dft.name] = dft
+
+    @classmethod
+    def values(cls):
+        """
+        Return the list of any registered batch action types .
+        """
+        return list(cls.action_types.values())
+
+    @classmethod
+    def get(cls, batch_action_type_format):
+        format_type = batch_action_type_format['type']
+
+        dft = cls.action_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported batch action type %s" % format_type)
+
+        return dft
+
+    @classmethod
+    def validate(cls, batch_action_type_format, value):
+        """
+        Call the validate of the correct descriptor format type.
+        :param batch_action_type_format: Format of the type of batch action as python object
+        :param value: Value to validate
+        :except ValueError with descriptor of the problem
+        """
+        format_type = batch_action_type_format['type']
+
+        dft = cls.action_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported batch action type %s" % format_type)
+
+        res = dft.validate(format_type, value)
+        if res is not None:
+            raise ValueError(res)
+
+    @classmethod
+    def check(cls, batch_action_type_format):
+        """
+        Call the check of the correct descriptor format type.
+        :param batch_action_type_format: Format of the type of descriptor as python object
+        :return: True if check success.
+        :except ValueError with descriptor of the problem
+        """
+        format_type = batch_action_type_format['type']
+
+        dft = cls.action_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported batch action type %s" % format_type)
+
+        res = dft.check(batch_action_type_format)
+        if res is not None:
+            raise ValueError(str(res))

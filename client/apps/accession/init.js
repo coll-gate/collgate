@@ -38,6 +38,12 @@ AccessionModule.prototype = {
         }
 
         //
+        // cache
+        //
+
+        app.main.cache.register('batch_action_types');
+
+        //
         // main collections
         //
 
@@ -53,7 +59,7 @@ AccessionModule.prototype = {
             collection: this.collections.accessionSynonymTypes
         });
 
-        // @todomay be a cache collection or uses a cachefetcher for batch action type
+        // @todo may be a cache collection or uses a cachefetcher for batch action type
         let BatchActionTypeCollection = require('./collections/batchactiontype');
         this.collections.batchActionTypes = new BatchActionTypeCollection();
 
@@ -90,9 +96,11 @@ AccessionModule.prototype = {
         let AccessionPanelRouter = require('./routers/accessionpanel');
         this.routers.accessionpanel = new AccessionPanelRouter();
 
+        let BatchActionTypeRouter = require('./routers/batchactiontype');
+        this.routers.batchactiontype = new BatchActionTypeRouter();
+
         let BatchPanelRouter = require('./routers/batchpanel');
         this.routers.batchpanel = new BatchPanelRouter();
-
     },
 
     start: function (app, options) {
