@@ -9,8 +9,12 @@
  */
 
 let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 let DescriptorCollection = require('../collections/descriptormodeltype');
+let DescriptorGroupCollection = require('../collections/descriptorgroup');
+let DescriptorTypeCollection = require('../collections/descriptortype');
 let PanelDescriptor = require('../views/descriptor');
+let DescriptorTypeModel = require('../models/descriptortype');
 
 let View = Marionette.CompositeView.extend({
     className: 'object descriptor-panel-view',
@@ -37,7 +41,8 @@ let View = Marionette.CompositeView.extend({
         'drop': 'drop',
         'click @ui.delete_descriptor_panel': 'deleteDescriptorPanel',
         'click @ui.label': 'editLabel',
-        'dblclick @ui.drag_zone': 'onDoubleClick'
+        'dblclick @ui.drag_zone': 'onDoubleClick',
+        'click @ui.add_btn': 'addDescriptor'
     },
 
     onDoubleClick: function () {
@@ -271,6 +276,149 @@ let View = Marionette.CompositeView.extend({
                 collection.fetch()
             }
         });
+    },
+
+    addDescriptor: function () {
+        let AddDescriptorDialog = Dialog.extend({
+            template: require('../templates/paneldescriptorcreate.html'),
+
+            ui: {
+                'descriptor_label': '#panel_descriptor_label',
+                'descriptor_name': '#panel_descriptor_name',
+                'type_select': '#type',
+                'type_create_zone': '.descriptor-type-create-zone',
+                'descriptor_type_name': '#descriptor_type_name',
+                'descriptor_type_description': '#descriptor_type_description',
+                'create_btn': 'button.create'
+            },
+
+            events: {
+                'click @ui.create_btn': 'onCreate',
+                'change @ui.type_select': 'onChangeType',
+                'keyup @ui.descriptor_label': 'onChangeLabel',
+                'change @ui.descriptor_label': 'onChangeLabel'
+            },
+
+            initialize: function (options) {
+                AddDescriptorDialog.__super__.initialize.apply(this);
+                this.descriptorGroupCollection = new DescriptorGroupCollection();
+                this.descriptorModel = options.descriptorModel;
+            },
+
+            onRender: function () {
+                AddDescriptorDialog.__super__.onRender.apply(this);
+
+                let view = this;
+
+                view.ui.type_select.selectpicker({});
+
+                $.when(view.descriptorGroupCollection.fetch()).then(function () {
+                    view.ui.type_select.children('option').remove();
+
+                    let opt = $('<option></option>');
+                    opt.attr('value', 'new');
+                    opt.html("<strong class=''><span class='fa fa-plus'></span> " + _t("New descriptor type")) + "</strong>";
+
+                    // idea: allow to create new descriptor type
+                    // view.ui.type_select.append(opt);
+                    // view.onChangeType();
+
+                    let i;
+                    for (i = 0; i < view.descriptorGroupCollection.length; i++) {
+                        let opt_group = $('<optgroup></optgroup>');
+                        opt_group.attr('label', view.descriptorGroupCollection.models[i].attributes.name);
+
+
+                        let group_i = i;
+
+                        let descriptorTypeCollection = new DescriptorTypeCollection([], {
+                            group_id: view.descriptorGroupCollection.models[i].id
+                        });
+
+                        $.when(descriptorTypeCollection.fetch()).then(function () {
+                            let i;
+                            for (i = 0; i < descriptorTypeCollection.length; i++) {
+                                let opt = $('<option></option>');
+                                opt.attr('value', JSON.stringify([
+                                    view.descriptorGroupCollection.models[group_i].id,
+                                    descriptorTypeCollection.models[i].id
+                                ]));
+                                opt.attr('data-tokens', view.descriptorGroupCollection.models[group_i].attributes.name);
+                                opt.html(descriptorTypeCollection.models[i].attributes.name);
+                                opt.appendTo(opt_group)
+                            }
+                            opt_group.appendTo(view.ui.type_select);
+
+                            if (group_i === view.descriptorGroupCollection.length - 1) {
+                                view.ui.type_select.selectpicker('refresh');
+                            }
+                        });
+                    }
+                });
+            },
+
+            onChangeType: function () {
+                if (this.ui.type_select.val() === 'new') {
+                    this.ui.type_create_zone.show();
+                } else {
+                    this.ui.type_create_zone.hide();
+                }
+            },
+
+            onChangeLabel: function () {
+                let label_sanitized = this.ui.descriptor_label.val().toUpperCase().replace(/\s/g, '_').normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+                this.ui.descriptor_name.val(label_sanitized);
+                this.ui.descriptor_type_name.val(label_sanitized);
+            },
+
+            onCreate: function () {
+                // todo: Check fields validity
+
+                let view = this;
+                let newPanelDescriptor = function (descriptor_type) {
+                    view.collection.create({
+                        name: view.ui.descriptor_name.val(),
+                        model: view.descriptorModel,
+                        label: view.ui.descriptor_label.val(),
+                        position: view.collection.length,
+                        descriptor_type_group: descriptor_type.group,
+                        descriptor_type: descriptor_type.id,
+                        descriptor_type_name: descriptor_type.attributes.name,
+                        descriptor_type_code: descriptor_type.attributes.code,
+                    }, {
+                        wait: true,
+                        success: function () {
+                            view.destroy();
+                        },
+                        error: function () {
+                            view.destroy();
+                        }
+                    });
+                };
+
+                if (this.ui.type_select.val() === 'new') {
+                    // idea: allow to create new descriptor type
+                    console.log('todo!');
+                }
+                else {
+                    let selected_values = JSON.parse(view.ui.type_select.val());
+                    let descriptorTypeModel = new DescriptorTypeModel({
+                        id: selected_values[1]
+                    },{
+                        group_id: selected_values[0]
+                    });
+                    descriptorTypeModel.fetch().then(function () {
+                        newPanelDescriptor(descriptorTypeModel);
+                    });
+                }
+            }
+        });
+
+        let addDescriptorDialog = new AddDescriptorDialog({
+            collection: this.collection,
+            descriptorModel: this.descriptorModel,
+        });
+        addDescriptorDialog.render();
     },
 
     onChildviewHideAddButton: function (childView) {

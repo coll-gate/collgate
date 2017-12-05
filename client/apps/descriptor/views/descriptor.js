@@ -82,25 +82,6 @@ let View = Marionette.View.extend({
             //e.originalEvent.dataTransfer.dropEffect = 'move';
             return false;
         }
-
-        // if (application.main.dnd.hasView('descriptor-panel')) {
-        //
-        //     this.dragEnterCount || (this.dragEnterCount = 1);
-        //
-        //     if (this.dragEnterCount === 1) {
-        //         if (application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
-        //             if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
-        //                 this.ui.top_placeholder.css('display', 'block');
-        //             } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
-        //                 this.ui.bottom_placeholder.css('display', 'block');
-        //             }
-        //         }
-        //     }
-        //
-        //     //e.originalEvent.dataTransfer.dropEffect = 'move';
-        //     return false;
-        //
-        // }
     },
 
     dragEnter: function (e) {
@@ -118,10 +99,8 @@ let View = Marionette.View.extend({
                 if (application.main.dnd.get().$el.hasClass('descriptor-view')) {
                     if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
                         this.ui.top_placeholder.css('display', 'block');
-                        console.log("top_fromview");
                     } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
                         this.ui.bottom_placeholder.css('display', 'block');
-                        console.log("bottom_fromview");
                     }
                 }
 
