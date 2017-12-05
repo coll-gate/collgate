@@ -41,8 +41,8 @@ let View = Marionette.CompositeView.extend({
 
             ui: {
                 'panel_name': '#panel_name',
-                "type_select": '#model',
-                "type_create_zone": '.model-create-zone',
+                'model_select': '#model',
+                'model_create_zone': '.model-create-zone',
                 'model_name': '#model_name',
                 'model_verbose_name': '#model_verbose_name',
                 'model_description': '.model-description',
@@ -59,7 +59,7 @@ let View = Marionette.CompositeView.extend({
 
             initialize: function () {
                 AddPanelDialog.__super__.initialize.apply(this);
-                this.descriptorCollection = new ModelCollection();
+                this.modelCollection = new ModelCollection();
             },
 
             onRender: function () {
@@ -67,36 +67,36 @@ let View = Marionette.CompositeView.extend({
 
                 let view = this;
 
-                view.ui.type_select.selectpicker({});
+                view.ui.model_select.selectpicker({});
 
-                $.when(view.descriptorCollection.fetch()).then(function () {
-                    view.ui.type_select.children('option').remove();
+                $.when(view.modelCollection.fetch()).then(function () {
+                    view.ui.model_select.children('option').remove();
 
 
                     let opt = $('<option></option>');
                     opt.attr('value', 'new');
                     opt.html("<strong class=''><span class='fa fa-plus'></span> " + _t("New model")) + "</strong>";
-                    view.ui.type_select.append(opt);
+                    view.ui.model_select.append(opt);
 
                     let i;
-                    for (i = 0; i < view.descriptorCollection.length; i++) {
+                    for (i = 0; i < view.modelCollection.length; i++) {
                         let opt = $('<option></option>');
-                        opt.attr('value', view.descriptorCollection.models[i].id);
-                        opt.html(view.descriptorCollection.models[i].attributes.verbose_name);
-                        view.ui.type_select.append(opt);
+                        opt.attr('value', view.modelCollection.models[i].id);
+                        opt.html(view.modelCollection.models[i].attributes.verbose_name);
+                        view.ui.model_select.append(opt);
                     }
 
-                    view.ui.type_select.selectpicker('refresh');
+                    view.ui.model_select.selectpicker('refresh');
 
                 });
             },
 
-            onChangeType: function () {
-                if (this.ui.type_select.val() === 'new') {
-                    this.ui.type_create_zone.show();
+            onChangeModel: function () {
+                if (this.ui.model_select.val() === 'new') {
+                    this.ui.model_create_zone.show();
                     this.ui.model_alert.hide()
                 } else {
-                    this.ui.type_create_zone.hide();
+                    this.ui.model_create_zone.hide();
                     this.ui.model_alert.show()
                 }
             },
@@ -125,8 +125,8 @@ let View = Marionette.CompositeView.extend({
                     });
                 };
 
-                if (this.ui.type_select.val() === 'new') {
-                    this.descriptorCollection.create({
+                if (this.ui.model_select.val() === 'new') {
+                    this.modelCollection.create({
                         name: this.ui.model_name.val(),
                         verbose_name: this.ui.model_verbose_name.val(),
                         description: this.ui.model_description.val(),
@@ -141,7 +141,7 @@ let View = Marionette.CompositeView.extend({
                     })
                 }
                 else {
-                    newPanel(parseInt(view.ui.type_select.val()));
+                    newPanel(parseInt(view.ui.model_select.val()));
                 }
 
             }
