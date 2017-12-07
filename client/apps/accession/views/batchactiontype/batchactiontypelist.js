@@ -34,6 +34,11 @@ let View = AdvancedTable.extend({
         this.filters = this.getOption('filters');
     },
 
+    onRender: function () {
+        View.__super__.onRender.apply(this, arguments);
+        this.onShowTab();
+    },
+
     onShowTab: function () {
         let view = this;
 
@@ -48,27 +53,27 @@ let View = AdvancedTable.extend({
         contextLayout.showChildView('title', new TitleView({title: _t("Actions on batch action type"), glyphicon: 'fa-wrench'}));
 
         let actions = [
-            'create-batchactiontype'
+            'create-batch-action-type'
         ];
-/*
-        let AccessionListContextView = require('./accessionlistcontext');
-        let contextView = new AccessionListContextView({actions: actions});
+
+        let ListContextView = require('./batchactiontypelistcontext');
+        let contextView = new ListContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
-        contextView.on("panel:create", function () {
-            view.onCreatePanel();
+        contextView.on("batch-action-type:create", function () {
+            view.onCreateBatchActionType();
         });
 
-        contextView.on("panel:link-accessions", function () {
-            view.onLinkToPanel();
-        });
-*/
         View.__super__.onShowTab.apply(this, arguments);
     },
 
     onBeforeDetach: function () {
         application.main.defaultRightView();
     },
+
+    onCreateBatchActionType: function() {
+        alert("@todo");
+    }
 });
 
 // support of descriptors columns extension

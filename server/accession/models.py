@@ -417,7 +417,7 @@ class BatchActionType(models.Model):
     label = JSONField(default={})
 
     # Format of the action (can define a lot of parameters, like input, output, process...)
-    format = JSONField(default={})
+    format = JSONField(default={"type": "undefined"})
 
     class Meta:
         verbose_name = _("batch action type")

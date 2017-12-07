@@ -17,7 +17,7 @@ let BatchActionTypeListView = require('../views/batchactiontype/batchactiontypel
 let DefaultLayout = require('../../main/views/defaultlayout');
 let ScrollingMoreView = require('../../main/views/scrollingmore');
 let TitleView = require('../../main/views/titleview');
-let PanelLayout = require('../views/batch/panel/panellayout');
+let BatchActionTypeLayout = require('../views/batchactiontype/batchactiontypelayout');
 
 let Router = Marionette.AppRouter.extend({
     routes: {

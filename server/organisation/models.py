@@ -81,7 +81,7 @@ class Organisation(DescribableEntity):
                 }
             },
             'grc': {
-                'label': _('GRC'),
+                'label': _('Partner'),
                 'field': 'grcs',
                 'query': False,
                 'format': {
