@@ -71,4 +71,4 @@ def fixture(fixture_manager, factory_manager):
     factory_manager.register(factory)
 
     # fixture_manager.create_or_update_synonym_types(SYNONYM_TYPES, 'accession', 'accession')
-    factory.create_or_update(SYNONYM_TYPES, 'accession', 'accession')
+    factory.create_or_update(factory_manager, SYNONYM_TYPES, False, 'accession', 'accession')

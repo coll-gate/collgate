@@ -60,7 +60,23 @@ let Router = Marionette.AppRouter.extend({
     },
 
     getBatchActionType: function (id, tab) {
-        alert("@todo")
+        tab || (tab = "");
+
+        let batchActionType = new BatchActionTypeModel({id: id});
+
+        let defaultLayout = new DefaultLayout();
+        window.application.main.showContent(defaultLayout);
+
+        window.accession.fetch().then(function() {
+            if (!defaultLayout.isRendered()) {
+                return;
+            }
+
+            defaultLayout.showChildView('title', new TitleView({title: _t("Batch Action Type"), model: batchActionType}));
+
+            let layout = new BatchActionTypeLayout({model: accession, initialTab: tab.replace('/', '')});
+            defaultLayout.showChildView('content', layout);
+        });
     }
 });
 

@@ -129,7 +129,9 @@ let Application = Marionette.Application.extend({
 
                     // fallback to home page to force user to log
                     // Backbone.history.navigate('/home/', {trigger: true});
-                    window.location.assign(window.application.url(['app', 'home']));
+                    if (!window.location.href.endsWith('/app/home/')) {
+                        window.location.assign(window.application.url(['app', 'home']));
+                    }
                 } else {
                     if (typeof(xhr.responseText) !== "undefined") {
                         if (xhr.getResponseHeader('Content-Type') === "application/json") {
@@ -149,8 +151,10 @@ let Application = Marionette.Application.extend({
 
         $(document).ajaxError(function(event, jqXHR, settings, thrownError) {
             if (jqXHR.status === 401) {
-                // fallback to home page to force user to login
-                window.location.assign(window.application.url(['app', 'home']));
+                if (!window.location.href.endsWith('/app/home/')) {
+                    // fallback to home page to force user to login
+                    window.location.assign(window.application.url(['app', 'home']));
+                }
             }
         });
 

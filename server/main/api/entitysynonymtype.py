@@ -24,7 +24,7 @@ class EntitySynonymTypeFactory(BaseFactory):
         self.name = "action_type"
         self.model = EntitySynonymType
 
-    def create_or_update(self, data, app_label, model_name):
+    def create_or_update(self, manager, data, bulk=True, app_label=None, model_name=None):
         sys.stdout.write("   + Create types of synonym...\n")
 
         # get related model
@@ -56,4 +56,4 @@ class EntitySynonymTypeFactory(BaseFactory):
             v['id'] = synonym_type_model.id
 
             # cache
-            self.set(v['id'], v['name'], v)
+            self.set_entry(v['id'], v['name'], v)

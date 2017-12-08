@@ -22,7 +22,7 @@ class BatchActionTypeFactory(BaseFactory):
         self.name = "action_type"
         self.model = BatchActionType
 
-    def create_or_update(self, data):
+    def create_or_update(self, manager, data, bulk=True):
         sys.stdout.write("   + Create types of batch action...\n")
 
         if type(data) is not dict:
@@ -46,4 +46,4 @@ class BatchActionTypeFactory(BaseFactory):
             v['id'] = action_type_model.id
 
             # cache
-            self.set(v['id'], v['name'], v)
+            self.set_entry(v['id'], v['name'], v)

@@ -9,10 +9,17 @@
  */
 
 let BatchActionTypeModel = require('../models/batchactiontype');
+let CountableCollection = require('../../main/collections/countable');
 
-let Collection = Backbone.Collection.extend({
-    url: window.application.url(['accession', 'batch-action-type']),
+let Collection = CountableCollection.extend({
+    url: window.application.url(['accession', 'batchactiontype']),
     model: BatchActionTypeModel,
+
+    initialize: function (models, options) {
+        options || (options = {});
+
+        Collection.__super__.initialize.apply(this, arguments);
+    },
 
     findValue: function(id) {
         for (let r in this.models) {

@@ -43,7 +43,7 @@ class BaseFactory(object):
         """
         pass
 
-    def set(self, entry_id, entry_code_or_name, entry):
+    def set_entry(self, entry_id, entry_code_or_name, entry):
         """
         Set in a dedicated cache the entry.
         :param entry_id: Unique identifier of the entry.
@@ -53,7 +53,7 @@ class BaseFactory(object):
         self.cache[entry_id] = entry
         self.cache_name_to_id[entry_code_or_name] = entry_id
 
-    def get(self, identifier):
+    def get_entry(self, identifier):
         """
         Get an entry from the dedicated cache of the factory.
         :param identifier: Entry unique identifier (integer) or unique code or name (str)

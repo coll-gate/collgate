@@ -70,7 +70,7 @@ let View = Marionette.View.extend({
     },
 
     viewDetails: function () {
-        Backbone.history.navigate('app/accession/batch-action-type/' + this.model.get('id') + '/', {trigger: true});
+        Backbone.history.navigate('app/accession/batchactiontype/' + this.model.get('id') + '/', {trigger: true});
     },
 
     onDeleteBatchActionType: function () {
