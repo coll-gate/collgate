@@ -346,64 +346,6 @@ class Batch(DescribableEntity):
         }
 
 
-class Sample(DescribableEntity):
-    """
-    Sample during lot processing.
-    """
-
-    # name validator, used with content validation, to avoid any whitespace before and after
-    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
-
-    # unique name of sample
-    name = models.CharField(unique=True, max_length=255, db_index=True)
-
-    # related batch
-    batch = models.ForeignKey('Batch', related_name='samples')
-
-    class Meta:
-        verbose_name = _("sample")
-
-    def natural_name(self):
-        return self.name
-
-    @classmethod
-    def make_search_by_name(cls, term):
-        return Q(name__istartswith=term)
-
-    def audit_create(self, user):
-        return {
-            'name': self.name,
-            'batch': self.batch_id,
-            'descriptor_meta_model': self.descriptor_meta_model_id,
-            'descriptors': self.descriptors
-        }
-
-    def audit_update(self, user):
-        if hasattr(self, 'updated_fields'):
-            result = {'updated_fields': self.updated_fields}
-
-            if 'name' in self.updated_fields:
-                result['name'] = self.name
-
-            if 'descriptors' in self.updated_fields:
-                if hasattr(self, 'updated_descriptors'):
-                    result['descriptors'] = self.updated_descriptors
-                else:
-                    result['descriptors'] = self.descriptors
-
-            return result
-        else:
-            return {
-                'name': self.name,
-                'descriptors': self.descriptors
-            }
-
-    def audit_delete(self, user):
-        return {
-            'name': self.name
-        }
-
-
 class BatchActionType(models.Model):
     """
     Type of batch-action.
@@ -421,6 +363,38 @@ class BatchActionType(models.Model):
 
     class Meta:
         verbose_name = _("batch action type")
+
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'name': {
+                'label': _('Name'),
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.batchactiontype'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'label': {
+                'label': _('Label'),
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.batchactiontype'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'format': {
+                'label': _('Type'),
+                'field': 'type',
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.batchactionformattype'
+                }
+            }
+        }
 
     def set_label(self, lang, label):
         """

@@ -50,7 +50,7 @@ let Router = Marionette.AppRouter.extend({
                 collection: collection,
                 targetView: batchActionTypeListView
             }));
-
+console.log(data[0]);
             defaultLayout.showChildView('bottom', new EntityListFilterView({
                 collection: collection, columns: data[0].value
             }));

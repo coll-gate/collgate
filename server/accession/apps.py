@@ -65,7 +65,7 @@ class CollGateAccession(ApplicationMain):
         )
 
         # add the describable entities models
-        from .models import Accession, Batch, Sample, AccessionPanel, BatchPanel
+        from .models import Accession, Batch, AccessionPanel, BatchPanel
 
         # descriptor_module
         from django.apps import apps
@@ -73,7 +73,6 @@ class CollGateAccession(ApplicationMain):
         descriptor_app.describable_entities += [
             Accession,
             Batch,
-            Sample,
             AccessionPanel,
             BatchPanel
         ]

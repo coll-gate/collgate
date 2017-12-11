@@ -10,6 +10,6 @@
 
 from .development import *
 
-LOGGING['loggers']['django.db']['level'] = 'DEBUG'
+# LOGGING['loggers']['django.db']['level'] = 'DEBUG'
 
 PURGE_SERVER_CACHE = True

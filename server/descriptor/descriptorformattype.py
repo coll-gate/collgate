@@ -8,20 +8,19 @@
 # @license MIT (see LICENSE file)
 # @details
 
-import json
-import re
 import decimal
-
+import re
 import validictory
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
-from django.db.models import Q
 
 from descriptor.descriptorformatunit import DescriptorFormatUnitManager
-from descriptor.models import DescriptorValue, DescriptorMetaModel
+from descriptor.models import DescriptorValue
 
 
 class DescriptorFormatTypeGroup(object):
