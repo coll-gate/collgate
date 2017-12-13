@@ -14,6 +14,8 @@ from django.db.models import prefetch_related_objects
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 import re
 
+from django.utils import translation
+
 
 class CursorQueryError(Exception):
     def __init__(self, message):
@@ -28,6 +30,75 @@ class CursorQueryValueError(CursorQueryError):
 class CursorQueryOperatorError(CursorQueryError):
     def __init__(self, message):
         super(Exception, self).__init__("Operator error: " + message)
+
+
+class CursorField(object):
+    """
+    Internal cursor field helper.
+    """
+
+    FIELD_TYPE_DEFAULT = 0
+    FIELD_TYPE_DESCRIPTOR = 1
+    FIELD_TYPE_COUNT = 2
+    FIELD_TYPE_LABEL = 3
+    FIELD_TYPE_FORMAT = 4
+
+    def __init__(self, field, index, cursor_query):
+        self._name = field.lstrip('+-#@$')
+        self._index = index
+
+        if field[0] == '#' or field[1] == '#':
+            self._type = CursorField.FIELD_TYPE_DESCRIPTOR
+        elif field[0] == '@' or field[1] == '@':
+            self._type = CursorField.FIELD_TYPE_LABEL
+        elif field[0] == '$' or field[1] == '$':
+            self._type = CursorField.FIELD_TYPE_FORMAT
+        elif self.name in cursor_query.count_fields():
+            self._type = CursorField.FIELD_TYPE_COUNT
+        else:
+            self._type = CursorField.FIELD_TYPE_DEFAULT
+
+        self._op = '<' if field[0] == '-' else '>'
+        self._ope = '<=' if field[0] == '-' else '>='
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def index(self):
+        return self._index
+
+    @property
+    def is_descriptor(self):
+        return self._type == CursorField.FIELD_TYPE_DESCRIPTOR
+
+    @property
+    def is_count(self):
+        return self._type == CursorField.FIELD_TYPE_COUNT
+
+    @property
+    def is_label(self):
+        return self._type == CursorField.FIELD_TYPE_LABEL
+
+    @property
+    def is_format(self):
+        return self._type == CursorField.FIELD_TYPE_FORMAT
+
+    @property
+    def sub_name(self):
+        if self.is_label:
+            return translation.get_language()
+        else:
+            return None
+
+    @property
+    def exclusive_operator(self):
+        return self._op
+
+    @property
+    def inclusive_operator(self):
+        return self._ope
 
 
 class CursorQuery(object):
@@ -148,6 +219,9 @@ class CursorQuery(object):
                 self.model_fields[field.name] = ('TEXT', 'TEXT', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
 
+    def count_fields(self):
+        return self._counts
+
     def cursor(self, cursor, cursor_fields=('id',)):
         """
         Defines the cursor at the previous latest element in way to get the next elements.
@@ -162,19 +236,18 @@ class CursorQuery(object):
         select_related = []
 
         for field in cursor_fields:
-            f = field.lstrip('+-#')
-            is_descriptor = field[0] == '#' or field[1] == '#'
+            cf = CursorField(field, -1, self)
 
-            if is_descriptor:
+            if cf.is_descriptor:
                 # only if sub-value of descriptor
-                if self.FIELDS_SEP in f:
-                    select_related.append('#' + f)
-            elif f in self.model_fields:
-                ff = f.split(self.FIELDS_SEP)
+                if self.FIELDS_SEP in cf.name:
+                    select_related.append('#' + cf.name)
+            elif cf.name in self.model_fields:
+                ff = cf.name.split(self.FIELDS_SEP)
 
                 if ff[0] in self.model_fields:
                     if self.model_fields[ff[0]][0] == 'FK':
-                        select_related.append(f)
+                        select_related.append(cf.name)
 
         self.add_select_related(select_related)
         return self
@@ -188,79 +261,113 @@ class CursorQuery(object):
             i = 0
 
             for field in self._cursor_fields:
-                f = field.lstrip('+-#')
-                is_descriptor = field[0] == '#' or field[1] == '#'
+                cf = CursorField(field, i, self)
 
-                if f in self._counts:
+                if cf.is_count:
                     continue
-
-                op = '<' if field[0] == '-' else '>'
-                ope = '<=' if field[0] == '-' else '>='
 
                 lqs = []
 
                 if len(previous):
-                    for prev_field, prev_i, prev_op, prev_ope, prev_is_descriptor in previous:
-                        # if self._cursor[prev_i] is None:
+                    for prev_cf in previous:
+                        # if self._cursor[prev_cf.index] is None:
                         #    continue
 
-                        if prev_is_descriptor:
-                            if self.FIELDS_SEP in prev_field:
-                                pff = prev_field.split(self.FIELDS_SEP)
+                        if prev_cf.is_descriptor:
+                            if self.FIELDS_SEP in prev_cf.name:
+                                pff = prev_cf.name.split(self.FIELDS_SEP)
                                 lqs.append(
-                                    self._cast_descriptor_sub_type(pff[0], pff[1], prev_ope, self._cursor[prev_i]))
+                                    self._cast_descriptor_sub_type(pff[0],
+                                                                   pff[1],
+                                                                   prev_cf.inclusive_operator,
+                                                                   self._cursor[prev_cf.index]))
                             else:
-                                clause = self._cast_descriptor_type(db_table, prev_field, prev_ope,
-                                                                    self._cursor[prev_i])
+                                clause = self._cast_descriptor_type(db_table,
+                                                                    prev_cf.name,
+                                                                    prev_cf.inclusive_operator,
+                                                                    self._cursor[prev_cf.index])
                                 if clause:
                                     lqs.append(clause)
                         else:
-                            if self.FIELDS_SEP in prev_field:
-                                pff = prev_field.split(self.FIELDS_SEP)
-                                lqs.append(self._cast_default_sub_type(pff[0], pff[1], prev_ope, self._cursor[prev_i]))
+                            if self.FIELDS_SEP in prev_cf.name:
+                                pff = prev_cf.name.split(self.FIELDS_SEP)
+                                lqs.append(self._cast_default_sub_type(pff[0],
+                                                                       pff[1],
+                                                                       prev_cf.inclusive_operator,
+                                                                       self._cursor[prev_cf.index]))
                             else:
                                 lqs.append(
-                                    self._cast_default_type(db_table, prev_field, prev_ope, self._cursor[prev_i]))
+                                    self._cast_default_type(db_table,
+                                                            prev_cf.name,
+                                                            prev_cf.inclusive_operator,
+                                                            self._cursor[prev_cf.index],
+                                                            prev_cf.sub_name))
 
-                    if is_descriptor:
-                        if self.FIELDS_SEP in f:
-                            ff = f.split(self.FIELDS_SEP)
-                            lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, self._cursor[i]))
+                    if cf.is_descriptor:
+                        if self.FIELDS_SEP in cf.name:
+                            ff = cf.name.split(self.FIELDS_SEP)
+                            lqs.append(self._cast_descriptor_sub_type(ff[0],
+                                                                      ff[1],
+                                                                      cf.exclusive_operator,
+                                                                      self._cursor[cf.index]))
                         else:
-                            clause = self._cast_descriptor_type(db_table, f, op, self._cursor[i])
+                            clause = self._cast_descriptor_type(db_table,
+                                                                cf.name,
+                                                                cf.exclusive_operator,
+                                                                self._cursor[cf.index])
                             if clause:
                                 lqs.append(clause)
                     else:
-                        if self.FIELDS_SEP in f:
-                            ff = f.split(self.FIELDS_SEP)
-                            lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, self._cursor[i]))
+                        if self.FIELDS_SEP in cf.name:
+                            ff = cf.name.split(self.FIELDS_SEP)
+                            lqs.append(self._cast_default_sub_type(ff[0],
+                                                                   ff[1],
+                                                                   cf.exclusive_operator,
+                                                                   self._cursor[cf.index]))
                         else:
-                            lqs.append(self._cast_default_type(db_table, f, op, self._cursor[i]))
+                            lqs.append(self._cast_default_type(db_table,
+                                                               cf.name,
+                                                               cf.exclusive_operator,
+                                                               self._cursor[cf.index],
+                                                               cf.sub_name))
 
                     # if self._cursor[i] is not None:
                     if len(lqs):
                         _where.append("(%s)" % " AND ".join(lqs))
                 else:
-                    if is_descriptor:
-                        if self.FIELDS_SEP in f:
-                            ff = f.split(self.FIELDS_SEP)
-                            lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, self._cursor[i]))
+                    if cf.is_descriptor:
+                        if self.FIELDS_SEP in cf.name:
+                            ff = cf.name.split(self.FIELDS_SEP)
+                            lqs.append(self._cast_descriptor_sub_type(ff[0],
+                                                                      ff[1],
+                                                                      cf.exclusive_operator,
+                                                                      self._cursor[cf.index]))
                         else:
-                            clause = self._cast_descriptor_type(db_table, f, op, self._cursor[i])
+                            clause = self._cast_descriptor_type(db_table,
+                                                                cf.name,
+                                                                cf.exclusive_operator,
+                                                                self._cursor[cf.index])
                             if clause:
                                 lqs.append(clause)
                     else:
-                        if self.FIELDS_SEP in f:
-                            ff = f.split(self.FIELDS_SEP)
-                            lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, self._cursor[i]))
+                        if self.FIELDS_SEP in cf.name:
+                            ff = cf.name.split(self.FIELDS_SEP)
+                            lqs.append(self._cast_default_sub_type(ff[0],
+                                                                   ff[1],
+                                                                   cf.exclusive_operator,
+                                                                   self._cursor[cf.index]))
                         else:
-                            lqs.append(self._cast_default_type(db_table, f, op, self._cursor[i]))
+                            lqs.append(self._cast_default_type(db_table,
+                                                               cf.name,
+                                                               cf.exclusive_operator,
+                                                               self._cursor[cf.index],
+                                                               cf.sub_name))
 
                     # if self._cursor[i] is not None:
                     if len(lqs):
                         _where.append("(%s)" % " AND ".join(lqs))
 
-                previous.append((f, i, op, ope, is_descriptor))
+                previous.append(cf)
 
                 i += 1
 
@@ -337,20 +444,19 @@ class CursorQuery(object):
         select_related = []
 
         for field in self._order_by:
-            f = field.lstrip('+-#')
-            is_descriptor = field[0] == '#' or field[1] == '#'
+            cf = CursorField(field, -1, self)
 
-            if is_descriptor:
+            if cf.is_descriptor:
                 # only if sub-value of descriptor
-                if self.FIELDS_SEP in f:
-                    select_related.append('#' + f)
+                if self.FIELDS_SEP in cf.name:
+                    select_related.append('#' + cf.name)
             else:
-                if self.FIELDS_SEP in f:
-                    ff = f.split(self.FIELDS_SEP)
+                if self.FIELDS_SEP in cf.name:
+                    ff = cf.name.split(self.FIELDS_SEP)
 
                     if ff[0] in self.model_fields:
                         if self.model_fields[ff[0]][0] == 'FK':
-                            select_related.append(f)
+                            select_related.append(cf.name)
 
         # if isinstance(self._select_related, bool):
         #     field_dict = {}
@@ -371,17 +477,16 @@ class CursorQuery(object):
     def _process_order_by(self):
         db_table = self._model._meta.db_table
         model_name = self._model._meta.model_name
+        lang = translation.get_language()
 
         for field in self._order_by:
-            f = field.lstrip('+-#')
+            cf = CursorField(field, -1, self)
             order = "DESC NULLS LAST" if field[0] == '-' else "ASC NULLS FIRST"
-            is_descriptor = field[0] == '#' or field[1] == '#'
-            is_count = f in self._counts
 
-            if self.FIELDS_SEP in f:
-                ff = f.split(self.FIELDS_SEP)
+            if self.FIELDS_SEP in cf.name:
+                ff = cf.name.split(self.FIELDS_SEP)
 
-                if is_descriptor:
+                if cf.is_descriptor:
                     renamed_table = "descr_" + ff[0].replace('.', '_')
                     related_model, related_fields = self._related_tables[renamed_table]
 
@@ -389,45 +494,48 @@ class CursorQuery(object):
                 else:
                     cast_type = self.model_fields[ff[0]][1]
             else:
-                if is_descriptor:
-                    description = self._description[f]
+                if cf.is_descriptor:
+                    description = self._description[cf.name]
                     cast_type = description['handler'].data
-                # count field
-                elif is_count:
+                elif cf.is_count:
                     cast_type = 'INTEGER'
+                elif cf.is_label:
+                    cast_type = "TEXT"
                 else:
-                    cast_type = self.model_fields[f][1]
+                    cast_type = self.model_fields[cf.name][1]
 
-            if is_descriptor:
-                if self.FIELDS_SEP in f:
-                    ff = f.split(self.FIELDS_SEP)
+            if cf.is_descriptor:
+                if self.FIELDS_SEP in cf.name:
+                    ff = cf.name.split(self.FIELDS_SEP)
                     renamed_table = "descr_" + ff[0].replace('.', '_')
                     self.query_order_by.append('"%s"."%s" %s' % (renamed_table, ff[1], order))
                 else:
                     if cast_type != 'TEXT':
                         self.query_order_by.append('CAST("%s"."descriptors"->>\'%s\' as %s) %s' % (
-                            db_table, f, cast_type, order))
+                            db_table, cf.name, cast_type, order))
                     else:
-                        self.query_order_by.append('("%s"."descriptors"->>\'%s\') %s' % (db_table, f, order))
+                        self.query_order_by.append('("%s"."descriptors"->>\'%s\') %s' % (db_table, cf.name, order))
             else:
-                if self.FIELDS_SEP in f:
-                    ff = f.split(self.FIELDS_SEP)
+                if self.FIELDS_SEP in cf.name:
+                    ff = cf.name.split(self.FIELDS_SEP)
                     self.query_order_by.append('"%s" %s' % ("_".join(ff), order))
-                elif self.model_fields[f][0] == 'FK':
-                    self.query_order_by.append('"%s"."%s_id" %s' % (db_table, f, order))
+                elif self.model_fields[cf.name][0] == 'FK':
+                    self.query_order_by.append('"%s"."%s_id" %s' % (db_table, cf.name, order))
+                elif cf.is_label:
+                    self.query_order_by.append('"%s"."%s"->>\'%s\' %s' % (db_table, cf.name, lang, order))
                 # count field
-                elif is_count:
+                elif cf.is_count:
                     # take column name depending of the relation
-                    related_model = getattr(self._model, f)
+                    related_model = getattr(self._model, cf.name)
                     if type(related_model) is models.fields.related_descriptors.ManyToManyDescriptor:
                         column = getattr(related_model.through, model_name).field.column
                     else:
                         column = related_model.rel.field.column
 
-                    self.query_order_by.append('"%s__count" %s' % (f, order))
-                    self.query_group_by.append('"%s"."%s"' % (f, column))
+                    self.query_order_by.append('"%s__count" %s' % (cf.name, order))
+                    self.query_group_by.append('"%s"."%s"' % (cf.name, column))
                 else:
-                    self.query_order_by.append('"%s"."%s" %s' % (db_table, f, order))
+                    self.query_order_by.append('"%s"."%s" %s' % (db_table, cf.name, order))
 
         return self
 
@@ -443,6 +551,8 @@ class CursorQuery(object):
             first_entity = None
             last_entity = None
 
+            lang = translation.get_language()
+
             try:
                 # cached during iteration
                 first_entity = self._first_elt or self._query_set[0]
@@ -456,47 +566,53 @@ class CursorQuery(object):
                 self._next_cursor = []
 
                 for field in self._order_by:
-                    f = field.lstrip('+-#')
-                    is_descriptor = field[0] == '#' or field[1] == '#'
-                    is_count = f in self._counts
+                    cf = CursorField(field, -1, self)
 
                     # prev cursor
-                    if is_descriptor:
-                        if self.FIELDS_SEP in f:
-                            ff = f.split(self.FIELDS_SEP)
+                    if cf.is_descriptor:
+                        if self.FIELDS_SEP in cf.name:
+                            ff = cf.name.split(self.FIELDS_SEP)
                             renamed_table = "descr_" + ff[0].replace('.', '_')
                             self._prev_cursor.append(getattr(first_entity, "%s_%s" % (renamed_table, ff[1])))
                         else:
-                            self._prev_cursor.append(first_entity.descriptors.get(f))
+                            self._prev_cursor.append(first_entity.descriptors.get(cf.name))
+                    elif cf.is_label:
+                        self._prev_cursor.append(getattr(last_entity, cf.name)[lang])
+                    elif cf.is_format:
+                        pass
                     else:
-                        if self.FIELDS_SEP in f:
-                            ff = f.split(self.FIELDS_SEP)
+                        if self.FIELDS_SEP in cf.name:
+                            ff = cf.name.split(self.FIELDS_SEP)
                             self._prev_cursor.append(getattr(first_entity, "_".join(ff)))
-                        elif self.model_fields[f][0] == 'FK':
-                            self._prev_cursor.append(getattr(first_entity, f + '_id'))
-                        elif is_count:
-                            self._prev_cursor.append(getattr(first_entity, f + '__count'))
+                        elif self.model_fields[cf.name][0] == 'FK':
+                            self._prev_cursor.append(getattr(first_entity, cf.name + '_id'))
+                        elif cf.is_count:
+                            self._prev_cursor.append(getattr(first_entity, cf.name + '__count'))
                         else:
-                            self._prev_cursor.append(getattr(first_entity, f))
+                            self._prev_cursor.append(getattr(first_entity, cf.name))
 
                     # next cursor
-                    if is_descriptor:
-                        if self.FIELDS_SEP in f:
-                            ff = f.split(self.FIELDS_SEP)
+                    if cf.is_descriptor:
+                        if self.FIELDS_SEP in cf.name:
+                            ff = cf.name.split(self.FIELDS_SEP)
                             renamed_table = "descr_" + ff[0].replace('.', '_')
                             self._next_cursor.append(getattr(last_entity, "%s_%s" % (renamed_table, ff[1])))
                         else:
-                            self._next_cursor.append(last_entity.descriptors.get(f))
+                            self._next_cursor.append(last_entity.descriptors.get(cf.name))
+                    elif cf.is_label:
+                            self._next_cursor.append(getattr(last_entity, cf.name)[lang])
+                    elif cf.is_format:
+                        pass
                     else:
-                        if self.FIELDS_SEP in f:
-                            ff = f.split(self.FIELDS_SEP)
+                        if self.FIELDS_SEP in cf.name:
+                            ff = cf.name.split(self.FIELDS_SEP)
                             self._next_cursor.append(getattr(last_entity, "_".join(ff)))
-                        elif self.model_fields[f][0] == 'FK':
-                            self._next_cursor.append(getattr(last_entity, f + '_id'))
-                        elif is_count:
-                            self._next_cursor.append(getattr(last_entity, f + '__count'))
+                        elif self.model_fields[cf.name][0] == 'FK':
+                            self._next_cursor.append(getattr(last_entity, cf.name + '_id'))
+                        elif cf.is_count:
+                            self._next_cursor.append(getattr(last_entity, cf.name + '__count'))
                         else:
-                            self._next_cursor.append(getattr(last_entity, f))
+                            self._next_cursor.append(getattr(last_entity, cf.name))
 
         self._cursor_built = True
 
@@ -522,17 +638,16 @@ class CursorQuery(object):
                 if not field:
                     raise CursorQueryValueError('Undefined field name')
 
-                f = field.lstrip('#')
-                is_descriptor = field[0] == '#' or field[1] == '#'
+                cf = CursorField(field, -1, self)
 
-                if is_descriptor:
+                if cf.is_descriptor:
                     # only if sub-value of descriptor
-                    if self.FIELDS_SEP in f:
-                        select_related.append('#' + f)
-                elif f in self.model_fields:
-                    if self.model_fields[f][0] == 'FK':
-                        if self.FIELDS_SEP in f:
-                            select_related.append(f)
+                    if self.FIELDS_SEP in cf.name:
+                        select_related.append('#' + cf.name)
+                elif cf.name in self.model_fields:
+                    if self.model_fields[cf.name][0] == 'FK':
+                        if self.FIELDS_SEP in cf.name:
+                            select_related.append(cf.name)
 
             # op
             elif filter_type == 'op':
@@ -610,6 +725,8 @@ class CursorQuery(object):
         lqs = []
         previous_type = 'op'
 
+        lang = translation.get_language()
+
         for lfilter in filters:
             lfilter_type = type(lfilter)
             filter_type = (
@@ -637,11 +754,10 @@ class CursorQuery(object):
                 value = lfilter.get('value', None)
                 cmp = lfilter.get('op', '=').lower()
 
-                f = field.lstrip('#')
-                is_descriptor = field[0] == '#' or field[1] == '#'
+                cf = CursorField(field, -1, self)
 
-                if self.FIELDS_SEP in f:
-                    ff = f.split(self.FIELDS_SEP)
+                if self.FIELDS_SEP in cf.name:
+                    ff = cf.name.split(self.FIELDS_SEP)
                     field_model = self._related_tables[ff[0]][1][ff[1]]
                     op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(cmp)
 
@@ -649,26 +765,36 @@ class CursorQuery(object):
                     if not op:
                         raise CursorQueryValueError('Unrecognized term operator')
 
-                    if is_descriptor:
+                    if cf.is_descriptor:
                         lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, self._convert_value(value, cmp)))
+                    elif cf.is_label:
+                        pass
+                    elif cf.is_format:
+                        pass
                     else:
                         lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, self._convert_value(value, cmp)))
-
                 else:
-                    if is_descriptor:
+                    if cf.is_descriptor:
                         op = self.OPERATORS_MAP.get(cmp)
                         # cmp is used with descriptor, otherwise map to a SQL operator
                         if not op:
                             raise CursorQueryValueError('Unrecognized term operator')
                         # use cmp with descriptor format type
-                        clause = self._cast_descriptor_type(db_table, f, cmp, value)
+                        clause = self._cast_descriptor_type(db_table, cf.name, cmp, value)
                         if clause:
                             lqs.append(clause)
-                    else:
-                        field_model = self.model_fields[f]
+                    elif cf.is_label:
+                        field_model = self.model_fields[cf.name]
                         op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(
                             cmp)
-                        lqs.append(self._cast_default_type(db_table, f, op, self._convert_value(value, cmp)))
+                        lqs.append(self._cast_default_type(db_table, cf.name, op, self._convert_value(value, cmp), lang))
+                    elif cf.is_format:
+                        pass
+                    else:
+                        field_model = self.model_fields[cf.name]
+                        op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(
+                            cmp)
+                        lqs.append(self._cast_default_type(db_table, cf.name, op, self._convert_value(value, cmp)))
 
             # operator
             elif filter_type == 'op':
@@ -716,7 +842,7 @@ class CursorQuery(object):
 
         return self._next_cursor
 
-    def _cast_default_type(self, table_name, field_name, operator, value):
+    def _cast_default_type(self, table_name, field_name, operator, value, sub_field_name=None):
         field_model = self.model_fields[field_name]
         final_value = self._make_value(value, field_model)
         coalesce_value = self._make_value(None, field_model)
@@ -729,12 +855,19 @@ class CursorQuery(object):
             if field_model[0] == 'FK':  # @todo and lookup on db model field name ?
                 return 'COALESCE("%s"."%s_id", %s) %s %s' % (
                     table_name, field_name, coalesce_value, operator, final_value)
+            elif field_model[0] == 'JSON':
+                return 'COALESCE("%s"."%s"->>\'%s\', %s) %s %s' % (
+                    table_name, field_name, sub_field_name, coalesce_value, operator, final_value)
             else:
                 return 'COALESCE("%s"."%s", %s) %s %s' % (
                     table_name, field_name, coalesce_value, operator, final_value)
         else:
             if field_model[0] == 'FK':
                 return '"%s"."%s_id" %s %s' % (table_name, field_name, operator, final_value)
+            elif field_model[0] == 'JSON':
+                return '"%s"."%s"->>\'%s\' %s %s' % (
+                    table_name, field_name, sub_field_name, operator, final_value)
+
             elif field_model[0] == 'ARRAY' and isinstance(operator, list) and operator[0] == 'NOT':
                 return 'NOT "%s"."%s" %s %s' % (table_name, field_name, operator[1], final_value)
             else:

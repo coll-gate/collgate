@@ -28,23 +28,28 @@ let View = Marionette.View.extend({
         }
     },
 
-    ui: {
-        details: 'td.view-batchactiontype-details'
-    },
-
-    events: {
-        'click @ui.details': 'viewDetails'
-    },
-
     behaviors: {
         ActionBtnEvents: {
             behaviorClass: require('../../../main/behaviors/actionbuttonevents'),
             actions: {
-                edit: {display: false},
+                edit: {display: true, title: _t("Rename type of batch action"), event: 'renameBatchActionType'},
+                tag: {display: true, title: _t("Edit label"), event: 'editLabel'},
                 manage: {display: true, event: 'viewDetails'},
                 remove: {display: true, event: 'onDeleteBatchActionType'}
             }
         }
+    },
+
+    ui: {
+        details: 'td.view-batchactiontype-details',
+        delete_btn: 'td.action.remove',
+        edit_label_btn: 'td.action.edit-label',
+        edit2_label_btn: 'td.action.rename',
+        manage_btn: 'td.action.manage'
+    },
+
+    events: {
+        'click @ui.details': 'viewDetails'
     },
 
     initialize: function () {
@@ -74,7 +79,35 @@ let View = Marionette.View.extend({
     },
 
     onDeleteBatchActionType: function () {
-        alert("@todo");
+        alert("@todo only if there is no action using this model");
+    },
+
+    editLabel: function() {
+        if (!session.user.isSuperUser || !session.user.isStaff) {
+            return false;
+        }
+
+        let ChangeLabel = require('../../../main/views/entitychangelabel');
+        let changeLabel = new ChangeLabel({
+            model: this.model,
+            title: _t("Change the labels for the type of batch action")});
+
+        changeLabel.render();
+
+        return false;
+    },
+
+    renameBatchActionType: function() {
+        let ChangeName = require('../../../main/views/entityrename');
+        let changeName = new ChangeName({
+            model: this.model,
+            title: _t("Rename the type of batch action")
+        });
+
+        changeName.render();
+        changeName.ui.name.val(this.model.get('name'));
+
+        return false;
     }
 });
 

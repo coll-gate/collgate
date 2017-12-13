@@ -20,12 +20,12 @@ let View = AdvancedTable.extend({
 
     defaultColumns: [
         {name: 'name', width: 'auto', sort_by: '+0'},
-        {name: 'label', width: 'auto', sort_by: null}
+        {name: '@label', width: 'auto', sort_by: null}
     ],
 
     columnsOptions: {
         'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-batchactiontype-details'},
-        'label': {label: _t('Label'), width: 'auto', minWidth: true, event: 'view-batchactiontype-details'},
+        '@label': {label: _t('Label'), width: 'auto', minWidth: true, event: 'view-batchactiontype-details'},
     },
 
     initialize: function (options) {

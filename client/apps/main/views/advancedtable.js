@@ -1509,7 +1509,7 @@ let View = Marionette.CompositeView.extend({
                 span.addClass(column.glyphicon[1]);
                 cell.html(span);
             } else if (!column.format) {
-                cell.html(item.get(columnName.replace(/^#/, '')));
+                cell.html(item.get(columnName.replace(/^[#@\$]/, '')));
             } else if (column.query) {
                 // deferred
             } else if (columnName.startsWith('#')) {

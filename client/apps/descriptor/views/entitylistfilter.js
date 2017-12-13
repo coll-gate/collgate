@@ -75,7 +75,7 @@ let View = Marionette.View.extend({
             let op = "eq";
             let value = null;
 
-            if (field === "name") {
+            if (field === "name" || field === "@label") {
                 op = "icontains";
             }
 

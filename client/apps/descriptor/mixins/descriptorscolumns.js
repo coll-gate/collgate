@@ -269,7 +269,7 @@ let DescriptorsColumnsView = {
         // lookup into the global cache
         for (let j = 0; j < modelList.length; ++j) {
             let model = modelList[j];
-            let key = model.get(columnName);
+            let key = model.get(columnName.replace(/^@\$/, ''));
             let entry = undefined;
 
             toFetch = false;
@@ -322,7 +322,7 @@ let DescriptorsColumnsView = {
                 for (let i = 0; i < models.length; ++i) {
                     let model = models[i];
                     let childView = self.children.findByModel(model);
-                    let key = model.get(columnName);
+                    let key = model.get(columnName.replace(/^@\$/, ''));
 
                     let cell = childView.$el.find('td[name="' + columnName + '"]');
                     if (key !== undefined) {
@@ -346,7 +346,7 @@ let DescriptorsColumnsView = {
                 for (let i = 0; i < models.length; ++i) {
                     let model = models[i];
                     let childView = this.view.children.findByModel(model);
-                    let key = model.get(columnName);
+                    let key = model.get(columnName.replace(/^@\$/, ''));
 
                     let cell = childView.$el.find('td[name="' + columnName + '"]');
                     if (key !== undefined) {
