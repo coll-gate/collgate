@@ -12,14 +12,27 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
 
-class BatchActionFormatType(object):
+class BatchActionTypeFormatGroup(object):
     """
-    Batch action format type base class.
+    Group of batch action type format.
+    """
+
+    def __init__(self, name, verbose_name):
+        self.name = name
+        self.verbose_name = verbose_name
+
+
+class BatchActionTypeFormat(object):
+    """
+    Batch action type format base class.
     """
 
     def __init__(self):
         # name referred as a code, stored in format.type.
         self.name = ''
+
+        # related group name
+        self.group = None
 
         # i18n verbose name displayable for the client
         self.verbose_name = ''
@@ -45,7 +58,7 @@ class BatchActionFormatType(object):
         return None
 
 
-class BatchActionFormatTypeManager(object):
+class BatchActionTypeFormatManager(object):
     """
     Singleton manager of set of batch action format types.
     """
@@ -53,32 +66,32 @@ class BatchActionFormatTypeManager(object):
     action_types = {}
 
     @classmethod
-    def register(cls, batch_action_types_list):
+    def register(cls, batch_action_type_formats_list):
         """
         Register a list of batch action types.
-        :param batch_action_types_list: An array of batch action type
+        :param batch_action_type_formats_list: An array of batch action type
         """
         # register each type into a map
-        for dft in batch_action_types_list:
+        for dft in batch_action_type_formats_list:
             if dft.name in cls.action_types:
-                raise ImproperlyConfigured("Batch action type already defined (%s)" % dft.name)
+                raise ImproperlyConfigured("Format of batch action type already defined (%s)" % dft.name)
 
             cls.action_types[dft.name] = dft
 
     @classmethod
     def values(cls):
         """
-        Return the list of any registered batch action types .
+        Return the list of any registered batch action types format.
         """
         return list(cls.action_types.values())
 
     @classmethod
     def get(cls, batch_action_type_format):
-        format_type = batch_action_type_format['type']
+        action_format = batch_action_type_format['type']
 
-        dft = cls.action_types.get(format_type)
+        dft = cls.action_types.get(action_format)
         if dft is None:
-            raise ValueError("Unsupported batch action type %s" % format_type)
+            raise ValueError("Unsupported format of batch action type %s" % action_format)
 
         return dft
 
@@ -90,13 +103,13 @@ class BatchActionFormatTypeManager(object):
         :param value: Value to validate
         :except ValueError with descriptor of the problem
         """
-        format_type = batch_action_type_format['type']
+        type_format = batch_action_type_format['type']
 
-        dft = cls.action_types.get(format_type)
+        dft = cls.action_types.get(type_format)
         if dft is None:
-            raise ValueError("Unsupported batch action type %s" % format_type)
+            raise ValueError("Unsupported format of batch action type %s" % type_format)
 
-        res = dft.validate(format_type, value)
+        res = dft.validate(type_format, value)
         if res is not None:
             raise ValueError(res)
 
@@ -108,18 +121,27 @@ class BatchActionFormatTypeManager(object):
         :return: True if check success.
         :except ValueError with descriptor of the problem
         """
-        format_type = batch_action_type_format['type']
+        type_format = batch_action_type_format['type']
 
-        dft = cls.action_types.get(format_type)
+        dft = cls.action_types.get(type_format)
         if dft is None:
-            raise ValueError("Unsupported batch action type %s" % format_type)
+            raise ValueError("Unsupported format of batch action type %s" % type_format)
 
         res = dft.check(batch_action_type_format)
         if res is not None:
             raise ValueError(str(res))
 
 
-class BatchActionFormatTypeCreation(object):
+class BatchActionFormatTypeGroupStandard(BatchActionTypeFormatGroup):
+    """
+    Group of standard values.
+    """
+
+    def __init__(self):
+        super().__init__("standard", _("Standard"))
+
+
+class BatchActionTypeFormatCreation(BatchActionTypeFormat):
     """
     Batch action format type for creation/introduction.
     - Input : None
@@ -127,13 +149,11 @@ class BatchActionFormatTypeCreation(object):
     """
 
     def __init__(self):
-        # name referred as a code, stored in format.type.
+        super().__init__()
+
         self.name = "creation"
-
-        # i18n verbose name displayable for the client
+        self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Creation")
-
-        # list of related field into format.*.
         self.format_fields = ["type"]
 
     def validate(self, batch_action_type_format, value):
@@ -154,7 +174,7 @@ class BatchActionFormatTypeCreation(object):
         return None
 
 
-class BatchActionFormatTypeMultiplication(object):
+class BatchActionTypeFormatMultiplication(BatchActionTypeFormat):
     """
     Batch action format type for multiplication.
     - Input : 1 or many
@@ -162,13 +182,11 @@ class BatchActionFormatTypeMultiplication(object):
     """
 
     def __init__(self):
-        # name referred as a code, stored in format.type.
-        self.name = 'multiplication'
+        super().__init__()
 
-        # i18n verbose name displayable for the client
+        self.name = "multiplication"
+        self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Multiplication")
-
-        # list of related field into format.*.
         self.format_fields = ["type"]
 
     def validate(self, batch_action_type_format, value):
@@ -189,7 +207,7 @@ class BatchActionFormatTypeMultiplication(object):
         return None
 
 
-class BatchActionFormatTypeRegeneration(object):
+class BatchActionTypeFormatRegeneration(BatchActionTypeFormat):
     """
     Batch action format type for regeneration.
     - Input : 1 or many
@@ -197,13 +215,11 @@ class BatchActionFormatTypeRegeneration(object):
     """
 
     def __init__(self):
-        # name referred as a code, stored in format.type.
-        self.name = 'regeneration'
+        super().__init__()
 
-        # i18n verbose name displayable for the client
+        self.name = "regeneration"
+        self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Regeneration")
-
-        # list of related field into format.*.
         self.format_fields = ["type"]
 
     def validate(self, batch_action_type_format, value):
@@ -224,7 +240,7 @@ class BatchActionFormatTypeRegeneration(object):
         return None
 
 
-class BatchActionFormatTypeComplement(object):
+class BatchActionTypeFormatComplement(BatchActionTypeFormat):
     """
     Batch action format type for complement.
     - Input : 1 or many
@@ -232,13 +248,11 @@ class BatchActionFormatTypeComplement(object):
     """
 
     def __init__(self):
-        # name referred as a code, stored in format.type.
-        self.name = 'complement'
+        super().__init__()
 
-        # i18n verbose name displayable for the client
+        self.name = "complement"
+        self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Complement")
-
-        # list of related field into format.*.
         self.format_fields = ["type"]
 
     def validate(self, batch_action_type_format, value):
@@ -259,7 +273,7 @@ class BatchActionFormatTypeComplement(object):
         return None
 
 
-class BatchActionFormatTypeSample(object):
+class BatchActionTypeFormatSample(BatchActionTypeFormat):
     """
     Batch action format type for sample.
     - Input : 1 or many
@@ -267,13 +281,11 @@ class BatchActionFormatTypeSample(object):
     """
 
     def __init__(self):
-        # name referred as a code, stored in format.type.
-        self.name = 'sample'
+        super().__init__()
 
-        # i18n verbose name displayable for the client
+        self.name = "sample"
+        self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Sample")
-
-        # list of related field into format.*.
         self.format_fields = ["type"]
 
     def validate(self, batch_action_type_format, value):
@@ -294,7 +306,7 @@ class BatchActionFormatTypeSample(object):
         return None
 
 
-class BatchActionFormatTypeSanitation(object):
+class BatchActionTypeFormatSanitation(BatchActionTypeFormat):
     """
     Batch action format type for sample.
     - Input : 1 or many
@@ -302,13 +314,11 @@ class BatchActionFormatTypeSanitation(object):
     """
 
     def __init__(self):
-        # name referred as a code, stored in format.type.
-        self.name = 'sanitation'
+        super().__init__()
 
-        # i18n verbose name displayable for the client
+        self.name = "sanitation"
+        self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Sanitation")
-
-        # list of related field into format.*.
         self.format_fields = ["type"]
 
     def validate(self, batch_action_type_format, value):
@@ -329,7 +339,7 @@ class BatchActionFormatTypeSanitation(object):
         return None
 
 
-class BatchActionFormatTypeCharacterization(object):
+class BatchActionTypeFormatCharacterization(BatchActionTypeFormat):
     """
     Batch action format type for characterization.
     - Input : 1 or many
@@ -337,13 +347,11 @@ class BatchActionFormatTypeCharacterization(object):
     """
 
     def __init__(self):
-        # name referred as a code, stored in format.type.
-        self.name = 'characterization'
+        super().__init__()
 
-        # i18n verbose name displayable for the client
+        self.name = "characterization"
+        self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Characterization")
-
-        # list of related field into format.*.
         self.format_fields = ["type"]
 
     def validate(self, batch_action_type_format, value):
@@ -364,7 +372,7 @@ class BatchActionFormatTypeCharacterization(object):
         return None
 
 
-class BatchActionFormatTypeConformityTest(object):
+class BatchActionTypeFormatConformityTest(BatchActionTypeFormat):
     """
     Batch action format type for characterization.
     - Input : 1 or many
@@ -372,13 +380,11 @@ class BatchActionFormatTypeConformityTest(object):
     """
 
     def __init__(self):
-        # name referred as a code, stored in format.type.
-        self.name = 'conformity-test'
+        super().__init__()
 
-        # i18n verbose name displayable for the client
+        self.name = "conformity-test"
+        self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Conformity Test")
-
-        # list of related field into format.*.
         self.format_fields = ["type"]
 
     def validate(self, batch_action_type_format, value):
@@ -399,7 +405,7 @@ class BatchActionFormatTypeConformityTest(object):
         return None
 
 
-class BatchActionFormatTypeElimination(object):
+class BatchActionTypeFormatElimination(BatchActionTypeFormat):
     """
     Batch action format type for characterization.
     - Input : 1 or many
@@ -407,13 +413,11 @@ class BatchActionFormatTypeElimination(object):
     """
 
     def __init__(self):
-        # name referred as a code, stored in format.type.
-        self.name = 'elimination'
+        super().__init__()
 
-        # i18n verbose name displayable for the client
+        self.name = "elimination"
+        self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Elimination")
-
-        # list of related field into format.*.
         self.format_fields = ["type"]
 
     def validate(self, batch_action_type_format, value):

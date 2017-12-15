@@ -8,14 +8,33 @@
  - @details
 -->
 
-<div name="details"></div>
-<div class="column" style="margin-top: 10px; height: calc(100% - 25px);">
+<div name="details" style="height: 1px"></div>
+<div class="column" style="margin-top: 10px; height: calc(100% - 1px);">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation"><a href="div.tab-pane[name=configuration]" aria-controls="configuration" role="tab" data-toggle="tab"><%= _t("Configuration") %></a></li>
+        <li role="presentation" class="active"><a href="div.tab-pane[name=configuration]" aria-controls="configuration" role="tab" data-toggle="tab"><%= _t("Configuration") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=accessions]" aria-controls="accessions" role="tab" data-toggle="tab"><%= _t("Accessions") %></a></li>
     </ul>
     <!-- Tab panes -->
     <div class="tab-content" style="height: calc(100% - 41px - 10px);">
-        <div role="tabpanel" class="tab-pane" name="configuration" style="height: 100%; overflow-y: auto;"></div>
+        <div role="tabpanel" class="tab-pane active" name="configuration" style="height: 100%; overflow-y: auto;">
+            <div class="tab-frame">
+                <div class="row">
+                    <div class="batch-action-type-format-type-group form-group col-md-6">
+                        <label><%- _t('Type of format') %></label>
+                        <select class="batch-action-type-format-type form-control"></select>
+                    </div>
+                </div>
+                <div class="contextual-region"></div>
+                <div class="batch-action-type-description form-group">
+                    <label for="batch_action_type_description"><%- _t('Description') %></label>
+                    <textarea id="batch_action_type_description" class="form-control" maxlength="1024"></textarea>
+                </div>
+                <div class="batch-action-type-update form-group text-center">
+                    <button id="save" class="btn btn-success btn-block"><%- _t('Update') %></button>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" name="accessions" style="height: 100%; overflow-y: auto;"></div>
     </div>
 </div>

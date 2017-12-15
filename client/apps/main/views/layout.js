@@ -199,7 +199,7 @@ let Layout = Marionette.View.extend({
             }
 
             // update the url for the history with the new active tab
-            if (!this.model.isNew()) {
+            if (!this.model.isNew() && e.relatedTarget) {
                 let href = Backbone.history.getFragment();
                 let previousTab = e.relatedTarget.getAttribute('aria-controls');
 

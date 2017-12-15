@@ -49,7 +49,10 @@ let View = Marionette.View.extend({
     },
 
     events: {
-        'click @ui.details': 'viewDetails'
+        'click @ui.details': 'viewDetails',
+        // 'click @ui.edit_label_btn': 'editLabel',
+        // 'click @ui.edit2_label_btn': 'renameBatchActionType',
+        // 'click @ui.manage_btn': 'viewDetails'
     },
 
     initialize: function () {

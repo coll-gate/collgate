@@ -385,9 +385,9 @@ class BatchActionType(models.Model):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
-            'format': {
+            '$format': {
                 'label': _('Type'),
-                # 'field': 'type',
+                'field': 'type->name',
                 'query': False,
                 'format': {
                     'type': 'string',

@@ -6,13 +6,15 @@
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
-
+# @details
+from django.core.exceptions import SuspiciousOperation
 from django.views.decorators.cache import cache_page
 
+from accession.batchactiontypeformat import BatchActionTypeFormatManager
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cache import cache_manager
+from permission.utils import get_permissions_for
 
 from .models import BatchActionType
 from .base import RestAccession
@@ -28,6 +30,16 @@ class RestBatchActionType(RestAccession):
 class RestBatchActionTypeCount(RestBatchActionType):
         regex = r'^count/$'
         name = 'count'
+
+
+class RestBatchActionTypeId(RestBatchActionType):
+    regex = r'^(?P<bac_id>[0-9]+)/$'
+    suffix = 'id'
+
+
+class RestBatchActionTypeFormat(RestBatchActionType):
+    regex = r'^format/$'
+    suffix = 'format'
 
 
 # @cache_page(60*60*24)   # @todo named cache mechanism
@@ -129,5 +141,64 @@ def get_batch_action_type_list(request):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestBatchActionTypeId.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_accession': _("You are not allowed to get a batch action type")
+})
+def get_batch_action_type_details_json(request, bac_id):
+    """
+    Get the details of a batch action type.
+    """
+
+    batch_action_type = BatchActionType.objects.get(id=int(bac_id))
+
+    result = {
+        'id': batch_action_type.id,
+        'name': batch_action_type.name,
+        'label': batch_action_type.get_label(),
+        'format': batch_action_type.format
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@cache_page(60 * 60 * 24)
+@RestBatchActionTypeFormat.def_request(Method.GET, Format.JSON)
+def get_format_type_list(request):
+    """
+    Return the list of format of batch action type
+    """
+    groups = {}
+    items = {}
+
+    for ft in BatchActionTypeFormatManager.values():
+        if ft.group:
+            if ft.group.name not in groups:
+                groups[ft.group.name] = {
+                    'group': ft.group.name,
+                    'label': str(ft.group.verbose_name)
+                }
+
+        if ft.name in items:
+            raise SuspiciousOperation("Already registered format of batch action type %s" % ft.name)
+
+        items[ft.name] = {
+            'id': ft.name,
+            'group': ft.group.name,
+            'value': ft.name,
+            'label': str(ft.verbose_name)
+        }
+
+    groups_list = sorted(list(groups.values()), key=lambda x: x['group'])
+    items_list = sorted(list(items.values()), key=lambda x: x['label'])
+
+    results = {
+        'groups': groups_list,
+        'items': items_list
+    }
+
+    return HttpResponseRest(request, results)
+
 
 # @todo management (add, delete, patch)

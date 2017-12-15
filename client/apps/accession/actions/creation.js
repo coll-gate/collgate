@@ -8,29 +8,30 @@
  * @details
  */
 
-let BatchActionFormatType = require('./batchactionformattype');
+let BatchActionFormatType = require('./batchactiontypeformat');
 let Marionette = require('backbone.marionette');
 
-let CreationType = function() {
+let CreationFormat = function() {
     BatchActionFormatType.call(this);
 
     this.name = "creation";
     this.group = "single";
 };
 
-_.extend(CreationType.prototype, BatchActionFormatType.prototype, {
+_.extend(CreationFormat.prototype, BatchActionFormatType.prototype, {
 
 });
 
-CreationType.DescriptorTypeDetailsView = Marionette.View.extend({
-    className: 'batchaction-type-details-format',
-    template: "<div></div>",
+CreationFormat.BatchActionTypeFormatDetailsView = Marionette.View.extend({
+    className: 'batchactiontype-format-details-format',
+    template: require('../templates/actions/creation.html'),
 
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);
     },
 
     onRender: function() {
+        let format = this.model.get('format');
     },
 
     getFormat: function() {
@@ -39,7 +40,7 @@ CreationType.DescriptorTypeDetailsView = Marionette.View.extend({
     }
 });
 
-CreationType.format = function(value) {
+CreationFormat.format = function(value) {
     if (value === null || value === undefined) {
         return "";
     } else {
@@ -47,4 +48,4 @@ CreationType.format = function(value) {
     }
 };
 
-module.exports = CreationType;
+module.exports = CreationFormat;

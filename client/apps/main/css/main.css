@@ -738,3 +738,7 @@ div.cell-context-menu ul.actions-list li a:hover {
   -webkit-animation: vertical 0.30s ease infinite;
   animation: vertical 0.30s ease infinite;
 }
+
+.tab-frame {
+    margin: 15px;
+}

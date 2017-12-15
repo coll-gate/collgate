@@ -36,13 +36,14 @@ let Layout = Marionette.View.extend({
 
     onRender: function () {
         let format = this.model.get('format');
+        let content_el = null;
 
         application.descriptor.views.formatTypes.drawSelect(this.ui.format_type, true, false, format.type);
 
         // update the contextual region according to the format
         let Element = application.descriptor.widgets.getElement(format.type);
         if (Element && Element.DescriptorTypeDetailsView) {
-            let content_el = new Element.DescriptorTypeDetailsView({model: this.model});
+            content_el = new Element.DescriptorTypeDetailsView({model: this.model});
             this.showChildView('content', content_el);
         } else {
             this.getRegion('content').empty();
@@ -54,9 +55,12 @@ let Layout = Marionette.View.extend({
             _.map(this.ui, function (key) {
                 key.prop('disabled', 'true');
             });
-            _.map(content_el.ui, function (key) {
-                key.prop('disabled', 'true');
-            });
+
+            if (content_el) {
+                _.map(content_el.ui, function (key) {
+                    key.prop('disabled', 'true');
+                });
+            }
         }
     },
 

@@ -22,7 +22,7 @@ let Model = Backbone.Model.extend({
         id: 0,
         name: '',
         label: '',
-        format: {}
+        format: {type: undefined}
     },
 
     parse: function(data) {

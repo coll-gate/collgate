@@ -8,6 +8,9 @@
  * @details
  */
 
+// style
+require('./css/accession.css');
+
 let AccessionModule = function () {
     this.name = "accession";
 };
@@ -26,7 +29,10 @@ AccessionModule.prototype = {
             console.warn("No translation found for the current language. Fallback to english language");
         }
 
+        //
         // register the meta-model type of descriptors
+        //
+
         let metaModelTypes = [
             'accession',
             'batch'
@@ -35,6 +41,24 @@ AccessionModule.prototype = {
         for (let i = 0; i < metaModelTypes.length; ++i) {
             let moduleName = metaModelTypes[i].replace(/_/g, '').toLowerCase();
             app.descriptor.descriptorMetaModelTypes.registerElement(metaModelTypes[i], require('./descriptormetamodeltypes/' + moduleName));
+        }
+
+        //
+        // batch action format types
+        //
+
+        let BatchActionFormatTypeManager = require('./actions/batchactionformattypemanager');
+        this.actions = new BatchActionFormatTypeManager();
+
+        // register the standard format type of descriptors
+        let actions = [
+            'creation',
+            /* todo */
+        ];
+
+        for (let i = 0; i < actions.length; ++i) {
+            let moduleName = actions[i].replace(/_/g, '').toLowerCase();
+            this.actions.registerElement(actions[i], require('./actions/' + moduleName));
         }
 
         //
@@ -69,6 +93,15 @@ AccessionModule.prototype = {
         });
 
         this.collections.conditionList = new Backbone.Collection();
+
+        let BatchActionTypeFormatCollection = require('./collections/batchactiontypeformat');
+        this.collections.batchActionTypeFormats = new BatchActionTypeFormatCollection();
+
+        this.views.batchActionTypeFormats = new SelectOption({
+            // sync: true,
+            className: 'batch-action-type-format',
+            collection: this.collections.batchActionTypeFormats,
+        });
 
         //
         // controllers

@@ -27,11 +27,14 @@ class CollGateAccession(ApplicationMain):
     def __init__(self, app_name, app_module):
         super(CollGateAccession, self).__init__(app_name, app_module)
 
-        # different types of format for type of descriptors for this module
+        # different types of formats for type of descriptors for this module
         self.format_types = []
 
-        # different types of format for meta-model of descriptors for this module
+        # different types of formats for meta-model of descriptors for this module
         self.meta_model_types = []
+
+        # different type of formats for batch-action-type
+        self.batch_action_type_formats = []
 
     def ready(self):
         super().ready()
@@ -93,6 +96,17 @@ class CollGateAccession(ApplicationMain):
 
         # and register them
         DescriptorMetaModelTypeManager.register(self.meta_model_types)
+
+        # and the batch action type formats
+        from accession import batchactiontypeformat
+
+        for element in dir(batchactiontypeformat):
+            attr = getattr(batchactiontypeformat, element)
+            if type(attr) is type and batchactiontypeformat.BatchActionTypeFormat in attr.__bases__:
+                self.batch_action_type_formats.append(attr())
+
+        from accession.batchactiontypeformat import BatchActionTypeFormatManager
+        BatchActionTypeFormatManager.register(self.batch_action_type_formats)
 
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)

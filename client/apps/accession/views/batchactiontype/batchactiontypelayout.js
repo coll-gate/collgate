@@ -22,11 +22,18 @@ let Layout = LayoutView.extend({
     },
 
     ui: {
-        configuration_tab: 'a[aria-controls=configuration]'
+        configuration_tab: 'a[aria-controls=configuration]',
+        accessions_tab: 'a[aria-controls=accessions]',
+        format_type: 'select.batch-action-type-format-type'
     },
 
     regions: {
-        'configuration': "div.tab-pane[name=configuration]"
+        'contextual': "div.contextual-region",
+        'accessions': "div.tab-pane[name=accessions]"
+    },
+
+    events: {
+        'change @ui.format_type': 'changeFormatType'
     },
 
     initialize: function (model, options) {
@@ -48,23 +55,48 @@ let Layout = LayoutView.extend({
         });
     },
 
+    disableAccessionsTab: function () {
+        this.ui.accessions_tab.parent().addClass('disabled');
+    },
+
     enableTabs: function () {
+        this.ui.accessions_tab.parent().removeClass('disabled');
+    },
+
+    changeFormatType: function () {
+        let type = this.ui.format_type.val();
+
+        // update the contextual region according to the format
+        let Element = window.application.accession.actions.getElement(type);
+        if (Element && Element.BatchActionTypeFormatDetailsView) {
+            this.showChildView('contextual', new Element.BatchActionTypeFormatDetailsView({model: this.model}));
+        } else {
+            this.getRegion('contextual').empty();
+        }
     },
 
     onRender: function () {
+        let format = this.model.get('format');
         let batchLayout = this;
+
+        application.accession.views.batchActionTypeFormats.drawSelect(this.ui.format_type, true, false, format.type || 'creation');
 
         if (!this.model.isNew()) {
             // configuration tab
-            // let configurationView = new (); @todo from model manager
-            // batchLayout.showChildView('configuration', configurationView);
+            let BatchActionFormatType = window.application.accession.actions.getElement(format.type || 'creation');
+            let batchActionFormatType = new BatchActionFormatType.BatchActionTypeFormatDetailsView({model: this.model});
+
+            batchLayout.showChildView('contextual', batchActionFormatType);
 
             this.enableTabs();
         } else {
-            // let configurationView = new (); @todo from model manager
-            // batchLayout.showChildView('configuration', configurationView);
+            let BatchActionFormatType = window.application.accession.actions.getElement(format.type || 'creation');
+            let batchActionFormatType = new BatchActionFormatType({model: this.model});
 
-            // not availables tabs
+            batchLayout.showChildView('contextual', batchActionFormatType);
+
+            // not available tabs
+            disableAccessionsTab();
         }
     }
 });

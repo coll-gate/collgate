@@ -35,12 +35,12 @@ let Router = Marionette.AppRouter.extend({
         });
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of accessions")}));
 
         // get available columns
-        let columns = application.main.cache.lookup({
+        let columns = window.application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.accession'}
         });
@@ -72,7 +72,7 @@ let Router = Marionette.AppRouter.extend({
         let accession = new AccessionModel({id: id});
 
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         accession.fetch().then(function() {
             if (!defaultLayout.isRendered()) {

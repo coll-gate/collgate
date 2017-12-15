@@ -37,7 +37,7 @@ let Router = Marionette.AppRouter.extend({
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of types of actions for batches")}));
 
-        let columns = application.main.cache.lookup({
+        let columns = window.application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.batchactiontype'}
         });
@@ -67,15 +67,15 @@ let Router = Marionette.AppRouter.extend({
         let defaultLayout = new DefaultLayout();
         window.application.main.showContent(defaultLayout);
 
-        window.accession.fetch().then(function() {
+        batchActionType.fetch().then(function() {
             if (!defaultLayout.isRendered()) {
                 return;
             }
 
             defaultLayout.showChildView('title', new TitleView({title: _t("Batch Action Type"), model: batchActionType}));
 
-            let layout = new BatchActionTypeLayout({model: accession, initialTab: tab.replace('/', '')});
-            defaultLayout.showChildView('content', layout);
+            let batchActionTypeLayout = new BatchActionTypeLayout({model: batchActionType, initialTab: tab.replace('/', '')});
+            defaultLayout.showChildView('content', batchActionTypeLayout);
         });
     }
 });
