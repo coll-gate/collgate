@@ -208,6 +208,7 @@ def patch_batch(request, bat_id):
             if entity_status is not None and batch.entity_status != entity_status:
                 batch.set_status(entity_status)
                 result['entity_status'] = entity_status
+                batch.update_field('entity_status')
 
             if descriptors is not None:
                 # update descriptors

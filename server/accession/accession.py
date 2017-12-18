@@ -483,6 +483,7 @@ def patch_accession(request, acc_id):
             if entity_status is not None and accession.entity_status != entity_status:
                 accession.set_status(entity_status)
                 result['entity_status'] = entity_status
+                accession.update_field('entity_status')
 
             if descriptors is not None:
                 # update descriptors

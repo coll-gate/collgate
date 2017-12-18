@@ -346,7 +346,7 @@ class Batch(DescribableEntity):
         }
 
 
-class BatchActionType(models.Model):
+class BatchActionType(Entity):
     """
     Type of batch-action.
     """
@@ -360,6 +360,9 @@ class BatchActionType(models.Model):
 
     # Format of the action (can define a lot of parameters, like input, output, process...)
     format = JSONField(default={"type": "undefined"})
+
+    # informative description.
+    description = models.TextField(blank=True, default="")
 
     class Meta:
         verbose_name = _("batch action type")
@@ -427,7 +430,7 @@ class BatchActionType(models.Model):
         }]
 
 
-class BatchAction(models.Model):
+class BatchAction(Entity):
     """
     A batch-action defines a process of creation or update of one or more output batches and a list of input batches
     altered or not modified, plus the relating accession.
@@ -435,9 +438,6 @@ class BatchAction(models.Model):
 
     # actor of the action
     user = models.ForeignKey(User)
-
-    # date of the action
-    created_date = models.DateTimeField(auto_now_add=True)
 
     # action type
     type = models.ForeignKey(to=BatchActionType, on_delete=models.PROTECT)

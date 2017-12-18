@@ -40,12 +40,4 @@ CreationFormat.BatchActionTypeFormatDetailsView = Marionette.View.extend({
     }
 });
 
-CreationFormat.format = function(value) {
-    if (value === null || value === undefined) {
-        return "";
-    } else {
-        return value === true ? _t("Yes") : _t("No");
-    }
-};
-
 module.exports = CreationFormat;

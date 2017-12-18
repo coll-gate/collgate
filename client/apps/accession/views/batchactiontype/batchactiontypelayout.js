@@ -24,7 +24,9 @@ let Layout = LayoutView.extend({
     ui: {
         configuration_tab: 'a[aria-controls=configuration]',
         accessions_tab: 'a[aria-controls=accessions]',
-        format_type: 'select.batch-action-type-format-type'
+        format_type: 'select.batch-action-type-format-type',
+        description: 'textarea[name=description]',
+        config_save: 'button[name=save]'
     },
 
     regions: {
@@ -33,7 +35,8 @@ let Layout = LayoutView.extend({
     },
 
     events: {
-        'change @ui.format_type': 'changeFormatType'
+        'change @ui.format_type': 'changeFormatType',
+        'click @ui.config_save': 'onUpdateConfig'
     },
 
     initialize: function (model, options) {
@@ -98,6 +101,16 @@ let Layout = LayoutView.extend({
             // not available tabs
             disableAccessionsTab();
         }
+    },
+
+    onUpdateConfig: function() {
+        let format = this.getChildView('contextual').getFormat();
+        let description = this.ui.description.val();
+        let model = this.model;
+
+        this.model.save({description: description, format: format}, {wait: true, patch: !this.model.isNew()}).then(function () {
+            //Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
+        });
     }
 });
 

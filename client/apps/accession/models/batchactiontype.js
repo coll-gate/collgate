@@ -20,9 +20,10 @@ let Model = Backbone.Model.extend({
 
     defaults: {
         id: 0,
-        name: '',
-        label: '',
-        format: {type: undefined}
+        name: "",
+        label: "",
+        format: {type: undefined},
+        description: ""
     },
 
     parse: function(data) {

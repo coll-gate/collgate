@@ -8,6 +8,8 @@
 # @license MIT (see LICENSE file)
 # @details
 from django.core.exceptions import SuspiciousOperation
+from django.shortcuts import get_object_or_404
+from django.utils import translation
 from django.views.decorators.cache import cache_page
 
 from accession.batchactiontypeformat import BatchActionTypeFormatManager
@@ -33,7 +35,7 @@ class RestBatchActionTypeCount(RestBatchActionType):
 
 
 class RestBatchActionTypeId(RestBatchActionType):
-    regex = r'^(?P<bac_id>[0-9]+)/$'
+    regex = r'^(?P<bat_id>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -102,6 +104,13 @@ def get_batch_action_type_list(request):
     limit = results_per_page
     sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
+    # @todo named cache mechanism when no filters and default order
+    # cache_name = 'batch_action_types'
+    # batch_action_types = cache_manager.get('accession', cache_name)
+    #
+    # if batch_action_types:
+    #     return HttpResponseRest(request, batch_action_types)
+
     if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
         order_by = sort_by + ['id']
     else:
@@ -129,7 +138,8 @@ def get_batch_action_type_list(request):
             'name': batch_action_type.name,
             # 'value': batch_action_type.name,
             'label': batch_action_type.get_label(),
-            'format': batch_action_type.format
+            'format': batch_action_type.format,
+            'description': batch_action_type.description
         })
 
     results = {
@@ -140,24 +150,28 @@ def get_batch_action_type_list(request):
         'next': cq.next_cursor,
     }
 
+    # cache for 24h
+    # cache_manager.set('accession', cache_name, batch_action_types, 60 * 60 * 24)
+
     return HttpResponseRest(request, results)
 
 
 @RestBatchActionTypeId.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.get_accession': _("You are not allowed to get a batch action type")
 })
-def get_batch_action_type_details_json(request, bac_id):
+def get_batch_action_type_details_json(request, bat_id):
     """
     Get the details of a batch action type.
     """
 
-    batch_action_type = BatchActionType.objects.get(id=int(bac_id))
+    batch_action_type = BatchActionType.objects.get(id=int(bat_id))
 
     result = {
         'id': batch_action_type.id,
         'name': batch_action_type.name,
         'label': batch_action_type.get_label(),
-        'format': batch_action_type.format
+        'format': batch_action_type.format,
+        'description': batch_action_type.description
     }
 
     return HttpResponseRest(request, result)
@@ -201,4 +215,121 @@ def get_format_type_list(request):
     return HttpResponseRest(request, results)
 
 
-# @todo management (add, delete, patch)
+@RestBatchActionTypeId.def_auth_request(Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
+            "format": {"type": "object", "required": False},
+            "label": BatchActionType.LABEL_VALIDATOR_OPTIONAL
+        },
+    },
+    perms={
+      'accession.change_batchactiontype': _("You are not allowed to modify a batch action type"),
+    })
+def patch_batch_action_type(request, bat_id):
+    batch_action_type = get_object_or_404(BatchActionType, id=int(bat_id))
+
+    entity_status = request.data.get("entity_status")
+    description = request.data.get("description")
+    label = request.data.get("label")
+    format_data = request.data.get("format")
+
+    result = {
+        'id': batch_action_type.id
+    }
+
+    if entity_status is not None and batch_action_type.entity_status != entity_status:
+        batch_action_type.set_status(entity_status)
+        result['entity_status'] = entity_status
+        batch_action_type.update_field('entity_status')
+
+    if description is not None:
+        batch_action_type.description = description
+        result['description'] = description
+        batch_action_type.update_field('description')
+
+    if label is not None:
+        lang = translation.get_language()
+        batch_action_type.set_label(lang, label)
+        result['label'] = label
+        batch_action_type.update_field('label')
+
+    if format_data is not None:
+        # @todo, allowed if no data using it, and must be checked by BatchActionTypeFormat
+        batch_action_type.format = format_data
+        result['format'] = format
+        batch_action_type.update_field('format')
+
+    batch_action_type.save()
+
+    return HttpResponseRest(request, result)
+
+
+@RestBatchActionTypeId.def_auth_request(Method.DELETE, Format.JSON, perms={
+         'accession.delete_batchactiontype': _('You are not allowed to remove a batch action type'),
+    },
+    staff=True)
+def delete_batch_action_type(request, bat_id):
+    """
+    If possible delete a descriptor model type from de descriptor model.
+    It is not possible if there is data using the model of descriptor or the status is valid.
+    """
+    batch_action_type = get_object_or_404(BatchActionType, id=int(bat_id))
+
+    # @todo
+    # if batch_action_type.in_usage():
+    #     raise SuspiciousOperation(_("There is some data using the batch action type"))
+
+    batch_action_type.delete()
+
+    return HttpResponseRest(request, {})
+
+
+@RestBatchActionType.def_auth_request(
+    Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": BatchActionType.NAME_VALIDATOR,
+            "format": {"type": "object", "required": False},
+            "label": BatchActionType.LABEL_VALIDATOR_OPTIONAL,
+            "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
+        }
+    },
+    perms={
+        'descriptor.add_batchactiontype': _('You are not allowed to create a batch action type'),
+    },
+    staff=True)
+def create_batch_action_type(request):
+    """
+    Create a new batch action type
+    """
+    # check name uniqueness
+    if BatchActionType.objects.filter(name=request.data['name']).exists():
+        raise SuspiciousOperation(_('A batch action with a similar name already exists'))
+
+    description = request.data.get("description")
+    label = request.data.get("label")
+    format_data = request.data.get("format")
+    lang = translation.get_language()
+
+    # create the batch action type
+    batch_action_type = BatchActionType()
+
+    batch_action_type.name = request.data['name']
+    batch_action_type.set_label(lang, label)
+    batch_action_type.description = description
+    batch_action_type.format = format_data
+
+    # @todo, allowed if no data using it, and must be checked by BatchActionTypeFormat
+
+    batch_action_type.save()
+
+    result = {
+        'id': batch_action_type.id,
+        'name': batch_action_type.name,
+        'label': batch_action_type.get_label(),
+        'format': batch_action_type.format,
+        'description': batch_action_type.description
+    }
+
+    return HttpResponseRest(request, result)
