@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file condition.py
-# @brief 
+# @brief coll-gate descriptor module, description
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate descriptor module, description
-"""
 
 from django.views.decorators.cache import cache_page
 from igdectk.rest import Format, Method
@@ -41,4 +37,3 @@ def get_description_list(request):
         })
 
     return HttpResponseRest(request, conditions)
-

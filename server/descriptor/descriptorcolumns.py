@@ -144,7 +144,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     }
 
     # cache for 1 day
-    cache_manager.set('entity_columns', cache_name, results, 60 * 60 * 24)
+    cache_manager.set('entity_columns', cache_name, results, 60*60*24)
 
     return HttpResponseRest(request, results)
 
@@ -180,6 +180,6 @@ def get_description(model):
         }
 
     # cache for 1 day
-    cache_manager.set('descriptor', cache_name, results, 60 * 60 * 24)
+    cache_manager.set('descriptor', cache_name, results, 60*60*24)
 
     return results

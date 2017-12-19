@@ -82,11 +82,11 @@ let View = Marionette.View.extend({
     },
 
     onDeleteBatchActionType: function () {
-        alert("@todo only if there is no action using this model");
+        this.model.destroy({wait: true});
     },
 
     editLabel: function() {
-        if (!session.user.isSuperUser || !session.user.isStaff) {
+        if (!window.session.user.isSuperUser || !window.session.user.isStaff) {
             return false;
         }
 

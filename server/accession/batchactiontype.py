@@ -17,6 +17,7 @@ from accession.batchactiontypeformat import BatchActionTypeFormatManager
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cache import cache_manager
+from main.models import InterfaceLanguages
 from permission.utils import get_permissions_for
 
 from .models import BatchActionType
@@ -50,6 +51,11 @@ class RestBatchActionTypeFormat(RestBatchActionType):
     suffix = 'format'
 
 
+class RestBatchActionTypeIdLabel(RestBatchActionTypeId):
+    regex = r'^label/$'
+    suffix = 'label'
+
+
 # @cache_page(60*60*24)   # @todo named cache mechanism
 # @RestBatchActionType.def_request(Method.GET, Format.JSON)
 # def get_batch_action_type_list(request):
@@ -76,7 +82,7 @@ class RestBatchActionTypeFormat(RestBatchActionType):
 #         })
 #
 #     # cache for 24h
-#     cache_manager.set('accession', cache_name, batch_action_types, 60 * 60 * 24)
+#     cache_manager.set('accession', cache_name, batch_action_types, 60*60*24)
 #
 #     return HttpResponseRest(request, batch_action_types)
 
@@ -157,7 +163,7 @@ def get_batch_action_type_list(request):
     }
 
     # cache for 24h
-    # cache_manager.set('accession', cache_name, batch_action_types, 60 * 60 * 24)
+    # cache_manager.set('accession', cache_name, batch_action_types, 60*60*24)
 
     return HttpResponseRest(request, results)
 
@@ -243,7 +249,7 @@ def get_batch_action_type_details_json(request, bat_id):
     return HttpResponseRest(request, result)
 
 
-@cache_page(60 * 60 * 24)
+@cache_page(60*60*24)
 @RestBatchActionTypeFormat.def_request(Method.GET, Format.JSON)
 def get_format_type_list(request):
     """
@@ -324,6 +330,9 @@ def patch_batch_action_type(request, bat_id):
         if batch_action_type.format.get('type', 'undefined') != 'undefined':
             raise SuspiciousOperation(_("It is not possible to change the format type"))
 
+        # format validation
+        BatchActionTypeFormatManager.check(format_data)
+
         batch_action_type.format = format_data
         result['format'] = format
         batch_action_type.update_field('format')
@@ -344,9 +353,8 @@ def delete_batch_action_type(request, bat_id):
     """
     batch_action_type = get_object_or_404(BatchActionType, id=int(bat_id))
 
-    # @todo
-    # if batch_action_type.in_usage():
-    #     raise SuspiciousOperation(_("There is some data using the batch action type"))
+    if batch_action_type.in_usage():
+        raise SuspiciousOperation(_("There is some data using the batch action type"))
 
     batch_action_type.delete()
 
@@ -377,8 +385,12 @@ def create_batch_action_type(request):
 
     description = request.data.get("description")
     label = request.data.get("label")
-    format_data = request.data.get("format")
+    format_data = request.data.get("format", {'type': 'undefined'})
     lang = translation.get_language()
+
+    if format_data['type'] != 'undefined':
+        # format validation
+        BatchActionTypeFormatManager.check(format_data)
 
     # create the batch action type
     batch_action_type = BatchActionType()
@@ -388,8 +400,6 @@ def create_batch_action_type(request):
     batch_action_type.description = description
     batch_action_type.format = format_data
 
-    # @todo, allowed if no data using it, and must be checked by BatchActionTypeFormat
-
     batch_action_type.save()
 
     result = {
@@ -398,6 +408,61 @@ def create_batch_action_type(request):
         'label': batch_action_type.get_label(),
         'format': batch_action_type.format,
         'description': batch_action_type.description
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestBatchActionTypeIdLabel.def_auth_request(Method.GET, Format.JSON)
+def get_all_labels_of_batch_action_type(request, bat_id):
+    """
+    Returns labels for each language related to the user interface.
+    """
+    batch_action_type = get_object_or_404(BatchActionType, id=int(bat_id))
+
+    label_dict = batch_action_type.label
+
+    # complete with missing languages
+    for lang, lang_label in InterfaceLanguages.choices():
+        if lang not in label_dict:
+            label_dict[lang] = ""
+
+    results = label_dict
+
+    return HttpResponseRest(request, results)
+
+
+@RestBatchActionTypeIdLabel.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "additionalProperties": BatchActionType.LABEL_VALIDATOR
+    },
+    perms={
+        'accession.change_batchactiontype': _('You are not allowed to modify a batch action type'),
+    },
+    staff=True)
+def change_all_labels_of_batch_action_type(request, bat_id):
+    """
+    Changes all the label, for each language related to the user interface.
+    Returns only the local label.
+    """
+    batch_action_type = get_object_or_404(BatchActionType, id=int(bat_id))
+
+    labels = request.data
+
+    languages_values = [lang[0] for lang in InterfaceLanguages.choices()]
+
+    for lang, label in labels.items():
+        if lang not in languages_values:
+            raise SuspiciousOperation(_("Unsupported language identifier"))
+
+    batch_action_type.label = labels
+
+    batch_action_type.update_field('label')
+    batch_action_type.save()
+
+    result = {
+        'label': batch_action_type.get_label()
     }
 
     return HttpResponseRest(request, result)

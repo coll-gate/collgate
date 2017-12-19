@@ -1,8 +1,8 @@
 /**
- * @file creation.js
- * @brief Display and manage a creation format of type of batch-action
+ * @file regeneration.js
+ * @brief Display and manage a regeneration test format of type of batch-action
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2017-12-11
+ * @date 2017-12-19
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details
@@ -11,20 +11,20 @@
 let BatchActionFormatType = require('./batchactiontypeformat');
 let Marionette = require('backbone.marionette');
 
-let CreationFormat = function() {
+let Format = function() {
     BatchActionFormatType.call(this);
 
-    this.name = "creation";
+    this.name = "regeneration";
     this.group = "standard";
 };
 
-_.extend(CreationFormat.prototype, BatchActionFormatType.prototype, {
+_.extend(Format.prototype, BatchActionFormatType.prototype, {
 
 });
 
-CreationFormat.BatchActionTypeFormatDetailsView = Marionette.View.extend({
+Format.BatchActionTypeFormatDetailsView = Marionette.View.extend({
     className: 'batchactiontype-format-details-format',
-    template: require('../templates/actions/creation.html'),
+    template: require('../templates/actions/regeneration.html'),
 
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);
@@ -40,4 +40,4 @@ CreationFormat.BatchActionTypeFormatDetailsView = Marionette.View.extend({
     }
 });
 
-module.exports = CreationFormat;
+module.exports = Format;

@@ -429,6 +429,9 @@ class BatchActionType(Entity):
             'values': None
         }]
 
+    def in_usage(self):
+        return BatchAction.objects.filter(type_id=self.id).exists()
+
 
 class BatchAction(Entity):
     """

@@ -12,17 +12,18 @@ let Backbone = require('backbone');
 
 let Model = Backbone.Model.extend({
     url: function() {
-        if (this.isNew())
+        if (this.isNew()) {
             return window.application.url(['accession', 'batchactiontype']);
-        else
+        } else {
             return window.application.url(['accession', 'batchactiontype', this.get('id')]);
+        }
     },
 
     defaults: {
-        id: 0,
+        id: null,
         name: "",
         label: "",
-        format: {type: undefined},
+        format: {type: 'undefined'},
         description: ""
     },
 

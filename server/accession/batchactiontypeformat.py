@@ -382,7 +382,7 @@ class BatchActionTypeFormatConformityTest(BatchActionTypeFormat):
     def __init__(self):
         super().__init__()
 
-        self.name = "conformity-test"
+        self.name = "conformity_test"
         self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Conformity Test")
         self.format_fields = ["type"]
@@ -418,6 +418,39 @@ class BatchActionTypeFormatElimination(BatchActionTypeFormat):
         self.name = "elimination"
         self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Elimination")
+        self.format_fields = ["type"]
+
+    def validate(self, batch_action_type_format, value):
+        """
+        Validate the value according the format.
+        :param batch_action_type_format: Format of the related batch action type
+        :param value: Value to validate
+        :return: None if the validation is done, else a string with the error detail
+        """
+        return None
+
+    def check(self, batch_action_type_format):
+        """
+        Check the format of a descriptor type, if it is valid for a specific type of format.
+        :param batch_action_type_format: Format of type of the related batch action type to check
+        :return: None if the check is done, else a string with the error detail
+        """
+        return None
+
+
+class BatchActionTypeFormatDispatch(BatchActionTypeFormat):
+    """
+    Batch action format type for dispatch.
+    - Input : 1 or many
+    - Output : 1 or many archived
+    """
+
+    def __init__(self):
+        super().__init__()
+
+        self.name = "dispatch"
+        self.group = BatchActionFormatTypeGroupStandard()
+        self.verbose_name = _("Dispatch")
         self.format_fields = ["type"]
 
     def validate(self, batch_action_type_format, value):

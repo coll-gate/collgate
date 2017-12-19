@@ -16,7 +16,7 @@ BATCH_ACTION_TYPES = {
             'en': 'Introduction',
             'fr': 'Introduction'
         },
-        'format': {}
+        'format': {'type': 'creation'}
     },
     'multiplication': {
         'id': None,
@@ -25,7 +25,7 @@ BATCH_ACTION_TYPES = {
             'en': 'Multiplication',
             'fr': 'Multiplication'
         },
-        'format': {}
+        'format': {'type': 'multiplication'}
     },
     'regeneration': {
         'id': None,
@@ -34,16 +34,16 @@ BATCH_ACTION_TYPES = {
             'en': 'Regeneration',
             'fr': 'Regeneration'
         },
-        'format': {}
+        'format': {'type': 'regeneration'}
     },
     'test': {
         'id': None,
-        'name': 'test',
+        'name': 'conformity_test',
         'label': {
-            'en': 'Test',
-            'fr': 'Test'
+            'en': 'Conformity test',
+            'fr': 'Test de conformité'
         },
-        'format': {}
+        'format': {'type': 'conformity_test'}
     },
     'cleanup': {
         'id': None,
@@ -52,7 +52,7 @@ BATCH_ACTION_TYPES = {
             'en': 'Nettoyage',
             'fr': 'Clean-up'
         },
-        'format': {}
+        'format': {'type': 'sanitation'}
     },
     'sample': {
         'id': None,
@@ -61,7 +61,7 @@ BATCH_ACTION_TYPES = {
             'en': 'Sample',
             'fr': 'Echantillon'
         },
-        'format': {}
+        'format': {'type': 'sample'}
     },
     'dispatch': {
         'id': None,
@@ -70,7 +70,7 @@ BATCH_ACTION_TYPES = {
             'en': 'Dispatch',
             'fr': 'Dispatch'
         },
-        'format': {}
+        'format': {'type': 'dispatch'}
     },
     'elimination': {
         'id': None,
@@ -79,7 +79,25 @@ BATCH_ACTION_TYPES = {
             'en': 'Elimination',
             'fr': 'Elimination'
         },
-        'format': {}
+        'format': {'type': 'elimination'}
+    },
+    'complement': {
+        'id': None,
+        'name': 'complement',
+        'label': {
+            'en': 'Complement',
+            'fr': 'Complément'
+        },
+        'format': {'type': 'complement'}
+    },
+    'characterization': {
+        'id': None,
+        'name': 'characterization',
+        'label': {
+            'en': 'Characterization',
+            'fr': 'Caractérisation'
+        },
+        'format': {'type': 'characterization'}
     },
 }
 

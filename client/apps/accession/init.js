@@ -53,7 +53,15 @@ AccessionModule.prototype = {
         // register the standard format type of descriptors
         let actions = [
             'creation',
-            /* todo */
+            'multiplication',
+            'regeneration',
+            'complement',
+            'sample',
+            'sanitation',
+            'characterization',
+            'conformity_test',
+            'elimination',
+            'dispatch'
         ];
 
         for (let i = 0; i < actions.length; ++i) {

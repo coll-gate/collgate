@@ -35,12 +35,14 @@ let Controller = Marionette.Object.extend({
                 ui: {
                     validate: "button.continue",
                     name: "input[name=name]",
+                    label: "input[name=label]",
                     format_type: "select[name=format]"
                 },
 
                 events: {
                     'click @ui.validate': 'onContinue',
-                    'input @ui.name': 'onNameInput'
+                    'input @ui.name': 'onNameInput',
+                    'input @ui.label': 'onLabelInput'
                 },
 
                 initialize: function (options) {
@@ -91,6 +93,10 @@ let Controller = Marionette.Object.extend({
                     }
                 },
 
+                onLabelInput: function () {
+
+                },
+
                 validateName: function() {
                     let v = this.ui.name.val().trim();
 
@@ -99,6 +105,20 @@ let Controller = Marionette.Object.extend({
                         return false;
                     } else if (v.length < 1) {
                         this.ui.name.validateField('failed', _t('characters_min', {count: 1}));
+                        return false;
+                    }
+
+                    return true;
+                },
+
+                validateLabel: function() {
+                    let v = this.ui.name.val().trim();
+
+                    if (v.length > 128) {
+                        this.ui.label.validateField('failed', _t('characters_max', {count: 128}));
+                        return false;
+                    } else if (v.length < 1) {
+                        this.ui.label.validateField('failed', _t('characters_min', {count: 1}));
                         return false;
                     }
 
@@ -114,7 +134,8 @@ let Controller = Marionette.Object.extend({
                         valid = false;
                     }
 
-                     if (this.ui.name.hasClass('invalid')) {
+                     if (this.ui.name.hasClass('invalid') ||
+                         this.ui.label.hasClass('invalid')) {
                         valid = false;
                     }
 
@@ -126,11 +147,13 @@ let Controller = Marionette.Object.extend({
 
                     if (this.validate()) {
                         let name = this.ui.name.val().trim();
+                        let label = this.ui.label.val().trim();
                         let formatType = this.ui.format_type.val();
 
                         // create a new local model and open an edit view with this model
                         let model = new BatchActionTypeModel({
                             name: name,
+                            label: label,
                             format: {type: formatType}
                         });
 

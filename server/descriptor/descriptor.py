@@ -1247,7 +1247,7 @@ def set_values_for_descriptor_type(request, grp_id, typ_id, val_id, field):
     return HttpResponseRest(request, results)
 
 
-@cache_page(60 * 60 * 24)
+@cache_page(60*60*24)
 @RestDescriptorGroupIdTypeIdValueDisplay.def_auth_request(Method.GET, Format.JSON)
 def get_all_display_values_for_descriptor_group_and_type(request, grp_id, typ_id):
     """
@@ -1315,7 +1315,7 @@ def get_all_display_values_for_descriptor_group_and_type(request, grp_id, typ_id
     return HttpResponseRest(request, values)
 
 
-@cache_page(60 * 60 * 24)
+@cache_page(60*60*24)
 @RestDescriptorTypeIdValueDisplay.def_auth_request(Method.GET, Format.JSON)
 def get_all_display_values_for_descriptor_type(request, typ_id):
     """

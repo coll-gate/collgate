@@ -34,7 +34,7 @@ class RestDescriptorFormatUnit(RestDescriptorFormat):
     suffix = 'unit'
 
 
-@cache_page(60 * 60 * 24)
+@cache_page(60*60*24)
 @RestDescriptorFormatType.def_request(Method.GET, Format.JSON)
 def get_format_type_list(request):
     """
@@ -72,7 +72,7 @@ def get_format_type_list(request):
     return HttpResponseRest(request, results)
 
 
-@cache_page(60 * 60 * 24)
+@cache_page(60*60*24)
 @RestDescriptorFormatUnit.def_request(Method.GET, Format.JSON)
 def get_format_unit_list(request):
     """
