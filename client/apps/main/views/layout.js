@@ -28,8 +28,8 @@ let Layout = Marionette.View.extend({
         },
         'dom:refresh': function(child) {
             let tab = this.$el.find('div.tab-pane.active').attr('name');
-            let view = this.getChildView(tab);
             let region = this.getRegion(tab);
+            let view = this.getChildView(tab);
 
             // update child of current tab
             if (view && view === child) {

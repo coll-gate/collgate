@@ -104,12 +104,14 @@ let View = AdvancedTable.extend({
         if (!this.getSelection('select')) {
             $.alert.warning(_t("No accession selected"));
         } else {
-            application.accession.controllers.accessionpanel.create(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+            application.accession.controllers.accessionpanel.create(
+                this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
         }
     },
 
     onLinkToPanel: function () {
-        application.accession.controllers.accessionpanel.linkAccessions(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+        application.accession.controllers.accessionpanel.linkAccessions(
+            this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
     }
 });
 

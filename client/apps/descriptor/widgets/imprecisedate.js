@@ -296,8 +296,10 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 }
             } else {
                 this.el.val("");
-                this.el.attr('value', "");
             }
+
+            // store value data
+            this.readValues = defaultValues;
         } else {
             if (definesValues) {
                 date = moment();
@@ -330,8 +332,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
     values: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                let value = this.el.val();
-                return value !== "" ? value : null;
+                return this.readValues;
             } else {
                 let date = this.el.data('DateTimePicker').date();
                 let format = this.el.data('DateTimePicker').format();

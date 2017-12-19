@@ -1,0 +1,38 @@
+<!--
+ - @file batchactiontypecreate.html
+ - @brief
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2017-12-19
+ - @copyright Copyright (c) 2017 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= _t("Create a type of batch action") %></h4>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="form-group">
+                    <label class="control-label"><%= _t("Format") %></label>
+                    <select name="format" style="width:100%;" class="form-control"></select>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label"><%= _t("Name") %></label>
+                            <input class="form-control name" name="name" type="text" value="" maxlength="128" autocomplete="off" autofocus="" style="width:100%;">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
+            <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

@@ -111,10 +111,13 @@ AccessionModule.prototype = {
         let BatchController = require('./controllers/batch');
         let AccessionPanelController = require('./controllers/accessionpanel');
         let BatchPanelController = require('./controllers/batchpanel');
+        let BatchActionTypeController = require('./controllers/batchactiontype');
+
         this.controllers.accession = new AccessionController();
         this.controllers.batch = new BatchController();
         this.controllers.accessionpanel = new AccessionPanelController();
         this.controllers.batchpanel = new BatchPanelController();
+        this.controllers.batchactiontype = new BatchActionTypeController();
 
         //
         // routers

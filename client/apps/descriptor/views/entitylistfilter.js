@@ -130,6 +130,7 @@ let View = Marionette.View.extend({
     },
 
     onChangeField: function () {
+        let self = this;
         let field = this.ui.entity_field.val();
         let column = this.getOption('columns')[field] || {};
 
@@ -149,6 +150,12 @@ let View = Marionette.View.extend({
                     descriptorTypeId: column.type
                 });
 
+                this.widget.el.on('keydown', function(e) {
+                    if (e.keyCode === 13) {
+                       self.onFilter();
+                    }
+                }).on('input', $.proxy(this.onSearchValue, this));
+
                 return;
             }
 
@@ -157,6 +164,12 @@ let View = Marionette.View.extend({
 
         let input = $('<input type="text" class="search-value form-control" name="search-value"/>');
         this.ui.search_group.append(input);
+
+        input.on('keydown', function(e) {
+            if (e.keyCode === 13) {
+               self.onFilter();
+            }
+        }).on('input', $.proxy(this.onSearchValue, this));
     }
 });
 

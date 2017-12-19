@@ -72,7 +72,7 @@ let View = AdvancedTable.extend({
     },
 
     onCreateBatchActionType: function() {
-        alert("@todo");
+        window.application.accession.controllers.batchactiontype.create();
     }
 });
 
