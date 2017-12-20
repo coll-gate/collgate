@@ -18,6 +18,10 @@ let ClassificationEntryModel = Backbone.Model.extend({
             return window.application.url(['classification', 'classificationentry', this.get('id')]);
     },
 
+    parentUrl: function() {
+        return window.application.url(['classification', 'classification', this.get('classification'), 'classificationentry']);
+    },
+
     defaults: {
         id: null,
         name: '',

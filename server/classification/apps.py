@@ -98,15 +98,6 @@ class CollGateClassification(ApplicationMain):
                 icon=FaGlyph('plus'),
                 order=1))
 
-        menu_classification.add_entry(MenuSeparator(100))
-        menu_classification.add_entry(
-            MenuEntry(
-                'list-classification-entry',
-                _('List classifications entries'),
-                "#classification/classificationentry/",
-                icon=FaGlyph('list'),
-                order=101))
-
         classification_module.add_menu(menu_classification)
 
         module_manager.register_module(classification_module)

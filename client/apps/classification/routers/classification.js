@@ -12,7 +12,6 @@ let Marionette = require('backbone.marionette');
 let ClassificationModel = require('../models/classification');
 
 let ClassificationListView = require('../views/classificationlist');
-let ClassificationCreateView = require('../views/classificationadd');
 
 let ClassificationRankListView = require('../views/classificationranklist');
 let ClassificationRankCreateView = require('../views/classificationrankadd');
@@ -35,7 +34,7 @@ let ClassificationRouter = Marionette.AppRouter.extend({
         let collection = new ClassificationCollection();
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of classifications")}));
 
@@ -48,17 +47,13 @@ let ClassificationRouter = Marionette.AppRouter.extend({
         }));
 
         classificationListView.query();
-
-        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-            defaultLayout.showChildView('bottom', new ClassificationCreateView({collection: collection}));
-        }
     },
 
     getClassificationIdRanksList : function(id) {
         let classification = new ClassificationModel({id: id});
 
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         let collection = new ClassificationRankCollection([], {classification_id: id});
 
@@ -82,7 +77,9 @@ let ClassificationRouter = Marionette.AppRouter.extend({
             // need classification permission details
             classificationRankListView.query();
 
-            if (classification.get('can_modify') && session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+            if (classification.get('can_modify') && window.session.user.isAuth &&
+                (window.session.user.isSuperUser || window.session.user.isStaff)) {
+
                 defaultLayout.showChildView('bottom', new ClassificationRankCreateView({
                     model: classification, collection: collection}));
             }

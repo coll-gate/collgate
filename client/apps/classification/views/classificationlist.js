@@ -23,6 +23,39 @@ let View = AdvancedTable.extend({
         View.__super__.initialize.apply(this);
 
         this.listenTo(this.collection, 'reset', this.render, this);
+    },
+
+    onBeforeAttach: function () {
+        let self = this;
+        let contextLayout = window.application.getView().getChildView('right');
+        if (!contextLayout) {
+            let DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            window.application.getView().showChildView('right', contextLayout);
+        }
+
+        let TitleView = require('../../main/views/titleview');
+        contextLayout.showChildView('title', new TitleView({title: _t("Classification actions"), glyphicon: 'fa-wrench'}));
+
+        let actions = [
+            'add'
+        ];
+
+        let ClassificationListContextView = require('./classificationlistcontext');
+        let contextView = new ClassificationListContextView({actions: actions});
+        contextLayout.showChildView('content', contextView);
+
+        contextView.on("classification:create", function () {
+            self.onCreateClassification();
+        });
+    },
+
+    onBeforeDetach: function () {
+        window.application.main.defaultRightView();
+    },
+
+    onCreateClassification: function () {
+        window.application.classification.controllers.classification.create(this.collection);
     }
 });
 

@@ -1,5 +1,6 @@
 {
   "A parent must be specified": "Un parent doit être spécifié",
+  "Accession actions": "",
   "Apply": "Appliquer",
   "Are you sure you want to delete any descriptors for this classification entry ?": "Etes-vous sûr de vouloir supprimer tout les descripteurs pour cette entrée de classification ?",
   "Cancel": "Annuler",
@@ -8,6 +9,7 @@
   "Change the labels for the classification rank": "Changer les étiquettes pour les rangs de classification",
   "Change the name for a synonym of classification entry": "Changer le nom pour un synonyme d'entrée de classification",
   "Classification": "Classification",
+  "Classification actions": "",
   "Classification entry": "Entrée de classification",
   "Classification entry details": "Détails de l'entrée de classification",
   "Classification entry name already in usage": "Nom d'entrée de classification déjà utilisé",
@@ -21,6 +23,7 @@
   "Create": "Créer",
   "Create a classification": "Créer une classification",
   "Create a classification entry": "Créer une entrée de classification",
+  "Create classification": "",
   "Create rank of classification": "Créer un rang de classification",
   "Defines": "Définir",
   "Defines a meta-model of descriptors": "Définir un méta-modèle de descripteurs",

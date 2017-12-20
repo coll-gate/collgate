@@ -68,7 +68,7 @@ let Router = Marionette.AppRouter.extend({
         });
 
         // @todo lookup for permission
-        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+        if (window.session.user.isAuth && (window.session.user.isSuperUser || window.session.user.isStaff)) {
             defaultLayout.showChildView('bottom', new DescriptorModelAddView({collection: collection}));
         }
     },
@@ -80,14 +80,14 @@ let Router = Marionette.AppRouter.extend({
         let model = new DescriptorModelModel({id: id});
 
         model.fetch().then(function () {
-            defaultLayout.showChildView('title', new TitleView({title: _t("Details for the model of descriptor"), object: model.get('name')}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Details for the model of descriptor"), model: model}));
             defaultLayout.showChildView('content', new DescriptorModelDetailView({model : model}));
         });
     },
 
     getDescriptorModelTypeListForModel: function(id) {
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of types of models of descriptor")}));
 

@@ -56,6 +56,9 @@ ClassificationModule.prototype = {
         // controllers
         //
 
+        let ClassificationController = require('./controllers/classification');
+        this.controllers.classification = new ClassificationController();
+
         let ClassificationEntryController = require('./controllers/classificationentry');
         this.controllers.classificationEntry = new ClassificationEntryController();
 

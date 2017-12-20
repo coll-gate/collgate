@@ -40,7 +40,7 @@ let Router = Marionette.AppRouter.extend({
         let collection = new DescriptorMetaModelCollection();
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of meta-models of descriptor")}));
 
@@ -51,21 +51,21 @@ let Router = Marionette.AppRouter.extend({
         });
 
         // @todo lookup for permission
-        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+        if (window.session.user.isAuth && (window.session.user.isSuperUser || window.session.user.isStaff)) {
             defaultLayout.showChildView('bottom', new DescriptorMetaModelAddView({collection: collection}));
         }
     },
 
     getDescriptorMetaModel: function (id) {
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         let model = new DescriptorMetaModelModel({id: id});
 
         model.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({
                 title: _t("Details for the meta-model of descriptor"),
-                object: model.get('name')
+                model: model
             }));
             defaultLayout.showChildView('content', new DescriptorMetaModelDetailView({model: model}));
         });
@@ -78,12 +78,12 @@ let Router = Marionette.AppRouter.extend({
         let metaModel = new DescriptorMetaModelModel({id: id});
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         metaModel.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({
                 title: _t("Layout editor"),
-                object: metaModel.get('name')
+                model: metaModel
             }));
         });
 
@@ -98,7 +98,7 @@ let Router = Marionette.AppRouter.extend({
         let panelCollection = new DescriptorPanelCollection([], {model_id: id});
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of panels of descriptor")}));
 

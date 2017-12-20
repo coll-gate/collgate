@@ -56,7 +56,7 @@ let Router = Marionette.AppRouter.extend({
 
         descriptorGroupListView.query();
 
-        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+        if (window.session.user.isAuth && (window.session.user.isSuperUser || window.session.user.isStaff)) {
             defaultLayout.showChildView('bottom', new DescriptorGroupAddView({collection: collection}));
         }
     },
@@ -72,7 +72,9 @@ let Router = Marionette.AppRouter.extend({
             defaultLayout.showChildView('title', new TitleView({title: _t("Types of descriptors for the group"), model: model}));
 
             // @todo lookup for permission
-            if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+            if (window.session.user.isAuth && (window.session.user.isSuperUser || window.session.user.isStaff) &&
+                model.get('can_modify')) {
+
                 defaultLayout.showChildView('bottom', new DescriptorGroupTypeAddView({collection: collection}));
             }
         });

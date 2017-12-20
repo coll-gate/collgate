@@ -98,13 +98,13 @@ let PermissionRouter = Marionette.AppRouter.extend({
         let permissionsCollection = new PermissionCollection([], {group_id: id, is_group: true});
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         let group = new GroupModel({id: id});
         group.fetch().then(function() {
             defaultLayout.showChildView('title', new TitleView({
                 title: _t("List of permissions for group"),
-                object: group.get('name')
+                model: group
             }));
         });
 
@@ -124,13 +124,13 @@ let PermissionRouter = Marionette.AppRouter.extend({
         let userCollection = new PermissionGroupUserCollection([], {group_id: id});
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         let group = new GroupModel({id: id});
         group.fetch().then(function() {
             defaultLayout.showChildView('title', new TitleView({
                 title: _t("List of users for group"),
-                object: group.get('name')
+                model: group
             }));
         });
 

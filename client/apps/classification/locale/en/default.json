@@ -1,5 +1,6 @@
 {
   "A parent must be specified": "",
+  "Accession actions": "",
   "Apply": "",
   "Are you sure you want to delete any descriptors for this classification entry ?": "",
   "Cancel": "",
@@ -8,6 +9,7 @@
   "Change the labels for the classification rank": "",
   "Change the name for a synonym of classification entry": "",
   "Classification": "",
+  "Classification actions": "",
   "Classification entry": "",
   "Classification entry details": "",
   "Classification entry name already in usage": "",
@@ -21,6 +23,7 @@
   "Create": "",
   "Create a classification": "",
   "Create a classification entry": "",
+  "Create classification": "",
   "Create rank of classification": "",
   "Defines": "",
   "Defines a meta-model of descriptors": "",

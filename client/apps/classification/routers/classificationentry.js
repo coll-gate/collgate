@@ -27,7 +27,6 @@ let ClassificationEntryCollection = require('../collections/classificationentry'
 
 let ClassificationEntryRouter = Marionette.AppRouter.extend({
     routes : {
-        "app/classification/classificationentry/": "getClassificationEntryList",
         "app/classification/classificationentry/:id/*tab": "getClassificationEntry",
         "app/classification/classification/:id/classificationentry/": "getClassificationClassificationEntry"
     },
@@ -55,41 +54,6 @@ let ClassificationEntryRouter = Marionette.AppRouter.extend({
         console.log('route');
     },
 */
-    getClassificationEntryList : function() {
-        let collection = new ClassificationEntryCollection();
-
-        let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
-
-        defaultLayout.showChildView('title', new TitleView({title: _t("List of classifications entries")}));
-
-        // get available columns
-        let columns = application.main.cache.lookup({
-            type: 'entity_columns',
-            format: {model: 'classification.classificationentry'}
-        });
-
-        columns.done(function(data) {
-            if (!defaultLayout.isRendered()) {
-                return;
-            }
-
-            let classificationEntryListView = new ClassificationEntryListView({
-                collection : collection, columns: data[0].value});
-
-            defaultLayout.showChildView('content', classificationEntryListView);
-            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
-                targetView: classificationEntryListView,
-                collection: collection
-            }));
-
-            defaultLayout.showChildView('bottom', new EntityListFilterView({
-                collection: collection, columns: data[0].value}));
-
-            classificationEntryListView.query();
-        });
-    },
-
     getClassificationEntry : function(id, tab) {
         tab || (tab = "");
 

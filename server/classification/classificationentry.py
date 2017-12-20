@@ -268,6 +268,7 @@ def get_classification_entry_details_json(request, cls_id):
         'id': classification_entry.id,
         'name': classification_entry.name,
         'rank': classification_entry.rank_id,
+        'classification': classification_entry.rank.classification_id,  # extra query cost
         'parent': classification_entry.parent_id,
         'parent_list': classification_entry.parent_list,
         'parent_details': parents,
