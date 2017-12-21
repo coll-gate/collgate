@@ -41,6 +41,14 @@ PermissionModule.prototype = {
         });
 
         //
+        // utils
+        //
+
+        let PermissionManager = require('./utils/permissionmanager');
+        this.manager = new PermissionManager();
+        this.manager.fetch();
+
+        //
         // routers
         //
 

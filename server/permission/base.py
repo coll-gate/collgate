@@ -89,6 +89,16 @@ class RestPermissionGroupNamePermission(RestPermissionGroupId):
     suffix = 'permission'
 
 
+class RestPermissionPermission(RestPermission):
+    regex = r'^permission/$'
+    name = 'permission'
+
+
+class RestPermissionPermissionEntity(RestPermission):
+    regex = r'^(?P<content_type>[a-z\_]+)/(?P<ent_id>[0-9]+)/$'
+    name = 'entity'
+
+
 # Group name validator
 GROUP_NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 80, "pattern": "^[a-zA-Z0-9\-\_]+$"}
 
@@ -802,3 +812,82 @@ def get_users_list_for_group(request, grp_id):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestPermissionPermission.def_auth_request(Method.GET, Format.JSON)
+def get_self_permissions(request):
+    """
+    User get its own permissions for its session.
+    """
+    user = get_object_or_404(User, username=request.user.username)
+
+    permissions = []
+
+    # at user level and groups
+    checkout = Permission.objects.filter(
+        Q(user=user) | Q(group__in=user.groups.all().values_list('id'))).select_related('content_type')
+
+    for perm in checkout:
+        permissions.append({
+            'id': perm.codename,
+            'name': perm.name,
+            'app_label': perm.content_type.app_label,
+        })
+
+    # per object is done at demand
+    # checkout = UserObjectPermission.objects.filter(user=user).select_related('permission', 'content_type')
+    # lookup = {}
+    #
+    # for perm in checkout:
+    #     obj_name = perm.content_type.get_object_for_this_type(id=perm.object_pk).name
+    #
+    #     if (perm.object_pk, perm.content_type.model, obj_name) in lookup:
+    #         perms = lookup[(perm.object_pk, perm.content_type.model, obj_name)]
+    #     else:
+    #         perms = []
+    #         lookup[(perm.object_pk, perm.content_type.model, obj_name)] = perms
+    #
+    #     perms.append({
+    #         'id': perm.permission.codename,
+    #         'name': perm.permission.name,
+    #         'app_label': perm.content_type.app_label,
+    #     })
+    #
+    # for k, v in lookup.items():
+    #     permissions.append(Perm(v, k[1], k[0], k[2]))
+    #
+    # checkout = GroupObjectPermission.objects.filter(group__in=user.groups.all()).select_related(
+    #     'permission', 'content_type')
+    # lookup = {}
+    #
+    # for perm in checkout:
+    #     obj_name = perm.content_type.get_object_for_this_type(id=perm.object_pk).name
+    #
+    #     if (perm.object_pk, perm.content_type.model, obj_name) in lookup:
+    #         perms = lookup[(perm.object_pk, perm.content_type.model, obj_name)]
+    #     else:
+    #         perms = []
+    #         lookup[(perm.object_pk, perm.content_type.model, obj_name)] = perms
+    #
+    #     perms.append({
+    #         'id': perm.permission.codename,
+    #         'name': perm.permission.name,
+    #         'app_label': perm.content_type.app_label,
+    #     })
+    #
+    # for k, v in lookup.items():
+    #     permissions.append(Perm(v, k[1], k[0], k[2]))
+
+    return HttpResponseRest(request, permissions)
+
+
+@RestPermissionPermissionEntity.def_auth_request(Method.GET, Format.JSON)
+def get_self_permissions_for_entity(request, content_type, ent_id):
+    """
+    User get its own permissions for its session for a specific entity
+    """
+    # @todo
+
+    permissions = {}
+
+    return HttpResponseRest(request, permissions)

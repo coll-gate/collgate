@@ -35,7 +35,7 @@ let ClassificationRouter = Marionette.AppRouter.extend({
 
         let defaultLayout = new DefaultLayout({});
         window.application.main.showContent(defaultLayout);
-
+        
         defaultLayout.showChildView('title', new TitleView({title: _t("List of classifications")}));
 
         let classificationListView = new ClassificationListView({collection : collection});
