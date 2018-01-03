@@ -44,13 +44,18 @@ class RestPermissionUser(RestPermission):
     suffix = 'user'
 
 
+class RestPermissionUserCount(RestPermissionUser):
+    regex = r'^user/count/$'
+    suffix = 'user/count/'
+
+
 class RestPermissionUserSearch(RestPermissionUser):
     regex = r'^search/$'
     suffix = 'search'
 
 
 class RestPermissionUserName(RestPermissionUser):
-    regex = r'^(?P<username>[a-zA-Z0-9\.\-_]+)/$'
+    regex = r'^username/(?P<username>[a-zA-Z0-9\.\-_]+)/$'
     suffix = 'username'
 
 
@@ -62,6 +67,11 @@ class RestPermissionUserNamePermission(RestPermissionUserName):
 class RestPermissionGroup(RestPermission):
     regex = r'^group/$'
     suffix = 'group'
+
+
+class RestPermissionGroupCount(RestPermission):
+    regex = r'^count/$'
+    suffix = 'count'
 
 
 class RestPermissionGroupSearch(RestPermissionGroup):
@@ -80,13 +90,18 @@ class RestPermissionGroupIdUser(RestPermissionGroupId):
 
 
 class RestPermissionGroupIdUserName(RestPermissionGroupIdUser):
-    regex = r'^(?P<username>[a-zA-Z0-9\.\-_]+)/$'
+    regex = r'^username/(?P<username>[a-zA-Z0-9\.\-_]+)/$'
     suffix = 'username'
 
 
-class RestPermissionGroupNamePermission(RestPermissionGroupId):
+class RestPermissionGroupIdPermission(RestPermissionGroupId):
     regex = r'^permission/$'
     suffix = 'permission'
+
+
+class RestPermissionGroupIdPermissionCount(RestPermissionGroupIdPermission):
+    regex = r'^permission/count/$'
+    suffix = 'count'
 
 
 class RestPermissionPermission(RestPermission):
@@ -197,6 +212,26 @@ def get_users_list(request):
     return HttpResponseRest(request, results)
 
 
+@RestPermissionUserCount.def_auth_request(Method.GET, Format.JSON, staff=True)
+def get_users_list_count(request):
+    cq = CursorQuery(User)
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    results = {
+        'perms': [],
+        'count': cq.count()
+    }
+
+    return HttpResponseRest(request, results)
+
+
 @RestPermissionGroup.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_groups_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
@@ -240,6 +275,26 @@ def get_groups_list(request):
         'prev': cq.prev_cursor,
         'cursor': cursor,
         'next': cq.next_cursor
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestPermissionGroupCount.def_auth_request(Method.GET, Format.JSON, staff=True)
+def get_groups_list_count(request):
+    cq = CursorQuery(Group)
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    results = {
+        'perms': [],
+        'count': cq.count()
     }
 
     return HttpResponseRest(request, results)
@@ -579,7 +634,7 @@ def delete_user_permission(request, username):
     return HttpResponseRest(request, {})
 
 
-@RestPermissionGroupNamePermission.def_auth_request(Method.GET, Format.JSON, staff=True)
+@RestPermissionGroupIdPermission.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_group_permissions(request, grp_id):
     group = get_object_or_404(Group, id=int(grp_id))
     permissions = []
@@ -636,7 +691,7 @@ def get_group_permissions(request, grp_id):
     return HttpResponseRest(request, response)
 
 
-@RestPermissionGroupNamePermission.def_auth_request(
+@RestPermissionGroupIdPermission.def_auth_request(
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
@@ -670,7 +725,7 @@ def add_group_permission(request, grp_id):
     return HttpResponseRest(request, {})
 
 
-@RestPermissionGroupNamePermission.def_auth_request(
+@RestPermissionGroupIdPermission.def_auth_request(
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
@@ -834,50 +889,6 @@ def get_self_permissions(request):
             'app_label': perm.content_type.app_label,
         })
 
-    # per object is done at demand
-    # checkout = UserObjectPermission.objects.filter(user=user).select_related('permission', 'content_type')
-    # lookup = {}
-    #
-    # for perm in checkout:
-    #     obj_name = perm.content_type.get_object_for_this_type(id=perm.object_pk).name
-    #
-    #     if (perm.object_pk, perm.content_type.model, obj_name) in lookup:
-    #         perms = lookup[(perm.object_pk, perm.content_type.model, obj_name)]
-    #     else:
-    #         perms = []
-    #         lookup[(perm.object_pk, perm.content_type.model, obj_name)] = perms
-    #
-    #     perms.append({
-    #         'id': perm.permission.codename,
-    #         'name': perm.permission.name,
-    #         'app_label': perm.content_type.app_label,
-    #     })
-    #
-    # for k, v in lookup.items():
-    #     permissions.append(Perm(v, k[1], k[0], k[2]))
-    #
-    # checkout = GroupObjectPermission.objects.filter(group__in=user.groups.all()).select_related(
-    #     'permission', 'content_type')
-    # lookup = {}
-    #
-    # for perm in checkout:
-    #     obj_name = perm.content_type.get_object_for_this_type(id=perm.object_pk).name
-    #
-    #     if (perm.object_pk, perm.content_type.model, obj_name) in lookup:
-    #         perms = lookup[(perm.object_pk, perm.content_type.model, obj_name)]
-    #     else:
-    #         perms = []
-    #         lookup[(perm.object_pk, perm.content_type.model, obj_name)] = perms
-    #
-    #     perms.append({
-    #         'id': perm.permission.codename,
-    #         'name': perm.permission.name,
-    #         'app_label': perm.content_type.app_label,
-    #     })
-    #
-    # for k, v in lookup.items():
-    #     permissions.append(Perm(v, k[1], k[0], k[2]))
-
     return HttpResponseRest(request, permissions)
 
 
@@ -886,8 +897,53 @@ def get_self_permissions_for_entity(request, content_type, ent_id):
     """
     User get its own permissions for its session for a specific entity
     """
-    # @todo
+    user = get_object_or_404(User, username=request.user.username)
 
-    permissions = {}
+
+    permissions = []
+
+    # per object is done at demand
+    checkout = UserObjectPermission.objects.filter(user=user).select_related('permission', 'content_type')
+    lookup = {}
+
+    for perm in checkout:
+        obj_name = perm.content_type.get_object_for_this_type(id=perm.object_pk).name
+
+        if (perm.object_pk, perm.content_type.model, obj_name) in lookup:
+            perms = lookup[(perm.object_pk, perm.content_type.model, obj_name)]
+        else:
+            perms = []
+            lookup[(perm.object_pk, perm.content_type.model, obj_name)] = perms
+
+        perms.append({
+            'id': perm.permission.codename,
+            'name': perm.permission.name,
+            'app_label': perm.content_type.app_label,
+        })
+
+    for k, v in lookup.items():
+        permissions.append(Perm(v, k[1], k[0], k[2]))
+
+    checkout = GroupObjectPermission.objects.filter(group__in=user.groups.all()).select_related(
+        'permission', 'content_type')
+    lookup = {}
+
+    for perm in checkout:
+        obj_name = perm.content_type.get_object_for_this_type(id=perm.object_pk).name
+
+        if (perm.object_pk, perm.content_type.model, obj_name) in lookup:
+            perms = lookup[(perm.object_pk, perm.content_type.model, obj_name)]
+        else:
+            perms = []
+            lookup[(perm.object_pk, perm.content_type.model, obj_name)] = perms
+
+        perms.append({
+            'id': perm.permission.codename,
+            'name': perm.permission.name,
+            'app_label': perm.content_type.app_label,
+        })
+
+    for k, v in lookup.items():
+        permissions.append(Perm(v, k[1], k[0], k[2]))
 
     return HttpResponseRest(request, permissions)

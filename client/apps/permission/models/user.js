@@ -12,7 +12,7 @@ let Backbone = require('backbone');
 
 let Model = Backbone.Model.extend({
     url: function() {
-        return window.application.url(['permission', 'user', this.get('username')]);
+        return window.application.url(['permission', 'user', 'username', this.get('username')]);
     },
 
     defaults: {
@@ -26,7 +26,7 @@ let Model = Backbone.Model.extend({
         is_superuser: false
     },
 
-    isNew : function () { return typeof(this.get('username')) != 'string'; },
+    isNew : function () { return typeof(this.get('username')) !== 'string'; },
 
     initialize: function(attributes, options) {
         options || (options = {});

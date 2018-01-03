@@ -13,10 +13,11 @@ let PermissionUserModel = require('../models/user');
 
 let Collection = CountableCollection.extend({
     url: function() {
-        if (this.is_group)
+        if (this.is_group) {
             return window.application.url(['permission', 'group', this.name, 'user']);
-        else
+        } else {
             return window.application.url(['permission', 'user']);
+        }
     },
 
     model: PermissionUserModel,
@@ -28,8 +29,9 @@ let Collection = CountableCollection.extend({
 
         this.is_group = options.is_group || false;
 
-        if (options.name)
+        if (options.name) {
             this.name = options.name;
+        }
     }
 });
 

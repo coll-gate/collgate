@@ -44,7 +44,7 @@ let View = Marionette.View.extend({
 
     enableUser: function () {
         // can't modify himself
-        if (session.user.username === this.model.get('username'))
+        if (window.session.user.username === this.model.get('username'))
             return;
 
         this.model.save({is_active: true}, {patch: true, wait: true});
@@ -52,7 +52,7 @@ let View = Marionette.View.extend({
 
     disableUser: function () {
         // can't modify himself
-        if (session.user.username === this.model.get('username'))
+        if (window.session.user.username === this.model.get('username'))
             return;
 
         // this.model.set('is_active', false);
@@ -62,7 +62,7 @@ let View = Marionette.View.extend({
 
     setStaff: function () {
         // can't modify himself
-        if (session.user.username === this.model.get('username'))
+        if (window.session.user.username === this.model.get('username'))
             return;
 
         this.model.save({is_staff: true}, {patch: true, wait: true});
@@ -70,7 +70,7 @@ let View = Marionette.View.extend({
 
     setRegular: function () {
         // can't modify himself
-        if (session.user.username === this.model.get('username'))
+        if (window.session.user.username === this.model.get('username'))
             return;
 
         this.model.save({is_staff: false}, {patch: true, wait: true});
@@ -78,7 +78,7 @@ let View = Marionette.View.extend({
 
     setSuperUser: function () {
         // can't modify himself
-        if (session.user.username === this.model.get('username'))
+        if (window.session.user.username === this.model.get('username'))
             return;
 
         this.model.save({is_superuser: true}, {patch: true, wait: true});
@@ -86,14 +86,14 @@ let View = Marionette.View.extend({
 
     setUser: function () {
         // can't modify himself
-        if (session.user.username === this.model.get('username'))
+        if (window.session.user.username === this.model.get('username'))
             return;
 
         this.model.save({is_superuser: false}, {patch: true, wait: true});
     },
 
     viewPermissions: function () {
-        Backbone.history.navigate("app/permission/user/" + this.model.get('username') + "/permission/", {trigger: true});
+        Backbone.history.navigate("app/permission/user/username/" + this.model.get('username') + "/permission/", {trigger: true});
     }
 });
 

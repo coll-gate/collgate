@@ -15,7 +15,7 @@ let PermissionCollection = Backbone.Collection.extend({
         if (this.is_group)
             return window.application.url(['permission', 'group', this.group_id, 'permission']);
         else
-            return window.application.url(['permission', 'user', this.username, 'permission']);
+            return window.application.url(['permission', 'user', 'username', this.username, 'permission']);
     },
 
     model: PermissionModel,

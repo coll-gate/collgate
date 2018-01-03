@@ -12,10 +12,11 @@ let Backbone = require('backbone');
 
 let Model = Backbone.Model.extend({
     url: function() {
-        if (this.isNew())
+        if (this.isNew()) {
             return window.application.url(['permission', 'group']);
-        else
-            return window.application.url(['permission' ,'group', this.get('id')]);
+        } else {
+            return window.application.url(['permission', 'group', this.get('id')]);
+        }
     },
 
     defaults: {
@@ -45,4 +46,3 @@ let Model = Backbone.Model.extend({
 });
 
 module.exports = Model;
-

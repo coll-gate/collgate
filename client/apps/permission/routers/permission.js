@@ -32,7 +32,7 @@ let ScrollingMoreView = require('../../main/views/scrollingmore');
 let PermissionRouter = Marionette.AppRouter.extend({
     routes : {
         "app/permission/user/": "getUsers",
-        "app/permission/user/:username/permission/": "getPermissionsForUser",
+        "app/permission/user/username/:username/permission/": "getPermissionsForUser",
         "app/permission/group/": "getGroups",
         "app/permission/group/:group_id/permission/": "getPermissionsForGroup",
         "app/permission/group/:group_id/user/": "getUsersForGroup",

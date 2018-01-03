@@ -41,7 +41,7 @@ let View = Marionette.View.extend({
     },
 
     viewUserDetails: function () {
-        Backbone.history.navigate("app/permission/user/" + this.model.get('username') + '/permission/', {trigger: true});
+        Backbone.history.navigate("app/permission/user/username/" + this.model.get('username') + '/permission/', {trigger: true});
     }
 });
 
