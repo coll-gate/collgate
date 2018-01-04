@@ -11,6 +11,7 @@
 import os
 import sys
 
+from django.db import connection
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain
@@ -51,9 +52,15 @@ class CollGateAudit(ApplicationMain):
 
         if localsettings.migration_audit:
             UserModel = get_user_model()
-            try:
-                localsettings.migration_user = UserModel.objects.get(username=localsettings.migration_username)
-            except UserModel.DoesNotExist:
+
+            if "auth_user" in connection.introspection.table_names():
+                try:
+                    localsettings.migration_user = UserModel.objects.get(username=localsettings.migration_username)
+                except UserModel.DoesNotExist:
+                    # user not found, disable user for audit
+                    localsettings.migration_user = None
+                    localsettings.migration_audit = False
+            else:
                 # user not found, disable user for audit
                 localsettings.migration_user = None
                 localsettings.migration_audit = False
@@ -67,8 +74,8 @@ class CollGateAudit(ApplicationMain):
             # migration mode is defined for init_fixture or data_migrate commands
             localsettings.migration_mode = True
 
-            # checkout global settings
-            self.get_global_settings()
+        # checkout global settings
+        self.get_global_settings()
 
         audit_module = Module('audit', base_url='coll-gate')
         audit_module.include_urls((
@@ -88,8 +95,11 @@ class CollGateAudit(ApplicationMain):
 
         # audit menu
         menu_audit = ModuleMenu('audit', _('Tracability'), auth=AUTH_STAFF, order=900)
-        menu_audit.add_entry(MenuEntry('audit-user', _('Tracability for a user'), "~audit/audit/searchByUserName", icon=FaGlyph('user'), order=1))
-        menu_audit.add_entry(MenuEntry('audit-entity', _('Tracability for an entity'), "~audit/audit/searchByEntity", icon=FaGlyph('book'), order=2))
+        menu_audit.add_entry(
+            MenuEntry('audit-user', _('Tracability for a user'), "~audit/audit/searchByUserName", icon=FaGlyph('user'),
+                      order=1))
+        menu_audit.add_entry(MenuEntry('audit-entity', _('Tracability for an entity'), "~audit/audit/searchByEntity",
+                                       icon=FaGlyph('book'), order=2))
         audit_module.add_menu(menu_audit)
 
         module_manager.register_module(audit_module)
