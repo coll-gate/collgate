@@ -38,7 +38,7 @@ def get_app(request, path):
         'profile_settings': "{}"
     }
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         if request.session.get('validated') is None:
             request.session.set_test_cookie()
 

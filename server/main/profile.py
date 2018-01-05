@@ -61,7 +61,7 @@ def profile_sign_in(request):
     """
     Login with username and password
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         logout(request)
         return redirect('/coll-gate/')
 
@@ -109,7 +109,7 @@ def profile_logout(request):
     """
     Logout
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         logout(request)
         messages.add_message(request, messages.INFO, _('Logged out'))
 

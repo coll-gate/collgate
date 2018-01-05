@@ -454,6 +454,9 @@ class BatchAction(Entity):
     # list of created or updated batches
     output_batches = models.ManyToManyField(Batch, related_name='+')
 
+    # associated data (advancement, status...)
+    data = JSONField(default={"status": "created"})
+
     class Meta:
         verbose_name = _("batch action")
 
