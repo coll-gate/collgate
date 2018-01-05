@@ -18,6 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.cache import cache_page
 
 from guardian.models import UserObjectPermission, GroupObjectPermission
+from guardian.shortcuts import get_perms
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -899,51 +900,29 @@ def get_self_permissions_for_entity(request, content_type, ent_id):
     """
     user = get_object_or_404(User, username=request.user.username)
 
-
     permissions = []
 
-    # per object is done at demand
-    checkout = UserObjectPermission.objects.filter(user=user).select_related('permission', 'content_type')
+    app_label, model = content_type.split('.')
+    content_type = ContentType.objects.get_by_natural_key(app_label, model)
+
+    entity = get_object_or_404(content_type.model_class(), int(ent_id))
+
+    perms = get_perms(user, entity)
+    permission_details = Permission.objects.find(codename__in=perms)
+
     lookup = {}
 
-    for perm in checkout:
-        obj_name = perm.content_type.get_object_for_this_type(id=perm.object_pk).name
+    for perm in permission_details:
+        lookup[perm.codename] = perm.name
 
-        if (perm.object_pk, perm.content_type.model, obj_name) in lookup:
-            perms = lookup[(perm.object_pk, perm.content_type.model, obj_name)]
-        else:
-            perms = []
-            lookup[(perm.object_pk, perm.content_type.model, obj_name)] = perms
+    for perm in perms:
+        perm_detail = lookup.get(perm)
 
-        perms.append({
-            'id': perm.permission.codename,
-            'name': perm.permission.name,
-            'app_label': perm.content_type.app_label,
-        })
-
-    for k, v in lookup.items():
-        permissions.append(Perm(v, k[1], k[0], k[2]))
-
-    checkout = GroupObjectPermission.objects.filter(group__in=user.groups.all()).select_related(
-        'permission', 'content_type')
-    lookup = {}
-
-    for perm in checkout:
-        obj_name = perm.content_type.get_object_for_this_type(id=perm.object_pk).name
-
-        if (perm.object_pk, perm.content_type.model, obj_name) in lookup:
-            perms = lookup[(perm.object_pk, perm.content_type.model, obj_name)]
-        else:
-            perms = []
-            lookup[(perm.object_pk, perm.content_type.model, obj_name)] = perms
-
-        perms.append({
-            'id': perm.permission.codename,
-            'name': perm.permission.name,
-            'app_label': perm.content_type.app_label,
-        })
-
-    for k, v in lookup.items():
-        permissions.append(Perm(v, k[1], k[0], k[2]))
+        if perm_detail:
+            permissions.append({
+                'id': perm,
+                'name': perm_detail,
+                'app_label': app_label
+            })
 
     return HttpResponseRest(request, permissions)

@@ -158,8 +158,11 @@ class Audit(models.Model):
     as content type, and to register the action into the DB.
     """
 
-    user = models.ForeignKey(User, null=False, blank=False, db_index=True)
-    content_type = models.ForeignKey(ContentType, null=False, blank=False)
+    # user cannot be deleted, only deactivated
+    user = models.ForeignKey(User, null=False, blank=False, db_index=True, on_delete=models.PROTECT)
+
+    # content type never might be deleted
+    content_type = models.ForeignKey(ContentType, null=False, blank=False, on_delete=models.PROTECT)
     object_id = models.IntegerField()
 
     type = models.IntegerField(null=False, blank=False, choices=AuditType.choices(), default=0)

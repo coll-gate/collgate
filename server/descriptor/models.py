@@ -134,7 +134,7 @@ class DescriptorType(Entity):
     code = models.CharField(unique=True, max_length=64)
 
     # default should belong to the general group.
-    group = models.ForeignKey(DescriptorGroup, related_name='types_set')
+    group = models.ForeignKey(DescriptorGroup, related_name='types_set', on_delete=models.PROTECT)
 
     # informative description.
     description = models.TextField(blank=True, default="")
@@ -923,7 +923,7 @@ class DescriptorValue(Entity):
     language = models.CharField(max_length=5, default="en")
 
     # Related type of descriptor.
-    descriptor = models.ForeignKey(DescriptorType, related_name='values_set')
+    descriptor = models.ForeignKey(DescriptorType, related_name='values_set', on_delete=models.CASCADE)
 
     # Direct parent descriptor value, in case of one level hierarchy.
     parent = models.CharField(max_length=64, null=True)
@@ -1017,10 +1017,10 @@ class DescriptorPanel(Entity):
     client_cache_update = ("entity_columns",)
 
     # To which meta-models this panel is attached.
-    descriptor_meta_model = models.ForeignKey('DescriptorMetaModel', related_name='panels')
+    descriptor_meta_model = models.ForeignKey('DescriptorMetaModel', related_name='panels', on_delete=models.PROTECT)
 
     # Related model of descriptor
-    descriptor_model = models.ForeignKey('DescriptorModel', related_name='panels')
+    descriptor_model = models.ForeignKey('DescriptorModel', related_name='panels', on_delete=models.PROTECT)
 
     # Label of the panel (can be used for a tab, or any dialog title).
     # It is i18nized used JSON dict with language code as key and label as string value.
@@ -1124,10 +1124,10 @@ class DescriptorModelType(Entity):
     label = JSONField(default={})
 
     # Relate the descriptor model (one descriptor model can have many descriptor model types)
-    descriptor_model = models.ForeignKey('DescriptorModel', related_name='descriptor_model_types')
+    descriptor_model = models.ForeignKey('DescriptorModel', related_name='descriptor_model_types', on_delete=models.PROTECT)
 
     # Related type of descriptor (relate on a specific one's)
-    descriptor_type = models.ForeignKey(DescriptorType, related_name='descriptor_model_types')
+    descriptor_type = models.ForeignKey(DescriptorType, related_name='descriptor_model_types', on_delete=models.PROTECT)
 
     # Position priority into the display. Lesser is before. Negative value are possibles.
     position = models.IntegerField(default=0)
@@ -1489,7 +1489,7 @@ class DescriptorMetaModel(Entity):
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
     # Target entity type (generally a describable entity).
-    target = models.ForeignKey(ContentType, editable=False, related_name='descriptor_meta_models')
+    target = models.ForeignKey(ContentType, editable=False, related_name='descriptor_meta_models', on_delete=models.PROTECT)
 
     # Label of the meta model of descriptor.
     # It is i18nized used JSON dict with language code as key and label as string value.
@@ -1611,13 +1611,13 @@ class DescriptorModelTypeCondition(Entity):
     client_cache_update = ("entity_columns",)
 
     # related descriptor model type
-    descriptor_model_type = models.ForeignKey(DescriptorModelType, related_name='conditions')
+    descriptor_model_type = models.ForeignKey(DescriptorModelType, related_name='conditions', on_delete=models.CASCADE)
 
     # type of the condition
     condition = models.IntegerField(default=DescriptorCondition.UNDEFINED.value, choices=DescriptorCondition.choices())
 
     # target descriptor model type (of the same descriptor model)
-    target = models.ForeignKey(DescriptorModelType, related_name='conditions_as_target')
+    target = models.ForeignKey(DescriptorModelType, related_name='conditions_as_target', on_delete=models.CASCADE)
 
     # JSON encoded values. It can be empty, # or a single value, or an array of values.
     # The value can be true or false if the target is boolean, or can be a value code if the target is an enum
@@ -1667,7 +1667,7 @@ class DescribableEntity(Entity):
     descriptors = JSONField(default={})
 
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel)
+    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, on_delete=models.PROTECT)
 
     class Meta:
         abstract = True

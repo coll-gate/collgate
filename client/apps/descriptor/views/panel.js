@@ -56,7 +56,7 @@ let View = Marionette.CompositeView.extend({
     },
 
     onRender: function () {
-        if (!session.user.isStaff && !session.user.isSuperUser) {
+        if (!window.application.permission.manager.isStaff()) {
             $(this.ui.delete_descriptor_panel).hide();
         }
     },

@@ -72,13 +72,13 @@ let View = Marionette.View.extend({
         };
 
         // @todo do we want can_modify/can_delete like for descriptor ?
-        if (!this.getOption('classification').get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.getOption('classification').get('can_modify') || !window.application.permission.manager.isStaff()) {
             properties.tag.disabled = true;
         } else {
             this.$el.prop('draggable', true);
         }
 
-        if (!this.getOption('classification').get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.getOption('classification').get('can_delete') || !window.application.permission.manager.isStaff()) {
             properties.remove.disabled = true;
         }
 
@@ -105,7 +105,7 @@ let View = Marionette.View.extend({
     },
 
     editLabel: function() {
-        if (!this.getOption('classification').get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.getOption('classification').get('can_modify') || !window.application.permission.manager.isStaff()) {
             return false;
         }
 

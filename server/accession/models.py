@@ -31,10 +31,10 @@ class AccessionClassificationEntry(models.Model):
     """
 
     # accession object
-    accession = models.ForeignKey('Accession', on_delete=models.CASCADE)
+    accession = models.ForeignKey('Accession', on_delete=models.PROTECT)
 
     # classification entry object
-    classification_entry = models.ForeignKey(ClassificationEntry, on_delete=models.CASCADE)
+    classification_entry = models.ForeignKey(ClassificationEntry, on_delete=models.PROTECT)
 
     # is a primary or secondary classification association
     primary = models.BooleanField(default=False, db_index=True)
@@ -216,7 +216,7 @@ class AccessionSynonym(EntitySynonym):
     # code validator, used with content validation, to avoid any whitespace before and after
     CODE_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
-    entity = models.ForeignKey(Accession, related_name='synonyms')
+    entity = models.ForeignKey(Accession, related_name='synonyms', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("accession synonym")
@@ -248,7 +248,7 @@ class Batch(DescribableEntity):
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
     # parent accession
-    accession = models.ForeignKey('Accession', related_name='batches')
+    accession = models.ForeignKey('Accession', related_name='batches', on_delete=models.PROTECT)
 
     # direct parent batches
     batches = models.ManyToManyField('Batch', related_name='children')
@@ -440,13 +440,13 @@ class BatchAction(Entity):
     """
 
     # actor of the action
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     # action type
     type = models.ForeignKey(to=BatchActionType, on_delete=models.PROTECT)
 
     # related parent accession
-    accession = models.ForeignKey(Accession, db_index=True)
+    accession = models.ForeignKey(Accession, db_index=True, on_delete=models.PROTECT)
 
     # list of initials batches used as parent for the creation of target batches
     input_batches = models.ManyToManyField(Batch, related_name='+')
@@ -475,7 +475,7 @@ class Panel(Entity):
 
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
     # It can be null because it is possible to have the choice to defines or not some descriptors
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, null=True)
+    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, null=True, on_delete=models.PROTECT)
 
     class Meta:
         abstract = True

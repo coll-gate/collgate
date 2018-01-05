@@ -155,7 +155,7 @@ class ClassificationRank(Entity):
         "type": "string", "minLength": 3, "maxLength": 128, "pattern": "^[a-zA-Z0-9\-\_]+$", "required": False}
 
     # related classification
-    classification = models.ForeignKey(Classification, null=False, related_name="ranks")
+    classification = models.ForeignKey(Classification, null=False, related_name="ranks", on_delete=models.CASCADE)
 
     # management name
     name = models.CharField(unique=True, max_length=128, db_index=True)
@@ -271,7 +271,7 @@ class ClassificationEntry(Entity):
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
     # It can be null because it is possible to have the choice to defines or not some descriptors
     # to a classification entry.
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, null=True)
+    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, null=True, on_delete=models.PROTECT)
 
     @classmethod
     def get_defaults_columns(cls):
@@ -422,7 +422,8 @@ class ClassificationEntrySynonym(EntitySynonym):
     # code validator, used with content validation, to avoid any whitespace before and after
     CODE_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
-    entity = models.ForeignKey(ClassificationEntry, related_name='synonyms')
+    # remove synonyms if entry removed
+    entity = models.ForeignKey(ClassificationEntry, related_name='synonyms', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("classification entry synonym")

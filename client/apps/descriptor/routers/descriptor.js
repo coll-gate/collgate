@@ -56,7 +56,7 @@ let Router = Marionette.AppRouter.extend({
 
         descriptorGroupListView.query();
 
-        if (window.session.user.isAuth && (window.session.user.isSuperUser || window.session.user.isStaff)) {
+        if (window.application.permission.manager.isStaff()) {
             defaultLayout.showChildView('bottom', new DescriptorGroupAddView({collection: collection}));
         }
     },
@@ -72,9 +72,7 @@ let Router = Marionette.AppRouter.extend({
             defaultLayout.showChildView('title', new TitleView({title: _t("Types of descriptors for the group"), model: model}));
 
             // @todo lookup for permission
-            if (window.session.user.isAuth && (window.session.user.isSuperUser || window.session.user.isStaff) &&
-                model.get('can_modify')) {
-
+            if (window.application.permission.manager.isStaff() && model.get('can_modify')) {
                 defaultLayout.showChildView('bottom', new DescriptorGroupTypeAddView({collection: collection}));
             }
         });
@@ -118,8 +116,7 @@ let Router = Marionette.AppRouter.extend({
                         model: model
                     });
 
-                    // @todo lookup for permission
-                    if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+                    if (window.application.permission.manager.isStaff() && model.get('can_modify')) {
                         defaultLayout.showChildView('bottom', new DescriptorValueAddView({collection: collection}));
                     }
                 } else if (model.get('format').type === "enum_pair") {
@@ -128,8 +125,7 @@ let Router = Marionette.AppRouter.extend({
                         model: model
                     });
 
-                    // @todo lookup for permission
-                    if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+                    if (window.application.permission.manager.isStaff() && model.get('can_modify')) {
                         defaultLayout.showChildView('bottom', new DescriptorValueAddView({collection: collection}));
                     }
                 } else if (model.get('format').type === "enum_ordinal") {

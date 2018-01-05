@@ -15,6 +15,12 @@ let PermissionManager = function() {
 PermissionManager.prototype = {
 
     fetch: function() {
+        this.global = {};
+
+        if (!this.isAuth()) {
+            return;
+        }
+
         let self = this;
 
         $.ajax({
@@ -31,22 +37,34 @@ PermissionManager.prototype = {
         });
     },
 
+    isAuth: function() {
+        return window.session.user.isAuth;
+    },
+
     isSuperUser: function() {
-        return window.session.is_superuser;
+        return window.session.user.isAuth && window.session.user.isSuperUser;
     },
 
     isStaff: function() {
-        return window.session.is_staff;
+        // super user is staff too
+        return window.session.user.isAuth && (window.session.user.isStaff || window.session.user.isSuperUser);
     },
 
-    has: function(module, model, action, id) {
-        if (this.isSuperUser()) {
-            return true;
+    /**
+     * Globals permissions.
+     * @param module Name of the module.
+     * @param model Name of the model of the concerned entity/object.
+     * @param action Type name of the action (get, change, list, delete...)
+     * @returns {boolean} True if user is auth, and the permission is available or super user, or specials permission
+     * when staff user.
+     */
+    has: function(module, model, action) {
+        if (!window.session.user.isAuth) {
+            return false;
         }
 
-        if (id !== undefined) {
-            alert("@todo");
-            return false;
+        if (window.session.user.isSuperUser) {
+            return true;
         }
 
         let perm = module.toLowerCase() + '.' + action.toLowerCase() + '_' + model.toLowerCase();
@@ -56,13 +74,42 @@ PermissionManager.prototype = {
                 return true;
             }
 
-            // special cases for staff
+            // implicit permissions for staff
             // @todo
+            if (module === "descriptor") {
+                return true;
+            } else if (module === "audit") {
+                return true;
+            }
 
             return false;
         } else {
             return perm in this.global;
         }
+    },
+
+    /**
+     * Returns a promise because the async behavior of per object permission getting.
+     * @param module
+     * @param model
+     * @param action
+     * @param id
+     * @returns {boolean}
+     */
+    forObject: function(module, model, action, id) {
+        if (!window.session.user.isAuth) {
+            return false;
+        }
+
+        if (window.session.user.isSuperUser) {
+            return true;
+        }
+
+        // per object, require a query @todo
+        alert("@todo");
+
+        let perm = module.toLowerCase() + '.' + action.toLowerCase() + '_' + model.toLowerCase();
+        return false;
     },
 };
 

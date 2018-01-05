@@ -50,11 +50,11 @@ let View = Marionette.View.extend({
             remove: {disabled: false}
         };
 
-        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
             properties.tag.disabled = true;
         }
 
-        if (this.model.get('num_descriptor_types') > 0 || !this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (this.model.get('num_descriptor_types') > 0 || !this.model.get('can_delete') || !window.application.permission.manager.isStaff()) {
             properties.remove.disabled = true;
         }
 
@@ -76,7 +76,7 @@ let View = Marionette.View.extend({
     },
 
     onRenameGroup: function () {
-        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
             return false;
         }
 

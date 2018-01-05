@@ -50,8 +50,7 @@ let Router = Marionette.AppRouter.extend({
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorMetaModelList}));
         });
 
-        // @todo lookup for permission
-        if (window.session.user.isAuth && (window.session.user.isSuperUser || window.session.user.isStaff)) {
+        if (window.application.permission.manager.isStaff()) {
             defaultLayout.showChildView('bottom', new DescriptorMetaModelAddView({collection: collection}));
         }
     },

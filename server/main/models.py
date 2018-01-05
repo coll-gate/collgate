@@ -187,7 +187,7 @@ class Entity(models.Model):
         "type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^[^\s]+(\s+[^\s]+)*$", "required": False}
 
     # content type of the entity
-    content_type = models.ForeignKey(ContentType, editable=False)
+    content_type = models.ForeignKey(ContentType, editable=False, on_delete=models.PROTECT)
 
     # status of the entity
     entity_status = models.IntegerField(
@@ -339,7 +339,7 @@ class EventMessage(models.Model):
     """
 
     # author of the message
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     # creation date
     created_date = models.DateTimeField(auto_now_add=True)
@@ -384,7 +384,7 @@ class EntitySynonymType(models.Model):
     has_language = models.BooleanField(default=True)
 
     # target model
-    target_model = models.ForeignKey(ContentType)
+    target_model = models.ForeignKey(ContentType, on_delete=models.PROTECT)
 
     # Is this type of synonym can be deleted when it is empty
     can_delete = models.BooleanField(default=True)
@@ -422,13 +422,13 @@ class EntitySynonym(Entity):
     """
 
     # entity must be defined to the foreign model when specialized
-    entity = None  # models.ForeignKey(ConcreteEntityModel, related_name='synonyms')
+    entity = None  # models.ForeignKey(ConcreteEntityModel, related_name='synonyms', on_delete=models.PROTECT)
 
     # synonym display name
     name = models.CharField(max_length=128, db_index=True)
 
     # related type of synonym
-    synonym_type = models.ForeignKey(EntitySynonymType)
+    synonym_type = models.ForeignKey(EntitySynonymType, on_delete=models.PROTECT)
 
     # language code
     language = models.CharField(max_length=5, default="", blank=True, null=False)

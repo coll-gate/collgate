@@ -46,11 +46,11 @@ let View = Marionette.View.extend({
 
         // @todo check user permissions
 
-        if (!this.getOption('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.getOption('can_modify') || !window.application.permission.manager.isStaff()) {
             properties.edit.disabled = true;
         }
 
-        // if (!this.getOption('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+        // if (!this.getOption('can_delete') || !window.application.permission.manager.isStaff()) {
         //     properties.remove.disabled = true;
         // }
 

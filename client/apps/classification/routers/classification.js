@@ -77,9 +77,7 @@ let ClassificationRouter = Marionette.AppRouter.extend({
             // need classification permission details
             classificationRankListView.query();
 
-            if (classification.get('can_modify') && window.session.user.isAuth &&
-                (window.session.user.isSuperUser || window.session.user.isStaff)) {
-
+            if (classification.get('can_modify') && window.application.permission.manager.isStaff()) {
                 defaultLayout.showChildView('bottom', new ClassificationRankCreateView({
                     model: classification, collection: collection}));
             }

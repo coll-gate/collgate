@@ -60,11 +60,11 @@ let View = Marionette.View.extend({
 
         // @todo check with user permission
 
-        if (/*!this.model.get('can_modify') ||*/ !session.user.isSuperUser || !session.user.isStaff) {
+        if (/*!this.model.get('can_modify') ||*/ !window.application.permission.manager.isStaff()) {
             properties.tag.disabled = true;
         }
 
-        if (this.model.get('num_descriptor_model_types') > 0 || /*!this.model.get('can_delete') ||*/ !session.user.isSuperUser || !session.user.isStaff) {
+        if (this.model.get('num_descriptor_model_types') > 0 || /*!this.model.get('can_delete') ||*/ !window.application.permission.manager.isStaff()) {
             properties.remove.disabled = true;
         }
 

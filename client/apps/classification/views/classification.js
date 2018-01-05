@@ -55,13 +55,13 @@ let View = Marionette.View.extend({
         };
 
         // @todo do we want can_modify/can_delete like for descriptor ?
-        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
             properties.tag.disabled = true;
             properties.edit.disabled = true;
             properties.edit2.disabled = true;
         }
 
-        if (this.model.get('num_classification_ranks') > 0 || !this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (this.model.get('num_classification_ranks') > 0 || !this.model.get('can_delete') || !window.application.permission.manager.isStaff()) {
             properties.remove.disabled = true;
         }
 
@@ -83,7 +83,7 @@ let View = Marionette.View.extend({
     },
 
     editLabel: function() {
-        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
             return false;
         }
 

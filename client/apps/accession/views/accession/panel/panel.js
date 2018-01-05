@@ -75,7 +75,7 @@ let View = Marionette.View.extend({
     },
 
     onRename: function () {
-        if (!session.user.isSuperUser || !session.user.isStaff) {
+        if (!window.application.permission.manager.isStaff()) {
             return false;
         }
 

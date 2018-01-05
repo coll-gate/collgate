@@ -62,7 +62,7 @@ let View = Marionette.View.extend({
     },
 
     onEditLabel: function() {
-        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
             return false;
         }
 
@@ -77,7 +77,7 @@ let View = Marionette.View.extend({
     },
 
     onRename: function () {
-        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
             return false;
         }
 

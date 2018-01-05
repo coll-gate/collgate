@@ -67,8 +67,7 @@ let Router = Marionette.AppRouter.extend({
             descriptorModelList.query();
         });
 
-        // @todo lookup for permission
-        if (window.session.user.isAuth && (window.session.user.isSuperUser || window.session.user.isStaff)) {
+        if (window.application.permission.manager.isStaff()) {
             defaultLayout.showChildView('bottom', new DescriptorModelAddView({collection: collection}));
         }
     },

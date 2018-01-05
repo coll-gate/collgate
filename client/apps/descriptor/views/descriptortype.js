@@ -50,9 +50,7 @@ let View = Marionette.View.extend({
             remove: {disabled: false}
         };
 
-        // @todo check user permissions
-
-        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
             // properties.edit.disabled = true;
         }
 
@@ -60,7 +58,7 @@ let View = Marionette.View.extend({
             properties.manage.disabled = true;
         }
 
-        if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.model.get('can_delete') || !window.application.permission.manager.isStaff()) {
             properties.remove.disabled = true;
         }
 

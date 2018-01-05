@@ -54,13 +54,11 @@ let View = Marionette.View.extend({
             remove: {disabled: false}
         };
 
-        // @todo check with user permission
-
-        if (!session.user.isSuperUser || !session.user.isStaff) {
+        if (!window.application.permission.manager.isStaff()) {
             properties.edit.disabled = true;
         }
 
-        if (this.model.get('num_descriptor_models') > 0 || !session.user.isSuperUser || !session.user.isStaff) {
+        if (this.model.get('num_descriptor_models') > 0 || !window.application.permission.manager.isStaff()) {
             properties.remove.disabled = true;
         }
 

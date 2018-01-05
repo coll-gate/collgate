@@ -30,7 +30,7 @@ class Media(Entity):
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
     # content type of the owner
-    owner_content_type = models.ForeignKey(ContentType, related_name='+')
+    owner_content_type = models.ForeignKey(ContentType, related_name='+', null=True, on_delete=models.SET_NULL)
 
     # object id of the owner related to the content type
     owner_object_id = models.IntegerField()

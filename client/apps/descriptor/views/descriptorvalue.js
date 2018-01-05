@@ -56,13 +56,11 @@ let View = Marionette.View.extend({
             remove: {disable: false}
         };
 
-        // @todo check user permissions
-
-        if (!this.getOption('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.getOption('can_modify') || !window.application.permission.manager.isStaff()) {
             properties.edit.disabled = true;
         }
 
-        if (!this.getOption('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+        if (!this.getOption('can_delete') || !window.application.permission.manager.isStaff()) {
             properties.remove.disabled = true;
         }
 
@@ -70,9 +68,7 @@ let View = Marionette.View.extend({
     },
 
     deleteDescriptorValue: function () {
-        // @todo check with user permission
-        //if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
-        if (!this.getOption('can_delete') || !session.user.isSuperUser || session.user.isStaff) {
+        if (!this.getOption('can_delete') || !window.application.permission.manager.isStaff()) {
             this.model.destroy({wait: true});
         }
         return false;

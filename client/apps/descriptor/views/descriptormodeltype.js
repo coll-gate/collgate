@@ -62,7 +62,7 @@ let View = Marionette.View.extend({
     },
 
     onRender: function() {
-        if (!session.user.isStaff && !session.user.isSuperUser) {
+        if (!window.application.permission.manager.isStaff()) {
             $(this.ui.delete_descriptor_model_type).hide();
         }
 
@@ -345,7 +345,7 @@ let View = Marionette.View.extend({
     },
 
     rename: function() {
-        if (!session.user.isSuperUser || !session.user.isStaff) {
+        if (!window.application.permission.manager.isStaff()) {
             return;
         }
 

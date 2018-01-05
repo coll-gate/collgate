@@ -86,7 +86,7 @@ let View = Marionette.View.extend({
     },
 
     editLabel: function() {
-        if (!window.session.user.isSuperUser || !window.session.user.isStaff) {
+        if (!window.application.permission.manager.isStaff()) {
             return false;
         }
 
