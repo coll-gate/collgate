@@ -10,7 +10,7 @@
 
 from django.utils.translation import ugettext_lazy as _
 
-from descriptor.descriptormetamodeltype import DescriptorMetaModelTypeManager
+from descriptor.layouttype import LayoutTypeManager
 from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module import AUTH_USER, AUTH_STAFF
 from igdectk.module.manager import module_manager
@@ -31,7 +31,7 @@ class CollGateAccession(ApplicationMain):
         self.format_types = []
 
         # different types of formats for meta-model of descriptors for this module
-        self.meta_model_types = []
+        self.layout_types = []
 
         # different type of formats for batch-action-type
         self.batch_action_type_formats = []
@@ -87,15 +87,15 @@ class CollGateAccession(ApplicationMain):
         ]
 
         # registers standard format type of descriptors meta-models
-        from . import descriptormetamodeltype
+        from descriptor import layouttype
 
-        for element in dir(descriptormetamodeltype):
-            attr = getattr(descriptormetamodeltype, element)
-            if type(attr) is type and descriptormetamodeltype.DescriptorMetaModelType in attr.__bases__:
-                self.meta_model_types.append(attr())
+        for element in dir(layouttype):
+            attr = getattr(layouttype, element)
+            if type(attr) is type and layouttype.LayoutType in attr.__bases__:
+                self.layout_types.append(attr())
 
         # and register them
-        DescriptorMetaModelTypeManager.register(self.meta_model_types)
+        LayoutTypeManager.register(self.layout_types)
 
         # and the batch action type formats
         from accession import batchactiontypeformat

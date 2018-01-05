@@ -16,7 +16,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel
+from descriptor.models import Layout
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from permission.utils import get_permissions_for
@@ -73,7 +73,7 @@ def get_batch_details_json(request, bat_id):
         'id': batch.id,
         'name': batch.name,
         'accession': batch.accession_id,
-        'descriptor_meta_model': batch.descriptor_meta_model_id,
+        'layout': batch.layout_id,
         'descriptors': batch.descriptors
     }
 
@@ -84,7 +84,7 @@ def get_batch_details_json(request, bat_id):
         "type": "object",
         "properties": {
             "name": Batch.NAME_VALIDATOR,
-            "descriptor_meta_model": {"type": "number"},
+            "layout": {"type": "number"},
             "accession": {"type": "number"},
             "descriptors": {"type": "object"}
         },
@@ -95,7 +95,7 @@ def get_batch_details_json(request, bat_id):
 def create_batch(request):
     # @todo name generator
     name = request.data['name']
-    dmm_id = int_arg(request.data['descriptor_meta_model'])
+    layout_id = int_arg(request.data['layout'])
     accession_id = int_arg(request.data['accession'])
     descriptors = request.data['descriptors']
 
@@ -110,7 +110,7 @@ def create_batch(request):
         raise SuspiciousOperation(_("The name of the batch is already used"))
 
     content_type = get_object_or_404(ContentType, app_label="accession", model="batch")
-    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+    layout = get_object_or_404(Layout, id=layout_id, target=content_type)
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Batch)
@@ -132,7 +132,7 @@ def create_batch(request):
             # common properties
             batch = Batch()
             batch.name = name
-            batch.descriptor_meta_model = dmm
+            batch.layout = layout
 
             # parent accession
             accession = get_object_or_404(Accession, id=accession_id)
@@ -141,7 +141,7 @@ def create_batch(request):
             # descriptors
             descriptors_builder = DescriptorsBuilder(batch)
 
-            descriptors_builder.check_and_update(dmm, descriptors)
+            descriptors_builder.check_and_update(layout, descriptors)
             batch.descriptors = descriptors_builder.descriptors
 
             batch.save()
@@ -166,7 +166,7 @@ def create_batch(request):
     response = {
         'id': batch.pk,
         'name': batch.name,
-        'descriptor_meta_model': dmm.id,
+        'layout': layout.id,
         'accession': accession.id,
         'descriptors': descriptors
     }
@@ -214,7 +214,7 @@ def patch_batch(request, bat_id):
                 # update descriptors
                 descriptors_builder = DescriptorsBuilder(batch)
 
-                descriptors_builder.check_and_update(batch.descriptor_meta_model, descriptors)
+                descriptors_builder.check_and_update(batch.layout, descriptors)
 
                 batch.descriptors = descriptors_builder.descriptors
                 result['descriptors'] = batch.descriptors
@@ -279,7 +279,7 @@ def get_batch_batches_list(request, bat_id):
             'id': batch.pk,
             'name': batch.name,
             'accession': batch.accession_id,
-            'descriptor_meta_model': batch.descriptor_meta_model_id,
+            'layout': batch.layout_id,
             'descriptors': batch.descriptors
         }
 
@@ -344,7 +344,7 @@ def get_batch_parents_batches_list(request, bat_id):
             'id': batch.pk,
             'name': batch.name,
             'accession': batch.accession_id,
-            'descriptor_meta_model': batch.descriptor_meta_model_id,
+            'layout': batch.layout_id,
             'descriptors': batch.descriptors
         }
 
@@ -384,7 +384,7 @@ def search_batch(request):
     The filters can be :
         - name: value to look for the name field.
         - method: for the name 'ieq' or 'icontains' for insensitive case equality or %like% respectively.
-        - meta_model: id of the descriptor meta-model to look for.
+        - layout: id of the descriptor meta-model to look for.
         - fields: list of fields to look for.
     """
     filters = json.loads(request.GET['filters'])
@@ -401,15 +401,15 @@ def search_batch(request):
         qs = Batch.objects.all()
 
     name_method = filters.get('method', 'ieq')
-    if 'meta_model' in filters['fields']:
-        meta_model = int_arg(filters['meta_model'])
+    if 'layout' in filters['fields']:
+        layout = int_arg(filters['layout'])
 
         if name_method == 'ieq':
             qs = qs.filter(Q(name__iexact=filters['name']))
         elif name_method == 'icontains':
             qs = qs.filter(Q(name__icontains=filters['name']))
 
-        qs = qs.filter(Q(descriptor_meta_model_id=meta_model))
+        qs = qs.filter(Q(layout_id=layout))
     elif 'name' in filters['fields']:
         if name_method == 'ieq':
             qs = qs.filter(name__iexact=filters['name'])
@@ -499,7 +499,7 @@ def get_batch_list(request):
             'id': batch.pk,
             'name': batch.name,
             'accession': batch.accession_id,
-            'descriptor_meta_model': batch.descriptor_meta_model_id,
+            'layout': batch.layout_id,
             'descriptors': batch.descriptors
         }
 

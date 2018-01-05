@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file descriptormetamodeltype.py
+# @file layouttype.py
 # @brief coll-gate descriptor meta-model format type class
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-09-13
@@ -11,7 +11,7 @@
 from django.core.exceptions import ImproperlyConfigured
 
 
-class DescriptorMetaModelType(object):
+class LayoutType(object):
     """
     Descriptor meta-model type class model.
     """
@@ -35,12 +35,12 @@ class DescriptorMetaModelType(object):
         return None
 
 
-class   DescriptorMetaModelTypeManager(object):
+class   LayoutTypeManager(object):
     """
     Singleton manager of set of descriptor meta-model format type.
     """
 
-    descriptor_meta_model_format_types = {}
+    layout_format_types = {}
 
     @classmethod
     def register(cls, format_types_list):
@@ -49,30 +49,30 @@ class   DescriptorMetaModelTypeManager(object):
         :param format_types_list: An array of descriptor meta-model type.
         """
         # register each type into a map
-        for dmm_ft in format_types_list:
-            if dmm_ft.model in cls.descriptor_meta_model_format_types:
-                raise ImproperlyConfigured("Descriptor meta-model format type not already defined (%s)" % str(dmm_ft.model._meta.verbose_name))
+        for layout_ft in format_types_list:
+            if layout_ft.model in cls.layout_format_types:
+                raise ImproperlyConfigured("Descriptor meta-model format type not already defined (%s)" % str(layout_ft.model._meta.verbose_name))
 
-            cls.descriptor_meta_model_format_types[dmm_ft.model] = dmm_ft
+            cls.layout_format_types[layout_ft.model] = layout_ft
 
     @classmethod
     def values(cls):
         """
         Return the list of any registered descriptor meta-model types.
         """
-        return list(cls.descriptor_meta_model_format_types.values())
+        return list(cls.layout_format_types.values())
 
     @classmethod
     def has(cls, model):
-        return model in cls.descriptor_meta_model_format_types
+        return model in cls.layout_format_types
 
     @classmethod
     def get(cls, model):
-        dmm_ft = cls.descriptor_meta_model_format_types.get(model)
-        if dmm_ft is None:
+        layout_ft = cls.layout_format_types.get(model)
+        if layout_ft is None:
             raise ValueError("Unsupported descriptor meta-model type %s" % model)
 
-        return dmm_ft
+        return layout_ft
 
     @classmethod
     def check(cls, model, data):
@@ -83,10 +83,10 @@ class   DescriptorMetaModelTypeManager(object):
         :return: True if check success.
         :except ValueError with descriptor of the problem
         """
-        dmm_ft = cls.descriptor_meta_model_format_types.get(model)
-        if dmm_ft is None:
+        layout_ft = cls.layout_format_types.get(model)
+        if layout_ft is None:
             raise ValueError("Unsupported descriptor meta-model type %s" % str(model._meta.verbose_name))
 
-        res = dmm_ft.check(data)
+        res = layout_ft.check(data)
         if res is not None:
             raise ValueError(str(res))

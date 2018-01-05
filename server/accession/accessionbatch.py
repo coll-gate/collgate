@@ -64,7 +64,7 @@ def accession_batches_list(request, acc_id):
             'id': batch.pk,
             'name': batch.name,
             'accession': batch.accession_id,
-            'descriptor_meta_model': batch.descriptor_meta_model_id,
+            'layout': batch.layout_id,
             'descriptors': batch.descriptors
         }
 
@@ -139,7 +139,7 @@ def search_batches_for_accession(request, acc_id):
             'id': batch.pk,
             'name': batch.name,
             'accession': accession.id,
-            'descriptor_meta_model': batch.descriptor_meta_model_id,
+            'layout': batch.layout_id,
             'descriptors': batch.descriptors
         }
 

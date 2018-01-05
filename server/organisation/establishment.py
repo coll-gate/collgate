@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel, DescriptorModelType
+from descriptor.models import Layout, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cursor import CursorQuery
@@ -86,7 +86,7 @@ def get_establishment_list_for_organisation(request, org_id):
             'id': establishment.pk,
             'name': establishment.name,
             'descriptors': establishment.descriptors,
-            'descriptor_meta_model': establishment.descriptor_meta_model,
+            'layout': establishment.layout,
             'organisation': establishment.organisation_id,
             'organisation_details': {
                 'id': establishment.organisation.id,
@@ -220,20 +220,20 @@ def create_establishment(request):
         raise SuspiciousOperation(_("The name of the establishment is already used"))
 
     content_type = get_object_or_404(ContentType, app_label="organisation", model="establishment")
-    dmm = get_object_or_404(DescriptorMetaModel, name="establishment", target=content_type)
+    layout = get_object_or_404(Layout, name="establishment", target=content_type)
 
     try:
         with transaction.atomic():
             # common properties
             establishment = Establishment()
             establishment.name = request.data['name']
-            establishment.descriptor_meta_model = dmm
+            establishment.layout = layout
             establishment.organisation = organisation
 
             # descriptors
             descriptors_builder = DescriptorsBuilder(organisation)
 
-            descriptors_builder.check_and_update(dmm, descriptors)
+            descriptors_builder.check_and_update(layout, descriptors)
             establishment.descriptors = descriptors_builder.descriptors
 
             establishment.save()
@@ -247,7 +247,7 @@ def create_establishment(request):
         'id': establishment.id,
         'name': establishment.name,
         'organisation': organisation.id,
-        'descriptor_meta_model': dmm.id,
+        'layout': layout.id,
         'descriptors': establishment.descriptors
     }
 
@@ -262,7 +262,7 @@ def get_establishment_details(request, est_id):
         'id': establishment.id,
         'name': establishment.name,
         'organisation': establishment.organisation_id,
-        'descriptor_meta_model': establishment.descriptor_meta_model_id,
+        'layout': establishment.layout_id,
         'descriptors': establishment.descriptors
     }
 
@@ -307,7 +307,7 @@ def patch_establishment(request, est_id):
                 # update descriptors
                 descriptors_builder = DescriptorsBuilder(establishment)
 
-                descriptors_builder.check_and_update(establishment.descriptor_meta_model, descriptors)
+                descriptors_builder.check_and_update(establishment.layout, descriptors)
 
                 establishment.descriptors = descriptors_builder.descriptors
                 result['descriptors'] = establishment.descriptors

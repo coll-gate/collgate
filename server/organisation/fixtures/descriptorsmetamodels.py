@@ -8,7 +8,7 @@
 # @license MIT (see LICENSE file)
 # @details 
 
-META_MODELS = {
+LAYOUTS = {
     'organisation': {
         'id': None,
         'name': 'organisation',
@@ -41,4 +41,4 @@ META_MODELS = {
 
 
 def fixture(fixture_manager, factory_manager):
-    fixture_manager.create_or_update_meta_models(META_MODELS)
+    fixture_manager.create_or_update_layouts(LAYOUTS)

@@ -20,7 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 from accession import localsettings
 from classification.models import ClassificationEntry
 from descriptor.models import DescribableEntity
-from descriptor.models import DescriptorMetaModel
+from descriptor.models import Layout
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 from main.models import Entity, EntitySynonym, EntityStatus, ContentType, uuid
 
@@ -88,12 +88,12 @@ class Accession(DescribableEntity):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
-            'descriptor_meta_model': {
+            'layout': {
                 'label': _('Model'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'accession.accession'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
@@ -167,7 +167,7 @@ class Accession(DescribableEntity):
             'name': self.name,
             'code': self.code,
             'primary_classification_entry': self.primary_classification_entry_id,
-            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'layout': self.layout_id,
             'descriptors': self.descriptors
         }
 
@@ -256,12 +256,12 @@ class Batch(DescribableEntity):
     @classmethod
     def get_defaults_columns(cls):
         return {
-            'descriptor_meta_model': {
+            'layout': {
                 'label': _('Model'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'accession.batch'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
@@ -316,7 +316,7 @@ class Batch(DescribableEntity):
         return {
             'name': self.name,
             'accession': self.accession_id,
-            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'layout': self.layout_id,
             'descriptors': self.descriptors
         }
 
@@ -475,7 +475,7 @@ class Panel(Entity):
 
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
     # It can be null because it is possible to have the choice to defines or not some descriptors
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, null=True)
+    layout = models.ForeignKey(Layout, null=True)
 
     class Meta:
         abstract = True
@@ -499,12 +499,12 @@ class BatchPanel(Panel):
     @classmethod
     def get_defaults_columns(cls):
         return {
-            'descriptor_meta_model': {
+            'layout': {
                 'label': _('Model'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'accession.batchpanel'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
@@ -550,12 +550,12 @@ class AccessionPanel(Panel):
     @classmethod
     def get_defaults_columns(cls):
         return {
-            'descriptor_meta_model': {
+            'layout': {
                 'label': _('Model'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'accession.accessionpanel'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
@@ -612,7 +612,7 @@ class AccessionView(models.Model):
     descriptors = JSONField(default={})
 
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, on_delete=models.DO_NOTHING)
+    layout = models.ForeignKey(Layout, on_delete=models.DO_NOTHING)
 
     # content type of the entity
     content_type = models.ForeignKey(ContentType, editable=False, on_delete=models.DO_NOTHING)
@@ -671,12 +671,12 @@ class AccessionView(models.Model):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
-            'descriptor_meta_model': {
+            'layout': {
                 'label': _('Model'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'accession.accession'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
@@ -730,7 +730,7 @@ class BatchView(models.Model):
     descriptors = JSONField(default={})
 
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, on_delete=models.DO_NOTHING)
+    layout = models.ForeignKey(Layout, on_delete=models.DO_NOTHING)
 
     # content type of the entity
     content_type = models.ForeignKey(ContentType, editable=False, on_delete=models.DO_NOTHING)
@@ -753,12 +753,12 @@ class BatchView(models.Model):
     @classmethod
     def get_defaults_columns(cls):
         return {
-            'descriptor_meta_model': {
+            'layout': {
                 'label': _('Model'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'accession.batch'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']

@@ -34,7 +34,7 @@ class CollGateDescriptor(ApplicationMain):
         self.format_units = []
 
         # different types of meta-model of descriptors for this module
-        self.meta_model_types = []
+        self.layout_types = []
 
     def ready(self):
         super().ready()
@@ -62,9 +62,9 @@ class CollGateDescriptor(ApplicationMain):
             'describable',
             'descriptor',
             'descriptormodel',
-            'descriptormetamodel',
+            'layout',
             'descriptorcolumns',
-            'descriptormetamodelparameters'
+            'layoutparameters'
             )
         )
 
@@ -102,15 +102,15 @@ class CollGateDescriptor(ApplicationMain):
         descriptorformatunit.DescriptorFormatUnitManager.register(self.format_units)
 
         # registers standard types of descriptors meta-models
-        from . import descriptormetamodeltype
+        from . import layouttype
 
-        for element in dir(descriptormetamodeltype):
-            attr = getattr(descriptormetamodeltype, element)
-            if type(attr) is type and descriptormetamodeltype.DescriptorMetaModelType in attr.__bases__:
-                self.meta_model_types.append(attr())
+        for element in dir(layouttype):
+            attr = getattr(layouttype, element)
+            if type(attr) is type and layouttype.LayoutType in attr.__bases__:
+                self.layout_types.append(attr())
 
         # and register them
-        descriptormetamodeltype.DescriptorMetaModelTypeManager.register(self.meta_model_types)
+        layouttype.LayoutTypeManager.register(self.layout_types)
 
         # descriptor administration menu
         menu_descriptor = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)

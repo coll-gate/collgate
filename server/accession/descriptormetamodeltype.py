@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file descriptormetamodeltype.py
+# @file layouttype.py
 # @brief coll-gate descriptor meta-model format type class
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-09-13
@@ -23,11 +23,11 @@ from django.db.models import Q
 from accession.models import Accession, Batch
 from classification.models import Classification
 from descriptor.descriptorformatunit import DescriptorFormatUnitManager
-from descriptor.descriptormetamodeltype import DescriptorMetaModelType
-from descriptor.models import DescriptorValue, DescriptorMetaModel
+from descriptor.layouttype import LayoutType
+from descriptor.models import DescriptorValue, Layout
 
 
-class DescriptorMetaModelTypeAccession(DescriptorMetaModelType):
+class LayoutTypeAccession(LayoutType):
     """
     Specialisation for an accession entity.
     """
@@ -37,14 +37,14 @@ class DescriptorMetaModelTypeAccession(DescriptorMetaModelType):
 
         self.model = Accession
         self.verbose_name = _("Accession")
-        self.data_fields = ["primary_classification", "batch_descriptor_meta_models"]
+        self.data_fields = ["primary_classification", "batch_layouts"]
 
     def check(self, data):
         schema = {
             "type": "object",
             "properties": {
                 "primary_classification": {"type": "number"},
-                "batch_descriptor_meta_models": {
+                "batch_layouts": {
                     "type": "array", 'minItems': 0, 'maxItems': 100, 'additionalItems': {'type': 'number'}, 'items': []
                 }
             }
@@ -62,10 +62,10 @@ class DescriptorMetaModelTypeAccession(DescriptorMetaModelType):
             return _("The classification must refers to an existing object")
 
         # check if the batch meta-models exists
-        dmm_ids = [int(x) for x in data['batch_descriptor_meta_models']]
-        dmms = DescriptorMetaModel.objects.filter(id__in=dmm_ids)
+        layout_ids = [int(x) for x in data['batch_layouts']]
+        layouts = Layout.objects.filter(id__in=layout_ids)
 
-        if dmms.count() != len(dmm_ids):
+        if layouts.count() != len(layout_ids):
             return _("The list of descriptor meta-models of batches must refers to existing objects")
 
         # changes is not possible if there is some existing accessions entries using this meta-model
@@ -74,7 +74,7 @@ class DescriptorMetaModelTypeAccession(DescriptorMetaModelType):
         return None
 
 
-class DescriptorMetaModelTypeBatch(DescriptorMetaModelType):
+class LayoutTypeBatch(LayoutType):
     """
     Specialisation for a batch entity.
     """

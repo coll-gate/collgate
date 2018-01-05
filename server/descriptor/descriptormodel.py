@@ -518,7 +518,7 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
         # for each descriptor meta model using this create the necessary index
         dps = DescriptorPanel.objects.filter(descriptor_model_id=dmt.descriptor_model_id)
         for dp in dps:
-            content_type_model = dp.descriptor_meta_model.target.model_class()
+            content_type_model = dp.layout.target.model_class()
             dmt.create_or_drop_index(content_type_model)
 
     return HttpResponseRest(request, result)
@@ -555,7 +555,7 @@ def delete_descriptor_model_type_for_model(request, des_id, typ_id):
     dps = DescriptorPanel.objects.filter(descriptor_model_id=dmt.descriptor_model_id)
 
     for dp in dps:
-        content_type_model = dp.descriptor_meta_model.target.model_class()
+        content_type_model = dp.layout.target.model_class()
         dmt.drop_index(content_type_model)
 
     return HttpResponseRest(request, {})

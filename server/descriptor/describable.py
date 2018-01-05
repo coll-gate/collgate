@@ -66,7 +66,7 @@ class DescriptorsBuilder(object):
         """
         return self._descriptors
 
-    def clear(self, descriptor_meta_model):
+    def clear(self, layout):
         """
         Clear (unset) any values of descriptors. It does not take care of mandatory or set_once attributes.
         The descriptors dict of the builder returns an empty dict. It does not also take care of the conditions because
@@ -75,9 +75,9 @@ class DescriptorsBuilder(object):
 
         Very important, any previously owned entities must be released by a call to update_associations.
 
-        :param descriptor_meta_model:
+        :param layout:
         """
-        dps = DescriptorPanel.objects.filter(descriptor_meta_model=descriptor_meta_model).order_by('position')
+        dps = DescriptorPanel.objects.filter(layout=layout).order_by('position')
         dps.select_related('descriptor_model')
 
         for panel in dps:
@@ -100,7 +100,7 @@ class DescriptorsBuilder(object):
         # no more values
         self._descriptors = {}
 
-    def check_and_update(self, descriptor_meta_model, descriptors):
+    def check_and_update(self, layout, descriptors):
         """
         For any descriptors (model-type) of the meta-model, check the new values given by the descriptors parameter,
         check the mandatory, the set_once and the condition. It also make the list of descriptors to be updated by
@@ -111,10 +111,10 @@ class DescriptorsBuilder(object):
         Very important, it is necessary to make a call to update_associations in way to release any previously used
         externals entities, and to own the newly associated.
 
-        :param descriptor_meta_model: Descriptor meta model
+        :param layout: Descriptor meta model
         :param descriptors: New descriptors values
         """
-        dps = DescriptorPanel.objects.filter(descriptor_meta_model=descriptor_meta_model).order_by('position')
+        dps = DescriptorPanel.objects.filter(layout=layout).order_by('position')
         dps.select_related('descriptor_model')
 
         for panel in dps:

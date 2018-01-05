@@ -18,7 +18,7 @@ from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from classification import localsettings
-from descriptor.models import DescriptorMetaModel
+from descriptor.models import Layout
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
 from main.models import Entity, EntitySynonym
@@ -271,7 +271,7 @@ class ClassificationEntry(Entity):
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
     # It can be null because it is possible to have the choice to defines or not some descriptors
     # to a classification entry.
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, null=True)
+    layout = models.ForeignKey(Layout, null=True)
 
     @classmethod
     def get_defaults_columns(cls):
@@ -306,12 +306,12 @@ class ClassificationEntry(Entity):
                     'details': True
                 }
             },
-            'descriptor_meta_model': {
+            'layout': {
                 'label': _('Model'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'classification.classificationentry'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
@@ -354,7 +354,7 @@ class ClassificationEntry(Entity):
             'rank': self.rank_id,
             'parent': self.parent_id,
             'parent_list': self.parent_list,
-            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'layout': self.layout_id,
             'descriptors': self.descriptors
         }
 
@@ -372,8 +372,8 @@ class ClassificationEntry(Entity):
                 result['parent'] = self.parent_id
                 result['parent_list'] = self.parent_list
 
-            if 'descriptor_meta_model' in self.updated_fields:
-                result['descriptor_meta_model'] = self.descriptor_meta_model_id
+            if 'layout' in self.updated_fields:
+                result['layout'] = self.layout_id
 
             if 'descriptors' in self.updated_fields:
                 if hasattr(self, 'updated_descriptors'):
@@ -388,7 +388,7 @@ class ClassificationEntry(Entity):
                 'rank': self.rank_id,
                 'parent': self.parent_id,
                 'parent_list': self.parent_list,
-                'descriptor_meta_model': self.descriptor_meta_model_id,
+                'layout': self.layout_id,
                 'descriptors': self.descriptors
             }
 

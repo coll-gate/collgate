@@ -22,7 +22,7 @@ from igdectk.rest.response import HttpResponseRest
 from main.cache import cache_manager
 
 from .descriptor import RestDescriptor
-from .models import DescriptorMetaModel, DescriptorModelType, DescriptorType
+from .models import Layout, DescriptorModelType, DescriptorType
 
 
 class RestDescriptorColumnsForContentType(RestDescriptor):
@@ -48,21 +48,21 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     app_label, model_name = content_type_name.split('.')
     content_type = get_object_or_404(ContentType, app_label=app_label, model=model_name)
 
-    dmms_list = request.GET.get('descriptor_meta_models')
+    layouts_list = request.GET.get('layouts')
     mode = request.GET.get('mode')
-    dmms_ids = None
+    layouts_ids = None
 
-    if dmms_list:
-        if type(dmms_list) is not str:
+    if layouts_list:
+        if type(layouts_list) is not str:
             raise SuspiciousOperation(_('Invalid descriptor meta model list parameter format'))
 
-        dmms_ids = [int(x) for x in dmms_list.split(',')]
-        dmms_ids.sort()
+        layouts_ids = [int(x) for x in layouts_list.split(',')]
+        layouts_ids.sort()
 
         if mode == 'search':
-            cache_name = cache_manager.make_cache_name(content_type_name, ','.join(map(str, dmms_ids)), mode)
+            cache_name = cache_manager.make_cache_name(content_type_name, ','.join(map(str, layouts_ids)), mode)
         else:
-            cache_name = cache_manager.make_cache_name(content_type_name, ','.join(map(str, dmms_ids)))
+            cache_name = cache_manager.make_cache_name(content_type_name, ','.join(map(str, layouts_ids)))
 
     else:
         if mode == 'search':
@@ -76,13 +76,13 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
         # pass
         return HttpResponseRest(request, results)
 
-    dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
+    layouts = Layout.objects.filter(target=content_type).values_list(
         "descriptor_models__descriptor_model_types__id", flat=True)
 
-    if dmms_ids:
-        dmms = dmms.filter(pk__in=dmms_ids)
+    if layouts_ids:
+        layouts = layouts.filter(pk__in=layouts_ids)
 
-    dmts = DescriptorModelType.objects.filter(id__in=dmms).prefetch_related('descriptor_type')
+    dmts = DescriptorModelType.objects.filter(id__in=layouts).prefetch_related('descriptor_type')
 
     columns = {}
 
@@ -151,8 +151,9 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
 
 def get_description(model):
     """
-    Returns information about columns for a specified model. All columns of any related meta-models.
+    Returns information about columns for a specified model. All columns of any related layouts.
     """
+
     cache_name = cache_manager.make_cache_name('description', '%s.%s' % (model._meta.app_label, model._meta.model_name))
     results = cache_manager.get('descriptor', cache_name)
 
@@ -161,9 +162,9 @@ def get_description(model):
 
     content_type = ContentType.objects.get_by_natural_key(app_label=model._meta.app_label, model=model._meta.model_name)
 
-    dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
+    layouts = Layout.objects.filter(target=content_type).values_list(
         "descriptor_models__descriptor_model_types__id", flat=True)
-    dmts = DescriptorModelType.objects.filter(id__in=dmms).prefetch_related('descriptor_type')
+    dmts = DescriptorModelType.objects.filter(id__in=layouts).prefetch_related('descriptor_type')
 
     results = {}
 

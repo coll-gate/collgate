@@ -19,7 +19,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from accession import localsettings
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel, DescriptorModelType
+from descriptor.models import Layout, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.models import Language
@@ -55,7 +55,7 @@ class RestAccessionId(RestAccessionAccession):
     "properties": {
         "name": AccessionSynonym.NAME_VALIDATOR,
         "code": AccessionSynonym.CODE_VALIDATOR,
-        "descriptor_meta_model": {"type": "number"},
+        "layout": {"type": "number"},
         "primary_classification_entry": {"type": "number"},
         "descriptors": {"type": "object"},
         "language": AccessionSynonym.LANGUAGE_VALIDATOR
@@ -66,7 +66,7 @@ class RestAccessionId(RestAccessionAccession):
 def create_accession(request):
     name = request.data['name']
     code = request.data['code']
-    dmm_id = int_arg(request.data['descriptor_meta_model'])
+    layout_id = int_arg(request.data['layout'])
     primary_classification_entry_id = int_arg(request.data['primary_classification_entry'])
     descriptors = request.data['descriptors']
     language = request.data['language']
@@ -86,7 +86,7 @@ def create_accession(request):
         raise SuspiciousOperation(_("The code and the name of the accession must be different"))
 
     content_type = get_object_or_404(ContentType, app_label="accession", model="accession")
-    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+    layout = get_object_or_404(Layout, id=layout_id, target=content_type)
 
     try:
         with transaction.atomic():
@@ -94,7 +94,7 @@ def create_accession(request):
             accession = Accession()
             accession.name = name
             accession.code = code
-            accession.descriptor_meta_model = dmm
+            accession.layout = layout
 
             # primary classification entry
             primary_classification_entry = get_object_or_404(ClassificationEntry, id=primary_classification_entry_id)
@@ -103,7 +103,7 @@ def create_accession(request):
             # descriptors
             descriptors_builder = DescriptorsBuilder(accession)
 
-            descriptors_builder.check_and_update(dmm, descriptors)
+            descriptors_builder.check_and_update(layout, descriptors)
             accession.descriptors = descriptors_builder.descriptors
 
             accession.save()
@@ -154,7 +154,7 @@ def create_accession(request):
         'id': accession.pk,
         'name': accession.name,
         'code': accession.code,
-        'descriptor_meta_model': dmm.id,
+        'layout': layout.id,
         'primary_classification_entry': primary_classification_entry.id,
         'descriptors': descriptors,
         'synonyms': [
@@ -264,7 +264,7 @@ def get_accession_list(request):
             'name': accession.name,
             'code': accession.code,
             'primary_classification_entry': accession.primary_classification_entry_id,
-            'descriptor_meta_model': accession.descriptor_meta_model_id,
+            'layout': accession.layout_id,
             'descriptors': accession.descriptors,
             'synonyms': [],
             'primary_classification_entry_details': {
@@ -317,7 +317,7 @@ def get_accession_details_json(request, acc_id):
         'code': accession.code,
         'primary_classification_entry': accession.primary_classification_entry_id,
         'synonyms': [],
-        'descriptor_meta_model': accession.descriptor_meta_model_id,
+        'layout': accession.layout_id,
         'descriptors': accession.descriptors,
         'panels': []
     }
@@ -327,7 +327,7 @@ def get_accession_details_json(request, acc_id):
         result['panels'].append({
             'id': panel.id,
             'name': panel.name,
-            'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
+            'layout': panel.layout.pk if panel.layout else None,
             'descriptors': panel.descriptors,
             'accessions_amount': panel.accessions.count()
         })
@@ -354,7 +354,7 @@ def search_accession(request):
     The filters can be :
         - name: value to look for the name field.
         - method: for the name 'ieq' or 'icontains' for insensitive case equality or %like% respectively.
-        - meta_model: id of the descriptor meta-model to look for.
+        - layout: id of the descriptor meta-model to look for.
         - fields: list of fields to look for.
     """
     filters = json.loads(request.GET['filters'])
@@ -371,15 +371,15 @@ def search_accession(request):
         qs = Accession.objects.all()
 
     name_method = filters.get('method', 'ieq')
-    if 'meta_model' in filters['fields']:
-        meta_model = int_arg(filters['meta_model'])
+    if 'layout' in filters['fields']:
+        layout = int_arg(filters['layout'])
 
         if name_method == 'ieq':
             qs = qs.filter(Q(synonyms__name__iexact=filters['name']))
         elif name_method == 'icontains':
             qs = qs.filter(Q(synonyms__name__icontains=filters['name']))
 
-        qs = qs.filter(Q(descriptor_meta_model_id=meta_model))
+        qs = qs.filter(Q(layout_id=layout))
     elif 'name' in filters['fields']:
         if name_method == 'ieq':
             qs = qs.filter(synonyms__name__iexact=filters['name'])
@@ -489,7 +489,7 @@ def patch_accession(request, acc_id):
                 # update descriptors
                 descriptors_builder = DescriptorsBuilder(accession)
 
-                descriptors_builder.check_and_update(accession.descriptor_meta_model, descriptors)
+                descriptors_builder.check_and_update(accession.layout, descriptors)
 
                 accession.descriptors = descriptors_builder.descriptors
                 result['descriptors'] = accession.descriptors

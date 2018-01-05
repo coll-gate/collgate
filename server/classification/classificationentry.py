@@ -20,7 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 from classification import localsettings
 from classification.classification import RestClassificationClassificationId
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel, DescriptorModelType
+from descriptor.models import Layout, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cursor import CursorQuery
@@ -80,8 +80,8 @@ class RestClassificationClassificationIdClassificationEntryCount(RestClassificat
     "type": "object",
     "properties": {
         "name": ClassificationEntrySynonym.NAME_VALIDATOR,
-        "descriptor_meta_model": {"type": "number"},
-        # "descriptor_meta_model": {"type": ["number", "null"], "required": False},
+        "layout": {"type": "number"},
+        # "layout": {"type": ["number", "null"], "required": False},
         "rank": {"type": "number", 'minimum': 0},
         "parent": {"type": ["number", "null"], "required": False},
         "descriptors": {"type": "object"},
@@ -103,20 +103,20 @@ def create_classification_entry(request):
 
     rank_id = int_arg(parameters['rank'])
     language = parameters['language']
-    descriptor_meta_model = request.data.get('descriptor_meta_model')
+    layout = request.data.get('layout')
     descriptors = request.data.get('descriptors')
 
     if not Language.objects.filter(code=language).exists():
         raise SuspiciousOperation(_("The language is not supported"))
 
-    if descriptor_meta_model is not None and descriptors is not None:
-        dmm_id = int_arg(descriptor_meta_model)
+    if layout is not None and descriptors is not None:
+        layout_id = int_arg(layout)
 
         content_type = get_object_or_404(ContentType, app_label="classification", model="classificationentry")
-        dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+        layout = get_object_or_404(Layout, id=layout_id, target=content_type)
     else:
         # @todo do we allow that ?
-        dmm = None
+        layout = None
 
     try:
         with transaction.atomic():
@@ -125,7 +125,7 @@ def create_classification_entry(request):
                 rank_id,
                 parent,
                 language,
-                dmm,
+                layout,
                 descriptors)
     except IntegrityError as e:
         DescriptorModelType.integrity_except(ClassificationEntry, e)
@@ -137,7 +137,7 @@ def create_classification_entry(request):
         'parent': classification_entry.parent_id if parent else None,
         'parent_list': classification_entry.parent_list,
         'synonyms': [],
-        'descriptor_meta_model': classification_entry.descriptor_meta_model_id if dmm else None,
+        'layout': classification_entry.layout_id if layout else None,
         'descriptors': classification_entry.descriptors
     }
 
@@ -191,7 +191,7 @@ def get_classification_entry_list(request):
             'name': classification_entry.name,
             'parent': classification_entry.parent_id,
             'rank': classification_entry.rank_id,
-            'descriptor_meta_model': classification_entry.descriptor_meta_model_id,
+            'layout': classification_entry.layout_id,
             'descriptors': classification_entry.descriptors,
             'parent_list': classification_entry.parent_list,
             # 'parent_details': None,
@@ -273,7 +273,7 @@ def get_classification_entry_details_json(request, cls_id):
         'parent_list': classification_entry.parent_list,
         'parent_details': parents,
         'synonyms': [],
-        'descriptor_meta_model': classification_entry.descriptor_meta_model_id,
+        'layout': classification_entry.layout_id,
         'descriptors': classification_entry.descriptors,
     }
 
@@ -392,7 +392,7 @@ def search_classification_entry(request):
         "type": "object",
         "properties": {
             "parent": {"type": ["number", "null"], 'required': False},
-            "descriptor_meta_model": {"type": ["integer", "null"], 'required': False},
+            "layout": {"type": ["integer", "null"], 'required': False},
             "descriptors": {"type": "object", 'required': False}
         },
     },
@@ -448,50 +448,50 @@ def patch_classification_entry(request, cls_id):
     try:
         with transaction.atomic():
             # update meta-model of descriptors and descriptors
-            if 'descriptor_meta_model' in request.data:
-                dmm_id = request.data["descriptor_meta_model"]
+            if 'layout' in request.data:
+                layout_id = request.data["layout"]
 
                 # changing of meta model erase all previous descriptors values
-                if dmm_id is None and classification_entry.descriptor_meta_model is not None:
+                if layout_id is None and classification_entry.layout is not None:
                     # clean previous descriptors and owns
                     descriptors_builder = DescriptorsBuilder(classification_entry)
 
-                    descriptors_builder.clear(classification_entry.descriptor_meta_model)
+                    descriptors_builder.clear(classification_entry.layout)
 
-                    classification_entry.descriptor_meta_model = None
+                    classification_entry.layout = None
                     classification_entry.descriptors = {}
 
                     descriptors_builder.update_associations()
 
-                    result['descriptor_meta_model'] = None
+                    result['layout'] = None
                     result['descriptors'] = {}
 
-                elif dmm_id is not None:
+                elif layout_id is not None:
                     # existing descriptors and new meta-model is different : first clean previous descriptors
-                    if (classification_entry.descriptor_meta_model is not None and
-                            classification_entry.descriptor_meta_model.pk != dmm_id):
+                    if (classification_entry.layout is not None and
+                            classification_entry.layout.pk != layout_id):
 
                         # clean previous descriptors and owns
                         descriptors_builder = DescriptorsBuilder(classification_entry)
 
-                        descriptors_builder.clear(classification_entry.descriptor_meta_model)
+                        descriptors_builder.clear(classification_entry.layout)
 
-                        classification_entry.descriptor_meta_model = None
+                        classification_entry.layout = None
                         classification_entry.descriptors = {}
 
                         descriptors_builder.update_associations()
 
                     # and set the new one
                     content_type = get_object_or_404(ContentType, app_label="classification", model="classificationentry")
-                    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+                    layout = get_object_or_404(Layout, id=layout_id, target=content_type)
 
-                    classification_entry.descriptor_meta_model = dmm
+                    classification_entry.layout = layout
                     classification_entry.descriptors = {}
 
-                    result['descriptor_meta_model'] = dmm.id
+                    result['layout'] = layout.id
                     result['descriptors'] = {}
 
-                    classification_entry.update_field(['descriptor_meta_model', 'descriptors'])
+                    classification_entry.update_field(['layout', 'descriptors'])
 
             # update descriptors
             if 'descriptors' in request.data:
@@ -499,7 +499,7 @@ def patch_classification_entry(request, cls_id):
 
                 descriptors_builder = DescriptorsBuilder(classification_entry)
 
-                descriptors_builder.check_and_update(classification_entry.descriptor_meta_model, descriptors)
+                descriptors_builder.check_and_update(classification_entry.layout, descriptors)
                 classification_entry.descriptors = descriptors_builder.descriptors
 
                 descriptors_builder.update_associations()
@@ -585,7 +585,7 @@ def get_classification_entry_children(request, cls_id):
             'name': classification.name,
             'parent': classification.parent_id,
             'rank': classification.rank_id,
-            'descriptor_meta_model': classification.descriptor_meta_model_id,
+            'layout': classification.layout_id,
             'descriptors': classification.descriptors,
             'parent_list': classification.parent_list,
             'parent_details': None,
@@ -789,7 +789,7 @@ def get_classification_id_entry_list(request, cls_id):
             'name': classification_entry.name,
             'parent': classification_entry.parent_id,
             'rank': classification_entry.rank_id,
-            'descriptor_meta_model': classification_entry.descriptor_meta_model_id,
+            'layout': classification_entry.layout_id,
             'descriptors': classification_entry.descriptors,
             'parent_list': classification_entry.parent_list,
             # 'parent_details': None,

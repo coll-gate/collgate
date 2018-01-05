@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file descriptormetamodelparameters.py
+# @file layoutparameters.py
 # @brief coll-gate descriptor module, descriptor meta-model parameters
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-09-13
@@ -8,9 +8,9 @@
 # @license MIT (see LICENSE file)
 # @details
 
-from .descriptormetamodel import RestDescriptorMetaModel, RestDescriptorMetaModelId
+from .layout import RestLayout, RestLayoutId
 
 
-# class RestDescriptorMetaModelForDescribable(RestDescriptorMetaModel):
+# class RestLayoutForDescribable(RestLayout):
 #     regex = r'^for-describable/(?P<content_type_name>[a-zA-Z\.-]+)/$'
 #     suffix = 'for-describable'

@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file descriptormetamodeltype.py
+# @file layouttype.py
 # @brief coll-gate descriptor meta-model format type class
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-09-13
@@ -12,10 +12,10 @@ import validictory
 from django.utils.translation import ugettext_lazy as _
 
 from classification.models import Classification, ClassificationEntry
-from descriptor.descriptormetamodeltype import DescriptorMetaModelType
+from descriptor.layouttype import LayoutType
 
 
-class DescriptorMetaModelTypeClassificationEntry(DescriptorMetaModelType):
+class LayoutTypeClassificationEntry(LayoutType):
     """
     Specialisation for an accession entity.
     """

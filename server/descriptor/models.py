@@ -1017,7 +1017,7 @@ class DescriptorPanel(Entity):
     client_cache_update = ("entity_columns",)
 
     # To which meta-models this panel is attached.
-    descriptor_meta_model = models.ForeignKey('DescriptorMetaModel', related_name='panels')
+    layout = models.ForeignKey('Layout', related_name='panels')
 
     # Related model of descriptor
     descriptor_model = models.ForeignKey('DescriptorModel', related_name='panels')
@@ -1042,7 +1042,7 @@ class DescriptorPanel(Entity):
 
     def audit_create(self, user):
         return {
-            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'layout': self.layout_id,
             'descriptor_model': self.descriptor_model_id,
             'label': self.label,
             'position': self.position
@@ -1318,7 +1318,7 @@ class DescriptorModelType(Entity):
         if self.index == JSONBFieldIndexType.NONE.value:
             return 0
 
-        count = self.descriptor_model.panels.filter(descriptor_meta_model__target=content_type).count()
+        count = self.descriptor_model.panels.filter(layout__target=content_type).count()
         return count
 
     @classmethod
@@ -1455,13 +1455,13 @@ class DescriptorModel(Entity):
 
             # @todo could be optimized ?
             for panel in self.panels.all():
-                meta_model = panel.descriptor_meta_model
+                layout = panel.layout
 
                 for de in describable_entities:
                     field_name = de._meta.model_name + '_set'
 
-                    attr = getattr(meta_model, field_name)
-                    if attr and attr.filter(descriptor_meta_model=meta_model).exists():
+                    attr = getattr(layout, field_name)
+                    if attr and attr.filter(layout=layout).exists():
                         return True
 
             return False
@@ -1469,7 +1469,7 @@ class DescriptorModel(Entity):
         return False
 
 
-class DescriptorMetaModel(Entity):
+class Layout(Entity):
     """
     A meta model regroup many models of descriptors and many panels of descriptors.
     Some entities inherit of one of this model, in way to defines what descriptors are used,
@@ -1489,7 +1489,7 @@ class DescriptorMetaModel(Entity):
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
     # Target entity type (generally a describable entity).
-    target = models.ForeignKey(ContentType, editable=False, related_name='descriptor_meta_models')
+    target = models.ForeignKey(ContentType, editable=False, related_name='layouts')
 
     # Label of the meta model of descriptor.
     # It is i18nized used JSON dict with language code as key and label as string value.
@@ -1501,7 +1501,7 @@ class DescriptorMetaModel(Entity):
     # List of model of descriptor attached to this meta model through panel of descriptor for label and position.
     descriptor_models = models.ManyToManyField(
         DescriptorModel,
-        related_name='descriptor_meta_models',
+        related_name='layouts',
         through=DescriptorPanel)
 
     # meta-model parameters
@@ -1545,7 +1545,7 @@ class DescriptorMetaModel(Entity):
             field_name = de._meta.model_name + '_set'
 
             attr = getattr(self, field_name)
-            if attr and attr.filter(descriptor_meta_model=self).exists():
+            if attr and attr.filter(layout=self).exists():
                 return True
 
             return False
@@ -1667,7 +1667,7 @@ class DescribableEntity(Entity):
     descriptors = JSONField(default={})
 
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel)
+    layout = models.ForeignKey(Layout)
 
     class Meta:
         abstract = True

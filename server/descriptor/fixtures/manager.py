@@ -19,7 +19,7 @@ from django.contrib.contenttypes.models import ContentType
 from classification.models import Classification
 from main.models import EntitySynonymType
 from ..models import DescriptorGroup, DescriptorType, DescriptorModel, DescriptorModelType, \
-    DescriptorMetaModel, DescriptorPanel, DescriptorValue
+    Layout, DescriptorPanel, DescriptorValue
 
 
 class FixtureManager:
@@ -31,7 +31,7 @@ class FixtureManager:
         self.descriptor_groups = {}
         self.descriptor_types = {}
         self.descriptor_models = {}
-        self.descriptor_meta_models = {}
+        self.layouts = {}
 
     def set_descriptor_group(self, name, obj_id):
         self.descriptor_groups[name] = {
@@ -51,8 +51,8 @@ class FixtureManager:
             'name': name
         }
 
-    def set_descriptor_meta_model(self, name, obj_id):
-        self.descriptor_meta_models[name] = {
+    def set_layout(self, name, obj_id):
+        self.layouts[name] = {
             'id': obj_id,
             'name': name
         }
@@ -90,16 +90,16 @@ class FixtureManager:
 
         return model_id
 
-    def get_descriptor_meta_model_id(self, name):
+    def get_layout_id(self, name):
         # local search first
-        meta_model_id = self.descriptor_meta_models.get(name, {'id': None})['id']
-        if meta_model_id is None:
+        layout_id = self.layouts.get(name, {'id': None})['id']
+        if layout_id is None:
             try:
-                meta_model_id = DescriptorMetaModel.objects.get(name=name).id
-            except DescriptorMetaModel.DoesNotExist:
+                layout_id = Layout.objects.get(name=name).id
+            except Layout.DoesNotExist:
                 return None
 
-        return meta_model_id
+        return layout_id
 
     def load_json(self, module_name, file_name):
         handler = open(os.path.join(module_name, 'fixtures', file_name), 'rU')
@@ -206,17 +206,17 @@ class FixtureManager:
 
                 position += 1
 
-    def create_or_update_meta_models(self, descriptor_meta_models):
+    def create_or_update_layouts(self, layouts):
         sys.stdout.write("   + Create descriptor meta-models...\n")
 
         # first pass, create/update any meta-models without parameters (let to default)
-        for k, v in descriptor_meta_models.items():
-            meta_model_name = v['name']
+        for k, v in layouts.items():
+            layout_name = v['name']
 
             content_type = ContentType.objects.get_by_natural_key(*v['target'].split('.'))
 
-            descriptor_meta_model, created = DescriptorMetaModel.objects.update_or_create(
-                name=meta_model_name,
+            layout, created = Layout.objects.update_or_create(
+                name=layout_name,
                 defaults={
                     'label': v['label'],
                     'description': v['description'],
@@ -230,7 +230,7 @@ class FixtureManager:
                 descriptor_model_id = self.get_descriptor_model_id(panel['descriptor_model_name'])
 
                 panel_model, created = DescriptorPanel.objects.update_or_create(
-                    descriptor_meta_model=descriptor_meta_model,
+                    layout=layout,
                     descriptor_model_id=descriptor_model_id,
                     defaults={
                         'label': panel['label'],
@@ -248,19 +248,19 @@ class FixtureManager:
                     dmt.create_or_drop_index(content_type_model)
 
             # keep id for others fixtures
-            v['id'] = descriptor_meta_model.id
+            v['id'] = layout.id
 
             # lookup table
-            self.set_descriptor_meta_model(meta_model_name, descriptor_meta_model.id)
+            self.set_layout(layout_name, layout.id)
 
         # second pass, update parameters and make relations with foreign keys
-        for k, v in descriptor_meta_models.items():
-            meta_model_name = v['name']
+        for k, v in layouts.items():
+            layout_name = v['name']
             has_updated = False
 
             try:
-                descriptor_meta_model = DescriptorMetaModel.objects.get(name=meta_model_name)
-            except DescriptorMetaModel.DoesNotExist:
+                layout = Layout.objects.get(name=layout_name)
+            except Layout.DoesNotExist:
                 raise
 
             parameters = v.get('parameters', {'type': 'undefined'})
@@ -269,8 +269,8 @@ class FixtureManager:
             if parameters.get('data') is None:
                 continue
 
-            # @todo a DescriptorMetaModelParameter management according to type
-            # DescriptorMetaModelManager.update_parameters(descriptor_meta_model, parameters)
+            # @todo a LayoutParameter management according to type
+            # LayoutManager.update_parameters(layout, parameters)
 
             final_parameters = {
                 'type': parameters_type,
@@ -292,31 +292,31 @@ class FixtureManager:
                 final_parameters['data']['primary_classification'] = primary_classification.id
 
                 # allow batches meta-model list
-                batch_meta_model_list = parameters['data'].get('batch_descriptor_meta_models', [])
-                batch_meta_model_id_list = []
+                batch_layout_list = parameters['data'].get('batch_layouts', [])
+                batch_layout_id_list = []
 
-                for batch_meta_model_name in batch_meta_model_list:
-                    batch_meta_model_id = self.get_descriptor_meta_model_id(batch_meta_model_name)
+                for batch_layout_name in batch_layout_list:
+                    batch_layout_id = self.get_layout_id(batch_layout_name)
 
-                    if batch_meta_model_id is None:
+                    if batch_layout_id is None:
                         try:
-                            batch_meta_model = DescriptorMetaModel.objects.get(name=batch_meta_model_name)
-                        except DescriptorMetaModel.DoesNotExist:
+                            batch_layout = Layout.objects.get(name=batch_layout_name)
+                        except Layout.DoesNotExist:
                             raise
 
-                        batch_meta_model_id = batch_meta_model.id
+                        batch_layout_id = batch_layout.id
 
-                    batch_meta_model_id_list.append(batch_meta_model_id)
+                    batch_layout_id_list.append(batch_layout_id)
 
-                final_parameters['data']['batch_descriptor_meta_models'] = batch_meta_model_id_list
+                final_parameters['data']['batch_layouts'] = batch_layout_id_list
 
-                descriptor_meta_model.parameters = final_parameters
+                layout.parameters = final_parameters
                 has_updated = True
             else:
                 pass
 
             if has_updated:
-                descriptor_meta_model.save()
+                layout.save()
 
     def create_or_update_values(self, descriptor_type_name, data, trans=False, inline=False):
         sys.stdout.write("   + Create descriptors values for %s...\n" % descriptor_type_name)

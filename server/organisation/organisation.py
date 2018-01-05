@@ -18,7 +18,7 @@ from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel, DescriptorModelType, DescriptorValue
+from descriptor.models import Layout, DescriptorModelType, DescriptorValue
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cursor import CursorQuery
@@ -74,7 +74,7 @@ def create_organisation(request):
         raise SuspiciousOperation(_("Unsupported type of organisation"))
 
     content_type = get_object_or_404(ContentType, app_label="organisation", model="organisation")
-    dmm = get_object_or_404(DescriptorMetaModel, name="organisation", target=content_type)
+    layout = get_object_or_404(Layout, name="organisation", target=content_type)
 
     try:
         with transaction.atomic():
@@ -82,12 +82,12 @@ def create_organisation(request):
             organisation = Organisation()
             organisation.name = request.data['name']
             organisation.type = organisation_type
-            organisation.descriptor_meta_model = dmm
+            organisation.layout = layout
 
             # descriptors
             descriptors_builder = DescriptorsBuilder(organisation)
 
-            descriptors_builder.check_and_update(dmm, descriptors)
+            descriptors_builder.check_and_update(layout, descriptors)
             organisation.descriptors = descriptors_builder.descriptors
 
             organisation.save()
@@ -108,7 +108,7 @@ def create_organisation(request):
         'name': organisation.name,
         'type': organisation.type,
         'grc': request.data['grc'],
-        'descriptor_meta_model': dmm.id,
+        'layout': layout.id,
         'descriptors': organisation.descriptors
     }
 
@@ -158,7 +158,7 @@ def get_organisation_list(request):
             'name': organisation.name,
             'type': organisation.type,
             'descriptors': organisation.descriptors,
-            'descriptor_meta_model': organisation.descriptor_meta_model_id,
+            'layout': organisation.layout_id,
             'num_establishments': organisation.establishments__count,
             'grc': organisation.grcs__count  # [x for x in organisation.grcs.all().values_list('id', flat=True)]
         }
@@ -278,7 +278,7 @@ def get_organisation_details(request, org_id):
         'id': organisation.id,
         'name': organisation.name,
         'type': organisation.type,
-        'descriptor_meta_model': organisation.descriptor_meta_model_id,
+        'layout': organisation.layout_id,
         'descriptors': organisation.descriptors
     }
 
@@ -331,7 +331,7 @@ def patch_organisation(request, org_id):
                 # update descriptors
                 descriptors_builder = DescriptorsBuilder(organisation)
 
-                descriptors_builder.check_and_update(organisation.descriptor_meta_model, descriptors)
+                descriptors_builder.check_and_update(organisation.layout, descriptors)
 
                 organisation.descriptors = descriptors_builder.descriptors
                 result['descriptors'] = organisation.descriptors

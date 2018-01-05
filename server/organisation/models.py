@@ -56,12 +56,12 @@ class Organisation(DescribableEntity):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
-            'descriptor_meta_model': {
+            'layout': {
                 'label': _('Model'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'organisation.organisation'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
@@ -114,7 +114,7 @@ class Organisation(DescribableEntity):
         return {
             'name': self.name,
             'type': self.type,
-            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'layout': self.layout_id,
             'descriptors': self.descriptors
         }
 
@@ -199,12 +199,12 @@ class Establishment(DescribableEntity):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
-            'descriptor_meta_model': {
+            'layout': {
                 'label': _('Model'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'organisation.establishment'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
@@ -214,7 +214,7 @@ class Establishment(DescribableEntity):
     def audit_create(self, user):
         return {
             'name': self.name,
-            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'layout': self.layout_id,
             'descriptors': self.descriptors
         }
 
