@@ -348,7 +348,7 @@ def get_accession_details_json(request, acc_id):
 })
 def search_accession(request):
     """
-    Quick search for an accession with a exact or partial name and meta model of descriptor.
+    Quick search for an accession with a exact or partial name and layout of descriptor.
     It is possible to have multiple results for a same accession because of the multiples synonyms.
 
     The filters can be :

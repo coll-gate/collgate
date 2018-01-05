@@ -1,7 +1,7 @@
 # -*- coding: utf-8; -*-
 #
-# @file descriptorsmetamodels.py
-# @brief Setup the value for the organisation meta-models and types of models of descriptors.
+# @file layouts.py
+# @brief Setup the value for the organisation layouts and types of models of descriptors.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD

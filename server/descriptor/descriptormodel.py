@@ -515,7 +515,7 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
     dmt.save()
 
     if index is not None:
-        # for each descriptor meta model using this create the necessary index
+        # for each layout using this create the necessary index
         dps = DescriptorPanel.objects.filter(descriptor_model_id=dmt.descriptor_model_id)
         for dp in dps:
             content_type_model = dp.layout.target.model_class()
@@ -551,7 +551,7 @@ def delete_descriptor_model_type_for_model(request, des_id, typ_id):
         dmt.position = new_position
         dmt.save()
 
-    # for each descriptor meta model using this drop the index if necessary
+    # for each layout using this drop the index if necessary
     dps = DescriptorPanel.objects.filter(descriptor_model_id=dmt.descriptor_model_id)
 
     for dp in dps:

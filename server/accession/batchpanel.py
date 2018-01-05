@@ -276,7 +276,7 @@ def modify_panel(request, panel_id):
             if 'layout' in request.data:
                 layout_id = request.data["layout"]
 
-                # changing of meta model erase all previous descriptors values
+                # changing of layout erase all previous descriptors values
                 if layout_id is None and panel.layout is not None:
                     # clean previous descriptors and owns
                     descriptors_builder = DescriptorsBuilder(panel)

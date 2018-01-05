@@ -750,7 +750,7 @@ def remove_descriptor_panel_of_layout(request, layout_id, pan_id):
     for dmt in dmts:
         content_type_model = layout.target.model_class()
 
-        # drop only if not used by another descriptor meta model
+        # drop only if not used by another layout
         if dmt.count_index_usage(layout.target) <= 1:
             dmt.drop_index(content_type_model)
 

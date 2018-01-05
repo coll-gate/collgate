@@ -111,7 +111,7 @@ class DescriptorsBuilder(object):
         Very important, it is necessary to make a call to update_associations in way to release any previously used
         externals entities, and to own the newly associated.
 
-        :param layout: Descriptor meta model
+        :param layout: Layout
         :param descriptors: New descriptors values
         """
         dps = DescriptorPanel.objects.filter(layout=layout).order_by('position')

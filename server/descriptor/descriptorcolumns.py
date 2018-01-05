@@ -54,7 +54,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
 
     if layouts_list:
         if type(layouts_list) is not str:
-            raise SuspiciousOperation(_('Invalid descriptor meta model list parameter format'))
+            raise SuspiciousOperation(_('Invalid layout list parameter format'))
 
         layouts_ids = [int(x) for x in layouts_list.split(',')]
         layouts_ids.sort()

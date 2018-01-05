@@ -17,6 +17,6 @@ ORDER = [
     'descriptorstypes',
     'organisationstypes',
     'descriptorsmodels',
-    'descriptorsmetamodels'
+    'layouts'
 ]
 

@@ -379,7 +379,7 @@ def get_batch_parents_batches_list(request, bat_id):
 })
 def search_batch(request):
     """
-    Quick search for batch with a exact or partial name and meta model of descriptor.
+    Quick search for batch with a exact or partial name and layout of descriptor.
 
     The filters can be :
         - name: value to look for the name field.

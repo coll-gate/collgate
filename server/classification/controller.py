@@ -53,8 +53,8 @@ class ClassificationEntryManager(object):
         :param rank_id: Classification rank with a greater level than its parent rank.
         :param parent: None or valid Classification entry instance.
         :param language: Language code of the primary synonym created with name.
-        :param layout: Descriptor meta model instance or None.
-        :param descriptors: Descriptors values or None if no descriptor meta model.
+        :param layout: Layout instance or None.
+        :param descriptors: Descriptors values or None if no layout.
         :return: None or new Classification entry instance.
         """
         if ClassificationEntry.objects.filter(name=name).exists():

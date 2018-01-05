@@ -451,7 +451,7 @@ def patch_classification_entry(request, cls_id):
             if 'layout' in request.data:
                 layout_id = request.data["layout"]
 
-                # changing of meta model erase all previous descriptors values
+                # changing of layout erase all previous descriptors values
                 if layout_id is None and classification_entry.layout is not None:
                     # clean previous descriptors and owns
                     descriptors_builder = DescriptorsBuilder(classification_entry)
@@ -681,7 +681,7 @@ def get_classification_entry_entities(request, cls_id):
     for entity in children_entities:
         field_name = entity._meta.model_name + '_set'
 
-        # check _meta model type with cursor content type (grouped by content_type)
+        # check _layout type with cursor content type (grouped by content_type)
         if cursor_content_type is not None:
             if ".".join((entity._meta.app_label, entity._meta.model_name)) == cursor_content_type:
                 cursor_content_type = None

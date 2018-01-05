@@ -1072,7 +1072,7 @@ class DescriptorPanel(Entity):
 
     def get_label(self):
         """
-        Get the label for this meta model in the current regional.
+        Get the label for this layout in the current regional.
         """
         lang = translation.get_language()
         return self.label.get(lang, "")
@@ -1198,7 +1198,7 @@ class DescriptorModelType(Entity):
 
     def get_label(self):
         """
-        Get the label for this meta model in the current regional.
+        Get the label for this layout in the current regional.
         """
         lang = translation.get_language()
         return self.label.get(lang, "")
@@ -1471,7 +1471,7 @@ class DescriptorModel(Entity):
 
 class Layout(Entity):
     """
-    A meta model regroup many models of descriptors and many panels of descriptors.
+    A layout regroup many models of descriptors and many panels of descriptors.
     Some entities inherit of one of this model, in way to defines what descriptors are used,
     and how they are displayed.
     """
@@ -1491,14 +1491,14 @@ class Layout(Entity):
     # Target entity type (generally a describable entity).
     target = models.ForeignKey(ContentType, editable=False, related_name='layouts')
 
-    # Label of the meta model of descriptor.
+    # Label of the layout of descriptor.
     # It is i18nized used JSON dict with language code as key and label as string value.
     label = JSONField(default={})
 
     # Textual description of the model of descriptor. There is no translation. It is for staff usage.
     description = models.TextField(blank=True, default="")
 
-    # List of model of descriptor attached to this meta model through panel of descriptor for label and position.
+    # List of model of descriptor attached to this layout through panel of descriptor for label and position.
     descriptor_models = models.ManyToManyField(
         DescriptorModel,
         related_name='layouts',
@@ -1508,7 +1508,7 @@ class Layout(Entity):
     parameters = JSONField(default={"type": "undefined"})
 
     class Meta:
-        verbose_name = _("descriptor meta model")
+        verbose_name = _("layout")
 
     def natural_name(self):
         return self.name
@@ -1519,7 +1519,7 @@ class Layout(Entity):
 
     def get_label(self):
         """
-        Get the label for this meta model in the current regional.
+        Get the label for this layout in the current regional.
         """
         lang = translation.get_language()
         return self.label.get(lang, "")
