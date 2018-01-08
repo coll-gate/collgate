@@ -30,7 +30,7 @@ class CollGateAccession(ApplicationMain):
         # different types of formats for type of descriptors for this module
         self.format_types = []
 
-        # different types of formats for meta-model of descriptors for this module
+        # different types of formats for layout of descriptors for this module
         self.layout_types = []
 
         # different type of formats for batch-action-type
@@ -86,7 +86,7 @@ class CollGateAccession(ApplicationMain):
             Accession
         ]
 
-        # registers standard format type of descriptors meta-models
+        # registers standard format type of descriptors layouts
         from descriptor import layouttype
 
         for element in dir(layouttype):

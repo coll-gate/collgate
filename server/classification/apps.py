@@ -32,7 +32,7 @@ class CollGateClassification(ApplicationMain):
         # defines the list of entities models that uses of a classification entry as parent
         self.children_entities = []
 
-        # different types of meta-model of descriptors for this module
+        # different types of layout of descriptors for this module
         self.layout_types = []
 
     def ready(self):

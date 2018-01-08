@@ -14,28 +14,32 @@ LAYOUTS = {
         'name': 'organisation',
         'target': 'organisation.organisation',
         'label': {'en': 'Organisation', 'fr': 'Organisation'},
-        'description': "Unique meta-model for an organisation entity.",
-        'panels': [
-            {
-                'id': None,
-                'label': {'en': 'Common', 'fr': 'Commun'},
-                'descriptor_model_name': 'organisation'
-            }
-        ]
+        'description': "Unique layout for an organisation entity.",
+        'structure': {
+            'panels': [
+                {
+                    'label': {'en': 'Common', 'fr': 'Commun'},
+                    'descriptors': []
+                    # 'descriptor_model_name': 'organisation'
+                }
+            ]
+        }
     },
     'establishment': {
         'id': None,
         'name': 'establishment',
         'target': 'organisation.establishment',
         'label': {'en': 'Establishment', 'fr': 'Implantation'},
-        'description': "Unique meta-model for an establishment of an organisation entity.",
-        'panels': [
-            {
-                'id': None,
-                'label': {'en': 'Common', 'fr': 'Commun'},
-                'descriptor_model_name': 'establishment'
-            }
-        ]
+        'description': "Unique layout for an establishment of an organisation entity.",
+        'structure': {
+            'panels': [
+                {
+                    'label': {'en': 'Common', 'fr': 'Commun'},
+                    'descriptors': []
+                    # 'descriptor_model_name': 'organisation'
+                }
+            ]
+        }
     }
 }
 

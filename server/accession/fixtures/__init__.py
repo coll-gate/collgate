@@ -11,8 +11,7 @@
 ORDER = [
     'entitysynonymtypes',
     'batchactiontypes',
-    'descriptorsgroups',
     'descriptorstypes',
     'mcpdtypes',
-    'descriptorsmodels'
+    # 'descriptorsmodels'
 ]

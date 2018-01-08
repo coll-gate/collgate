@@ -13,13 +13,13 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
-from descriptor.models import DescribableEntity, DescriptorType
+from descriptor.models import DescribableEntity, Descriptor
 
 
 class Organisation(DescribableEntity):
     """
     Organisation entity for management level.
-    The descriptor meta-model is defined to the unique name "organisation".
+    The descriptor layout is defined to the unique name "organisation".
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
@@ -152,7 +152,7 @@ class Organisation(DescribableEntity):
 
     @classmethod
     def is_type(cls, organisation_type):
-        descriptor_type = DescriptorType.objects.get(code=cls.TYPE_CODE)
+        descriptor_type = Descriptor.objects.get(code=cls.TYPE_CODE)
 
         try:
             descriptor_type.get_value(organisation_type)
@@ -165,7 +165,7 @@ class Organisation(DescribableEntity):
 class Establishment(DescribableEntity):
     """
     Location for an organisation.
-    The descriptor meta-model is defined to the unique name "establishment".
+    The descriptor layout is defined to the unique name "establishment".
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after

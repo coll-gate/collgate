@@ -13,10 +13,9 @@ coll-gate organisation fixtures initialisation
 """
 
 ORDER = [
-    'descriptorsgroups',
     'descriptorstypes',
-    'organisationstypes',
-    'descriptorsmodels',
+    # 'organisationstypes',
+    # 'descriptorsmodels',
     'layouts'
 ]
 

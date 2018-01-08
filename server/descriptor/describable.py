@@ -16,7 +16,7 @@ from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.descriptorformattype import DescriptorFormatTypeManager
-from descriptor.models import DescriptorPanel, DescriptorModelTypeCondition
+# from descriptor.models import DescriptorPanel, DescriptorModelTypeCondition
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
@@ -66,155 +66,155 @@ class DescriptorsBuilder(object):
         """
         return self._descriptors
 
-    def clear(self, layout):
-        """
-        Clear (unset) any values of descriptors. It does not take care of mandatory or set_once attributes.
-        The descriptors dict of the builder returns an empty dict. It does not also take care of the conditions because
-        there is no new values. And it make the list of descriptors to be released by a next call of
-        update_associations.
+    # def clear(self, layout):
+    #     """
+    #     Clear (unset) any values of descriptors. It does not take care of mandatory or set_once attributes.
+    #     The descriptors dict of the builder returns an empty dict. It does not also take care of the conditions because
+    #     there is no new values. And it make the list of descriptors to be released by a next call of
+    #     update_associations.
+    #
+    #     Very important, any previously owned entities must be released by a call to update_associations.
+    #
+    #     :param layout:
+    #     """
+    #     dps = DescriptorPanel.objects.filter(layout=layout).order_by('position')
+    #     dps.select_related('descriptor_model')
+    #
+    #     for panel in dps:
+    #         descriptor_model = panel.descriptor_model
+    #
+    #         for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related(
+    #                 'descriptor_type'):
+    #             descriptor_type = dmt.descriptor_type
+    #
+    #             # values are loaded on demand (displaying the panel or opening the dropdown)
+    #             dt_format = descriptor_type.format
+    #
+    #             src_name = str(dmt.name)
+    #
+    #             acc_value = self.entity.descriptors.get(src_name)
+    #
+    #             if DescriptorFormatTypeManager.has_external(dt_format):
+    #                 self.own_list.append((dt_format, acc_value, None))
+    #
+    #     # no more values
+    #     self._descriptors = {}
 
-        Very important, any previously owned entities must be released by a call to update_associations.
-
-        :param layout:
-        """
-        dps = DescriptorPanel.objects.filter(layout=layout).order_by('position')
-        dps.select_related('descriptor_model')
-
-        for panel in dps:
-            descriptor_model = panel.descriptor_model
-
-            for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related(
-                    'descriptor_type'):
-                descriptor_type = dmt.descriptor_type
-
-                # values are loaded on demand (displaying the panel or opening the dropdown)
-                dt_format = descriptor_type.format
-
-                src_name = str(dmt.name)
-
-                acc_value = self.entity.descriptors.get(src_name)
-
-                if DescriptorFormatTypeManager.has_external(dt_format):
-                    self.own_list.append((dt_format, acc_value, None))
-
-        # no more values
-        self._descriptors = {}
-
-    def check_and_update(self, layout, descriptors):
-        """
-        For any descriptors (model-type) of the meta-model, check the new values given by the descriptors parameter,
-        check the mandatory, the set_once and the condition. It also make the list of descriptors to be updated by
-        a next call of update_associations.
-
-        The descriptors values are then available in the property descriptors of the builder.
-
-        Very important, it is necessary to make a call to update_associations in way to release any previously used
-        externals entities, and to own the newly associated.
-
-        :param layout: Layout
-        :param descriptors: New descriptors values
-        """
-        dps = DescriptorPanel.objects.filter(layout=layout).order_by('position')
-        dps.select_related('descriptor_model')
-
-        for panel in dps:
-            descriptor_model = panel.descriptor_model
-
-            for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related('descriptor_type'):
-                descriptor_type = dmt.descriptor_type
-
-                # values are loaded on demand (displaying the panel or opening the dropdown)
-                dt_format = descriptor_type.format
-
-                conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
-                src_name = dmt.name
-
-                src_defined = src_name in descriptors
-
-                acc_value = self.entity.descriptors.get(src_name)
-                src_value = descriptors.get(src_name)
-
-                merged_value = src_value if src_defined else acc_value
-
-                # valid the new value
-                if src_defined and src_value is not None:
-                    DescriptorFormatTypeManager.validate(dt_format, src_value, dmt)
-
-                # mandatory descriptor
-                if dmt.mandatory:
-                    if src_value is None and acc_value is None:
-                        raise ValueError(_("Missing mandatory descriptor %s") % (dmt.get_label(),))
-
-                # set once descriptor
-                if dmt.set_once:
-                    if src_value is not None and acc_value is not None:
-                        raise ValueError(_("Already defined set once descriptor %s") % (dmt.get_label(),))
-
-                if conditions.exists():
-                    # check condition
-                    dmtc = conditions[0]
-                    target_name = dmtc.target.name
-
-                    # according to the condition if the current value is defined (src) or was defined (acc)
-                    # the condition must be respected otherwise it raises an exception if a new value is defined (src)
-                    src_target_defined = target_name in descriptors
-
-                    acc_target_value = self.entity.descriptors.get(target_name)
-                    src_target_value = descriptors.get(target_name)
-                    merged_target_value = src_target_value if src_target_defined else acc_target_value
-
-                    if dmtc.condition == 0:
-                        # the src_value can be defined if the target_value is not defined
-                        if merged_target_value is not None and merged_value is not None:
-                            raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                             " (%s)" % dmt.get_label())
-
-                    elif dmtc.condition == 1:
-                        # the src_value can be defined if the target_value is defined
-                        if merged_target_value is None and merged_value is not None:
-                            raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                             " (%s)" % dmt.get_label())
-
-                    elif dmtc.condition == 2:
-                        # the src_value can defined if the target_value is defined and is equal to the value defined by
-                        # the condition
-
-                        # first the target_value must be defined
-                        if merged_target_value is None and merged_value is not None:
-                            raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                             " (%s)" % dmt.get_label())
-
-                        # and be equal to
-                        if merged_value is not None and merged_target_value is not None and merged_target_value != dmtc.values:
-                            raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                             " (%s)" % dmt.get_label())
-
-                    elif dmtc.condition == 3:
-                        # the src_value can defined if the target_value is defined and is different from the value
-                        # defined by the condition
-
-                        # first the target_value must be defined
-                        if merged_target_value is None and merged_value is not None:
-                            raise ValueError(
-                                _("A conditional descriptor is defined but the condition is not true") +
-                                " (%s)" % dmt.get_label())
-
-                        # and be different from
-                        if merged_value is not None and merged_target_value is not None and merged_target_value == dmtc.values:
-                            raise ValueError(
-                                _("A conditional descriptor is defined but the condition is not true") +
-                                " (%s)" % dmt.get_label())
-
-                # use new value if defined, else reuse current
-                self._descriptors[dmt.name] = src_value if src_defined else acc_value
-
-                # keep trace of changed descriptors
-                if src_defined and src_value != acc_value:
-                    self._changed_descriptors[dmt.name] = src_value
-
-                # make the list of descriptors that need to perform a call to own
-                if DescriptorFormatTypeManager.has_external(dt_format):
-                    self.own_list.append((dt_format, acc_value, merged_value))
+    # def check_and_update(self, layout, descriptors):
+    #     """
+    #     For any descriptors (model-type) of the layout, check the new values given by the descriptors parameter,
+    #     check the mandatory, the set_once and the condition. It also make the list of descriptors to be updated by
+    #     a next call of update_associations.
+    #
+    #     The descriptors values are then available in the property descriptors of the builder.
+    #
+    #     Very important, it is necessary to make a call to update_associations in way to release any previously used
+    #     externals entities, and to own the newly associated.
+    #
+    #     :param layout: Layout
+    #     :param descriptors: New descriptors values
+    #     """
+    #     dps = DescriptorPanel.objects.filter(layout=layout).order_by('position')
+    #     dps.select_related('descriptor_model')
+    #
+    #     for panel in dps:
+    #         descriptor_model = panel.descriptor_model
+    #
+    #         for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related('descriptor_type'):
+    #             descriptor_type = dmt.descriptor_type
+    #
+    #             # values are loaded on demand (displaying the panel or opening the dropdown)
+    #             dt_format = descriptor_type.format
+    #
+    #             conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
+    #             src_name = dmt.name
+    #
+    #             src_defined = src_name in descriptors
+    #
+    #             acc_value = self.entity.descriptors.get(src_name)
+    #             src_value = descriptors.get(src_name)
+    #
+    #             merged_value = src_value if src_defined else acc_value
+    #
+    #             # valid the new value
+    #             if src_defined and src_value is not None:
+    #                 DescriptorFormatTypeManager.validate(dt_format, src_value, dmt)
+    #
+    #             # mandatory descriptor
+    #             if dmt.mandatory:
+    #                 if src_value is None and acc_value is None:
+    #                     raise ValueError(_("Missing mandatory descriptor %s") % (dmt.get_label(),))
+    #
+    #             # set once descriptor
+    #             if dmt.set_once:
+    #                 if src_value is not None and acc_value is not None:
+    #                     raise ValueError(_("Already defined set once descriptor %s") % (dmt.get_label(),))
+    #
+    #             if conditions.exists():
+    #                 # check condition
+    #                 dmtc = conditions[0]
+    #                 target_name = dmtc.target.name
+    #
+    #                 # according to the condition if the current value is defined (src) or was defined (acc)
+    #                 # the condition must be respected otherwise it raises an exception if a new value is defined (src)
+    #                 src_target_defined = target_name in descriptors
+    #
+    #                 acc_target_value = self.entity.descriptors.get(target_name)
+    #                 src_target_value = descriptors.get(target_name)
+    #                 merged_target_value = src_target_value if src_target_defined else acc_target_value
+    #
+    #                 if dmtc.condition == 0:
+    #                     # the src_value can be defined if the target_value is not defined
+    #                     if merged_target_value is not None and merged_value is not None:
+    #                         raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+    #                                          " (%s)" % dmt.get_label())
+    #
+    #                 elif dmtc.condition == 1:
+    #                     # the src_value can be defined if the target_value is defined
+    #                     if merged_target_value is None and merged_value is not None:
+    #                         raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+    #                                          " (%s)" % dmt.get_label())
+    #
+    #                 elif dmtc.condition == 2:
+    #                     # the src_value can defined if the target_value is defined and is equal to the value defined by
+    #                     # the condition
+    #
+    #                     # first the target_value must be defined
+    #                     if merged_target_value is None and merged_value is not None:
+    #                         raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+    #                                          " (%s)" % dmt.get_label())
+    #
+    #                     # and be equal to
+    #                     if merged_value is not None and merged_target_value is not None and merged_target_value != dmtc.values:
+    #                         raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+    #                                          " (%s)" % dmt.get_label())
+    #
+    #                 elif dmtc.condition == 3:
+    #                     # the src_value can defined if the target_value is defined and is different from the value
+    #                     # defined by the condition
+    #
+    #                     # first the target_value must be defined
+    #                     if merged_target_value is None and merged_value is not None:
+    #                         raise ValueError(
+    #                             _("A conditional descriptor is defined but the condition is not true") +
+    #                             " (%s)" % dmt.get_label())
+    #
+    #                     # and be different from
+    #                     if merged_value is not None and merged_target_value is not None and merged_target_value == dmtc.values:
+    #                         raise ValueError(
+    #                             _("A conditional descriptor is defined but the condition is not true") +
+    #                             " (%s)" % dmt.get_label())
+    #
+    #             # use new value if defined, else reuse current
+    #             self._descriptors[dmt.name] = src_value if src_defined else acc_value
+    #
+    #             # keep trace of changed descriptors
+    #             if src_defined and src_value != acc_value:
+    #                 self._changed_descriptors[dmt.name] = src_value
+    #
+    #             # make the list of descriptors that need to perform a call to own
+    #             if DescriptorFormatTypeManager.has_external(dt_format):
+    #                 self.own_list.append((dt_format, acc_value, merged_value))
 
     def update_associations(self):
         """

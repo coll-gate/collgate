@@ -13,7 +13,6 @@ coll-gate geolocation fixtures initialisation
 """
 
 ORDER = [
-    'descriptorsgroups',
     'descriptorstypes'
 ]
 

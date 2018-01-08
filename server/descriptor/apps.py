@@ -24,7 +24,7 @@ class CollGateDescriptor(ApplicationMain):
     def __init__(self, app_name, app_module):
         super(CollGateDescriptor, self).__init__(app_name, app_module)
 
-        # defines the list of entities models that uses of a meta-model of descriptor
+        # defines the list of entities models that uses of a layout of descriptor
         self.describable_entities = []
 
         # different types of format for type of descriptors for this module
@@ -33,7 +33,7 @@ class CollGateDescriptor(ApplicationMain):
         # different units of format for type of descriptors
         self.format_units = []
 
-        # different types of meta-model of descriptors for this module
+        # different types of layout of descriptors for this module
         self.layout_types = []
 
     def ready(self):
@@ -101,7 +101,7 @@ class CollGateDescriptor(ApplicationMain):
         # and register them
         descriptorformatunit.DescriptorFormatUnitManager.register(self.format_units)
 
-        # registers standard types of descriptors meta-models
+        # registers standard types of descriptors layouts
         from . import layouttype
 
         for element in dir(layouttype):
@@ -124,7 +124,7 @@ class CollGateDescriptor(ApplicationMain):
             MenuEntry('list-descriptor-model', _('List models of descriptor'), "#descriptor/model/",
                       icon=FaGlyph('th'), order=302, auth=AUTH_STAFF))
         menu_descriptor.add_entry(
-            MenuEntry('list-descriptor-meta-model', _('List meta-models of descriptor'), "#descriptor/meta-model/",
+            MenuEntry('list-descriptor-layout', _('List layouts of descriptor'), "#descriptor/layout/",
                       icon=FaGlyph('th-large'), order=303, auth=AUTH_STAFF))
         descriptor_module.add_menu(menu_descriptor)
 

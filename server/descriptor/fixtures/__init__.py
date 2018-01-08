@@ -13,7 +13,6 @@ coll-gate descriptors fixtures initialisation
 """
 
 ORDER = [
-    'descriptorsgroups',
     'descriptorstypes'
 ]
 

@@ -20,7 +20,8 @@ from django.utils.translation import ugettext_lazy as _
 from classification import localsettings
 from classification.classification import RestClassificationClassificationId
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import Layout, DescriptorModelType
+# from descriptor.models import Layout, DescriptorModelType
+from descriptor.models import Layout
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cursor import CursorQuery
@@ -76,80 +77,80 @@ class RestClassificationClassificationIdClassificationEntryCount(RestClassificat
     suffix = 'count'
 
 
-@RestClassificationEntry.def_auth_request(Method.POST, Format.JSON, content={
-    "type": "object",
-    "properties": {
-        "name": ClassificationEntrySynonym.NAME_VALIDATOR,
-        "layout": {"type": "number"},
-        # "layout": {"type": ["number", "null"], "required": False},
-        "rank": {"type": "number", 'minimum': 0},
-        "parent": {"type": ["number", "null"], "required": False},
-        "descriptors": {"type": "object"},
-        # "descriptors": {"type": "object", "required": False}
-        "language": ClassificationEntrySynonym.LANGUAGE_VALIDATOR
-    },
-}, perms={'classification.add_classificationentry': _('You are not allowed to create a classification entry')}
-                                          )
-def create_classification_entry(request):
-    """
-    Create a new classification entry with a primary synonym in the current language.
-    """
-    parameters = request.data
-
-    parent = None
-    if parameters.get('parent'):
-        parent_id = int_arg(parameters['parent'])
-        parent = get_object_or_404(ClassificationEntry, id=parent_id)
-
-    rank_id = int_arg(parameters['rank'])
-    language = parameters['language']
-    layout = request.data.get('layout')
-    descriptors = request.data.get('descriptors')
-
-    if not Language.objects.filter(code=language).exists():
-        raise SuspiciousOperation(_("The language is not supported"))
-
-    if layout is not None and descriptors is not None:
-        layout_id = int_arg(layout)
-
-        content_type = get_object_or_404(ContentType, app_label="classification", model="classificationentry")
-        layout = get_object_or_404(Layout, id=layout_id, target=content_type)
-    else:
-        # @todo do we allow that ?
-        layout = None
-
-    try:
-        with transaction.atomic():
-            classification_entry = ClassificationEntryManager.create_classification_entry(
-                parameters['name'],
-                rank_id,
-                parent,
-                language,
-                layout,
-                descriptors)
-    except IntegrityError as e:
-        DescriptorModelType.integrity_except(ClassificationEntry, e)
-
-    response = {
-        'id': classification_entry.id,
-        'name': classification_entry.name,
-        'rank': classification_entry.rank_id,
-        'parent': classification_entry.parent_id if parent else None,
-        'parent_list': classification_entry.parent_list,
-        'synonyms': [],
-        'layout': classification_entry.layout_id if layout else None,
-        'descriptors': classification_entry.descriptors
-    }
-
-    for s in classification_entry.synonyms.all():
-        response['synonyms'].append({
-            'id': s.id,
-            'name': s.name,
-            'synonym_type': s.synonym_type_id,
-            'language': s.language
-        })
-
-    return HttpResponseRest(request, response)
+# @RestClassificationEntry.def_auth_request(Method.POST, Format.JSON, content={
+#     "type": "object",
+#     "properties": {
+#         "name": ClassificationEntrySynonym.NAME_VALIDATOR,
+#         "layout": {"type": "number"},
+#         # "layout": {"type": ["number", "null"], "required": False},
+#         "rank": {"type": "number", 'minimum': 0},
+#         "parent": {"type": ["number", "null"], "required": False},
+#         "descriptors": {"type": "object"},
+#         # "descriptors": {"type": "object", "required": False}
+#         "language": ClassificationEntrySynonym.LANGUAGE_VALIDATOR
+#     },
+# }, perms={'classification.add_classificationentry': _('You are not allowed to create a classification entry')}
+#                                           )
+# def create_classification_entry(request):
+#     """
+#     Create a new classification entry with a primary synonym in the current language.
+#     """
+#     parameters = request.data
+#
+#     parent = None
+#     if parameters.get('parent'):
+#         parent_id = int_arg(parameters['parent'])
+#         parent = get_object_or_404(ClassificationEntry, id=parent_id)
+#
+#     rank_id = int_arg(parameters['rank'])
+#     language = parameters['language']
+#     layout = request.data.get('layout')
+#     descriptors = request.data.get('descriptors')
+#
+#     if not Language.objects.filter(code=language).exists():
+#         raise SuspiciousOperation(_("The language is not supported"))
+#
+#     if layout is not None and descriptors is not None:
+#         layout_id = int_arg(layout)
+#
+#         content_type = get_object_or_404(ContentType, app_label="classification", model="classificationentry")
+#         layout = get_object_or_404(Layout, id=layout_id, target=content_type)
+#     else:
+#         # @todo do we allow that ?
+#         layout = None
+#
+#     try:
+#         with transaction.atomic():
+#             classification_entry = ClassificationEntryManager.create_classification_entry(
+#                 parameters['name'],
+#                 rank_id,
+#                 parent,
+#                 language,
+#                 layout,
+#                 descriptors)
+#     except IntegrityError as e:
+#         DescriptorModelType.integrity_except(ClassificationEntry, e)
+#
+#     response = {
+#         'id': classification_entry.id,
+#         'name': classification_entry.name,
+#         'rank': classification_entry.rank_id,
+#         'parent': classification_entry.parent_id if parent else None,
+#         'parent_list': classification_entry.parent_list,
+#         'synonyms': [],
+#         'layout': classification_entry.layout_id if layout else None,
+#         'descriptors': classification_entry.descriptors
+#     }
+#
+#     for s in classification_entry.synonyms.all():
+#         response['synonyms'].append({
+#             'id': s.id,
+#             'name': s.name,
+#             'synonym_type': s.synonym_type_id,
+#             'language': s.language
+#         })
+#
+#     return HttpResponseRest(request, response)
 
 
 @RestClassificationEntry.def_auth_request(Method.GET, Format.JSON, perms={
@@ -387,134 +388,134 @@ def search_classification_entry(request):
     return HttpResponseRest(request, results)
 
 
-@RestClassificationEntryId.def_auth_request(
-    Method.PATCH, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            "parent": {"type": ["number", "null"], 'required': False},
-            "layout": {"type": ["integer", "null"], 'required': False},
-            "descriptors": {"type": "object", 'required': False}
-        },
-    },
-    perms={
-        'classification.change_classificationentry': _("You are not allowed to modify a classification entry"),
-    }
-)
-def patch_classification_entry(request, cls_id):
-    classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
-
-    result = {}
-
-    if 'parent' in request.data:
-        if request.data['parent'] is None:
-            classification_entry.parent = None
-            classification_entry.parent_list = []
-
-            result['parent'] = None
-            result['parent_list'] = []
-            result['parent_details'] = []
-        else:
-            pcls_id = int(request.data['parent'])
-
-            parent = get_object_or_404(ClassificationEntry, id=pcls_id)
-
-            classification_entry.parent = parent
-
-            # @todo rank level
-            if parent.rank_id >= classification_entry.rank_id:
-                raise SuspiciousOperation(_("The rank of the parent must be lowest than the classification entry itself"))
-
-            # make parent list
-            ClassificationEntryManager.update_parents(classification_entry, parent)
-
-            # query for parents
-            parents = []
-            parents_cls = ClassificationEntry.objects.filter(id__in=classification_entry.parent_list)
-
-            for parent in parents_cls:
-                parents.insert(0, {
-                    'id': parent.id,
-                    'name': parent.name,
-                    'rank': parent.rank_id,
-                    'parent': parent.parent_id
-                })
-
-            result['parent'] = parent.id
-            result['parent_list'] = parents
-            result['parent_details'] = parents
-
-        classification_entry.update_field(['parent', 'parent_list'])
-
-    try:
-        with transaction.atomic():
-            # update meta-model of descriptors and descriptors
-            if 'layout' in request.data:
-                layout_id = request.data["layout"]
-
-                # changing of layout erase all previous descriptors values
-                if layout_id is None and classification_entry.layout is not None:
-                    # clean previous descriptors and owns
-                    descriptors_builder = DescriptorsBuilder(classification_entry)
-
-                    descriptors_builder.clear(classification_entry.layout)
-
-                    classification_entry.layout = None
-                    classification_entry.descriptors = {}
-
-                    descriptors_builder.update_associations()
-
-                    result['layout'] = None
-                    result['descriptors'] = {}
-
-                elif layout_id is not None:
-                    # existing descriptors and new meta-model is different : first clean previous descriptors
-                    if (classification_entry.layout is not None and
-                            classification_entry.layout.pk != layout_id):
-
-                        # clean previous descriptors and owns
-                        descriptors_builder = DescriptorsBuilder(classification_entry)
-
-                        descriptors_builder.clear(classification_entry.layout)
-
-                        classification_entry.layout = None
-                        classification_entry.descriptors = {}
-
-                        descriptors_builder.update_associations()
-
-                    # and set the new one
-                    content_type = get_object_or_404(ContentType, app_label="classification", model="classificationentry")
-                    layout = get_object_or_404(Layout, id=layout_id, target=content_type)
-
-                    classification_entry.layout = layout
-                    classification_entry.descriptors = {}
-
-                    result['layout'] = layout.id
-                    result['descriptors'] = {}
-
-                    classification_entry.update_field(['layout', 'descriptors'])
-
-            # update descriptors
-            if 'descriptors' in request.data:
-                descriptors = request.data["descriptors"]
-
-                descriptors_builder = DescriptorsBuilder(classification_entry)
-
-                descriptors_builder.check_and_update(classification_entry.layout, descriptors)
-                classification_entry.descriptors = descriptors_builder.descriptors
-
-                descriptors_builder.update_associations()
-
-                result['descriptors'] = classification_entry.descriptors
-
-                classification_entry.update_descriptors(descriptors_builder.changed_descriptors())
-                classification_entry.update_field('descriptors')
-
-            classification_entry.save()
-
-    except IntegrityError as e:
-        DescriptorModelType.integrity_except(ClassificationEntry, e)
-
-    return HttpResponseRest(request, result)
+# @RestClassificationEntryId.def_auth_request(
+#     Method.PATCH, Format.JSON, content={
+#         "type": "object",
+#         "properties": {
+#             "parent": {"type": ["number", "null"], 'required': False},
+#             "layout": {"type": ["integer", "null"], 'required': False},
+#             "descriptors": {"type": "object", 'required': False}
+#         },
+#     },
+#     perms={
+#         'classification.change_classificationentry': _("You are not allowed to modify a classification entry"),
+#     }
+# )
+# def patch_classification_entry(request, cls_id):
+#     classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
+#
+#     result = {}
+#
+#     if 'parent' in request.data:
+#         if request.data['parent'] is None:
+#             classification_entry.parent = None
+#             classification_entry.parent_list = []
+#
+#             result['parent'] = None
+#             result['parent_list'] = []
+#             result['parent_details'] = []
+#         else:
+#             pcls_id = int(request.data['parent'])
+#
+#             parent = get_object_or_404(ClassificationEntry, id=pcls_id)
+#
+#             classification_entry.parent = parent
+#
+#             # @todo rank level
+#             if parent.rank_id >= classification_entry.rank_id:
+#                 raise SuspiciousOperation(_("The rank of the parent must be lowest than the classification entry itself"))
+#
+#             # make parent list
+#             ClassificationEntryManager.update_parents(classification_entry, parent)
+#
+#             # query for parents
+#             parents = []
+#             parents_cls = ClassificationEntry.objects.filter(id__in=classification_entry.parent_list)
+#
+#             for parent in parents_cls:
+#                 parents.insert(0, {
+#                     'id': parent.id,
+#                     'name': parent.name,
+#                     'rank': parent.rank_id,
+#                     'parent': parent.parent_id
+#                 })
+#
+#             result['parent'] = parent.id
+#             result['parent_list'] = parents
+#             result['parent_details'] = parents
+#
+#         classification_entry.update_field(['parent', 'parent_list'])
+#
+#     try:
+#         with transaction.atomic():
+#             # update layout of descriptors and descriptors
+#             if 'layout' in request.data:
+#                 layout_id = request.data["layout"]
+#
+#                 # changing of layout erase all previous descriptors values
+#                 if layout_id is None and classification_entry.layout is not None:
+#                     # clean previous descriptors and owns
+#                     descriptors_builder = DescriptorsBuilder(classification_entry)
+#
+#                     descriptors_builder.clear(classification_entry.layout)
+#
+#                     classification_entry.layout = None
+#                     classification_entry.descriptors = {}
+#
+#                     descriptors_builder.update_associations()
+#
+#                     result['layout'] = None
+#                     result['descriptors'] = {}
+#
+#                 elif layout_id is not None:
+#                     # existing descriptors and new layout is different : first clean previous descriptors
+#                     if (classification_entry.layout is not None and
+#                             classification_entry.layout.pk != layout_id):
+#
+#                         # clean previous descriptors and owns
+#                         descriptors_builder = DescriptorsBuilder(classification_entry)
+#
+#                         descriptors_builder.clear(classification_entry.layout)
+#
+#                         classification_entry.layout = None
+#                         classification_entry.descriptors = {}
+#
+#                         descriptors_builder.update_associations()
+#
+#                     # and set the new one
+#                     content_type = get_object_or_404(ContentType, app_label="classification", model="classificationentry")
+#                     layout = get_object_or_404(Layout, id=layout_id, target=content_type)
+#
+#                     classification_entry.layout = layout
+#                     classification_entry.descriptors = {}
+#
+#                     result['layout'] = layout.id
+#                     result['descriptors'] = {}
+#
+#                     classification_entry.update_field(['layout', 'descriptors'])
+#
+#             # update descriptors
+#             if 'descriptors' in request.data:
+#                 descriptors = request.data["descriptors"]
+#
+#                 descriptors_builder = DescriptorsBuilder(classification_entry)
+#
+#                 descriptors_builder.check_and_update(classification_entry.layout, descriptors)
+#                 classification_entry.descriptors = descriptors_builder.descriptors
+#
+#                 descriptors_builder.update_associations()
+#
+#                 result['descriptors'] = classification_entry.descriptors
+#
+#                 classification_entry.update_descriptors(descriptors_builder.changed_descriptors())
+#                 classification_entry.update_field('descriptors')
+#
+#             classification_entry.save()
+#
+#     except IntegrityError as e:
+#         DescriptorModelType.integrity_except(ClassificationEntry, e)
+#
+#     return HttpResponseRest(request, result)
 
 
 @RestClassificationEntryId.def_auth_request(Method.DELETE, Format.JSON, perms={

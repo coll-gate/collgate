@@ -268,7 +268,7 @@ class ClassificationEntry(Entity):
     # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
     descriptors = JSONField(default={})
 
-    # It refers to a set of models of type of descriptors through a meta-model of descriptor.
+    # It refers to a set of models of type of descriptors through a layout of descriptor.
     # It can be null because it is possible to have the choice to defines or not some descriptors
     # to a classification entry.
     layout = models.ForeignKey(Layout, null=True)

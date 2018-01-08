@@ -18,7 +18,8 @@ from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import Layout, DescriptorModelType, DescriptorValue
+# from descriptor.models import Layout, DescriptorModelType, DescriptorValue
+from descriptor.models import Layout
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cursor import CursorQuery
@@ -47,72 +48,72 @@ class RestOrganisationSearch(RestOrganisation):
     suffix = 'search'
 
 
-@RestOrganisation.def_auth_request(Method.POST, Format.JSON, content={
-    "type": "object",
-    "properties": {
-        "name": Organisation.NAME_VALIDATOR,
-        "type": Organisation.TYPE_VALIDATOR,
-        "descriptors": {"type": "object"},
-        "grc": {"type": "boolean"}
-    },
-}, perms={'organisation.add_organisation': _('You are not allowed to create an organisation')}
-)
-def create_organisation(request):
-    """
-    Create a new organisation.
-    """
-    name = request.data['name']
-    organisation_type = request.data['type']
-    descriptors = request.data['descriptors']
-
-    # check uniqueness of the name
-    if Organisation.objects.filter(name=name).exists():
-        raise SuspiciousOperation(_("The name of the organisation is already used"))
-
-    # check that type is in the values of descriptor
-    if not Organisation.is_type(organisation_type):
-        raise SuspiciousOperation(_("Unsupported type of organisation"))
-
-    content_type = get_object_or_404(ContentType, app_label="organisation", model="organisation")
-    layout = get_object_or_404(Layout, name="organisation", target=content_type)
-
-    try:
-        with transaction.atomic():
-            # common properties
-            organisation = Organisation()
-            organisation.name = request.data['name']
-            organisation.type = organisation_type
-            organisation.layout = layout
-
-            # descriptors
-            descriptors_builder = DescriptorsBuilder(organisation)
-
-            descriptors_builder.check_and_update(layout, descriptors)
-            organisation.descriptors = descriptors_builder.descriptors
-
-            organisation.save()
-
-            # update owner on external descriptors
-            descriptors_builder.update_associations()
-
-            # add to GRC as partner
-            if request.data['grc'] is True:
-                grc = GRC.objects.get_unique_grc()
-                grc.organisations.add(organisation)
-
-    except IntegrityError as e:
-        DescriptorModelType.integrity_except(Organisation, e)
-
-    response = {
-        'id': organisation.id,
-        'name': organisation.name,
-        'type': organisation.type,
-        'grc': request.data['grc'],
-        'layout': layout.id,
-        'descriptors': organisation.descriptors
-    }
-
-    return HttpResponseRest(request, response)
+# @RestOrganisation.def_auth_request(Method.POST, Format.JSON, content={
+#     "type": "object",
+#     "properties": {
+#         "name": Organisation.NAME_VALIDATOR,
+#         "type": Organisation.TYPE_VALIDATOR,
+#         "descriptors": {"type": "object"},
+#         "grc": {"type": "boolean"}
+#     },
+# }, perms={'organisation.add_organisation': _('You are not allowed to create an organisation')}
+# )
+# def create_organisation(request):
+#     """
+#     Create a new organisation.
+#     """
+#     name = request.data['name']
+#     organisation_type = request.data['type']
+#     descriptors = request.data['descriptors']
+#
+#     # check uniqueness of the name
+#     if Organisation.objects.filter(name=name).exists():
+#         raise SuspiciousOperation(_("The name of the organisation is already used"))
+#
+#     # check that type is in the values of descriptor
+#     if not Organisation.is_type(organisation_type):
+#         raise SuspiciousOperation(_("Unsupported type of organisation"))
+#
+#     content_type = get_object_or_404(ContentType, app_label="organisation", model="organisation")
+#     layout = get_object_or_404(Layout, name="organisation", target=content_type)
+#
+#     try:
+#         with transaction.atomic():
+#             # common properties
+#             organisation = Organisation()
+#             organisation.name = request.data['name']
+#             organisation.type = organisation_type
+#             organisation.layout = layout
+#
+#             # descriptors
+#             descriptors_builder = DescriptorsBuilder(organisation)
+#
+#             descriptors_builder.check_and_update(layout, descriptors)
+#             organisation.descriptors = descriptors_builder.descriptors
+#
+#             organisation.save()
+#
+#             # update owner on external descriptors
+#             descriptors_builder.update_associations()
+#
+#             # add to GRC as partner
+#             if request.data['grc'] is True:
+#                 grc = GRC.objects.get_unique_grc()
+#                 grc.organisations.add(organisation)
+#
+#     except IntegrityError as e:
+#         DescriptorModelType.integrity_except(Organisation, e)
+#
+#     response = {
+#         'id': organisation.id,
+#         'name': organisation.name,
+#         'type': organisation.type,
+#         'grc': request.data['grc'],
+#         'layout': layout.id,
+#         'descriptors': organisation.descriptors
+#     }
+#
+#     return HttpResponseRest(request, response)
 
 
 @RestOrganisation.def_auth_request(Method.GET, Format.JSON)
@@ -285,67 +286,67 @@ def get_organisation_details(request, org_id):
     return HttpResponseRest(request, result)
 
 
-@RestOrganisationId.def_auth_request(Method.PATCH, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            "name": Organisation.NAME_VALIDATOR_OPTIONAL,
-            "type": Organisation.TYPE_VALIDATOR_OPTIONAL,
-            "entity_status": Organisation.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-            "descriptors": {"type": "object", "required": False},
-        },
-    },
-    perms={
-        'organisation.change_organisation': _("You are not allowed to modify an organisation"),
-    })
-def patch_organisation(request, org_id):
-    organisation = get_object_or_404(Organisation, id=int(org_id))
-
-    organisation_name = request.data.get("name")
-    organisation_type = request.data.get("type")
-    entity_status = request.data.get("entity_status")
-    descriptors = request.data.get("descriptors")
-
-    result = {
-        'id': organisation.id
-    }
-
-    try:
-        with transaction.atomic():
-            if organisation_name is not None:
-                organisation.name = organisation_name
-                result['name'] = organisation_name
-
-                organisation.update_field('name')
-
-            if organisation_type is not None:
-                organisation.type = organisation_type
-                result['type'] = organisation_type
-
-                organisation.update_field('type')
-
-            if entity_status is not None and organisation.entity_status != entity_status:
-                organisation.set_status(entity_status)
-                result['entity_status'] = entity_status
-
-            if descriptors is not None:
-                # update descriptors
-                descriptors_builder = DescriptorsBuilder(organisation)
-
-                descriptors_builder.check_and_update(organisation.layout, descriptors)
-
-                organisation.descriptors = descriptors_builder.descriptors
-                result['descriptors'] = organisation.descriptors
-
-                descriptors_builder.update_associations()
-
-                organisation.update_descriptors(descriptors_builder.changed_descriptors())
-                organisation.update_field('descriptors')
-
-            organisation.save()
-    except IntegrityError as e:
-        DescriptorModelType.integrity_except(Organisation, e)
-
-    return HttpResponseRest(request, result)
+# @RestOrganisationId.def_auth_request(Method.PATCH, Format.JSON, content={
+#         "type": "object",
+#         "properties": {
+#             "name": Organisation.NAME_VALIDATOR_OPTIONAL,
+#             "type": Organisation.TYPE_VALIDATOR_OPTIONAL,
+#             "entity_status": Organisation.ENTITY_STATUS_VALIDATOR_OPTIONAL,
+#             "descriptors": {"type": "object", "required": False},
+#         },
+#     },
+#     perms={
+#         'organisation.change_organisation': _("You are not allowed to modify an organisation"),
+#     })
+# def patch_organisation(request, org_id):
+#     organisation = get_object_or_404(Organisation, id=int(org_id))
+#
+#     organisation_name = request.data.get("name")
+#     organisation_type = request.data.get("type")
+#     entity_status = request.data.get("entity_status")
+#     descriptors = request.data.get("descriptors")
+#
+#     result = {
+#         'id': organisation.id
+#     }
+#
+#     try:
+#         with transaction.atomic():
+#             if organisation_name is not None:
+#                 organisation.name = organisation_name
+#                 result['name'] = organisation_name
+#
+#                 organisation.update_field('name')
+#
+#             if organisation_type is not None:
+#                 organisation.type = organisation_type
+#                 result['type'] = organisation_type
+#
+#                 organisation.update_field('type')
+#
+#             if entity_status is not None and organisation.entity_status != entity_status:
+#                 organisation.set_status(entity_status)
+#                 result['entity_status'] = entity_status
+#
+#             if descriptors is not None:
+#                 # update descriptors
+#                 descriptors_builder = DescriptorsBuilder(organisation)
+#
+#                 descriptors_builder.check_and_update(organisation.layout, descriptors)
+#
+#                 organisation.descriptors = descriptors_builder.descriptors
+#                 result['descriptors'] = organisation.descriptors
+#
+#                 descriptors_builder.update_associations()
+#
+#                 organisation.update_descriptors(descriptors_builder.changed_descriptors())
+#                 organisation.update_field('descriptors')
+#
+#             organisation.save()
+#     except IntegrityError as e:
+#         DescriptorModelType.integrity_except(Organisation, e)
+#
+#     return HttpResponseRest(request, result)
 
 
 @RestOrganisationId.def_auth_request(Method.DELETE, Format.JSON, perms={

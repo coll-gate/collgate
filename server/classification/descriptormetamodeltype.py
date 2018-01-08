@@ -1,7 +1,7 @@
 # -*- coding: utf-8; -*-
 #
 # @file layouttype.py
-# @brief coll-gate descriptor meta-model format type class
+# @brief coll-gate descriptor layout format type class
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-09-13
 # @copyright Copyright (c) 2017 INRA/CIRAD
@@ -46,7 +46,7 @@ class LayoutTypeClassificationEntry(LayoutType):
         except Classification.DoesNotExist:
             return _("The classification must refers to an existing object")
 
-        # changes is not possible if there is some existing classifications entries using this meta-model
+        # changes is not possible if there is some existing classifications entries using this layout
         # @todo check
 
         return None

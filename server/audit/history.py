@@ -14,7 +14,6 @@ import validictory
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
-from descriptor.models import DescriptorModelType
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Method, Format
 from igdectk.rest.response import HttpResponseRest
@@ -36,7 +35,7 @@ class RestAuditSearchHistoryValue(RestAuditSearchHistory):
 
 @RestAuditSearchHistoryValue.def_auth_request(Method.GET, Format.JSON, parameters=(
         'app_label', 'model', 'object_id', 'value')
-)
+                                              )
 def search_audit_value_history_for_entity(request):
     """
     Search audit entries related to a specific entity according to its content type and unique id.
@@ -61,9 +60,9 @@ def search_audit_value_history_for_entity(request):
     else:
         is_descriptor = False
 
-    validictory.validate(value_name, DescriptorModelType.NAME_VALIDATOR)
-
     content_type = ContentType.objects.get_by_natural_key(app_label, model)
+
+    validictory.validate(value_name, content_type.NAME_VALIDATOR)
 
     entity = content_type.get_object_for_this_type(id=object_id)
     # @todo check permissions

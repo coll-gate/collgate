@@ -1,7 +1,7 @@
 # -*- coding: utf-8; -*-
 #
 # @file layouttype.py
-# @brief coll-gate descriptor meta-model format type class
+# @brief coll-gate descriptor layout format type class
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-09-13
 # @copyright Copyright (c) 2017 INRA/CIRAD
@@ -61,14 +61,14 @@ class LayoutTypeAccession(LayoutType):
         except Classification.DoesNotExist:
             return _("The classification must refers to an existing object")
 
-        # check if the batch meta-models exists
+        # check if the batch layouts exists
         layout_ids = [int(x) for x in data['batch_layouts']]
         layouts = Layout.objects.filter(id__in=layout_ids)
 
         if layouts.count() != len(layout_ids):
-            return _("The list of descriptor meta-models of batches must refers to existing objects")
+            return _("The list of descriptor layouts of batches must refers to existing objects")
 
-        # changes is not possible if there is some existing accessions entries using this meta-model
+        # changes is not possible if there is some existing accessions entries using this layout
         # @todo check
 
         return None

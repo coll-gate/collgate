@@ -26,7 +26,7 @@ from igdectk.rest.handler import RestHandler
 
 from main.cursor import CursorQuery
 from main.models import InterfaceLanguages
-from .models import DescriptorType, DescriptorGroup, DescriptorValue
+from .models import Descriptor, DescriptorValue
 
 
 class RestDescriptor(RestHandler):
@@ -142,8 +142,11 @@ class RestDescriptorGroupIdTypeIdValueIdDisplay(RestDescriptorGroupIdTypeIdValue
 @RestDescriptorGroup.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_group_list(request):
     """
-    Descriptor group name is unique and indexed.
+    Descriptor group name is indexed.
     """
+
+    # todo: deprecated function | use the function get descriptor list and select the field "group_name"
+
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
@@ -154,28 +157,14 @@ def get_descriptor_group_list(request):
     else:
         order_by = sort_by
 
-    cq = CursorQuery(DescriptorGroup)
-
-    if request.GET.get('search'):
-        search = json.loads(request.GET['search'])
-        cq.filter(search)
-
-    if request.GET.get('filters'):
-        filters = json.loads(request.GET['filters'])
-        cq.filter(filters)
-
+    cq = CursorQuery(Descriptor)
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
-    cq.set_count('types_set')
 
     group_list = []
-    for group in cq:
+    for descriptor in cq:
         group_list.append({
-            'id': group.pk,
-            'name': group.name,
-            'num_descriptor_types': group.types_set__count,
-            'can_delete': group.can_delete,
-            'can_modify': group.can_modify
+            'name': descriptor.group_name,
         })
 
     results = {
@@ -188,17 +177,61 @@ def get_descriptor_group_list(request):
 
     return HttpResponseRest(request, results)
 
+    # """
+    # Descriptor group name is unique and indexed.
+    # """
+    # results_per_page = int_arg(request.GET.get('more', 30))
+    # cursor = json.loads(request.GET.get('cursor', 'null'))
+    # limit = results_per_page
+    # sort_by = json.loads(request.GET.get('sort_by', '[]'))
+    #
+    # if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+    #     order_by = sort_by + ['id']
+    # else:
+    #     order_by = sort_by
+    #
+    # cq = CursorQuery(DescriptorGroup)
+    #
+    # if request.GET.get('search'):
+    #     search = json.loads(request.GET['search'])
+    #     cq.filter(search)
+    #
+    # if request.GET.get('filters'):
+    #     filters = json.loads(request.GET['filters'])
+    #     cq.filter(filters)
+    #
+    # cq.cursor(cursor, order_by)
+    # cq.order_by(order_by).limit(limit)
+    # cq.set_count('types_set')
+    #
+    # group_list = []
+    # for group in cq:
+    #     group_list.append({
+    #         'id': group.pk,
+    #         'name': group.name,
+    #         'num_descriptor_types': group.types_set__count,
+    #         'can_delete': group.can_delete,
+    #         'can_modify': group.can_modify
+    #     })
+    #
+    # results = {
+    #     'perms': [],
+    #     'items': group_list,
+    #     'prev': cq.prev_cursor,
+    #     'cursor': cursor,
+    #     'next': cq.next_cursor
+    # }
+    #
+    # return HttpResponseRest(request, results)
+
 
 @RestDescriptorGroupCount.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_group_list_count(request):
     """
     Get the count of number of group of descriptors in JSON
     """
-    cq = CursorQuery(DescriptorGroup)
-
-    if request.GET.get('filters'):
-        filters = json.loads(request.GET['filters'])
-        cq.filter(filters)
+    cq = CursorQuery(Descriptor)
+    cq.order_by('group_name').distinct()
 
     results = {
         'perms': [],
@@ -208,244 +241,244 @@ def get_descriptor_group_list_count(request):
     return HttpResponseRest(request, results)
 
 
-@RestDescriptorGroup.def_auth_request(
-    Method.POST, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            "name": DescriptorGroup.NAME_VALIDATOR
-        },
-    },
-    perms={'descriptor.add_descriptorgroup': _('You are not allowed to create a group of descriptors')},
-    staff=True
-)
-def create_descriptor_group(request):
-    group_params = request.data
-
-    group = DescriptorGroup.objects.create(
-        name=group_params['name'],
-        can_delete=True,
-        can_modify=True)
-
-    response = {
-        'id': group.id,
-        'name': group.name,
-        'num_descriptor_types': 0,
-        'can_delete': group.can_delete,
-        'can_modify': group.can_modify
-    }
-
-    return HttpResponseRest(request, response)
-
-
-@RestDescriptorGroupId.def_auth_request(
-    Method.DELETE, Format.JSON,
-    perms={
-        'descriptor.delete_descriptorgroup': _("You are not allowed to delete a group of descriptors"),
-    },
-    staff=True
-)
-def delete_descriptor_group(request, grp_id):
-    group = get_object_or_404(DescriptorGroup, id=int(grp_id))
-
-    if group.types_set.count() > 0:
-        raise SuspiciousOperation(_("Only an empty group of descriptors can be deleted"))
-
-    group.delete()
-
-    return HttpResponseRest(request, {})
+# @RestDescriptorGroup.def_auth_request(
+#     Method.POST, Format.JSON, content={
+#         "type": "object",
+#         "properties": {
+#             "name": DescriptorType.NAME_VALIDATOR
+#         },
+#     },
+#     perms={'descriptor.add_descriptorgroup': _('You are not allowed to create a group of descriptors')},
+#     staff=True
+# )
+# def create_descriptor_group(request):
+#     group_params = request.data
+#
+#     group = DescriptorGroup.objects.create(
+#         name=group_params['name'],
+#         can_delete=True,
+#         can_modify=True)
+#
+#     response = {
+#         'id': group.id,
+#         'name': group.name,
+#         'num_descriptor_types': 0,
+#         'can_delete': group.can_delete,
+#         'can_modify': group.can_modify
+#     }
+#
+#     return HttpResponseRest(request, response)
 
 
-@RestDescriptorGroupId.def_auth_request(
-    Method.PATCH, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            "name": DescriptorGroup.NAME_VALIDATOR_OPTIONAL
-        },
-    },
-    perms={
-        'descriptor.change_descriptorgroup': _("You are not allowed to modify a group of descriptors"),
-    },
-    staff=True
-)
-def patch_descriptor_group(request, grp_id):
-    group = get_object_or_404(DescriptorGroup, id=int(grp_id))
-    group_name = request.data.get('name')
-
-    update = False
-    result = {'id': group.pk}
-
-    if not group.can_modify:
-        raise SuspiciousOperation(_("It is not permit to modify this group of type of descriptors"))
-
-    if group_name and group_name != group.name:
-        if DescriptorGroup.objects.filter(name__exact=group_name).exists():
-            raise SuspiciousOperation(_("Name of group of descriptor already in usage"))
-
-        group.name = group_name
-        group.full_clean()
-        result['name'] = group.name
-
-        update = True
-
-    if update:
-        group.save()
-
-    return HttpResponseRest(request, result)
+# @RestDescriptorGroupId.def_auth_request(
+#     Method.DELETE, Format.JSON,
+#     perms={
+#         'descriptor.delete_descriptorgroup': _("You are not allowed to delete a group of descriptors"),
+#     },
+#     staff=True
+# )
+# def delete_descriptor_group(request, grp_id):
+#     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
+#
+#     if group.types_set.count() > 0:
+#         raise SuspiciousOperation(_("Only an empty group of descriptors can be deleted"))
+#
+#     group.delete()
+#
+#     return HttpResponseRest(request, {})
 
 
-@RestDescriptorGroupSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
-def search_descriptor_groups(request):
-    """
-    Filters the groups of descriptors by name.
-    @todo could needs pagination
-    """
-    filters = json.loads(request.GET['filters'])
-    page = int_arg(request.GET.get('page', 1))
-
-    groups = None
-
-    if filters['method'] == 'ieq' and 'name' in filters['fields']:
-        groups = DescriptorGroup.objects.filter(name__iexact=filters['name'])
-    elif filters['method'] == 'icontains' and 'name' in filters['fields']:
-        groups = DescriptorGroup.objects.filter(name__icontains=filters['name'])
-
-    groups = groups.annotate(Count('types_set'))
-
-    groups_list = []
-
-    if groups:
-        for group in groups:
-            groups_list.append({
-                "id": group.id,
-                "name": group.name,
-                'num_descriptor_types': group.types_set__count,
-                'can_delete': group.can_delete,
-                'can_modify': group.can_modify
-            })
-
-    response = {
-        'items': groups_list,
-        'page': page
-    }
-
-    return HttpResponseRest(request, response)
-
-
-@RestDescriptorGroupId.def_auth_request(Method.GET, Format.JSON)
-def get_descriptor_groups(request, grp_id):
-    group = get_object_or_404(DescriptorGroup, id=int(grp_id))
-
-    response = {
-        'id': group.id,
-        'name': group.name,
-        'can_delete': group.can_delete,
-        'can_modify': group.can_modify,
-        'num_descriptor_types': group.types_set.all().count()
-    }
-
-    return HttpResponseRest(request, response)
+# @RestDescriptorGroupId.def_auth_request(
+#     Method.PATCH, Format.JSON, content={
+#         "type": "object",
+#         "properties": {
+#             "name": DescriptorGroup.NAME_VALIDATOR_OPTIONAL
+#         },
+#     },
+#     perms={
+#         'descriptor.change_descriptorgroup': _("You are not allowed to modify a group of descriptors"),
+#     },
+#     staff=True
+# )
+# def patch_descriptor_group(request, grp_id):
+#     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
+#     group_name = request.data.get('name')
+#
+#     update = False
+#     result = {'id': group.pk}
+#
+#     if not group.can_modify:
+#         raise SuspiciousOperation(_("It is not permit to modify this group of type of descriptors"))
+#
+#     if group_name and group_name != group.name:
+#         if DescriptorGroup.objects.filter(name__exact=group_name).exists():
+#             raise SuspiciousOperation(_("Name of group of descriptor already in usage"))
+#
+#         group.name = group_name
+#         group.full_clean()
+#         result['name'] = group.name
+#
+#         update = True
+#
+#     if update:
+#         group.save()
+#
+#     return HttpResponseRest(request, result)
 
 
-@RestDescriptorGroupIdType.def_auth_request(Method.GET, Format.JSON)
-def get_descriptor_types_for_group(request, grp_id):
-    results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = json.loads(request.GET.get('cursor', 'null'))
-    limit = results_per_page
-    sort_by = json.loads(request.GET.get('sort_by', '["name"]'))
-    order_by = sort_by
-
-    group = get_object_or_404(DescriptorGroup, id=int(grp_id))
-
-    cq = CursorQuery(DescriptorType)
-
-    cq.filter(group=group.pk)
-
-    if request.GET.get('search'):
-        search = json.loads(request.GET['search'])
-        cq.filter(search)
-
-    if request.GET.get('filters'):
-        filters = json.loads(request.GET['filters'])
-        cq.filter(filters)
-
-    cq.cursor(cursor, order_by)
-    cq.order_by(order_by).limit(limit)
-
-    dt_items = []
-
-    for descr_type in cq:
-        # can add an extra query per row
-        count = descr_type.count_num_values()
-
-        dt_items.append({
-            'id': descr_type.pk,
-            'group': group.pk,
-            'name': descr_type.name,
-            'code': descr_type.code,
-            'description': descr_type.description,
-            'num_descriptor_values': count,
-            'can_delete': descr_type.can_delete,
-            'can_modify': descr_type.can_modify,
-            'format': descr_type.format
-        })
-
-    results = {
-        'perms': [],
-        'items': dt_items,
-        'prev': cq.prev_cursor,
-        'cursor': cursor,
-        'next': cq.next_cursor
-    }
-
-    return HttpResponseRest(request, results)
+# @RestDescriptorGroupSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
+# def search_descriptor_groups(request):
+#     """
+#     Filters the groups of descriptors by name.
+#     @todo could needs pagination
+#     """
+#     filters = json.loads(request.GET['filters'])
+#     page = int_arg(request.GET.get('page', 1))
+#
+#     groups = None
+#
+#     if filters['method'] == 'ieq' and 'name' in filters['fields']:
+#         groups = DescriptorGroup.objects.filter(name__iexact=filters['name'])
+#     elif filters['method'] == 'icontains' and 'name' in filters['fields']:
+#         groups = DescriptorGroup.objects.filter(name__icontains=filters['name'])
+#
+#     groups = groups.annotate(Count('types_set'))
+#
+#     groups_list = []
+#
+#     if groups:
+#         for group in groups:
+#             groups_list.append({
+#                 "id": group.id,
+#                 "name": group.name,
+#                 'num_descriptor_types': group.types_set__count,
+#                 'can_delete': group.can_delete,
+#                 'can_modify': group.can_modify
+#             })
+#
+#     response = {
+#         'items': groups_list,
+#         'page': page
+#     }
+#
+#     return HttpResponseRest(request, response)
 
 
-@RestDescriptorGroupIdTypeSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
-def search_descriptor_types_for_group(request, grp_id):
-    """
-    Filters the type of descriptors by name for a specific group.
-    """
-    filters = json.loads(request.GET['filters'])
-    page = int_arg(request.GET.get('page', 1))
-
-    group = get_object_or_404(DescriptorGroup, id=int(grp_id))
-    descr_types = None
-
-    if filters['method'] == 'ieq' and 'name' in filters['fields']:
-        descr_types = DescriptorType.objects.filter(group=group, name__iexact=filters['name'])
-    elif filters['method'] == 'icontains' and 'name' in filters['fields']:
-        descr_types = DescriptorGroup.objects.filter(group=group, name__icontains=filters['name'])
-
-    descr_types_list = []
-
-    if descr_types is not None:
-        for descr_type in descr_types:
-            # can add one query per descriptor type
-            count = descr_type.count_num_values()
-
-            descr_types_list.append({
-                'id': descr_type.id,
-                'name': descr_type.name,
-                'code': descr_type.code,
-                'description': descr_type.description,
-                'group': group.id,
-                'num_descriptor_values': count,
-                'format': descr_type.format,
-                'can_delete': descr_type.can_delete,
-                'can_modify': descr_type.can_modify
-            })
-
-    response = {
-        'items': descr_types_list,
-        'page': page
-    }
-
-    return HttpResponseRest(request, response)
+# @RestDescriptorGroupId.def_auth_request(Method.GET, Format.JSON)
+# def get_descriptor_groups(request, grp_id):
+#     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
+#
+#     response = {
+#         'id': group.id,
+#         'name': group.name,
+#         'can_delete': group.can_delete,
+#         'can_modify': group.can_modify,
+#         'num_descriptor_types': group.types_set.all().count()
+#     }
+#
+#     return HttpResponseRest(request, response)
+#
+#
+# @RestDescriptorGroupIdType.def_auth_request(Method.GET, Format.JSON)
+# def get_descriptor_types_for_group(request, grp_id):
+#     results_per_page = int_arg(request.GET.get('more', 30))
+#     cursor = json.loads(request.GET.get('cursor', 'null'))
+#     limit = results_per_page
+#     sort_by = json.loads(request.GET.get('sort_by', '["name"]'))
+#     order_by = sort_by
+#
+#     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
+#
+#     cq = CursorQuery(DescriptorType)
+#
+#     cq.filter(group=group.pk)
+#
+#     if request.GET.get('search'):
+#         search = json.loads(request.GET['search'])
+#         cq.filter(search)
+#
+#     if request.GET.get('filters'):
+#         filters = json.loads(request.GET['filters'])
+#         cq.filter(filters)
+#
+#     cq.cursor(cursor, order_by)
+#     cq.order_by(order_by).limit(limit)
+#
+#     dt_items = []
+#
+#     for descr_type in cq:
+#         # can add an extra query per row
+#         count = descr_type.count_num_values()
+#
+#         dt_items.append({
+#             'id': descr_type.pk,
+#             'group': group.pk,
+#             'name': descr_type.name,
+#             'code': descr_type.code,
+#             'description': descr_type.description,
+#             'num_descriptor_values': count,
+#             'can_delete': descr_type.can_delete,
+#             'can_modify': descr_type.can_modify,
+#             'format': descr_type.format
+#         })
+#
+#     results = {
+#         'perms': [],
+#         'items': dt_items,
+#         'prev': cq.prev_cursor,
+#         'cursor': cursor,
+#         'next': cq.next_cursor
+#     }
+#
+#     return HttpResponseRest(request, results)
+#
+#
+# @RestDescriptorGroupIdTypeSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
+# def search_descriptor_types_for_group(request, grp_id):
+#     """
+#     Filters the type of descriptors by name for a specific group.
+#     """
+#     filters = json.loads(request.GET['filters'])
+#     page = int_arg(request.GET.get('page', 1))
+#
+#     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
+#     descr_types = None
+#
+#     if filters['method'] == 'ieq' and 'name' in filters['fields']:
+#         descr_types = DescriptorType.objects.filter(group=group, name__iexact=filters['name'])
+#     elif filters['method'] == 'icontains' and 'name' in filters['fields']:
+#         descr_types = DescriptorGroup.objects.filter(group=group, name__icontains=filters['name'])
+#
+#     descr_types_list = []
+#
+#     if descr_types is not None:
+#         for descr_type in descr_types:
+#             # can add one query per descriptor type
+#             count = descr_type.count_num_values()
+#
+#             descr_types_list.append({
+#                 'id': descr_type.id,
+#                 'name': descr_type.name,
+#                 'code': descr_type.code,
+#                 'description': descr_type.description,
+#                 'group': group.id,
+#                 'num_descriptor_values': count,
+#                 'format': descr_type.format,
+#                 'can_delete': descr_type.can_delete,
+#                 'can_modify': descr_type.can_modify
+#             })
+#
+#     response = {
+#         'items': descr_types_list,
+#         'page': page
+#     }
+#
+#     return HttpResponseRest(request, response)
 
 
 @RestDescriptorTypeId.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_type(request, typ_id):
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
 
     count = descr_type.count_num_values()
 
@@ -464,33 +497,34 @@ def get_descriptor_type(request, typ_id):
     return HttpResponseRest(request, response)
 
 
-@RestDescriptorGroupIdTypeId.def_auth_request(Method.GET, Format.JSON)
-def get_descriptor_type_for_group(request, grp_id, typ_id):
-    group = get_object_or_404(DescriptorGroup, id=int(grp_id))
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group=group)
-
-    count = descr_type.count_num_values()
-
-    response = {
-        'id': descr_type.id,
-        'name': descr_type.name,
-        'code': descr_type.code,
-        'description': descr_type.description,
-        'group': group.id,
-        'num_descriptor_values': count,
-        'format': descr_type.format,
-        'can_delete': descr_type.can_delete,
-        'can_modify': descr_type.can_modify
-    }
-
-    return HttpResponseRest(request, response)
+# @RestDescriptorGroupIdTypeId.def_auth_request(Method.GET, Format.JSON)
+# def get_descriptor_type_for_group(request, grp_id, typ_id):
+#     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
+#     descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group=group)
+#
+#     count = descr_type.count_num_values()
+#
+#     response = {
+#         'id': descr_type.id,
+#         'name': descr_type.name,
+#         'code': descr_type.code,
+#         'description': descr_type.description,
+#         'group': group.id,
+#         'num_descriptor_values': count,
+#         'format': descr_type.format,
+#         'can_delete': descr_type.can_delete,
+#         'can_modify': descr_type.can_modify
+#     }
+#
+#     return HttpResponseRest(request, response)
 
 
 @RestDescriptorGroupIdType.def_auth_request(
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": DescriptorType.NAME_VALIDATOR
+            "name": Descriptor.NAME_VALIDATOR,
+            "group_name": Descriptor.NAME_VALIDATOR
         },
     },
     perms={
@@ -499,13 +533,11 @@ def get_descriptor_type_for_group(request, grp_id, typ_id):
     },
     staff=True
 )
-def create_descriptor_type(request, grp_id):
-    descr_type_params = request.data
-
-    group = get_object_or_404(DescriptorGroup, id=int(grp_id))
+def create_descriptor_type(request):
+    descriptor_type_params = request.data
 
     # generate a new internal code base on previous max ID_xxx
-    qs = DescriptorType.objects.filter(code__startswith='ID_').order_by(Length('code').desc(), '-code')[:1]
+    qs = Descriptor.objects.filter(code__startswith='ID_').order_by(Length('code').desc(), '-code')[:1]
     if qs.exists():
         suffix = int(qs[0].code.split('_')[1]) + 1
     else:
@@ -513,22 +545,22 @@ def create_descriptor_type(request, grp_id):
 
     code = 'ID_%03i' % suffix
 
-    descr_type = DescriptorType.objects.create(
-        name=descr_type_params['name'],
+    descriptor_type = Descriptor.objects.create(
+        name=descriptor_type_params['name'],
         code=code,
-        group=group,
+        group_name=descriptor_type_params['group_name'],
         can_delete=True,
         can_modify=True)
 
     response = {
-        'id': descr_type.id,
-        'name': descr_type.name,
-        'code': descr_type.code,
-        'description': descr_type.description,
-        'group': group.id,
+        'id': descriptor_type.id,
+        'name': descriptor_type.name,
+        'code': descriptor_type.code,
+        'description': descriptor_type.description,
+        'group_name': descriptor_type.group_name,
         'num_descriptor_values': 0,
-        'can_delete': descr_type.can_delete,
-        'can_modify': descr_type.can_modify
+        'can_delete': descriptor_type.can_delete,
+        'can_modify': descriptor_type.can_modify
     }
 
     return HttpResponseRest(request, response)
@@ -543,7 +575,7 @@ def create_descriptor_type(request, grp_id):
     staff=True
 )
 def delete_descriptor_type_for_group(request, grp_id, typ_id):
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id), group_id=int(grp_id))
 
     if descr_type.has_values():
         raise SuspiciousOperation(_("Only an empty of values type of descriptor can be deleted"))
@@ -560,7 +592,7 @@ def delete_descriptor_type_for_group(request, grp_id, typ_id):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": DescriptorType.NAME_VALIDATOR,
+            "name": Descriptor.NAME_VALIDATOR,
             "code": {"type": "string", 'minLength': 3, 'maxLength': 32},
             "description": {"type": "string", 'maxLength': 1024, 'blank': True},
             "format": {
@@ -578,13 +610,12 @@ def delete_descriptor_type_for_group(request, grp_id, typ_id):
     },
     staff=True
 )
-def update_descriptor_type(request, grp_id, typ_id):
+def update_descriptor_type(request, typ_id):
     descr_type_params = request.data
     format_type = descr_type_params['format']
     description = request.data['description']
 
-    group = get_object_or_404(DescriptorGroup, id=int(grp_id))
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group=group)
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
     org_format = descr_type.format
 
     if not descr_type.can_modify:
@@ -632,7 +663,8 @@ def update_descriptor_type(request, grp_id, typ_id):
             descr_type.values_set.all().delete()
 
         # regenerate values only if difference in range or translation
-        if org_min_range != min_range or org_max_range != max_range or format_type['trans'] != org_format.get('trans', False):
+        if org_min_range != min_range or org_max_range != max_range or format_type['trans'] != org_format.get('trans',
+                                                                                                              False):
             values = {}
 
             i = 1  # begin to 1
@@ -670,7 +702,7 @@ def update_descriptor_type(request, grp_id, typ_id):
         'code': descr_type.code,
         'description': descr_type.description,
         'format': descr_type.format,
-        'group': group.id,
+        'group_name': descr_type.group_name,
         'num_descriptor_values': count,
         'can_delete': descr_type.can_delete,
         'can_modify': descr_type.can_modify
@@ -680,7 +712,7 @@ def update_descriptor_type(request, grp_id, typ_id):
 
 
 @RestDescriptorGroupIdTypeIdValue.def_auth_request(Method.GET, Format.JSON)
-def get_descriptor_values_for_group_and_type(request, grp_id, typ_id):
+def get_descriptor_values_for_group_and_type(request, typ_id):
     """
     Get the list of values for a given group and type of descriptor and according to the current language.
     """
@@ -690,7 +722,7 @@ def get_descriptor_values_for_group_and_type(request, grp_id, typ_id):
 
     sort_by = request.GET.get('sort_by', 'id')
 
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
 
     if sort_by.startswith('-'):
         order_by = sort_by[1:]
@@ -727,7 +759,7 @@ def get_descriptor_values_for_type(request, typ_id):
 
     sort_by = request.GET.get('sort_by', 'id')
 
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
 
     if sort_by.startswith('-'):
         order_by = sort_by[1:]
@@ -769,11 +801,11 @@ def get_descriptor_values_for_type(request, typ_id):
     },
     staff=True
 )
-def create_descriptor_values_for_type(request, grp_id, typ_id):
+def create_descriptor_values_for_type(request, typ_id):
     """
     Create and insert at last a new value for a type of descriptor.
     """
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
 
     qs = descr_type.values_set.all().order_by('-code')[:1]
     if qs.exists():
@@ -839,12 +871,12 @@ def create_descriptor_values_for_type(request, grp_id, typ_id):
     },
     staff=True
 )
-def patch_value_for_descriptor_model(request, grp_id, typ_id, val_id):
+def patch_value_for_descriptor_model(request, typ_id, val_id):
     """
     Patch the value for a specific model of descriptor.
     The field can be 'ordinal', 'value0' or 'value1'.
     """
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
 
     format_type = descr_type.format
 
@@ -919,11 +951,11 @@ def patch_value_for_descriptor_model(request, grp_id, typ_id, val_id):
     },
     staff=True
 )
-def delete_value_for_descriptor_type(request, grp_id, typ_id, val_id):
+def delete_value_for_descriptor_type(request, typ_id, val_id):
     """
     Delete a single value for a type of descriptor.
     """
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
     dmts = descr_type.descriptor_model_types.all()
 
     for dmt in dmts:
@@ -952,11 +984,11 @@ def delete_value_for_descriptor_type(request, grp_id, typ_id, val_id):
 
 
 @RestDescriptorGroupIdTypeIdValueId.def_auth_request(Method.GET, Format.JSON)
-def get_value_for_descriptor_group_and_type(request, grp_id, typ_id, val_id):
+def get_value_for_descriptor_group_and_type(request, typ_id, val_id):
     """
     Get a single value for a type of descriptor.
     """
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
     value = descr_type.get_value(val_id)
 
     result = {
@@ -974,7 +1006,7 @@ def get_value_for_descriptor_type(request, typ_id, val_id):
     """
     Get a single value for a type of descriptor.
     """
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
     value = descr_type.get_value(val_id)
 
     result = {
@@ -988,11 +1020,11 @@ def get_value_for_descriptor_type(request, typ_id, val_id):
 
 
 @RestDescriptorGroupIdTypeIdValueIdDisplay.def_auth_request(Method.GET, Format.JSON)
-def get_display_value_for_descriptor_type_and_group(request, grp_id, typ_id, val_id):
+def get_display_value_for_descriptor_type_and_group(request, typ_id, val_id):
     """
     Get a single value for a type of descriptor.
     """
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
 
     format_type = descr_type.format
     list_type = format_type.get('list_type', '')
@@ -1046,7 +1078,7 @@ def get_display_value_for_descriptor_type(request, typ_id, val_id):
     """
     Get a single value for a type of descriptor.
     """
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
 
     format_type = descr_type.format
     list_type = format_type.get('list_type', '')
@@ -1097,14 +1129,14 @@ def get_display_value_for_descriptor_type(request, typ_id, val_id):
 
 @RestDescriptorGroupIdTypeIdValueIdField.def_auth_request(
     Method.GET, Format.JSON)
-def get_labels_for_descriptor_type_group_and_field(request, grp_id, typ_id, val_id, field):
+def get_labels_for_descriptor_type_group_and_field(request, typ_id, val_id, field):
     """
     Get all translations for a specific field of a value of descriptor.
     """
     if field not in ('value0', 'value1'):
         raise SuspiciousOperation(_('Field name must be value0 or value1'))
 
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
 
     format_type = descr_type.format
 
@@ -1147,7 +1179,7 @@ def get_labels_for_descriptor_type_field(request, typ_id, val_id, field):
     if field not in ('value0', 'value1'):
         raise SuspiciousOperation(_('Field name must be value0 or value1'))
 
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
 
     format_type = descr_type.format
 
@@ -1190,14 +1222,14 @@ def get_labels_for_descriptor_type_field(request, typ_id, val_id, field):
         'descriptor.change_descriptorvalue': _('You are not allowed to modify a value of type of descriptor'),
     },
     staff=True)
-def set_values_for_descriptor_type(request, grp_id, typ_id, val_id, field):
+def set_values_for_descriptor_type(request, typ_id, val_id, field):
     """
     Set many translations for a specific field of a value of descriptor.
     """
     if field not in ('value0', 'value1'):
         raise SuspiciousOperation(_('Field name must be value0 or value1'))
 
-    descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    descr_type = get_object_or_404(Descriptor, id=int(typ_id))
 
     new_values = request.data
 
@@ -1247,13 +1279,13 @@ def set_values_for_descriptor_type(request, grp_id, typ_id, val_id, field):
     return HttpResponseRest(request, results)
 
 
-@cache_page(60*60*24)
+@cache_page(60 * 60 * 24)
 @RestDescriptorGroupIdTypeIdValueDisplay.def_auth_request(Method.GET, Format.JSON)
-def get_all_display_values_for_descriptor_group_and_type(request, grp_id, typ_id):
+def get_all_display_values_for_descriptor_group_and_type(request, typ_id):
     """
     Returns all the value of the related type of descriptor order and formatted as described.
     """
-    dt = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    dt = get_object_or_404(Descriptor, id=int(typ_id))
 
     limit = 30
 
@@ -1315,13 +1347,13 @@ def get_all_display_values_for_descriptor_group_and_type(request, grp_id, typ_id
     return HttpResponseRest(request, values)
 
 
-@cache_page(60*60*24)
+@cache_page(60 * 60 * 24)
 @RestDescriptorTypeIdValueDisplay.def_auth_request(Method.GET, Format.JSON)
 def get_all_display_values_for_descriptor_type(request, typ_id):
     """
     Returns all the value of the related type of descriptor order and formatted as described.
     """
-    dt = get_object_or_404(DescriptorType, id=int(typ_id))
+    dt = get_object_or_404(Descriptor, id=int(typ_id))
 
     limit = 30
 
@@ -1384,7 +1416,7 @@ def get_all_display_values_for_descriptor_type(request, typ_id):
 
 
 @RestDescriptorGroupIdTypeIdValueDisplaySearch.def_auth_request(Method.GET, Format.JSON, parameters=('value',))
-def search_display_value_for_descriptor_group_and_type(request, grp_id, typ_id):
+def search_display_value_for_descriptor_group_and_type(request, typ_id):
     """
     Search and returns a list of value from the related type of descriptor and formatted as described.
     """
@@ -1392,7 +1424,7 @@ def search_display_value_for_descriptor_group_and_type(request, grp_id, typ_id):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    dt = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
+    dt = get_object_or_404(Descriptor, id=int(typ_id))
 
     format_type = dt.format
     list_type = format_type.get('list_type', '')
@@ -1465,7 +1497,7 @@ def search_display_value_for_descriptor_group_and_type(request, typ_id):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    dt = get_object_or_404(DescriptorType, id=int(typ_id))
+    dt = get_object_or_404(Descriptor, id=int(typ_id))
 
     format_type = dt.format
     list_type = format_type.get('list_type', '')

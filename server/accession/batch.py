@@ -384,7 +384,7 @@ def search_batch(request):
     The filters can be :
         - name: value to look for the name field.
         - method: for the name 'ieq' or 'icontains' for insensitive case equality or %like% respectively.
-        - layout: id of the descriptor meta-model to look for.
+        - layout: id of the descriptor layout to look for.
         - fields: list of fields to look for.
     """
     filters = json.loads(request.GET['filters'])

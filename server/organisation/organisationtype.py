@@ -11,7 +11,7 @@
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
 
-from descriptor.models import DescriptorType
+from descriptor.models import Descriptor
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
@@ -34,7 +34,7 @@ def organisation_type(request):
     organisation_types = []
 
     # stored in a type of descriptor
-    descriptor_type = get_object_or_404(DescriptorType, code=Organisation.TYPE_CODE)
+    descriptor_type = get_object_or_404(Descriptor, code=Organisation.TYPE_CODE)
 
     cursor_prev, cursor_next, values = descriptor_type.get_values(sort_by='id')
 
