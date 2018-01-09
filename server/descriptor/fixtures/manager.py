@@ -14,10 +14,12 @@ import json
 import os
 import sys
 
+import validictory
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import SuspiciousOperation
 
 from classification.models import Classification
-from main.models import EntitySynonymType
+from main.models import EntitySynonymType, Entity
 # from ..models import Descriptor, DescriptorModel, DescriptorModelType, \
 #     Layout, DescriptorPanel, DescriptorValue
 
@@ -34,17 +36,17 @@ class FixtureManager:
         self.descriptor_models = {}
         self.layouts = {}
 
-    def set_descriptor_type(self, name, obj_id):
+    def set_descriptor(self, name, obj_id):
         self.descriptor_types[name] = {
             'id': obj_id,
             'name': name
         }
 
-    def set_descriptor_model(self, name, obj_id):
-        self.descriptor_models[name] = {
-            'id': obj_id,
-            'name': name
-        }
+    # def set_descriptor_model(self, name, obj_id):
+    #     self.descriptor_models[name] = {
+    #         'id': obj_id,
+    #         'name': name
+    #     }
 
     def set_layout(self, name, obj_id):
         self.layouts[name] = {
@@ -93,8 +95,8 @@ class FixtureManager:
 
         return data
 
-    def create_or_update_types(self, descriptor_types):
-        sys.stdout.write("   + Create descriptors types...\n")
+    def create_or_update_descriptors(self, descriptor_types):
+        sys.stdout.write("   + Create descriptors...\n")
 
         for k, descriptor_data in descriptor_types.items():
             descriptor_name = descriptor_data['name']
@@ -108,6 +110,7 @@ class FixtureManager:
 
             descriptor, created = Descriptor.objects.update_or_create(name=descriptor_name, defaults={
                 'code': descriptor_data.get('code', ''),
+                'label': descriptor_data.get('label', {}),
                 'description': descriptor_data.get('description', ''),
                 'group_name': descriptor_data.get('group_name', None),
                 'format': type_format,
@@ -119,7 +122,7 @@ class FixtureManager:
             descriptor_data['id'] = descriptor.id
 
             # lookup table
-            self.set_descriptor_type(descriptor_name, descriptor.id)
+            self.set_descriptor(descriptor_name, descriptor.id)
 
     # def create_or_update_models(self, descriptor_models):
     #     sys.stdout.write("   + Create descriptor models...\n")
@@ -185,36 +188,28 @@ class FixtureManager:
                 defaults={
                     'label': v['label'],
                     'description': v['description'],
-                    'target': content_type
+                    'target': content_type,
+                    'layout_content': v['layout_content']
                 }
             )
 
-            position = 0
-            print(v['structure'])
+            # Check if descriptors exist and not define more than one by layout.
+            descriptor_ids = []
+            if v['layout_content'].get('panels'):
+                for panel in v['layout_content']['panels']:
+                    for descriptor in panel.get('descriptors'):
+                        try:
+                            result = Descriptor.objects.get(name=descriptor.get('name'))
+                            if result.id in descriptor_ids:
+                                raise ValueError(
+                                    'Descriptor \"%s\" must be used once by layout' % descriptor.get('name'))
+                            else:
+                                descriptor_ids.append(result.id)
+                        except Descriptor.DoesNotExist:
+                            raise ValueError('Descriptor \"%s\" does not exit' % descriptor.get('name'))
 
-            # for panel in v['structure']:
-            #     descriptor_model_id = self.get_descriptor_model_id(panel['descriptor_model_name'])
-            #
-            #     panel_model, created = DescriptorPanel.objects.update_or_create(
-            #         layout=layout,
-            #         descriptor_model_id=descriptor_model_id,
-            #         defaults={
-            #             'label': panel['label'],
-            #             'position': position
-            #         }
-            #     )
-            #
-            #     panel['id'] = panel_model.id
-            #     position += 1
-            #
-            #     # create indexes
-            #     dmts = panel_model.descriptor_model.descriptor_model_types.all()
-            #     for dmt in dmts:
-            #         content_type_model = content_type.model_class()
-            #         dmt.create_or_drop_index(content_type_model)
-            #
-            # # keep id for others fixtures
-            # v['id'] = layout.id
+            # keep id for others fixtures
+            v['id'] = layout.id
 
             # lookup table
             self.set_layout(layout_name, layout.id)
@@ -367,7 +362,8 @@ class FixtureManager:
             if descriptor is not None:
                 Descriptor.objects.filter(name=descriptor['name']).update(values=None)
 
-    def create_or_update_synonym_types(self, synonym_types, app_label, model_name):
+    @staticmethod
+    def create_or_update_synonym_types(synonym_types, app_label, model_name):
         sys.stdout.write("   + Create types of synonym...\n")
 
         # get related model

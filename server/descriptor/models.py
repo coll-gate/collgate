@@ -55,6 +55,10 @@ class NullsLastQuerySet(models.QuerySet):
         self.query = query or NullsLastQuery(self.model)
 
 
+class MultipleObjectsReturned(Exception):
+    """The query returned multiple objects when only one was expected."""
+    pass
+
 # class DescriptorGroup(Entity):
 #     """
 #     Category of a type of descriptor.
@@ -1545,7 +1549,7 @@ class Layout(Entity):
     #     through=DescriptorPanel)
 
     # Descriptors display and conditions
-    structure = JSONField(default={"type": "undefined"})
+    layout_content = JSONField(default={"type": "undefined"})
 
     # layout parameters
     # parameters = JSONField(default={"type": "undefined"})

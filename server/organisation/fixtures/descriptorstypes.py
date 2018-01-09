@@ -30,4 +30,4 @@ DESCRIPTORS = {
 
 
 def fixture(fixture_manager, factory_manager):
-    fixture_manager.create_or_update_types(DESCRIPTORS)
+    fixture_manager.create_or_update_descriptors(DESCRIPTORS)

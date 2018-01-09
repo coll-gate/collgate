@@ -15,11 +15,38 @@ LAYOUTS = {
         'target': 'organisation.organisation',
         'label': {'en': 'Organisation', 'fr': 'Organisation'},
         'description': "Unique layout for an organisation entity.",
-        'structure': {
+        'layout_content': {
             'panels': [
                 {
                     'label': {'en': 'Common', 'fr': 'Commun'},
-                    'descriptors': []
+                    'descriptors': [
+                        {
+                            'name': 'acronym_1',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'code_16',
+                            'mandatory': False,
+                            'set_once': False
+
+                        },
+                        {
+                            'name': 'address',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'zipcode',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'city',
+                            'mandatory': False,
+                            'set_once': False
+                        }
+                    ]
                     # 'descriptor_model_name': 'organisation'
                 }
             ]
@@ -31,11 +58,32 @@ LAYOUTS = {
         'target': 'organisation.establishment',
         'label': {'en': 'Establishment', 'fr': 'Implantation'},
         'description': "Unique layout for an establishment of an organisation entity.",
-        'structure': {
+        'layout_content': {
             'panels': [
                 {
                     'label': {'en': 'Common', 'fr': 'Commun'},
-                    'descriptors': []
+                    'descriptors': [
+                        {
+                            'name': 'address',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'zipcode',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'city',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'code_16',
+                            'mandatory': False,
+                            'set_once': False
+                        }
+                    ]
                     # 'descriptor_model_name': 'organisation'
                 }
             ]

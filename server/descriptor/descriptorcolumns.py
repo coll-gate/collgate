@@ -84,9 +84,9 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     # entity model
 
     for layout in layouts:
-        for panel in layout.structure.panels:
-            for descriptor in panel:
-                descriptor = Descriptor.objects.get(pk=descriptor.id)
+        for panel in layout.layout_content.get('panels'):
+            for descriptor in panel.get('descriptors'):
+                descriptor = Descriptor.objects.get(name=descriptor.get('name'))
                 dft = DescriptorFormatTypeManager.get(descriptor.format)
 
                 query = True if dft.related_model(descriptor.format) else False
@@ -182,14 +182,14 @@ def get_description(model):
     results = {}
 
     for layout in layouts:
-        for panel in layout.structure.panels:
-            for descriptor in panel:
-                descriptor = Descriptor.objects.get(pk=descriptor.id)
+        for panel in layout.layout_content.get('panels'):
+            for descriptor in panel.get('descriptors'):
+                descriptor = Descriptor.objects.get(name=descriptor.get('name'))
                 dft = DescriptorFormatTypeManager.get(descriptor.format)
                 results[descriptor.name] = {
                     'name': descriptor.name,
                     'label': descriptor.get_label(),
-                    'index': descriptor.index,
+                    # 'index': descriptor.index,
                     'handler': dft,
                     'format': descriptor.format
                 }

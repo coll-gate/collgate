@@ -23,10 +23,10 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'HOST': '',  # '127.0.0.1',
-        'PORT': '',  # '5432',
+        'HOST': 'localhost',  # '127.0.0.1',
+        'PORT': '5432',  # '5432',
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'collgate_dev',
+        'NAME': 'collgate_dev_new_model',
         'USER': 'collgate_dev',
         'PASSWORD': 'collgate_dev',
         'CONN_MAX_AGE': 86400
@@ -170,7 +170,7 @@ WEBPACK = {
     'entry': '/build/app.js'
 }
 
-GEONAMES_COUNTRY_SOURCES = ['/home/mboulnemour/collgate/collgate/server/geonames/data/historicCountryInfo.txt',
+GEONAMES_COUNTRY_SOURCES = ['/home/mboulnemour/collgate/collgate_new_model/server/geonames/data/historicCountryInfo.txt',
                             'http://download.geonames.org/export/dump/countryInfo.txt']
 
 # CACHES = {
