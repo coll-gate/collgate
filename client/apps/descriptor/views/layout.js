@@ -1,7 +1,7 @@
 /**
- * @file descriptormetamodel.js
+ * @file layout.js
  * @brief Meta-model of descriptor item view
- * @author Frédéric SCHERMA (INRA UMR1095)
+ * @author Frédéric SCHERMA (INRA UMR1095), Medhi BOULNEMOUR (INRA UMR1095)
  * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
@@ -9,23 +9,22 @@
  */
 
 let Marionette = require('backbone.marionette');
-
-let Dialog = require('../../main/views/dialog');
+// let Dialog = require('../../main/views/dialog');
 
 let View = Marionette.View.extend({
     tagName: 'tr',
-    className: 'element object descriptor-meta-model',
-    template: require('../templates/descriptormetamodel.html'),
+    className: 'element object layout',
+    template: require('../templates/layout.html'),
 
     behaviors: {
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
-                edit: {title: _t("Edit label"), event: 'viewDescriptorMetaModelDetails'},
-                edit2: {display: true, title: _t("Layout editor"), event: 'viewLayoutEditor'},
+                edit: {title: _t("Layout editor"), event: 'viewLayoutEditor'},
+                // edit2: {display: true, title: _t("Layout editor"), event: 'viewLayoutEditor'},
                 tag: {display: true, event: 'editLabel'},
-                manage: {display: true, event: 'viewDescriptorPanels'},
-                remove: {display: true, event: 'deleteDescriptorMetaModel'}
+                // manage: {display: true, event: 'viewLayoutEditor'},
+                remove: {display: true, event: 'deleteLayout'}
             }
         }
     },
@@ -33,15 +32,15 @@ let View = Marionette.View.extend({
     ui: {
         edit_btn: '.action.edit',
         tag_btn: '.action.tag',
-        manage_btn: '.action.manage',
+        // manage_btn: '.action.manage',
         delete_btn: 'button.action.delete'
     },
 
     events: {
-        'click @ui.edit_btn': 'viewDescriptorMetaModelDetails',
+        // 'click @ui.edit_btn': 'viewLayoutDetails',
         'click @ui.tag_btn': 'editLabel',
-        'click @ui.manage_btn': 'viewDescriptorPanels',
-        'click @ui.delete_btn': 'deleteDescriptorMetaModel'
+        // 'click @ui.manage_btn': 'viewDescriptorPanels',
+        'click @ui.delete_btn': 'deleteLayout'
     },
 
     initialize: function () {
@@ -60,9 +59,9 @@ let View = Marionette.View.extend({
             properties.edit.disabled = true;
         }
 
-        if (this.model.get('num_descriptor_models') > 0 || !session.user.isSuperUser || !session.user.isStaff) {
-            properties.remove.disabled = true;
-        }
+        // if (this.model.get('num_descriptor_models') > 0 || !session.user.isSuperUser || !session.user.isStaff) {
+        //     properties.remove.disabled = true;
+        // }
 
         return properties;
     },
@@ -72,19 +71,15 @@ let View = Marionette.View.extend({
         application.main.views.contentTypes.htmlFromValue(this.el);
     },
 
-    viewDescriptorMetaModelDetails: function () {
-        Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/", {trigger: true});
-    },
-
-    viewDescriptorPanels: function () {
-        Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/panel/", {trigger: true});
-    },
+    // viewLayoutDetails: function () {
+    //     Backbone.history.navigate("app/descriptor/layout/" + this.model.id + "/", {trigger: true});
+    // },
 
     viewLayoutEditor: function () {
         Backbone.history.navigate("app/descriptor/layout/" + this.model.id + "/", {trigger: true});
     },
 
-    deleteDescriptorMetaModel: function () {
+    deleteLayout: function () {
         // if (this.model.get('num_descriptor_models') === 0) {
         //     this.model.destroy({wait: true});
         // } else {
@@ -97,7 +92,7 @@ let View = Marionette.View.extend({
         let ChangeLabel = require('../../main/views/entitychangelabel');
         let changeLabel = new ChangeLabel({
             model: this.model,
-            title: _t("Change the labels for the meta-model of descriptor")});
+            title: _t("Change the labels for the layout")});
 
         changeLabel.render();
 

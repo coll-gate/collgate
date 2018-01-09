@@ -61,7 +61,7 @@ class CollGateDescriptor(ApplicationMain):
             'condition',
             'describable',
             'descriptor',
-            'descriptormodel',
+            # 'descriptormodel',
             'layout',
             'descriptorcolumns',
             'layoutparameters'
@@ -118,13 +118,13 @@ class CollGateDescriptor(ApplicationMain):
         # descriptor related menus
         menu_descriptor.add_entry(MenuSeparator(300))
         menu_descriptor.add_entry(
-            MenuEntry('list-descriptor-group', _('List groups of descriptors'), "#descriptor/group/",
+            MenuEntry('list-descriptor', _('Descriptor management'), "#descriptor/group/",
                       icon=FaGlyph('th-list'), order=301, auth=AUTH_STAFF))
+        # menu_descriptor.add_entry(
+        #     MenuEntry('list-descriptor-model', _('List models of descriptor'), "#descriptor/model/",
+        #               icon=FaGlyph('th'), order=302, auth=AUTH_STAFF))
         menu_descriptor.add_entry(
-            MenuEntry('list-descriptor-model', _('List models of descriptor'), "#descriptor/model/",
-                      icon=FaGlyph('th'), order=302, auth=AUTH_STAFF))
-        menu_descriptor.add_entry(
-            MenuEntry('list-descriptor-layout', _('List layouts of descriptor'), "#descriptor/layout/",
+            MenuEntry('list-layout', _('Layout management'), "#descriptor/layout/",
                       icon=FaGlyph('th-large'), order=303, auth=AUTH_STAFF))
         descriptor_module.add_menu(menu_descriptor)
 

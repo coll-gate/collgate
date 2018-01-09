@@ -1501,7 +1501,7 @@ class Layout(Entity):
     and how they are displayed.
     """
 
-    # todo: precise validator schema
+    # todo: precise validator schema (descriptor sections, conditions..)
     STRUCTURE_VALIDATOR = {
         "type": "object",
         "properties": {
@@ -1552,7 +1552,7 @@ class Layout(Entity):
     layout_content = JSONField(default={"type": "undefined"})
 
     # layout parameters
-    # parameters = JSONField(default={"type": "undefined"})
+    parameters = JSONField(default={"type": "undefined"})
 
     class Meta:
         verbose_name = _("layout")

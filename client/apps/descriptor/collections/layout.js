@@ -9,11 +9,11 @@
  */
 
 let CountableCollection = require('../../main/collections/countable');
-let DescriptorMetaModelModel = require('../models/descriptormetamodel');
+let LayoutModel = require('../models/layout');
 
 let Collection = CountableCollection.extend({
-    url: window.application.url(['descriptor', 'meta-model']),
-    model: DescriptorMetaModelModel,
+    url: window.application.url(['descriptor', 'layout']),
+    model: LayoutModel,
 });
 
 module.exports = Collection;

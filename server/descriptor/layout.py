@@ -31,7 +31,7 @@ from .models import Layout
 
 class RestLayout(RestDescriptor):
     regex = r'^layout/$'
-    suffix = 'descriptor-layout'
+    suffix = 'layout'
 
 
 class RestLayoutCount(RestLayout):
@@ -115,7 +115,7 @@ def get_list_layouts(request):
 
     cq.cursor(cursor, order_by)
     # cq.set_count('descriptor_models')
-    cq.set_count('panels')
+    # cq.set_count('panels')
     cq.order_by(order_by).limit(limit)
 
     cq.prefetch_related('target')
@@ -130,7 +130,8 @@ def get_list_layouts(request):
             'description': layout.description,
             'target': '.'.join(layout.target.natural_key()),
             'parameters': layout.parameters,
-            'num_descriptor_models': layout.panels__count  # 0 #layout.descriptor_models__count
+            'layout_content': layout.layout_content
+            # 'num_descriptor_models': layout.panels__count  # 0 #layout.descriptor_models__count
         }
 
         layout_items.append(d)

@@ -1,5 +1,5 @@
 /**
- * @file descriptormetamodel.js
+ * @file layout.js
  * @brief Meta-model of descriptor
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-27
@@ -13,9 +13,9 @@ let Backbone = require('backbone');
 let Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return window.application.url(['descriptor', 'meta-model']);
+            return window.application.url(['descriptor', 'layout']);
         else
-            return window.application.url(['descriptor', 'meta-model', this.get('id')]);
+            return window.application.url(['descriptor', 'layout', this.get('id')]);
     },
 
     defaults: {
@@ -25,7 +25,7 @@ let Model = Backbone.Model.extend({
         description: '',
         target: '',
         parameters: {},
-        num_descriptor_models: 0,
+        layout_content: {}
     },
 
     parse: function(data) {
