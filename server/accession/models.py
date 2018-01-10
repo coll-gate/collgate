@@ -89,7 +89,7 @@ class Accession(DescribableEntity):
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
             'layout': {
-                'label': _('Model'),
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {

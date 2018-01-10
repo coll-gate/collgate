@@ -770,61 +770,61 @@ def search_layouts(request):
 #     return HttpResponseRest(request, {})
 #
 #
-# @RestLayoutIdLabel.def_auth_request(Method.GET, Format.JSON)
-# def get_all_labels_of_layout(request, layout_id):
-#     """
-#     Returns labels for each language related to the user interface.
-#     """
-#     layout = get_object_or_404(Layout, id=int(layout_id))
-#
-#     label_dict = layout.label
-#
-#     # complete with missing languages
-#     for lang, lang_label in InterfaceLanguages.choices():
-#         if lang not in label_dict:
-#             label_dict[lang] = ""
-#
-#     results = label_dict
-#
-#     return HttpResponseRest(request, results)
-#
-#
-# @RestLayoutIdLabel.def_auth_request(
-#     Method.PUT, Format.JSON, content={
-#         "type": "object",
-#         "additionalProperties": DescriptorPanel.LABEL_VALIDATOR
-#     },
-#     perms={
-#         'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
-#     },
-#     staff=True)
-# def change_all_labels_of_layout(request, layout_id):
-#     """
-#     Changes all the label, for each language related to the user interface.
-#     Returns only the local label.
-#     """
-#     layout = get_object_or_404(Layout, id=int(layout_id))
-#
-#     labels = request.data
-#
-#     languages_values = [lang[0] for lang in InterfaceLanguages.choices()]
-#
-#     for lang, label in labels.items():
-#         if lang not in languages_values:
-#             raise SuspiciousOperation(_("Unsupported language identifier"))
-#
-#     layout.label = labels
-#
-#     layout.update_field('label')
-#     layout.save()
-#
-#     result = {
-#         'label': layout.get_label()
-#     }
-#
-#     return HttpResponseRest(request, result)
-#
-#
+@RestLayoutIdLabel.def_auth_request(Method.GET, Format.JSON)
+def get_all_labels_of_layout(request, layout_id):
+    """
+    Returns labels for each language related to the user interface.
+    """
+    layout = get_object_or_404(Layout, id=int(layout_id))
+
+    label_dict = layout.label
+
+    # complete with missing languages
+    for lang, lang_label in InterfaceLanguages.choices():
+        if lang not in label_dict:
+            label_dict[lang] = ""
+
+    results = label_dict
+
+    return HttpResponseRest(request, results)
+
+
+@RestLayoutIdLabel.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "additionalProperties": Layout.LABEL_VALIDATOR
+    },
+    perms={
+        'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
+    },
+    staff=True)
+def change_all_labels_of_layout(request, layout_id):
+    """
+    Changes all the label, for each language related to the user interface.
+    Returns only the local label.
+    """
+    layout = get_object_or_404(Layout, id=int(layout_id))
+
+    labels = request.data
+
+    languages_values = [lang[0] for lang in InterfaceLanguages.choices()]
+
+    for lang, label in labels.items():
+        if lang not in languages_values:
+            raise SuspiciousOperation(_("Unsupported language identifier"))
+
+    layout.label = labels
+
+    layout.update_field('label')
+    layout.save()
+
+    result = {
+        'label': layout.get_label()
+    }
+
+    return HttpResponseRest(request, result)
+
+
 # @RestLayoutIdPanelIdLabel.def_auth_request(Method.GET, Format.JSON)
 # def get_all_labels_of_layout(request, layout_id, pan_id):
 #     """
