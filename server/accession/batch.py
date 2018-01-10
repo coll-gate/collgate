@@ -15,6 +15,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
+from accession.namebuilder import batch_name_builder
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
@@ -30,6 +31,11 @@ from django.utils.translation import ugettext_lazy as _
 class RestBatch(RestAccession):
     regex = r'^batch/$'
     name = 'batch'
+
+
+class RestBatchNaming(RestBatch):
+    regex = r'^naming/$'
+    name = 'naming'
 
 
 class RestBatchSearch(RestBatch):
@@ -55,6 +61,22 @@ class RestBatchIdBatch(RestBatchId):
 class RestBatchIdParent(RestBatchId):
     regex = r'^parent/$'
     suffix = 'parent'
+
+
+@RestBatchNaming.def_auth_request(Method.GET, Format.JSON)
+def get_batch_naming(request):
+    """
+    Generate a new unique batch name.
+    """
+    name = batch_name_builder[0].pick([])
+
+    result = {
+        'name': name,
+        'app_label': "accession",
+        'model': "batch"
+    }
+
+    return HttpResponseRest(request, result)
 
 
 @RestBatchId.def_auth_request(Method.GET, Format.JSON)
@@ -93,7 +115,12 @@ def get_batch_details_json(request, bat_id):
     }
 )
 def create_batch(request):
-    # @todo name generator
+    """
+    This is the deprecated way of creating a batch. Creation of a batch must be supervised
+    by an action of creation.
+    This method still because of its interest during development process.
+    """
+
     name = request.data['name']
     dmm_id = int_arg(request.data['descriptor_meta_model'])
     accession_id = int_arg(request.data['accession'])

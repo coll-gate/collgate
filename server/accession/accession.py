@@ -18,6 +18,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from accession import localsettings
+from accession.namebuilder import accession_name_builder
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
@@ -35,6 +36,11 @@ class RestAccessionAccession(RestAccession):
     name = 'accession'
 
 
+class RestAccessionNaming(RestAccessionAccession):
+    regex = r'^naming/$'
+    name = 'naming'
+
+
 class RestAccessionSearch(RestAccessionAccession):
     regex = r'^search/$'
     suffix = 'search'
@@ -48,6 +54,22 @@ class RestAccessionAccessionCount(RestAccessionAccession):
 class RestAccessionId(RestAccessionAccession):
     regex = r'^(?P<acc_id>[0-9]+)/$'
     suffix = 'id'
+
+
+@RestAccessionNaming.def_auth_request(Method.GET, Format.JSON)
+def get_accession_naming(request):
+    """
+    Generate a new unique accession name.
+    """
+    name = accession_name_builder[0].pick([])
+
+    result = {
+        'name': name,
+        'app_label': "accession",
+        'model': "accession"
+    }
+
+    return HttpResponseRest(request, result)
 
 
 @RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={

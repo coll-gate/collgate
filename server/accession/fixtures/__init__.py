@@ -9,6 +9,7 @@
 # @details coll-gate accession fixtures initialisation
 
 ORDER = [
+    'sequences',
     'entitysynonymtypes',
     'batchactiontypes',
     'descriptorsgroups',

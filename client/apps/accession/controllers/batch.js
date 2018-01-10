@@ -63,11 +63,19 @@ let Controller = Marionette.Object.extend({
         filters || (filters = {});
         search || (search = {});
 
-        $.ajax({
+        let layouts = $.ajax({
             type: "GET",
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.batch']),
             dataType: 'json'
-        }).done(function (data) {
+        });
+
+        let naming = $.ajax({
+            type: "GET",
+            url: window.application.url(['accession', 'batch', 'naming']),
+            dataType: 'json'
+        });
+
+        $.when(layouts, naming).then(function (data, naming) {
             let CreateBatchView = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_batch'
@@ -75,7 +83,7 @@ let Controller = Marionette.Object.extend({
                 template: require('../templates/navbatchcreate.html'),
                 templateContext: function () {
                     return {
-                        meta_models: data,
+                        meta_models: data[0],
                         title: (!selection) ? _t("Introduce a batch") : _t("Introduce a sub-batch"),
                         name: (!selection) ? _t("Name of the batch") : _t("Name of the sub-batch")
                     };
@@ -97,7 +105,7 @@ let Controller = Marionette.Object.extend({
                 onRender: function () {
                     CreateBatchView.__super__.onRender.apply(this);
 
-                    application.main.views.languages.drawSelect(this.ui.language);
+                    window.application.main.views.languages.drawSelect(this.ui.language);
                     this.ui.meta_model.selectpicker({});
 
                     this.ui.accession.select2(Search(
@@ -225,6 +233,9 @@ let Controller = Marionette.Object.extend({
 
             let createBatchView = new CreateBatchView();
             createBatchView.render();
+
+            // generated name
+            createBatchView.ui.name.val(naming[0].name);
         });
     },
 

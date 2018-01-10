@@ -23,11 +23,19 @@ let SearchEntityDialog = require('../views/search');
 let Controller = Marionette.Object.extend({
 
     create: function() {
-        $.ajax({
+        let description = $.ajax({
             type: "GET",
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.accession']),
             dataType: 'json'
-        }).done(function(data) {
+        });
+
+        let naming = $.ajax({
+            type: "GET",
+            url: window.application.url(['accession', 'accession', 'naming']),
+            dataType: 'json'
+        });
+
+        $.when(description, naming).then(function(data, naming) {
             let CreateAccessionDialog = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_accession'
@@ -35,7 +43,7 @@ let Controller = Marionette.Object.extend({
                 template: require('../templates/accessioncreate.html'),
                 templateContext: function () {
                     return {
-                        meta_models: data
+                        meta_models: data[0]
                     };
                 },
 
@@ -334,6 +342,9 @@ let Controller = Marionette.Object.extend({
 
             let createAccessionView = new CreateAccessionDialog();
             createAccessionView.render();
+
+            // generated name
+            createAccessionView.ui.code.val(naming[0].name);
         });
     },
 

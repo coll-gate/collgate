@@ -196,3 +196,12 @@ class CollGateAccession(ApplicationMain):
                     name="accession_alternate_name").pk
                 localsettings.synonym_type_accession_geves_code = EntitySynonymType.objects.get(
                     name="accession_geves_code").pk
+
+        # setup the name builders
+        from accession.namebuilder import NameBuilder
+
+        from accession.namebuilder import accession_name_builder
+        accession_name_builder[0] = NameBuilder("accession_naming_seq", "{GRC_ID}_{SEQUENCE.6}")
+
+        from accession.namebuilder import batch_name_builder
+        batch_name_builder[0] = NameBuilder("batch_naming_seq", "{GRC_ID}_{SEQUENCE.6}")

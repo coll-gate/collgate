@@ -245,6 +245,7 @@ class Establishment(DescribableEntity):
 
 
 class GRCManager(models.Manager):
+
     def get_unique_grc(self):
         return self.all()[0]
 

@@ -22,6 +22,34 @@ class BatchActionTypeFormatGroup(object):
         self.verbose_name = verbose_name
 
 
+class BatchActionController(object):
+    """
+    Batch action controller base class.
+    It defines the interface to create or update the action, and to manage its related batches.
+    """
+
+    def __init__(self, batch_action_type_format):
+        self.type_format = batch_action_type_format
+
+    def create(self, batch_action_type, accession, user):
+        """
+        Creation step of the batch action.
+        :param batch_action_type: Instance of the batch action type model
+        :param accession: Related accession
+        :param user: User actor of the creation
+        :return The new batch action saved model
+        """
+        return None
+
+    def update(self, batch_action, user):
+        """
+        Update step of the batch action.
+        :param batch_action: A valid existing in DB batch action instance to be updated.
+        :param user: User actor of this operation
+        """
+        pass
+
+
 class BatchActionTypeFormat(object):
     """
     Batch action type format base class.
@@ -40,6 +68,9 @@ class BatchActionTypeFormat(object):
         # list of related field into format.*.
         self.format_fields = ["type"]
 
+        # batch action controller
+        self.controller = None
+
     def validate(self, batch_action_type_format, value):
         """
         Validate the value according the format.
@@ -56,6 +87,12 @@ class BatchActionTypeFormat(object):
         :return: None if the check is done, else a string with the error detail
         """
         return None
+
+    def controller(self):
+        """
+        Return the associated batch controller.
+        """
+        return self.controller(self)
 
 
 class BatchActionTypeFormatManager(object):
@@ -155,6 +192,9 @@ class BatchActionTypeFormatCreation(BatchActionTypeFormat):
         self.group = BatchActionFormatTypeGroupStandard()
         self.verbose_name = _("Creation")
         self.format_fields = ["type"]
+
+        from accession.batchactions.creation import BatchActionCreation
+        self.controller = BatchActionCreation
 
     def validate(self, batch_action_type_format, value):
         """

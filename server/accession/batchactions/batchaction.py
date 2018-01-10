@@ -17,7 +17,7 @@ from accession.models import BatchAction, Accession, BatchActionType
 
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Method, Format
-from rest.response import HttpResponseRest
+from igdectk.rest.response import HttpResponseRest
 
 
 class RestBatchAction(RestAccession):
@@ -46,15 +46,9 @@ def create_batch_action(request):
     batch_action_type = get_object_or_404(BatchActionType, pk=batch_action_type_id)
 
     # format type might be 'creation'
-    # batchaction_type_format = BatchActionTypeFormatManager.get(batchaction_type.format.get('type'))
+    batch_action_type_format = BatchActionTypeFormatManager.get(batch_action_type.format.get('type'))
 
-    batch_action = BatchAction()
-    batch_action.type = batch_action_type
-    batch_action.user = user
-    batch_action.accession = accession
-    batch_action.data = {'status': 'created'}
-
-    batch_action.save()
+    batch_action = batch_action_type_format.controller().create(batch_action_type, accession, user)
 
     result = {
         'id': batch_action.pk,
