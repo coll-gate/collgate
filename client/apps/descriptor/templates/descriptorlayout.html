@@ -1,0 +1,40 @@
+<!--
+ - @file descriptorlayout.html
+ - @brief
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2018-01-12
+ - @copyright Copyright (c) 2017 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div name="details" style="height: 1px"></div>
+<div class="column" style="margin-top: 10px; height: calc(100% - 1px);">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="div.tab-pane[name=configuration]" aria-controls="configuration" role="tab" data-toggle="tab"><%= _t("Configuration") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=values]" aria-controls="values" role="tab" data-toggle="tab"><%= _t("Values") %></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content" style="height: calc(100% - 41px - 10px);">
+        <div role="tabpanel" class="tab-pane active" name="configuration" style="height: 100%; overflow-y: auto;">
+            <div class="tab-frame">
+                <div class="row">
+                    <div class="descriptor-format-type-group form-group col-md-6">
+                        <label><%- _t('Type of format') %></label>
+                        <select class="descriptor-format-type form-control"></select>
+                    </div>
+                </div>
+                <div class="contextual-region"></div>
+                <div class="descriptor-description form-group">
+                    <label><%- _t('Description') %></label>
+                    <textarea name="description" class="form-control" maxlength="1024"><%= description %></textarea>
+                </div>
+                <div class="descriptor-update form-group text-center">
+                    <button name="save" class="btn btn-success btn-block"><%- _t('Update') %></button>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" name="values" style="height: 100%; overflow-y: auto;"></div>
+    </div>
+</div>

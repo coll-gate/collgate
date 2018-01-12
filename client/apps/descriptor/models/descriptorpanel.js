@@ -15,18 +15,17 @@ let Model = Backbone.Model.extend({
         let model_id = this.model_id || this.get('model') || this.collection.model_id;
 
         if (this.isNew()) {
-            return window.application.url(['descriptor', 'meta-model', model_id, 'panel']);
+            return window.application.url(['descriptor', 'layout', model_id, 'panel']);
         } else {
-            return window.application.url(['descriptor', 'meta-model', model_id, 'panel', this.get('id')]);
+            return window.application.url(['descriptor', 'layout', model_id, 'panel', this.get('id')]);
         }
     },
 
     defaults: {
         id: null,
+        position: null,
         label: '',
-        descriptor_model: null,
-        descriptor_model_name: '',
-        descriptor_model_verbose_name: '',
+        layout: this.model_id
     },
 
     initialize: function(attributes, options) {

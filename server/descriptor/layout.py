@@ -24,7 +24,9 @@ from igdectk.rest.response import HttpResponseRest
 
 from main.models import InterfaceLanguages
 from .descriptor import RestDescriptor
-from .models import Layout
+from .models import Layout, Descriptor
+
+
 # from .models import DescriptorModel, DescriptorPanel, Layout, DescriptorModelTypeCondition, \
 #     DescriptorModelType
 
@@ -130,7 +132,7 @@ def get_list_layouts(request):
             'description': layout.description,
             'target': '.'.join(layout.target.natural_key()),
             'parameters': layout.parameters,
-            'layout_content': layout.layout_content
+            # 'layout_content': layout.layout_content
             # 'num_descriptor_models': layout.panels__count  # 0 #layout.descriptor_models__count
         }
 
@@ -260,10 +262,11 @@ def get_layout(request, layout_id):
     result = {
         'id': layout.id,
         'name': layout.name,
+        'label': layout.label,
         'description': layout.description,
         'target': '.'.join(layout.target.natural_key()),
         'parameters': layout.parameters,
-        'num_descriptor_models': layout.descriptor_models.all().count()
+        'layout_content': layout.layout_content
     }
 
     return HttpResponseRest(request, result)
@@ -493,62 +496,61 @@ def search_layouts(request):
     return HttpResponseRest(request, response)
 
 
-# @RestLayoutIdPanel.def_auth_request(Method.GET, Format.JSON)
-# def list_descriptor_panels_for_layout(request, layout_id):
-#     """
-#     Returns a list of panels for a metal-model of descriptors, ordered by position.
-#     """
-#     results_per_page = int_arg(request.GET.get('more', 30))
-#     cursor = request.GET.get('cursor')
-#     limit = results_per_page
-#
-#     layout = get_object_or_404(Layout, id=int(layout_id))
-#
-#     if cursor:
-#         cursor = json.loads(cursor)
-#         cursor_position, cursor_id = cursor
-#         qs = DescriptorPanel.objects.filter(Q(layout=layout.id), Q(position__gt=cursor_position))
-#     else:
-#         qs = DescriptorPanel.objects.filter(Q(layout=layout.id))
-#
-#     descriptor_models = qs.prefetch_related(
-#         'descriptor_model').order_by(
-#         'position').prefetch_related(
-#         'descriptor_model')[:limit]
-#
-#     panels_list = []
-#
-#     for panel in descriptor_models:
-#         panels_list.append({
-#             'id': panel.id,
-#             'label': panel.get_label(),
-#             'position': panel.position,
-#             'descriptor_model': panel.descriptor_model.id,
-#             'descriptor_model_name': panel.descriptor_model.name,
-#             'descriptor_model_verbose_name': panel.descriptor_model.verbose_name
-#         })
-#
-#     if len(panels_list) > 0:
-#         # prev cursor (asc order)
-#         panel = panels_list[0]
-#         prev_cursor = (panel['position'], panel['id'])
-#
-#         # next cursor (asc order)
-#         panel = panels_list[-1]
-#         next_cursor = (panel['position'], panel['id'])
-#     else:
-#         prev_cursor = None
-#         next_cursor = None
-#
-#     results = {
-#         'perms': [],
-#         'items': panels_list,
-#         'prev': prev_cursor,
-#         'cursor': cursor,
-#         'next': next_cursor,
-#     }
-#
-#     return HttpResponseRest(request, results)
+@RestLayoutIdPanel.def_auth_request(Method.GET, Format.JSON)
+def list_descriptor_panels_for_layout(request, layout_id):
+    """
+    Returns a list of panels for a layout, ordered by position.
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    # limit = results_per_page
+
+    layout = get_object_or_404(Layout, id=int(layout_id))
+
+    # if cursor:
+    #     cursor = json.loads(cursor)
+    #     cursor_position, cursor_id = cursor
+    #     qs = DescriptorPanel.objects.filter(Q(layout=layout.id), Q(position__gt=cursor_position))
+    # else:
+    #     qs = DescriptorPanel.objects.filter(Q(layout=layout.id))
+
+    # descriptor_models = qs.prefetch_related(
+    #     'descriptor_model').order_by(
+    #     'position').prefetch_related(
+    #     'descriptor_model')[:limit]
+
+    panels_list = []
+    i = 0
+    for panel in layout.layout_content.get('panels'):
+        lang = translation.get_language()
+        panels_list.append({
+            'id': i,
+            'label': panel['label'].get(lang, "en"),
+            'position': i,
+        })
+        i += 1
+
+    if len(panels_list) > 0:
+        # prev cursor (asc order)
+        panel = panels_list[0]
+        prev_cursor = (panel['position'], panel['id'])
+
+        # next cursor (asc order)
+        panel = panels_list[-1]
+        next_cursor = (panel['position'], panel['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': panels_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
 #
 #
 # @RestLayoutIdPanel.def_auth_request(
@@ -631,6 +633,69 @@ def search_layouts(request):
 #     }
 #
 #     return HttpResponseRest(request, result)
+
+
+@RestLayoutIdPanelId.def_auth_request(Method.GET, Format.JSON, staff=True)
+def list_descriptor_for_panel(request, layout_id, pan_id):
+    """
+    Returns a list of type of descriptors ordered by name for a given layout panel.
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    # limit = results_per_page
+
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    panel = layout.layout_content.get('panels')[int(pan_id)]
+
+    # if cursor:
+    #     cursor = json.loads(cursor)
+    #     cursor_position, cursor_id = cursor
+    #     qs = panel.descriptor_model_types.filter(Q(position__gt=cursor_position))
+    # else:
+    #     qs = panel.descriptor_model_types.all()
+    #
+    # dmts = qs.order_by('position')[:limit]
+
+    items_list = []
+    i = 0
+    for panel_descriptor in panel['descriptors']:
+        mdl_descriptor = get_object_or_404(Descriptor, name=panel_descriptor.get('name'))
+
+        items_list.append({
+            'id': mdl_descriptor.id,
+            'name': mdl_descriptor.name,
+            'position': i,
+            'label': mdl_descriptor.get_label(),
+            'group_name': mdl_descriptor.group_name,
+            'code': mdl_descriptor.code,
+            'mandatory': panel_descriptor.get('mandatory', False),
+            'set_once': panel_descriptor.get('set_once', False),
+            'index': panel_descriptor.get('index', None)
+        })
+        i += 1
+
+    if len(items_list) > 0:
+        # prev cursor (asc order)
+        obj = items_list[0]
+        prev_cursor = (obj['position'], obj['id'])
+
+        # next cursor (asc order)
+        obj = items_list[-1]
+        next_cursor = (obj['position'], obj['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': items_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
 #
 #
 # @RestLayoutIdPanelOrder.def_auth_request(Method.PUT, Format.JSON, content={

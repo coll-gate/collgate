@@ -1,20 +1,18 @@
 /**
- * @file batchactiontypelayout.js
- * @brief Optimized layout for batch action details
- * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2017-12-07
- * @copyright Copyright (c) 2017 INRA/CIRAD
+ * @file descriptorlayout.js
+ * @brief Layout for descriptor details
+ * @author Medhi BOULNEMOUR (INRA UMR1095)
+ * @date 2018-01-12
+ * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details
  */
 
-let LayoutView = require('../../../main/views/layout');
-let BatchActionTypeModel = require('../../models/batchactiontype');
-let ScrollingMoreView = require('../../../main/views/scrollingmore');
-let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
+let LayoutView = require('../../main/views/layout');
+let DescriptorDetails = require('./descriptordetails');
 
 let Layout = LayoutView.extend({
-    template: require("../../templates/batchactiontype/layout.html"),
+    template: require("../templates/descriptorlayout.html"),
 
     attributes: {
         style: "height: 100%;"
@@ -22,16 +20,16 @@ let Layout = LayoutView.extend({
 
     ui: {
         configuration_tab: 'a[aria-controls=configuration]',
-        accessions_tab: 'a[aria-controls=accessions]',
+        values_tab: 'a[aria-controls=values]',
         format_type: 'select.batch-action-type-format-type',
         description: 'textarea[name=description]',
         config_save: 'button[name=save]'
     },
 
     regions: {
-        'contextual': "div.contextual-region",
+        // 'contextual': "div.contextual-region",
         'configuration': "div.tab-pane[name=configuration]",
-        'accessions': "div.tab-pane[name=accessions]"
+        'values': "div.tab-pane[name=values]"
     },
 
     events: {
@@ -43,27 +41,27 @@ let Layout = LayoutView.extend({
         Layout.__super__.initialize.apply(this, arguments);
 
         if (this.model.isNew()) {
-            this.listenTo(this.model, 'change:id', this.onBatchActionTypeCreate, this);
+            this.listenTo(this.model, 'change:id', this.onDescriptorCreate, this);
         }
     },
 
-    onBatchActionTypeCreate: function () {
+    onDescriptorCreate: function () {
         // re-render once created
         this.render();
 
         // and update history
-        Backbone.history.navigate('app/accession/batchactiontype/' + this.model.get('id') + '/', {
+        Backbone.history.navigate('app/descriptor/descriptor/' + this.model.get('id') + '/', {
             /*trigger: true,*/
             replace: false
         });
     },
 
     disableValuesTab: function () {
-        this.ui.accessions_tab.parent().addClass('disabled');
+        this.ui.values_tab.parent().addClass('disabled');
     },
 
     enableTabs: function () {
-        this.ui.accessions_tab.parent().removeClass('disabled');
+        this.ui.values_tab.parent().removeClass('disabled');
     },
 
     changeFormatType: function () {
@@ -80,32 +78,24 @@ let Layout = LayoutView.extend({
 
     onRender: function () {
         let format = this.model.get('format');
-        let batchLayout = this;
+        let descriptorLayout = this;
 
-        window.application.accession.views.batchActionTypeFormats.drawSelect(
-            this.ui.format_type, true, false, format.type || 'creation');
+        // window.application.accession.views.batchActionTypeFormats.drawSelect(
+        //     this.ui.format_type, true, false, format.type || 'creation');
+
+        // configuration tab
+        let descriptorDetails = new DescriptorDetails({model: this.model});
+        descriptorLayout.showChildView('configuration', descriptorDetails);
 
         if (!this.model.isNew()) {
-            // configuration tab
-            let Element = window.application.accession.actions.getElement(format.type || 'creation');
-            let batchActionFormatType = new Element.BatchActionTypeFormatDetailsView({model: this.model});
-            this.ui.format_type.prop('disabled', true).selectpicker('refresh');
-
-            batchLayout.showChildView('contextual', batchActionFormatType);
-
             this.enableTabs();
         } else {
-            let Element = window.application.accession.actions.getElement(format.type || 'creation');
-            let batchActionFormatType = new Element.BatchActionTypeFormatDetailsView({model: this.model});
-
-            batchLayout.showChildView('contextual', batchActionFormatType);
-
             // not available tabs
             this.disableValuesTab();
         }
     },
 
-    onUpdateConfig: function() {
+    onUpdateConfig: function () {
         let childView = this.getChildView('contextual');
         let formatType = this.ui.format_type.val();
 

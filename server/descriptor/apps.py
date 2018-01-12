@@ -118,7 +118,7 @@ class CollGateDescriptor(ApplicationMain):
         # descriptor related menus
         menu_descriptor.add_entry(MenuSeparator(300))
         menu_descriptor.add_entry(
-            MenuEntry('list-descriptor', _('Descriptor management'), "#descriptor/group/",
+            MenuEntry('list-descriptor', _('Descriptor management'), "#descriptor/descriptor/",
                       icon=FaGlyph('th-list'), order=301, auth=AUTH_STAFF))
         # menu_descriptor.add_entry(
         #     MenuEntry('list-descriptor-model', _('List models of descriptor'), "#descriptor/model/",

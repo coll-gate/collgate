@@ -11,7 +11,7 @@
 let Marionette = require('backbone.marionette');
 let LayoutModel = require('../models/layout');
 let LayoutCollection = require('../collections/layout');
-// let DescriptorPanelCollection = require('../collections/descriptorpanel');
+let DescriptorPanelCollection = require('../collections/descriptorpanel');
 let LayoutAddView = require('../views/descriptormetamodeladd');
 let LayoutListView = require('../views/layoutlist');
 let DefaultLayout = require('../../main/views/defaultlayout');

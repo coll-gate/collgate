@@ -162,7 +162,57 @@ class Descriptor(Entity):
     can_modify = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name = _("descriptor type")
+        verbose_name = _("descriptor")
+
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'code': {
+                'label': _('Code'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'name': {
+                'label': _('Name'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'label': {
+                'label': _('Label'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'group_name': {
+                'label': _('Group'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',  # todo: create a value set by a select distinct query
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'description': {
+                'label': _('Description'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            }
+        }
 
     def natural_name(self):
         return self.name

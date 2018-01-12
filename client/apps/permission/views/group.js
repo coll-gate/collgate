@@ -24,7 +24,7 @@ let View = Marionette.View.extend({
 
     events: {
         'click @ui.delete_group': 'deleteGroup',
-        'click @ui.change_name': 'onRenameGroup',
+        'click @ui.change_name': 'onRename',
         'click @ui.view_permissions': 'viewPermissions',
         'click @ui.view_users': 'viewUsers'
     },
@@ -34,7 +34,7 @@ let View = Marionette.View.extend({
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
                 edit: {display: true, title: _t("Manage permissions"), event: 'viewPermissions'},
-                tag: {display: true, title: _t("Edit label"), event: 'onRenameGroup'},
+                tag: {display: true, title: _t("Edit label"), event: 'onRename'},
                 manage: {display: true, title: _t("Manage users"), event: 'viewUsers'},
                 remove: {display: true, event: 'deleteGroup'}
             }
@@ -63,7 +63,7 @@ let View = Marionette.View.extend({
         this.model.destroy({wait: true});
     },
 
-    onRenameGroup: function() {
+    onRename: function() {
         let ChangeName = require('../../main/views/entityrename');
         let changeName = new ChangeName({
             model: this.model,

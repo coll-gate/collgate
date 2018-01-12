@@ -61,7 +61,7 @@ let View = AdvancedTable.extend({
         contextLayout.showChildView('content', contextView);
 
         contextView.on("batch-action-type:create", function () {
-            view.onCreateBatchActionType();
+            view.onCreateDescriptor();
         });
 
         View.__super__.onShowTab.apply(this, arguments);
@@ -71,7 +71,7 @@ let View = AdvancedTable.extend({
         application.main.defaultRightView();
     },
 
-    onCreateBatchActionType: function() {
+    onCreateDescriptor: function() {
         window.application.accession.controllers.batchactiontype.create();
     }
 });

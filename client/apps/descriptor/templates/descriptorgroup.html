@@ -10,12 +10,14 @@
 
 <% var className = "action"; %>
 <td class="glyph-fixed-column lock-status">
-    <% if (!can_delete) { %>
+    <% if (!can_modify) { %>
         <% className = ""; %>
         <span class="fa fa-lock" title="<%= _t('Group of descriptors locked') %>"></span>
     <% } %>
 </td>
+<td class="" name="code" value="<%= code %>"><%= code %></td>
 <td class="<%= className %> rename" name="name" value="<%= name %>"><%= name %></td>
-<td class="action manage last-column" name="num_descriptor_types">
-    <span class="badge" title="<%= _t('Manage types of descriptor') %>"><%= num_descriptor_types %></span>
-</td>
+<td class="" name="label" value="<%= label %>"><%= label %></td>
+<!--<td class="action manage last-column" name="num_descriptor_types">-->
+    <!--<span class="badge" title="<%= _t('Manage types of descriptor') %>"><%= num_descriptor_types %></span>-->
+<!--</td>-->

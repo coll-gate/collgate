@@ -1,5 +1,5 @@
 /**
- * @file descriptortypedetailslayout.js
+ * @file descriptordetails.js
  * @brief Optimized layout for details of a type of descriptor
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-01-25
@@ -39,9 +39,9 @@ let Layout = Marionette.View.extend({
         let content_el = null;
 
         application.descriptor.views.formatTypes.drawSelect(this.ui.format_type, true, false, format.type);
+        let Element = application.descriptor.widgets.getElement(format.type);
 
         // update the contextual region according to the format
-        let Element = application.descriptor.widgets.getElement(format.type);
         if (Element && Element.DescriptorTypeDetailsView) {
             content_el = new Element.DescriptorTypeDetailsView({model: this.model});
             this.showChildView('content', content_el);

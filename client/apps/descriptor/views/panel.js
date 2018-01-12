@@ -13,7 +13,7 @@ let Dialog = require('../../main/views/dialog');
 let DescriptorCollection = require('../collections/descriptormodeltype');
 let DescriptorGroupCollection = require('../collections/descriptorgroup');
 let DescriptorTypeCollection = require('../collections/descriptortype');
-let PanelDescriptor = require('../views/descriptor');
+let PanelDescriptor = require('./layoutdescriptor');
 let DescriptorTypeModel = require('../models/descriptortype');
 
 let View = Marionette.CompositeView.extend({
@@ -49,9 +49,9 @@ let View = Marionette.CompositeView.extend({
         this.ui.panel_descriptors.collapse('toggle')
     },
 
-    initialize: function () {
+    initialize: function (options) {
         this.listenTo(this.model, 'change', this.render, this);
-        this.collection = new DescriptorCollection([], {model_id: this.model.attributes.descriptor_model});
+        this.collection = new DescriptorCollection([], {model_id: this.model.attributes.id, layout_id: this.model.collection.model_id});
         this.collection.fetch()
     },
 

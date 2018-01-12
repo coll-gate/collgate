@@ -9,7 +9,7 @@
  */
 
 let AdvancedTable = require('../../main/views/advancedtable');
-let DescriptorTypeView = require('../views/descriptortype');
+let DescriptorTypeView = require('./descriptor');
 
 let View = AdvancedTable.extend({
     template: require("../templates/descriptortypelist.html"),

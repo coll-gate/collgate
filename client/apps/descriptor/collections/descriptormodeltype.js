@@ -13,7 +13,7 @@ let CountableCollection = require('../../main/collections/countable');
 
 let Collection = CountableCollection.extend({
     url: function() {
-        return window.application.url(['descriptor', 'model', this.model_id, 'type']);
+        return window.application.url(['descriptor', 'layout', this.layout_id, 'panel', this.model_id]);
     },
 
     model: DescriptorModelTypeModel,
@@ -25,6 +25,7 @@ let Collection = CountableCollection.extend({
         Collection.__super__.initialize.apply(this, arguments);
 
         this.model_id = options.model_id;
+        this.layout_id = options.layout_id;
     }
 });
 

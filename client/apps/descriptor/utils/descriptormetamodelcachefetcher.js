@@ -61,7 +61,7 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
         keysToFetch = new Set(keys);
     }
 
-    let url = window.application.url(['descriptor', 'meta-model', 'values']);
+    let url = window.application.url(['descriptor', 'layout', 'values']);
     let queryData = {
         values: JSON.stringify(Array.from(keysToFetch))
     };
