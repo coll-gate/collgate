@@ -24,6 +24,7 @@ class BatchActionCreation(BatchActionController):
 
     def create(self, batch_action_type, accession, user, input_batches=None):
         naming_constants = ['I']  # @todo from config
+        descriptors_map = {}      # @todo from config
 
         try:
             with transaction.atomic():
@@ -41,9 +42,7 @@ class BatchActionCreation(BatchActionController):
 
                 batch_action.save()
 
-                # batch layout from accession layout information
-                batch_layout_id = accession.descriptor_meta_model.parameters['data']['batch_descriptor_meta_models'][0]
-                batch_layout = Layout.objects.get(pk=batch_layout_id)
+                batch_layout = self.batch_layout(accession)
 
                 # now create the initial batch
                 batch = Batch()
@@ -52,6 +51,9 @@ class BatchActionCreation(BatchActionController):
 
                 batch.accession = accession
                 batch.descriptor_meta_model = batch_layout
+
+                # @todo set configured descriptors (date, type...)
+
                 batch.save()
 
                 batch_action.output_batches.add(batch)

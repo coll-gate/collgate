@@ -11,6 +11,8 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
+from accession.models import DescriptorMetaModel as Layout
+
 
 class BatchActionTypeFormatGroup(object):
     """
@@ -37,6 +39,28 @@ class BatchActionController(object):
             'ACCESSION_NAME': accession.name,
             'ACCESSION_CODE': accession.code
         }
+
+    def batch_layout(self, accession):
+        """
+        Return the batch layout model from the given accession layout parameters.
+        """
+        data = accession.descriptor_meta_model.parameters.get('data')
+        if not data:
+            return None
+
+        # @todo merge 'batch_layout'
+        layouts = data.get('batch_descriptor_meta_models')
+
+        if not layouts:
+            return None
+
+        batch_layout_id = layouts[0]
+        try:
+            batch_layout = Layout.objects.get(pk=batch_layout_id)
+        except Layout.DoesNotExist:
+            return None
+
+        return batch_layout
 
     def create(self, batch_action_type, accession, user, input_batches=None):
         """

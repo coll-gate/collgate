@@ -24,6 +24,7 @@ class BatchActionMultiplication(BatchActionController):
 
     def create(self, batch_action_type, accession, user, input_batches=None):
         naming_constants = ['M']  # @todo from config
+        descriptors_map = {}      # @todo from config
 
         if input_batches is None:
             input_batches = []
@@ -44,10 +45,7 @@ class BatchActionMultiplication(BatchActionController):
 
                 batch_action.save()
 
-                # batch layout from accession layout information
-                batch_layout_id = accession.descriptor_meta_model.parameters['data']['batch_descriptor_meta_models'][0]
-                # batch_layout = Layout.objects.get(pk=batch_layout_id)
-
+                # batch_layout = self.batch_layout(accession)
                 in_batches = Batch.objects.find(pk__in=input_batches)
 
                 # setup input batch
@@ -63,7 +61,7 @@ class BatchActionMultiplication(BatchActionController):
                     batch.descriptor_meta_model = in_batch.descriptor_meta_model
                     batch.descriptors = in_batch.descriptors
 
-                    # @todo update some normalized descriptors (date, type...)
+                    # @todo update configured descriptors (date, type...)
                     batch.save()
 
                 batch_action.output_batches.add(batch)
