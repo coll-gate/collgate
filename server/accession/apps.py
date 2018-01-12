@@ -198,10 +198,14 @@ class CollGateAccession(ApplicationMain):
                     name="accession_geves_code").pk
 
         # setup the name builders
-        from accession.namebuilder import NameBuilder
+        from accession.namebuilder import NameBuilder, NameBuilderManager
+        NameBuilderManager.init()
 
-        from accession.namebuilder import accession_name_builder
-        accession_name_builder[0] = NameBuilder("accession_naming_seq", "{GRC_ID}_{SEQUENCE.6}")
+        NameBuilderManager.register(NameBuilderManager.GLOBAL_ACCESSION,
+                                    NameBuilder("accession_naming_seq", "{SEQUENCE.6}"))
 
-        from accession.namebuilder import batch_name_builder
-        batch_name_builder[0] = NameBuilder("batch_naming_seq", "{GRC_ID}_{SEQUENCE.6}")
+        NameBuilderManager.register(NameBuilderManager.GLOBAL_BATCH,
+                                    NameBuilder("batch_naming_seq",
+                                                "{VAR.ACCESSION_CODE}-{CONST}-{YEAR}-{HASH.3}"))
+
+        # print(NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH).pick({'ACCESSION_CODE': '032354'}, ['M']))

@@ -18,7 +18,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from accession import localsettings
-from accession.namebuilder import accession_name_builder
+from accession.namebuilder import NameBuilderManager
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
@@ -61,7 +61,7 @@ def get_accession_naming(request):
     """
     Generate a new unique accession name.
     """
-    name = accession_name_builder[0].pick([])
+    name = NameBuilderManager.get(NameBuilderManager.GLOBAL_ACCESSION).pick([])
 
     result = {
         'name': name,
@@ -237,13 +237,6 @@ def get_accession_list(request):
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
     sort_by = json.loads(request.GET.get('sort_by', '[]'))
-
-    # order_by = ['name', 'id']
-    # order_by = ['primary_classification_entry->name', 'id']
-    # order_by = ['#MCPD_ORIGCTY->name', 'name', 'id']
-    # order_by = ['-#IPGRI_4.1.1->value1', 'name', 'id']
-    # order_by = ['#test_accession->name', '#MCPD_ORIGCTY->name', '#IPGRI_4.1.1->value1', 'name', 'id']
-    # order_by = ['#MCPD_ORIGCTY->name', '#IPGRI_4.1.1->value1', 'name', 'id']
 
     if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
         order_by = sort_by + ['id']
@@ -534,7 +527,7 @@ def patch_accession(request, acc_id):
 def delete_accession(request, acc_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
 
-    accession.synonyms.clear()
+    accession.synonyms.all().delete()
     accession.delete()
 
     return HttpResponseRest(request, {})

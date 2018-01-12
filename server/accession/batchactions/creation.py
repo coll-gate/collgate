@@ -13,7 +13,7 @@ from django.db import transaction, IntegrityError
 from accession.batchactiontypeformat import BatchActionTypeFormatManager, BatchActionTypeFormatCreation
 from accession.batchactiontypeformat import BatchActionController
 from accession.models import BatchActionType, BatchAction, Batch
-from accession.namebuilder import batch_name_builder
+from accession.namebuilder import NameBuilderManager
 from descriptor.models import DescriptorMetaModel as Layout
 
 
@@ -22,7 +22,9 @@ class BatchActionCreation(BatchActionController):
     def __init__(self, batch_action_type_format):
         super().__init__(batch_action_type_format)
 
-    def create(self, batch_action_type, accession, user):
+    def create(self, batch_action_type, accession, user, input_batches=None):
+        naming_constants = ['I']  # @todo from config
+
         try:
             with transaction.atomic():
                 batch_action = BatchAction()
@@ -45,7 +47,9 @@ class BatchActionCreation(BatchActionController):
 
                 # now create the initial batch
                 batch = Batch()
-                batch.name = batch_name_builder[0].pick([])
+                batch.name = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH).pick(
+                    self.naming_variables, naming_constants)
+
                 batch.accession = accession
                 batch.descriptor_meta_model = batch_layout
                 batch.save()

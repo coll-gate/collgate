@@ -31,12 +31,20 @@ class BatchActionController(object):
     def __init__(self, batch_action_type_format):
         self.type_format = batch_action_type_format
 
-    def create(self, batch_action_type, accession, user):
+    @property
+    def naming_variables(self, accession):
+        return {
+            'ACCESSION_NAME': accession.name,
+            'ACCESSION_CODE': accession.code
+        }
+
+    def create(self, batch_action_type, accession, user, input_batches=None):
         """
         Creation step of the batch action.
         :param batch_action_type: Instance of the batch action type model
         :param accession: Related accession
         :param user: User actor of the creation
+        :param input_batches: List of input batches or None if not necessary for the action
         :return The new batch action saved model
         """
         return None

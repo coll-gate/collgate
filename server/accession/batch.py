@@ -15,7 +15,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from accession.namebuilder import batch_name_builder
+from accession.namebuilder import NameBuilderManager
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
@@ -68,7 +68,7 @@ def get_batch_naming(request):
     """
     Generate a new unique batch name.
     """
-    name = batch_name_builder[0].pick([])
+    name = NameBuilderManager.get(NameBuilderManager.GLOBAL_ACCESSION).pick([])
 
     result = {
         'name': name,
