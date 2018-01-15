@@ -202,10 +202,9 @@ class CollGateAccession(ApplicationMain):
         NameBuilderManager.init()
 
         NameBuilderManager.register(NameBuilderManager.GLOBAL_ACCESSION,
-                                    NameBuilder("accession_naming_seq", "{SEQUENCE.6}"))
+                                    NameBuilder("accession_naming_seq", self.get_setting("accession_naming")))
 
         NameBuilderManager.register(NameBuilderManager.GLOBAL_BATCH,
-                                    NameBuilder("batch_naming_seq",
-                                                "{VAR.ACCESSION_CODE}-{CONST}-{YEAR}-{HASH.3}"))
+                                    NameBuilder("batch_naming_seq", self.get_setting("batch_naming")))
 
         # print(NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH).pick({'ACCESSION_CODE': '032354'}, ['M']))

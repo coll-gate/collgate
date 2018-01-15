@@ -23,7 +23,7 @@ class BatchActionCreation(BatchActionController):
         super().__init__(batch_action_type_format)
 
     def create(self, batch_action_type, accession, user, input_batches=None):
-        naming_constants = ['I']  # @todo from config
+        naming_constants = self.naming_constants(1, accession, batch_action_type)
         descriptors_map = {}      # @todo from config
 
         try:

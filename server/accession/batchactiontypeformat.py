@@ -40,6 +40,30 @@ class BatchActionController(object):
             'ACCESSION_CODE': accession.code
         }
 
+    @property
+    def naming_constants(self, count, accession, batch_action):
+        constants = "" * count
+
+        # first retrieve constants from accession layout
+        data = accession.descriptor_meta_model.parameters.get('data')
+        if data:
+            opts = data.get('naming_options')
+            if opts:
+                i = 0
+                for opt in opts:
+                    constants[i] = opt
+                    i += 1
+
+        # and override with batch action parameters
+        opts = batch_action.format.get('naming_options')
+        if opts:
+            i = 0
+            for opt in opts:
+                constants[i] = opt
+                i += 1
+
+        return constants
+
     def batch_layout(self, accession):
         """
         Return the batch layout model from the given accession layout parameters.

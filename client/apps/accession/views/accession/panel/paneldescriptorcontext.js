@@ -12,7 +12,7 @@ let Marionette = require('backbone.marionette');
 
 let View = Marionette.View.extend({
     tagName: 'div',
-    template: require('../../../templates/accesisonpaneldescriptorcontext.html'),
+    template: require('../../../templates/accessionpaneldescriptorcontext.html'),
     className: "context-panel",
     templateContext: function () {
         return {

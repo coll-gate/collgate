@@ -11,13 +11,41 @@
 let DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
 
 let Batch = DescriptorMetaModelType.extend({
-    template: "<div></div>",
+    template: require('../templates/descriptormetamodeltypes/batch.html'),
+
+    regions: {
+        "namingOptions": "div.accession-naming-options"
+    },
 
     onRender: function() {
+        // naming options
+        let self = this;
+
+        let namingOptions = Object.resolve('data.naming_options', this.model.get('parameters')) || [];
+
+        $.ajax({
+            type: "GET",
+            url: window.application.url(['accession', 'naming', 'batch']),
+            dataType: 'json',
+        }).done(function(data) {
+            let NamingOptionsView = require('../views/namingoption');
+            let len = (data.format.match(/{CONST}/g) || []).length;
+
+            if (namingOptions.length !== len) {
+                namingOptions = new Array(len);
+            }
+
+            self.showChildView("namingOptions", new NamingOptionsView({
+                namingFormat: data.format,
+                namingOptions: namingOptions
+            }));
+        });
     },
 
     getData: function() {
-        return {}
+        return {
+            'naming_options': this.getChildView("namingOptions").getNamingOptions()
+        }
     }
 });
 

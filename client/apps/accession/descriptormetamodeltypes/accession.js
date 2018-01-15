@@ -13,6 +13,10 @@ let DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes
 let Accession = DescriptorMetaModelType.extend({
     template: require('../templates/descriptormetamodeltypes/accession.html'),
 
+    regions: {
+        "namingOptions": "div.accession-naming-options"
+    },
+
     ui: {
         'primary_classification': 'select.primary-classification',
         'batch_descriptor_meta_models_group': 'div.batch-descriptor-meta-models-group'
@@ -39,7 +43,7 @@ let Accession = DescriptorMetaModelType.extend({
         // batches list
         let batchesListValues = Object.resolve('data.batch_descriptor_meta_models', this.model.get('parameters')) || [];
 
-        this.batchesWidget = application.descriptor.widgets.newElement('descriptor_meta_model');
+        this.batchesWidget = window.application.descriptor.widgets.newElement('descriptor_meta_model');
         this.batchesWidget.create(
             {model: 'accession.batch'},
             this.ui.batch_descriptor_meta_models_group, {
@@ -50,12 +54,36 @@ let Accession = DescriptorMetaModelType.extend({
         if (batchesListValues.length) {
             this.batchesWidget.set({model: 'accession.batch'}, true, batchesListValues);
         }
+
+        // naming options
+        let self = this;
+
+        let namingOptions = Object.resolve('data.naming_options', this.model.get('parameters')) || [];
+
+        $.ajax({
+            type: "GET",
+            url: window.application.url(['accession', 'naming', 'accession']),
+            dataType: 'json',
+        }).done(function(data) {
+            let NamingOptionsView = require('../views/namingoption');
+            let len = (data.format.match(/{CONST}/g) || []).length;
+
+            if (namingOptions.length !== len) {
+                namingOptions = new Array(len);
+            }
+
+            self.showChildView("namingOptions", new NamingOptionsView({
+                namingFormat: data.format,
+                namingOptions: namingOptions
+            }));
+        });
     },
 
     getData: function () {
         return {
             'primary_classification': parseInt(this.ui.primary_classification.val()),
-            'batch_descriptor_meta_models': this.batchesWidget.values() || []
+            'batch_descriptor_meta_models': this.batchesWidget.values() || [],
+            'naming_options': this.getChildView("namingOptions").getNamingOptions()
         }
     },
 

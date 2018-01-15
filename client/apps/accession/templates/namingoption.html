@@ -1,0 +1,20 @@
+<!--
+ - @file namingoption.html
+ - @brief Naming options list definition
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2018-01-15
+ - @copyright Copyright (c) 2018 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<label><%- _t('Naming constants definition') %></label>
+<input name="naming-format" class="form-control" type="text" readonly="readonly">
+<div class="row naming-option-list">
+    <% for (var i = 0; i < namingOptions.length; ++i) { %>
+    <div class="col-xs-6">
+        <label><%- _t('Constant ') + (i+1).toString() %></label>
+        <input name="naming-constant" index="<%= i %>" class="form-control" type="text" max="16" value="<%= namingOptions[i] %>">
+    </div>
+    <% } %>
+</div>

@@ -10,6 +10,8 @@
 
 # Default settings of the application
 APP_DB_DEFAULT_SETTINGS = {
+    "accession_naming": "{SEQUENCE.6}",
+    "batch_naming": "{VAR.ACCESSION_CODE}-{CONST}-{YEAR}-{HASH.3}"
 }
 
 APP_VERBOSE_NAME = "Coll-Gate :: Accession"
