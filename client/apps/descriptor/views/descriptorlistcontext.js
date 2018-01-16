@@ -18,17 +18,20 @@ let View = Marionette.View.extend({
         return {
             actions: this.getOption('actions'),
             options: {
-                'create-descriptor': {className: 'btn-default', label: _t('Create descriptor')}
+                'create-descriptor': {className: 'btn-default', label: _t('Create descriptor')},
+                'update-descriptor': {className: 'btn-success', label: _t('Update')}
             }
         }
     },
 
     ui: {
-        'create-descriptor': 'button[name="create-descriptor"]'
+        'create-descriptor': 'button[name="create-descriptor"]',
+        'update-descriptor': 'button[name="update-descriptor"]'
     },
 
     triggers: {
-        "click @ui.create-descriptor": "descriptor:create"
+        "click @ui.create-descriptor": "descriptor:create",
+        "click @ui.update-descriptor": "descriptor:update"
     },
 
     initialize: function(options) {

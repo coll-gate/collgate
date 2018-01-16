@@ -10,6 +10,7 @@
 
 let LayoutView = require('../../main/views/layout');
 let DescriptorDetails = require('./descriptordetails');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
 
 let Layout = LayoutView.extend({
     template: require("../templates/descriptorlayout.html"),
@@ -28,8 +29,8 @@ let Layout = LayoutView.extend({
 
     regions: {
         // 'contextual': "div.contextual-region",
-        'configuration': "div.tab-pane[name=configuration]",
-        'values': "div.tab-pane[name=values]"
+        'configuration': "#config_content",
+        'values': "#values_content"
     },
 
     events: {
@@ -80,15 +81,72 @@ let Layout = LayoutView.extend({
         let format = this.model.get('format');
         let descriptorLayout = this;
 
-        // window.application.accession.views.batchActionTypeFormats.drawSelect(
-        //     this.ui.format_type, true, false, format.type || 'creation');
-
         // configuration tab
         let descriptorDetails = new DescriptorDetails({model: this.model});
         descriptorLayout.showChildView('configuration', descriptorDetails);
 
         if (!this.model.isNew()) {
-            this.enableTabs();
+            if (_.indexOf(application.descriptor.format_with_value_list, format.type) !== -1) {
+
+                let model = this.model;
+                let DescriptorValueCollection = require('../collections/descriptorvalue');
+                let collection = new DescriptorValueCollection([], {
+                    type_id: this.model.id,
+                    // filters: (options.filters || {}),
+                });
+
+                // values tab
+                this.model.fetch().then(function () {
+                    collection.fetch().then(function () {
+                        let valueListView = null;
+
+                        let DescriptorValueListView = require('../views/descriptorvaluelist');
+                        let DescriptorValuePairListView = require('../views/descriptorvaluepairlist');
+                        let DescriptorValueOrdinalListView = require('../views/descriptorvalueordinallist');
+
+                        if (model.get('format').type === "enum_single") {
+                                valueListView = new DescriptorValueListView({
+                                    collection: collection,
+                                    model: model,
+                                });
+
+                            // @todo lookup for permission
+                            if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+                                // defaultLayout.showChildView('bottom', new DescriptorValueAddView({collection: collection}));
+                            }
+                        } else if (model.get('format').type === "enum_pair") {
+                                valueListView = new DescriptorValuePairListView({
+                                    collection: collection,
+                                    model: model,
+                                });
+
+                            // @todo lookup for permission
+                            if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+                                // defaultLayout.showChildView('bottom', new DescriptorValueAddView({collection: collection}));
+                            }
+                        } else if (model.get('format').type === "enum_ordinal") {
+                                valueListView = new DescriptorValueOrdinalListView({
+                                    collection: collection,
+                                    model: model,
+                                });
+                        }
+
+                        if (valueListView) {
+                            descriptorLayout.showChildView('values', valueListView);
+                            // defaultLayout.showChildView('content', valueListView);
+                            // descriptorLayout.showChildView('bottom', new ScrollingMoreView({
+                            //     targetView: valueListView,
+                            //     more: -1
+                            // }));
+                        }
+                    });
+                });
+
+
+                this.enableTabs();
+            } else {
+                this.disableValuesTab();
+            }
         } else {
             // not available tabs
             this.disableValuesTab();

@@ -12,7 +12,11 @@ let Backbone = require('backbone');
 
 let Model = Backbone.Model.extend({
     url: function () {
-        return window.application.url(['descriptor', 'descriptor', this.get('id')]);
+        if (this.isNew()) {
+            return window.application.url(['descriptor', 'descriptor']);
+        } else {
+            return window.application.url(['descriptor', 'descriptor', this.get('id')]);
+        }
     },
 
     defaults: {
@@ -20,7 +24,7 @@ let Model = Backbone.Model.extend({
         name: '',
         code: '',
         label: '',
-        group_name: '',
+        group_name: null,
         description: '',
         can_delete: true,
         can_modify: true,

@@ -20,7 +20,7 @@ let DescriptorValueListView = require('../views/descriptorvaluelist');
 let DescriptorValuePairListView = require('../views/descriptorvaluepairlist');
 let DescriptorValueOrdinalListView = require('../views/descriptorvalueordinallist');
 let DescriptorValueAddView = require('../views/descriptorvalueadd');
-let DescriptorDetailsLayout = require('../views/descriptorlayout');
+let DescriptorLayout = require('../views/descriptorlayout');
 
 let DefaultLayout = require('../../main/views/defaultlayout');
 let TitleView = require('../../main/views/titleview');
@@ -98,7 +98,7 @@ let Router = Marionette.AppRouter.extend({
 
         model.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({title: _t("Details for the descriptor"), model: model}));
-            defaultLayout.showChildView('content', new DescriptorDetailsLayout({model: model, initialTab: tab.replace('/', '')}));
+            defaultLayout.showChildView('content', new DescriptorLayout({model: model, initialTab: tab.replace('/', '')}));
         });
     },
 

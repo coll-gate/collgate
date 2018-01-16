@@ -54,6 +54,15 @@ class RestDescriptorDescriptorSearch(RestDescriptorDescriptor):
     suffix = 'search'
 
 
+class RestDescriptorDescriptorIdValue(RestDescriptorDescriptorId):
+    regex = r'^value/$'
+    suffix = 'value'
+
+
+class RestDescriptorDescriptorIdValueId(RestDescriptorDescriptorIdValue):
+    regex = r'^(?P<val_id>[a-zA-Z0-9:_\.]+)/$'
+    suffix = 'id'
+
 # class RestDescriptorType(RestDescriptor):
 #     regex = r'^type/$'
 #     suffix = 'type'
@@ -609,7 +618,16 @@ def search_descriptor(request):
         "type": "object",
         "properties": {
             "name": Descriptor.NAME_VALIDATOR,
-            "group_name": Descriptor.NAME_VALIDATOR
+            # "group_name": Descriptor.NAME_VALIDATOR,
+            # "code": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "description": {"type": "string", 'maxLength': 1024, 'blank': True},
+            "format": {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string", 'minLength': 1, 'maxLength': 32},
+                },
+                "additionalProperties": True
+            }
         },
     },
     perms={
@@ -634,7 +652,8 @@ def create_descriptor(request):
         code=code,
         group_name=descriptor_params['group_name'],
         can_delete=True,
-        can_modify=True)
+        can_modify=True
+    )
 
     response = {
         'id': descriptor.id,
@@ -649,6 +668,221 @@ def create_descriptor(request):
 
     return HttpResponseRest(request, response)
 
+
+@RestDescriptorDescriptorId.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": Descriptor.NAME_VALIDATOR,
+            "code": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "description": {"type": "string", 'maxLength': 1024, 'blank': True},
+            "format": {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string", 'minLength': 1, 'maxLength': 32},
+                },
+                "additionalProperties": True
+            }
+        },
+    },
+    perms={
+        'descriptor.change_descriptor': _('You are not allowed to modify a descriptor')
+    },
+    staff=True
+)
+def update_descriptor(request, typ_id):
+    descriptor_params = request.data
+    format_type = descriptor_params['format']
+    description = request.data['description']
+
+    descriptor = get_object_or_404(Descriptor, id=int(typ_id))
+    org_format = descriptor.format
+
+    if not descriptor.can_modify:
+        raise SuspiciousOperation(_("It is not permit to modify this descriptor"))
+
+    # @todo check if there is some values and used descriptor... inconsistency of the describables in DB
+    # may we test if the descriptor type is mapped into descriptor layout, and if these descriptor layout
+    # have data ?
+
+    # format validation
+    DescriptorFormatTypeManager.check(format_type)
+
+    # @todo must be operated by DescriptorFormatType
+    # had values -> has no values
+    if not format_type['type'].startswith('enum_') and org_format['type'].startswith('enum_'):
+        # overwrite values
+        descriptor.values = None
+        descriptor.values_set.all().delete()
+
+    # single enumeration
+    if format_type['type'] == 'enum_single':
+        # reset if type or translation differs
+        if org_format['type'] != 'enum_single' or format_type['trans'] != org_format.get('trans', False):
+            # reset values
+            descriptor.values = None
+            descriptor.values_set.all().delete()
+
+    # pair enumeration
+    elif format_type['type'] == 'enum_pair':
+        # reset if type or translation differs
+        if org_format['type'] != 'enum_pair' or format_type['trans'] != org_format.get('trans', False):
+            # reset values
+            descriptor.values = None
+            descriptor.values_set.all().delete()
+
+    # ordinal enumeration
+    elif format_type['type'] == 'enum_ordinal':
+        # range as integer in this case
+        org_min_range, org_max_range = [int(x) for x in org_format.get('range', ['0', '0'])]
+        min_range, max_range = [int(x) for x in format_type['range']]
+
+        # reset values because it changes of type
+        if org_format['type'] != 'enum_ordinal':
+            descriptor.values = None
+            descriptor.values_set.all().delete()
+
+        # regenerate values only if difference in range or translation
+        if org_min_range != min_range or org_max_range != max_range or format_type['trans'] != org_format.get('trans',
+                                                                                                              False):
+            values = {}
+
+            i = 1  # begin to 1
+
+            # translation mean a dict of dict
+            if format_type['trans']:
+                for lang in InterfaceLanguages.choices():
+                    lvalues = {}
+
+                    for ordinal in range(min_range, max_range + 1):
+                        code = "%s:%07i" % (descriptor.code, i)
+                        lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
+                        i += 1
+
+                    values[lang[0]] = lvalues
+            else:
+                for ordinal in range(min_range, max_range + 1):
+                    code = "%s:%07i" % (descriptor.code, i)
+                    values[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
+                    i += 1
+
+            descriptor.values = values
+
+    descriptor.name = descriptor_params['name']
+    descriptor.format = format_type
+    descriptor.description = description
+
+    count = descriptor.count_num_values()
+
+    descriptor.save()
+
+    response = {
+        'id': descriptor.id,
+        'name': descriptor.name,
+        'label': descriptor.get_label(),
+        'code': descriptor.code,
+        'description': descriptor.description,
+        'format': descriptor.format,
+        'group_name': descriptor.group_name,
+        'num_descriptor_values': count,
+        'can_delete': descriptor.can_delete,
+        'can_modify': descriptor.can_modify
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestDescriptorDescriptorIdValue.def_auth_request(Method.GET, Format.JSON)
+def get_descriptor_values(request, typ_id):
+    """
+    Get the list of values for a given descriptor and according to the current language.
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    sort_by = request.GET.get('sort_by', 'id')
+
+    descriptor = get_object_or_404(Descriptor, id=int(typ_id))
+
+    if sort_by.startswith('-'):
+        order_by = sort_by[1:]
+        reverse = True
+    elif sort_by.startswith('+'):
+        order_by = sort_by[1:]
+        reverse = False
+    else:
+        order_by = sort_by
+        reverse = False
+
+    prev_cursor, next_cursor, values_list = descriptor.get_values(order_by, reverse, cursor, limit)
+
+    results = {
+        'sort_by': sort_by,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+        'format': descriptor.format,
+        'items': values_list,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+# @RestDescriptorDescriptorIdValue.def_auth_request(Method.GET, Format.JSON)
+# def get_descriptor_values(request, typ_id):
+#     """
+#     Get the list of values for a given descriptor and according to the current language.
+#     """
+#     results_per_page = int_arg(request.GET.get('more', 30))
+#     cursor = json.loads(request.GET.get('cursor', 'null'))
+#     limit = results_per_page
+#     sort_by = json.loads(request.GET.get('sort_by', '[]'))
+#
+#     if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+#         order_by = sort_by + ['id']
+#     else:
+#         order_by = sort_by
+#
+#     cq = CursorQuery(DescriptorValue)
+#
+#     if request.GET.get('filters'):
+#         cq.filter(json.loads(request.GET['filters']))
+#
+#     if request.GET.get('search'):
+#         cq.filter(json.loads(request.GET['search']))
+#
+#     cq.cursor(cursor, order_by)
+#     cq.order_by(order_by).limit(limit)
+#
+#     items = []
+#
+#     for descriptor in cq:
+#         d = {
+#             'id': descriptor.id,
+#             'name': descriptor.name,
+#             'code': descriptor.code,
+#             'label': descriptor.get_label(),
+#             'group_name': descriptor.group_name,
+#             'description': descriptor.description,
+#             'can_delete': descriptor.can_delete,
+#             'can_modify': descriptor.can_modify,
+#             'format': descriptor.format,
+#             'index': None  # todo: add index field to the descriptor model
+#         }
+#
+#         items.append(d)
+#
+#     results = {
+#         'perms': [],
+#         'items': items,
+#         'prev': cq.prev_cursor,
+#         'cursor': cursor,
+#         'next': cq.next_cursor,
+#         'format': descriptor.format,
+#     }
+#
+#     return HttpResponseRest(request, results)
 
 # @RestDescriptorGroupIdTypeId.def_auth_request(
 #     Method.DELETE, Format.JSON,
@@ -1067,22 +1301,23 @@ def create_descriptor(request):
 #     return HttpResponseRest(request, {})
 #
 #
-# @RestDescriptorGroupIdTypeIdValueId.def_auth_request(Method.GET, Format.JSON)
-# def get_value_for_descriptor_group_and_type(request, typ_id, val_id):
-#     """
-#     Get a single value for a type of descriptor.
-#     """
-#     descr_type = get_object_or_404(Descriptor, id=int(typ_id))
-#     value = descr_type.get_value(val_id)
-#
-#     result = {
-#         'parent': value[0],
-#         'ordinal': value[1],
-#         'value0': value[2],
-#         'value1': value[3]
-#     }
-#
-#     return HttpResponseRest(request, result)
+
+@RestDescriptorDescriptorIdValueId.def_auth_request(Method.GET, Format.JSON)
+def get_value_for_descriptor(request, typ_id, val_id):
+    """
+    Get a single value for a descriptor.
+    """
+    descriptor = get_object_or_404(Descriptor, id=int(typ_id))
+    value = descriptor.get_value(val_id)
+
+    result = {
+        'parent': value[0],
+        'ordinal': value[1],
+        'value0': value[2],
+        'value1': value[3]
+    }
+
+    return HttpResponseRest(request, result)
 #
 #
 # @RestDescriptorTypeIdValueId.def_auth_request(Method.GET, Format.JSON)

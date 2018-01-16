@@ -73,6 +73,12 @@ DescriptorModule.prototype = {
         // descriptor format types
         //
 
+        this.format_with_value_list = [
+            'enum_single',
+            'enum_pair',
+            'enum_ordinal'
+        ];
+
         let DescriptorFormatTypeManager = require('./widgets/descriptorformattypemanager');
         this.widgets = new DescriptorFormatTypeManager();
 

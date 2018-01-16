@@ -10,7 +10,7 @@
 
 let Marionette = require('backbone.marionette');
 
-let Layout = Marionette.View.extend({
+let View = Marionette.View.extend({
     template: require("../templates/descriptortypedetailslayout.html"),
 
     regions: {
@@ -26,12 +26,44 @@ let Layout = Marionette.View.extend({
     },
 
     events: {
-        'click @ui.save': 'saveDescriptorType',
+        'click @ui.save': 'saveDescriptor',
         'input @ui.name': 'inputName',
         'change @ui.format_type': 'changeFormatType'
     },
 
-    initialize: function () {
+    onShowTab: function () {
+        let view = this;
+
+        let contextLayout = application.getView().getChildView('right');
+        if (!contextLayout) {
+            let DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            application.getView().showChildView('right', contextLayout);
+        }
+
+        let TitleView = require('../../main/views/titleview');
+        contextLayout.showChildView('title', new TitleView({
+            title: _t("Actions on descriptor"),
+            glyphicon: 'fa-wrench'
+        }));
+
+        let actions = [];
+
+        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && this.model.get('can_modify')) {
+            actions.push('update-descriptor');
+        }
+
+        if (actions.length) {
+            let ListContextView = require('./descriptorlistcontext');
+            let contextView = new ListContextView({actions: actions});
+            contextLayout.showChildView('content', contextView);
+
+            contextView.on("descriptor:update", function () {
+                view.saveDescriptor();
+            });
+        } else {
+            application.main.defaultRightView();
+        }
     },
 
     onRender: function () {
@@ -50,7 +82,8 @@ let Layout = Marionette.View.extend({
         }
 
         // @todo check user permissions
-        if (!this.model.get('can_modify')) {
+        let x = this.model.get('can_modify');
+        if (x === false) {
             this.ui.save.hide();
             _.map(this.ui, function (key) {
                 key.prop('disabled', 'true');
@@ -66,6 +99,7 @@ let Layout = Marionette.View.extend({
 
     onBeforeDetach: function () {
         this.ui.format_type.selectpicker('destroy');
+        application.main.defaultRightView();
     },
 
     changeFormatType: function () {
@@ -93,7 +127,7 @@ let Layout = Marionette.View.extend({
         }
     },
 
-    saveDescriptorType: function () {
+    saveDescriptor: function () {
         if (!$(this.ui.name.isValidField()))
             return;
 
@@ -121,4 +155,4 @@ let Layout = Marionette.View.extend({
     }
 });
 
-module.exports = Layout;
+module.exports = View;
