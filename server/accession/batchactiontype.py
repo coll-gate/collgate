@@ -328,14 +328,14 @@ def patch_batch_action_type(request, bat_id):
         batch_action_type.update_field('label')
 
     if format_data is not None:
-        if batch_action_type.format.get('type', 'undefined') != 'undefined':
+        if batch_action_type.format.get('type', 'undefined') != batch_action_type.format['type']:
             raise SuspiciousOperation(_("It is not possible to change the format type"))
 
         # format validation
         BatchActionTypeFormatManager.check(format_data)
 
         batch_action_type.format = format_data
-        result['format'] = format
+        result['format'] = format_data
         batch_action_type.update_field('format')
 
     batch_action_type.save()

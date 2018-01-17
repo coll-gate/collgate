@@ -30,6 +30,7 @@ let Layout = LayoutView.extend({
 
     regions: {
         'contextual': "div.contextual-region",
+        'namingOptions': "div.naming-options",
         'configuration': "div.tab-pane[name=configuration]",
         'accessions': "div.tab-pane[name=accessions]"
     },
@@ -103,26 +104,56 @@ let Layout = LayoutView.extend({
             // not available tabs
             this.disableAccessionsTab();
         }
+
+        // naming options
+        let self = this;
+
+        let namingOptions = Object.resolve('data.naming_options', this.model.get('format')) || [];
+
+        $.ajax({
+            type: "GET",
+            url: window.application.url(['accession', 'naming', 'batch']),
+            dataType: 'json',
+        }).done(function(data) {
+            let NamingOptionsView = require('../namingoption');
+            let len = (data.format.match(/{CONST}/g) || []).length;
+
+            if (namingOptions.length !== len) {
+                namingOptions = new Array(len);
+            }
+
+            self.showChildView("namingOptions", new NamingOptionsView({
+                namingFormat: data.format,
+                namingOptions: namingOptions
+            }));
+        });
     },
 
     onUpdateConfig: function() {
         let childView = this.getChildView('contextual');
+        let namingOptionsView = this.getChildView('namingOptions');
         let formatType = this.ui.format_type.val();
 
         if (childView) {
-            let format = childView.getFormat();
-            format.type = formatType;
+            let format = {
+                type: formatType,
+                data: childView.getFormat() || {}
+            };
+
+            if (namingOptionsView) {
+                format.data['naming_options'] = namingOptionsView.getNamingOptions();
+            }
 
             let description = this.ui.description.val();
             let model = this.model;
 
             if (model.isNew()) {
                 model.save({description: description, format: format}, {wait: true}).then(function () {
-                    //Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
+                    Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
                 });
             } else {
-                model.save({description: description}, {wait: true, patch: true}).then(function () {
-                    //Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
+                model.save({description: description, format: format}, {wait: true, patch: true}).then(function () {
+                    Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
                 });
             }
         }
