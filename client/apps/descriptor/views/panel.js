@@ -1,6 +1,6 @@
 /**
  * @file panel.js
- * @brief Panel of model of descriptor item view
+ * @brief Panel of layout item view
  * @author Medhi BOULNEMOUR (INRA UMR1095)
  * @date 2017-11-29
  * @copyright Copyright (c) 2016 INRA/CIRAD
@@ -182,7 +182,7 @@ let View = Marionette.CompositeView.extend({
 
                 $.ajax({
                     type: "PUT",
-                    url: window.application.url(['descriptor', 'meta-model', modelId, 'panel', 'order']),
+                    url: window.application.url(['descriptor', 'layout', modelId, 'panel', 'order']),
                     dataType: 'json',
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({

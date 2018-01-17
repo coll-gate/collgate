@@ -1,6 +1,6 @@
 /**
- * @file descriptormodeltype.js
- * @brief Type of model of descriptor model
+ * @file layoutdescriptor.js
+ * @brief Model of layout descriptor
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-13
  * @copyright Copyright (c) 2016 INRA/CIRAD
@@ -13,25 +13,19 @@ let Backbone = require('backbone');
 let Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew()) {
-            return window.application.url(['descriptor', 'model', this.getModelId(), 'type']);
+            return window.application.url(['descriptor', 'layout', this.collection.layout_id, 'panel', this.getModelId(), 'descriptor']);
         } else {
-            return window.application.url(['descriptor', 'model', this.getModelId(), 'type', this.get('id')]);
+            return window.application.url(['descriptor', 'layout', this.collection.layout_id, 'panel', this.getModelId(), 'descriptor', this.get('position')]);
         }
     },
 
     defaults: {
         id: null,
         name: '',
-        model: null,
         label: '',
         position: 0,
-        descriptor_type_group: 0,
-        descriptor_type: 0,
-        descriptor_type_name: '',
-        descriptor_type_code: '',
         mandatory: false,
-        set_once: false,
-        index: 'None'
+        set_once: false
     },
 
     initialize: function(attributes, options) {

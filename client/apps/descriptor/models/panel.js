@@ -25,7 +25,7 @@ let Model = Backbone.Model.extend({
         id: null,
         position: null,
         label: '',
-        layout: this.model_id
+        layout: this.model_id,
     },
 
     initialize: function(attributes, options) {

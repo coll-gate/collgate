@@ -20,6 +20,43 @@ let DescriptorLayout = require('../views/descriptorlayout');
 
 let Controller = Marionette.Object.extend({
 
+    delete: function (model) {
+        let DeletePanelDialog = Dialog.extend({
+            template: require('../../main/templates/confirm.html'),
+            templateContext: function () {
+                return {
+                    title: _t("Delete descriptor"),
+                    message: _t("Some values might exist for this descriptor." +
+                        " Do you really want to delete this descriptor anyway?"),
+                    confirm_txt: _("Yes"),
+                    confirm_class: 'danger',
+                    cancel_txt: _("No"),
+                    cancel_class: 'default'
+                }
+            },
+            ui: {
+                confirm: "button.confirm"
+            },
+            events: {
+                'click @ui.confirm': 'onDelete'
+            },
+
+            initialize: function () {
+                DeletePanelDialog.__super__.initialize.apply(this);
+            },
+
+            onDelete: function () {
+                model.destroy({wait: true});
+                this.destroy();
+                return false;
+            }
+
+        });
+
+        let deletePanelDialog = new DeletePanelDialog();
+        deletePanelDialog.render();
+    },
+
     create: function () {
         let CreateDescriptorDialog = Dialog.extend({
             attributes: {

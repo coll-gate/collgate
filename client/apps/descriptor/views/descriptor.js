@@ -91,12 +91,16 @@ let View = Marionette.View.extend({
     },
 
     deleteDescriptor: function () {
-        if (this.model.get('num_descriptor_values') === 0) {
-            this.model.destroy({wait: true});
-        } else {
-            $.alert.error(_t("Some values exists for this type of descriptor"));
-        }
-        return false;
+        // todo: Alert user only if the descriptor is used
+
+        // old version:
+        // if (this.model.get('num_descriptor_values') === 0) {
+        //     this.model.destroy({wait: true});
+        // } else {
+        //     $.alert.error(_t("Some values exists for this type of descriptor"));
+        // }
+
+        application.descriptor.controllers.descriptor.delete(this.model);
     }
 });
 

@@ -48,6 +48,7 @@
   "Date Time": "Date Heure",
   "Date+time": "Date+heure",
   "Delete": "",
+  "Delete descriptor": "",
   "Description": "Description",
   "Descriptor": "Descripteur",
   "Descriptor can not contain a list of values": "Le descripteur ne peut pas contenir une liste de valeurs",

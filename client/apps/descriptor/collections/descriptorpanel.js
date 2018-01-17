@@ -8,7 +8,7 @@
  * @details
  */
 
-let DescriptorPanelModel = require('../models/descriptorpanel');
+let DescriptorPanelModel = require('../models/panel');
 
 let Collection = Backbone.Collection.extend({
     url: function() {

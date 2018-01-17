@@ -2,7 +2,7 @@
 #
 # @file layout.py
 # @brief coll-gate descriptor module, descriptor layout
-# @author Frédéric SCHERMA (INRA UMR1095)
+# @author Frédéric SCHERMA (INRA UMR1095), Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
@@ -81,6 +81,16 @@ class RestLayoutIdPanelOrder(RestLayoutIdPanel):
     suffix = 'order'
 
 
+class RestLayoutIdDescriptor(RestLayoutId):
+    regex = r'^descriptor/$'
+    suffix = 'descriptor'
+
+
+class RestLayoutIdDescriptorOrder(RestLayoutIdDescriptor):
+    regex = r'^order/$'
+    suffix = 'order'
+
+
 class RestLayoutIdPanelId(RestLayoutIdPanel):
     regex = r'^(?P<pan_id>[0-9]+)/$'
     suffix = 'id'
@@ -89,6 +99,16 @@ class RestLayoutIdPanelId(RestLayoutIdPanel):
 class RestLayoutIdPanelIdLabel(RestLayoutIdPanelId):
     regex = r'^label/$'
     suffix = 'label'
+
+
+class RestLayoutIdPanelIdDescriptor(RestLayoutIdPanelId):
+    regex = r'^descriptor/$'
+    suffix = 'descriptor'
+
+
+class RestLayoutIdPanelIdDescriptorId(RestLayoutIdPanelIdDescriptor):
+    regex = r'^(?P<desc_id>[0-9]+)/$'
+    suffix = 'id'
 
 
 @RestLayout.def_auth_request(Method.GET, Format.JSON)
@@ -446,7 +466,6 @@ def patch_layout(request, layout_id):
 #
 #     return HttpResponseRest(request, results)
 
-
 @RestLayoutSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
 def search_layouts(request):
     """
@@ -551,74 +570,59 @@ def list_descriptor_panels_for_layout(request, layout_id):
     }
 
     return HttpResponseRest(request, results)
-#
-#
-# @RestLayoutIdPanel.def_auth_request(
-#     Method.POST, Format.JSON, content={
-#         "type": "object",
-#         "properties": {
-#             "label": DescriptorPanel.LABEL_VALIDATOR,
-#             "position": {"type": "number"},
-#             "descriptor_model": {"type": "number"},
-#         },
-#     },
-#     perms={
-#         'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
-#         'descriptor.add_descriptorpanel': _('You are not allowed to create a panel of descriptor'),
-#     },
-#     staff=True)
-# def create_descriptor_panel_for_layout(request, layout_id):
-#     position = int(request.data['position'])
-#
-#     lang = translation.get_language()
-#
-#     layout = get_object_or_404(Layout, id=int(layout_id))
-#
-#     dm_id = int(request.data['descriptor_model'])
-#     dm = get_object_or_404(DescriptorModel, id=dm_id)
-#
-#     if DescriptorPanel.objects.filter(Q(layout=layout.id), Q(descriptor_model=dm.id)).exists():
-#         raise SuspiciousOperation(
-#             _("A panel of descriptor for this model already exists into this layout of descriptor"))
-#
-#     dp = DescriptorPanel()
-#
-#     dp.set_label(lang, request.data['label'])
-#     dp.position = position
-#     dp.layout = layout
-#     dp.descriptor_model = dm
-#
-#     dp.full_clean()
-#     dp.save()
-#
-#     # rshift of 1 others descriptor_model
-#     dps = DescriptorPanel.objects.filter(Q(layout=layout.id), Q(position__gte=position)).order_by(
-#         'position')
-#
-#     for ldp in dps:
-#         if ldp.id != dp.id:
-#             new_position = ldp.position + 1
-#             ldp.position = new_position
-#             ldp.save()
-#
-#     # create related indexes
-#     dmts = dm.descriptor_model_types.all()
-#     for dmt in dmts:
-#         content_type_model = layout.target.model_class()
-#         dmt.create_or_drop_index(content_type_model)
-#
-#     result = {
-#         'id': dp.id,
-#         'label': dp.get_label(),
-#         'position': dp.position,
-#         'descriptor_model': dm.id,
-#         'descriptor_model_name': dm.name,
-#         'descriptor_model_verbose_name': dm.verbose_name
-#     }
-#
-#     return HttpResponseRest(request, result)
-#
-#
+
+
+@RestLayoutIdPanel.def_auth_request(Method.POST, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "label": Layout.LABEL_VALIDATOR,
+        # "position": {"type": "number"},
+        # "descriptor_model": {"type": "number"},
+    },
+}, perms={
+    'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
+    # 'descriptor.add_descriptorpanel': _('You are not allowed to create a panel of descriptor'),
+},
+                                    staff=True)
+def create_panel_for_layout(request, layout_id):
+    # position = int(request.data['position'])
+    lang = translation.get_language()
+
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    panel_list = layout.layout_content.get('panels')
+
+    panel = {
+        'descriptors': [],
+        'label': {'fr': '', 'en': ''}
+    }
+    panel['label'][lang] = request.data['label']
+
+    panel_list.append(panel)
+    layout.save()
+
+    result = {
+        'id': len(panel_list) - 1,
+        'label': panel['label'][lang],
+        'position': len(panel_list) - 1
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestLayoutIdPanelId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
+    # 'descriptor.add_descriptorpanel': _('You are not allowed to create a panel of descriptor'),
+}, staff=True)
+def remove_panel_for_layout(request, layout_id, pan_id):
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    panel_list = layout.layout_content.get('panels')
+
+    panel_list.remove(panel_list[int(pan_id)])
+    layout.save()
+
+    return HttpResponseRest(request, {})
+
+
 # @RestLayoutIdPanelId.def_auth_request(Method.GET, Format.JSON)
 # def get_descriptor_panel_for_layout(request, layout_id, pan_id):
 #     panel = get_object_or_404(DescriptorPanel, id=int(pan_id), layout=int(layout_id))
@@ -696,103 +700,152 @@ def list_descriptor_for_panel(request, layout_id, pan_id):
 
     return HttpResponseRest(request, results)
 
-#
-#
-# @RestLayoutIdPanelOrder.def_auth_request(Method.PUT, Format.JSON, content={
-#         "type": "object",
-#         "properties": {
-#             "descriptor_panel_id": {"type": "number"},
-#             "position": {"type": "number"},
-#         },
-#     },
-#     perms={
-#         'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
-#         'descriptor.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor'),
-#     },
-#     staff=True)
-# def reorder_descriptor_panels_for_model(request, layout_id):
-#     """
-#     Reorder the panels for a layout of descriptors according to the new position of one of the elements.
-#     """
-#     dp_id = int(request.data['descriptor_panel_id'])
-#     position = int(request.data['position'])
-#
-#     layout = get_object_or_404(Layout, id=int(layout_id))
-#     dp_ref = get_object_or_404(DescriptorPanel, layout=layout, id=dp_id)
-#
-#     dp_list = []
-#
-#     if position < dp_ref.position:
-#         dps = layout.panels.filter(Q(position__gte=position)).order_by('position')
-#
-#         for dp in dps:
-#             if dp.id != dp_id:
-#                 dp_list.append(dp)
-#
-#         dp_ref.position = position
-#         dp_ref.save()
-#
-#         next_position = position + 1
-#
-#         for dp in dp_list:
-#             dp.position = next_position
-#             dp.save()
-#
-#             next_position += 1
-#     else:
-#         dps = layout.panels.filter(Q(position__lte=position)).order_by('position')
-#
-#         for dp in dps:
-#             if dp.id != dp_id:
-#                 dp_list.append(dp)
-#
-#         dp_ref.position = position
-#         dp_ref.save()
-#
-#         next_position = 0
-#
-#         for dp in dp_list:
-#             dp.position = next_position
-#             dp.save()
-#
-#             next_position += 1
-#
-#     return HttpResponseRest(request, {})
-#
-#
-# @RestLayoutIdPanelId.def_auth_request(
-#     Method.PATCH, Format.JSON, content={
-#         "type": "object",
-#         "properties": {
-#             "label": DescriptorPanel.LABEL_VALIDATOR_OPTIONAL
-#         }
-#     },
-#     perms={
-#         'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
-#         'descriptor.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor'),
-#     },
-#     staff=True)
-# def modify_descriptor_panel_for_layout(request, layout_id, pan_id):
-#     label = request.data.get('label')
-#
-#     panel = get_object_or_404(DescriptorPanel, id=int(pan_id), layout_id=int(layout_id))
-#
-#     update = False
-#     result = {'id': panel.pk}
-#
-#     if label is not None:
-#         update = True
-#
-#         lang = translation.get_language()
-#         panel.set_label(lang, label)
-#         panel.full_clean()
-#
-#         result['label'] = label
-#
-#     if update:
-#         panel.save()
-#
-#     return HttpResponseRest(request, result)
+
+@RestLayoutIdDescriptorOrder.def_auth_request(Method.PUT, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "current_position": {"type": "number"},
+        "new_position": {"type": "number"},
+        "current_panel": {"type": "number"},
+        "new_panel": {"type": "number"},
+    },
+}, perms={
+    'descriptor.change_layout': _(
+        'You are not allowed to modify a layout of descriptor'),
+    # 'descriptor.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+    # 'descriptor.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
+},
+                                              staff=True)
+def reorder_descriptor_for_panel(request, layout_id):
+    """
+    Reorder descriptors according to the new position of one of the elements.
+    """
+    current_position = int(request.data['current_position'])
+    current_panel = int(request.data['current_panel'])  # new
+    new_position = int(request.data['new_position'])
+    new_panel = int(request.data['new_panel'])  # new
+
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    panel_list = layout.layout_content.get('panels')
+
+    descriptor = panel_list[current_panel]['descriptors'].pop(current_position)
+    panel_list[new_panel]['descriptors'].insert(new_position, descriptor)
+
+    layout.save()
+
+    return HttpResponseRest(request, {})
+
+
+@RestLayoutIdPanelOrder.def_auth_request(Method.PUT, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "descriptor_panel_id": {"type": "number"},
+        "position": {"type": "number"},
+    },
+}, perms={
+    'descriptor.change_layout': _(
+        'You are not allowed to modify a layout of descriptor'),
+    # 'descriptor.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor'),
+},
+                                         staff=True)
+def reorder_descriptor_panels_for_model(request, layout_id):
+    """
+    Reorder the panels for a layout of descriptors according to the new position of one of the elements.
+    """
+
+    current_position = int(request.data['descriptor_panel_id'])
+    new_position = int(request.data['position'])
+
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    # panel = layout.layout_content.get('panels')[current_position]
+
+    panel_list = layout.layout_content.get('panels')
+
+    panel = panel_list.pop(current_position)
+    panel_list.insert(new_position, panel)
+
+    layout.save()
+
+    return HttpResponseRest(request, {})
+
+
+@RestLayoutIdPanelIdDescriptorId.def_auth_request(
+    Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "label": Descriptor.LABEL_VALIDATOR_OPTIONAL,
+            "mandatory": {"type": "boolean", "required": False},
+            "set_once": {"type": "boolean", "required": False}
+        }
+    },
+    perms={
+        'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
+        # 'descriptor.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor'),
+    },
+    staff=True)
+def modify_descriptor_panel_for_layout(request, layout_id, pan_id, desc_id):
+    label = request.data.get('label')
+    mandatory = request.data.get('mandatory')
+    set_once = request.data.get('set_once')
+
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    panel = layout.layout_content.get('panels')[int(pan_id)]
+    descriptor = panel.get('descriptors')[int(desc_id)]
+
+    descriptor['label'] = label
+
+    if mandatory is True or mandatory is False:
+        descriptor['mandatory'] = mandatory
+
+    if set_once is True or set_once is False:
+        descriptor['set_once'] = set_once
+
+    layout.save()
+
+    return HttpResponseRest(request, {})
+
+
+@RestLayoutIdPanelIdDescriptorId.def_auth_request(
+    Method.DELETE, Format.JSON, perms={
+        'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
+        # 'descriptor.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor'),
+    },
+    staff=True)
+def remove_descriptor_for_layout(request, layout_id, pan_id, desc_id):
+    # todo: alert message about that
+
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    panel = layout.layout_content.get('panels')[int(pan_id)]
+    descriptor = panel.get('descriptors')[int(desc_id)]
+
+    panel.get('descriptors').remove(descriptor)
+    layout.save()
+
+    return HttpResponseRest(request, {})
+
+
+@RestLayoutIdPanelIdDescriptor.def_auth_request(Method.POST, Format.JSON, perms={
+        'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
+        # 'descriptor.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor'),
+    }, staff=True)
+def remove_descriptor_for_layout(request, layout_id, pan_id):
+    descriptor_id = request.data.get('descriptor_id')
+
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    panel = layout.layout_content.get('panels')[int(pan_id)]
+
+    descriptor = get_object_or_404(Descriptor, id=int(descriptor_id))
+
+    panel.get('descriptors').append({
+        'name': descriptor.name,
+        'mandatory': False,
+        'set_once': False
+    })
+    layout.save()
+
+    return HttpResponseRest(request, {})
+
+
 #
 #
 # @RestLayoutIdPanelId.def_auth_request(
@@ -888,7 +941,6 @@ def change_all_labels_of_layout(request, layout_id):
     }
 
     return HttpResponseRest(request, result)
-
 
 # @RestLayoutIdPanelIdLabel.def_auth_request(Method.GET, Format.JSON)
 # def get_all_labels_of_layout(request, layout_id, pan_id):

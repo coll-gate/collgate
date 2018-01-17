@@ -35,7 +35,7 @@ class LayoutType(object):
         return None
 
 
-class   LayoutTypeManager(object):
+class LayoutTypeManager(object):
     """
     Singleton manager of set of descriptor layout format type.
     """
@@ -51,7 +51,8 @@ class   LayoutTypeManager(object):
         # register each type into a map
         for layout_ft in format_types_list:
             if layout_ft.model in cls.layout_format_types:
-                raise ImproperlyConfigured("Descriptor layout format type not already defined (%s)" % str(layout_ft.model._meta.verbose_name))
+                raise ImproperlyConfigured(
+                    "Descriptor layout format type not already defined (%s)" % str(layout_ft.model._meta.verbose_name))
 
             cls.layout_format_types[layout_ft.model] = layout_ft
 

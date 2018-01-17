@@ -479,6 +479,26 @@ def search_descriptor(request):
     return HttpResponseRest(request, response)
 
 
+@RestDescriptorDescriptorId.def_auth_request(
+    Method.DELETE, Format.JSON,
+    perms={
+        'descriptor.delete_descriptor': _("You are not allowed to delete a descriptor"),
+    },
+    staff=True
+)
+def delete_descriptor_type_for_group(request, typ_id):
+    descriptor = get_object_or_404(Descriptor, id=int(typ_id))
+
+    # todo: Check if the descriptor has values and it's used
+    # if descriptor.has_values():
+    #     raise SuspiciousOperation(_("Only an empty of values type of descriptor can be deleted"))
+    #
+    # if descriptor.in_usage():
+    #     raise SuspiciousOperation(_("Only unused types of descriptor can be deleted"))
+
+    descriptor.delete()
+
+    return HttpResponseRest(request, {})
 # @RestDescriptorGroupId.def_auth_request(Method.GET, Format.JSON)
 # def get_descriptor_groups(request, grp_id):
 #     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
@@ -883,27 +903,6 @@ def get_descriptor_values(request, typ_id):
 #     }
 #
 #     return HttpResponseRest(request, results)
-
-# @RestDescriptorGroupIdTypeId.def_auth_request(
-#     Method.DELETE, Format.JSON,
-#     perms={
-#         'descriptor.change_descriptorgroup': _('You are not allowed to modify a group of types of descriptors'),
-#         'descriptor.delete_descriptortype': _("You are not allowed to delete a type of descriptor"),
-#     },
-#     staff=True
-# )
-# def delete_descriptor_type_for_group(request, grp_id, typ_id):
-#     descr_type = get_object_or_404(Descriptor, id=int(typ_id), group_id=int(grp_id))
-#
-#     if descr_type.has_values():
-#         raise SuspiciousOperation(_("Only an empty of values type of descriptor can be deleted"))
-#
-#     if descr_type.in_usage():
-#         raise SuspiciousOperation(_("Only unused types of descriptor can be deleted"))
-#
-#     descr_type.delete()
-#
-#     return HttpResponseRest(request, {})
 #
 #
 # @RestDescriptorGroupIdTypeId.def_auth_request(
