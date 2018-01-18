@@ -23,7 +23,8 @@ class BatchActionCreation(BatchActionController):
         super().__init__(batch_action_type_format)
 
     def create(self, batch_action_type, accession, user, input_batches=None):
-        naming_constants = self.naming_constants(1, accession, batch_action_type)
+        name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
+        naming_constants = self.naming_constants(name_builder.num_constants, accession, batch_action_type)
         descriptors_map = {}      # @todo from config
 
         try:
@@ -46,8 +47,7 @@ class BatchActionCreation(BatchActionController):
 
                 # now create the initial batch
                 batch = Batch()
-                batch.name = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH).pick(
-                    self.naming_variables, naming_constants)
+                batch.name = name_builder.pick(self.naming_variables, naming_constants)
 
                 batch.accession = accession
                 batch.descriptor_meta_model = batch_layout

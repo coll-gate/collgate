@@ -1,4 +1,3 @@
-
 /**
  * @file contentbottomlayout.js
  * @brief Two rows content+bottom layout
@@ -68,12 +67,12 @@ let View = Marionette.View.extend({
     onResize: function() {
         let view = this.getChildView('content');
         if (view && view.onResize) {
-            view.onResize();
+    //        view.onResize();
         }
 
         view = this.getChildView('bottom');
         if (view && view.onResize) {
-            view.onResize();
+      //      view.onResize();
         }
     }
 });

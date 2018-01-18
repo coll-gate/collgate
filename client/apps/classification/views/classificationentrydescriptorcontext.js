@@ -12,7 +12,7 @@ let Marionette = require('backbone.marionette');
 
 let View = Marionette.View.extend({
     tagName: 'div',
-    template: require('../templates/classificationentrydescriptorcontext.html'),
+    template: require('../../main/templates/contextmenu.html'),
     className: "context classification-entry",
     templateContext: function () {
         return {

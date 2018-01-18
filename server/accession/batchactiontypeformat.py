@@ -12,6 +12,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
 from accession.models import DescriptorMetaModel as Layout
+from accession.namebuilder import NameBuilderManager
 
 
 class BatchActionTypeFormatGroup(object):
@@ -64,6 +65,13 @@ class BatchActionController(object):
 
         return constants
 
+    @property
+    def name_builder(self):
+        """
+        Get the related name builder. Default to the global batch one's.
+        """
+        return NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
+
     def batch_layout(self, accession):
         """
         Return the batch layout model from the given accession layout parameters.
@@ -111,6 +119,10 @@ class BatchActionTypeFormat(object):
     Batch action type format base class.
     """
 
+    IO_NONE = 0
+    IO_ONE = 1
+    IO_MANY = 2
+
     def __init__(self):
         # name referred as a code, stored in format.type.
         self.name = ''
@@ -125,7 +137,13 @@ class BatchActionTypeFormat(object):
         self.format_fields = ["type"]
 
         # batch action controller
-        self.controller = None
+        self._controller = None
+
+        # has input batches
+        self.input_type = BatchActionTypeFormat.IO_NONE
+
+        # has output batches
+        self.output_type = BatchActionTypeFormat.IO_ONE
 
     def validate(self, batch_action_type_format, value):
         """
@@ -144,11 +162,14 @@ class BatchActionTypeFormat(object):
         """
         return None
 
+    def has_controller(self):
+        return self._controller is not None
+
     def controller(self):
         """
         Return the associated batch controller.
         """
-        return self.controller(self)
+        return self._controller(self)
 
 
 class BatchActionTypeFormatManager(object):
@@ -182,11 +203,11 @@ class BatchActionTypeFormatManager(object):
     def get(cls, batch_action_type_format):
         action_format = batch_action_type_format['type']
 
-        dft = cls.action_types.get(action_format)
-        if dft is None:
+        bat = cls.action_types.get(action_format)
+        if bat is None:
             raise ValueError("Unsupported format of batch action type %s" % action_format)
 
-        return dft
+        return bat
 
     @classmethod
     def validate(cls, batch_action_type_format, value):
@@ -198,11 +219,11 @@ class BatchActionTypeFormatManager(object):
         """
         type_format = batch_action_type_format['type']
 
-        dft = cls.action_types.get(type_format)
-        if dft is None:
+        bat = cls.action_types.get(type_format)
+        if bat is None:
             raise ValueError("Unsupported format of batch action type %s" % type_format)
 
-        res = dft.validate(type_format, value)
+        res = bat.validate(type_format, value)
         if res is not None:
             raise ValueError(res)
 
@@ -216,11 +237,24 @@ class BatchActionTypeFormatManager(object):
         """
         type_format = batch_action_type_format['type']
 
-        dft = cls.action_types.get(type_format)
-        if dft is None:
+        bat = cls.action_types.get(type_format)
+        if bat is None:
             raise ValueError("Unsupported format of batch action type %s" % type_format)
 
-        res = dft.check(batch_action_type_format)
+        data = batch_action_type_format.get('data')
+        if data is None:
+            raise ValueError("Missing batch action type data object")
+
+        # according to its controller check the naming constants
+        if bat.has_controller():
+            constants = data.get('naming_options')
+            if constants is None:
+                raise ValueError("Missing name builder constants array")
+
+            if len(constants) != bat.controller().name_builder.num_constants:
+                raise ValueError("Number of name builder constants differs")
+
+        res = bat.check(batch_action_type_format)
         if res is not None:
             raise ValueError(str(res))
 
@@ -250,7 +284,7 @@ class BatchActionTypeFormatCreation(BatchActionTypeFormat):
         self.format_fields = ["type"]
 
         from accession.batchactions.creation import BatchActionCreation
-        self.controller = BatchActionCreation
+        self._controller = BatchActionCreation
 
     def validate(self, batch_action_type_format, value):
         """

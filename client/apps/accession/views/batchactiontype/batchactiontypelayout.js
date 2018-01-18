@@ -149,10 +149,12 @@ let Layout = LayoutView.extend({
 
             if (model.isNew()) {
                 model.save({description: description, format: format}, {wait: true}).then(function () {
+                    $.alert.success(_t("Successfully changed !"));
                     Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
                 });
             } else {
                 model.save({description: description, format: format}, {wait: true, patch: true}).then(function () {
+                    $.alert.success(_t("Successfully changed !"));
                     Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
                 });
             }

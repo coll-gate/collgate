@@ -101,6 +101,7 @@ let View = AdvancedTable.extend({
         }
 
         View.__super__.onShowTab.apply(this);
+
     },
 
     onCreatePanel: function () {

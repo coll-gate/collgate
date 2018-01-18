@@ -15,6 +15,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
+from accession.batchactiontypeformat import BatchActionTypeFormatManager
 from accession.namebuilder import NameBuilderManager
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel
@@ -66,9 +67,10 @@ class RestBatchIdParent(RestBatchId):
 @RestBatchNaming.def_auth_request(Method.GET, Format.JSON)
 def get_batch_naming(request):
     """
-    Generate a new unique batch name.
+    Generate a new unique batch name. !!!
+    @todo not that !!! name is generated at creation, cannot be seen before ! same for accession ! remove that !
     """
-    name = NameBuilderManager.get(NameBuilderManager.GLOBAL_ACCESSION).pick([])
+    name = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH).pick({}, [""])
 
     result = {
         'name': name,

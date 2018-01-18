@@ -57,7 +57,7 @@ let View = AdvancedTable.extend({
 
     onRender: function () {
         View.__super__.onRender.apply(this, arguments);
-        this.onShowTab();
+       // this.onShowTab();
     },
 
     onUnion: function () {
