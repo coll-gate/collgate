@@ -79,7 +79,7 @@ let View = AdvancedTable.extend({
             contextLayout.showChildView('title', new TitleView({title: _t("Batches actions")}));
 
             let actions = [
-                'create',
+                // 'create',
                 'create-panel',
                 'link-to-panel'
             ];
