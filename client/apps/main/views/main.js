@@ -126,10 +126,13 @@ let MainLayout = Marionette.View.extend({
         'dom:refresh': function(child) {
             // re-inject the grabber column each time the content has changed
             if (child && child.$el.parent().hasClass('root-content')) {
-                let grabber = $('<div class="root-right-bar-grabber"></div>');
-                this.ui.content.append(grabber);
+                let grabber = this.ui.content.children('div.root-right-bar-grabber');
+                if (grabber.length === 0) {
+                    grabber = $('<div class="root-right-bar-grabber"></div>');
+                    this.ui.content.append(grabber);
 
-                this.ui.content.children('div.root-right-bar-grabber').on('mouseover', $.proxy(this.onMouseHoverRightPane, this));
+                    this.ui.content.children('div.root-right-bar-grabber').on('mouseover', $.proxy(this.onMouseHoverRightPane, this));
+                }
 
                 if (this.ui.content.hasClass('col-md-12')) {
                     let right = $('div.container').css('padding-right').replace('px', '');

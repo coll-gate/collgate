@@ -28,10 +28,10 @@ let Layout = LayoutView.extend({
         actions_tab: 'a[aria-controls=actions]',
         panels_tab: 'a[aria-controls=panels]',
         accessions_tab: 'a[aria-controls=accessions]',
-
     },
 
     regions: {
+        'details': "div.batch-details",
         'descriptors': "div.tab-pane[name=descriptors]",
         'parents': "div.tab-pane[name=parents]",
         'batches': "div.tab-pane[name=batches]",
@@ -121,7 +121,7 @@ let Layout = LayoutView.extend({
 
         if (!this.model.isNew()) {
             // get available columns
-            let columns = application.main.cache.lookup({
+            let columns = window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'accession.batch'}
             });
@@ -155,16 +155,16 @@ let Layout = LayoutView.extend({
                     return;
                 }
 
-                let SubBatchListView = require('./subbatchlist');
-                let subbatchListView = new SubBatchListView({
+                let BatchChildrenListView = require('./batchchildrenlist');
+                let batchChildrenListView = new BatchChildrenListView({
                     collection: childrenBatches, model: batchLayout.model, columns: data[0].columns
                 });
 
                 let contentBottomLayout = new ContentBottomLayout();
                 batchLayout.showChildView('batches', contentBottomLayout);
 
-                contentBottomLayout.showChildView('content', subbatchListView);
-                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: subbatchListView}));
+                contentBottomLayout.showChildView('content', batchChildrenListView);
+                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchChildrenListView}));
             });
 
             // panels tab
@@ -172,7 +172,7 @@ let Layout = LayoutView.extend({
             let batchPanels = new PanelCollection({batch_id: this.model.get('id')});
 
             // get available columns
-            let columns3 = application.main.cache.lookup({
+            let columns3 = window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'accession.batchpanel'}
             });
@@ -193,7 +193,7 @@ let Layout = LayoutView.extend({
                 contentBottomLayout.showChildView('content', batchPanelListView);
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchPanelListView}));
 
-                batchPanelListView.query();
+                // batchPanelListView.query(); here or $.when
             });
 
             // accessions tab
@@ -204,6 +204,12 @@ let Layout = LayoutView.extend({
                 if (!batchLayout.isRendered()) {
                     return;
                 }
+
+                // batch path
+                let BatchPath = require('./batchpath');
+                let batchPath = new BatchPath({accession: accession, model: batchLayout.model});
+
+                batchLayout.showChildView('details', batchPath);
 
                 let accessions = new AccessionCollection([], {
                     filters: [{
@@ -236,16 +242,43 @@ let Layout = LayoutView.extend({
                     contentBottomLayout.showChildView('content', batchAccessionListView);
                     contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchAccessionListView}));
 
-                    batchAccessionListView.query();
+                    // batchAccessionListView.query(); here or $.when
                 });
 
-            });
+                // actions list tab
+                let BatchActionCollection = require('../../collections/batchaction');
+                let batchActions = new BatchActionCollection({batch_id: batchLayout.model.get('id')});
 
+                // get available columns
+                let columns5 = window.application.main.cache.lookup({
+                    type: 'entity_columns',
+                    format: {model: 'accession.batchaction'}
+                });
+
+                $.when(columns5, batchActions.fetch()).then(function (data) {
+                    if (!batchLayout.isRendered()) {
+                        return;
+                    }
+
+                    let BatchActionListView = require('./batchactionlist');
+                    let batchActionListView = new BatchActionListView({
+                        collection: batchActions, model: batchLayout.model, columns: data[0].value
+                    });
+
+                    let contentBottomLayout = new ContentBottomLayout();
+                    batchLayout.showChildView('actions', contentBottomLayout);
+
+                    contentBottomLayout.showChildView('content', batchActionListView);
+                    contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchActionListView}));
+
+                    // batchActionListView.query(); here or $.when
+                });
+            });
 
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
             this.enableTabs();
         } else {
-            // descriptors edit tab
+            // descriptors edit tab (should no longer happen now with actions)
             $.ajax({
                 method: "GET",
                 url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),

@@ -64,22 +64,23 @@ let View = AdvancedTable.extend({
     },
 
     onShowTab: function () {
-        // context only for children (sub-batches)
-        if (this.collection.batch_type !== 'parents') {
-            let view = this;
+        View.__super__.onShowTab.apply(this);
 
-            let contextLayout = application.getView().getChildView('right');
+        // context only for children (sub-batches)
+        if (1) {//this.collection.batch_type !== 'parents') {
+            let self = this;
+
+            let contextLayout = window.application.getView().getChildView('right');
             if (!contextLayout) {
                 let DefaultLayout = require('../../../main/views/defaultlayout');
                 contextLayout = new DefaultLayout();
-                application.getView().showChildView('right', contextLayout);
+                window.application.getView().showChildView('right', contextLayout);
             }
 
             let TitleView = require('../../../main/views/titleview');
             contextLayout.showChildView('title', new TitleView({title: _t("Batches actions")}));
 
             let actions = [
-                // 'create',
                 'create-panel',
                 'link-to-panel'
             ];
@@ -88,15 +89,12 @@ let View = AdvancedTable.extend({
             let contextView = new AccessionBatchesContextView({actions: actions});
             contextLayout.showChildView('content', contextView);
 
-            contextView.on("batch:create", function () {
-                application.accession.controllers.batch.create();
-            });
             contextView.on("panel:create", function () {
-                view.onCreatePanel();
+                self.onCreatePanel();
             });
 
             contextView.on("panel:link-batches", function () {
-                view.onLinkToPanel();
+                self.onLinkToPanel();
             });
         }
 
@@ -108,20 +106,28 @@ let View = AdvancedTable.extend({
         if (!this.getSelection('select')) {
             $.alert.warning(_t("No batch selected"));
         } else {
-            application.accession.controllers.batchpanel.create(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+            window.application.accession.controllers.batchpanel.create(
+                this.getSelection('select'),
+                this.relatedEntity,
+                this.collection.filters,
+                this.collection.search);
         }
     },
 
     onBeforeDetach: function () {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },
 
     onLinkToPanel: function () {
-        application.accession.controllers.batchpanel.linkBatches(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+        window.application.accession.controllers.batchpanel.linkBatches(
+            this.getSelection('select'),
+            this.relatedEntity,
+            this.collection.filters,
+            this.collection.search);
     },
 
     onHideTab: function () {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },
 });
 

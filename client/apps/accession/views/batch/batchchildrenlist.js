@@ -1,7 +1,8 @@
 /**
- * @file subbatchlist.js
- * @brief
+ * @file batchchildrenlist.js
+ * @brief Children batch for a specific batch parent
  * @author Medhi BOULNEMOUR (INRA UMR1095)
+ * @author Frederic SCHERMA (INRA UMR1095)
  * @date 2017-11-06
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
@@ -75,9 +76,9 @@ let View = AdvancedTable.extend({
     onShowTab: function () {
         View.__super__.onShowTab.apply(this);
 
-        // context only for children (sub-batches)
+        // context only for children
         if (this.collection.batch_type !== 'parents') {
-            let view = this;
+            let self = this;
 
             let contextLayout = application.getView().getChildView('right');
             if (!contextLayout) {
@@ -89,29 +90,39 @@ let View = AdvancedTable.extend({
             let TitleView = require('../../../main/views/titleview');
             contextLayout.showChildView('title', new TitleView({title: _t("Batches actions")}));
 
-            let actions = ['create'];
+            let actions = [
+                'create-panel',
+                'link-to-panel',
+                'unlink-batches'
+            ];
 
-            let AccessionBatchesContextView = require('./subbatchlistcontext');
+            let AccessionBatchesContextView = require('./batchlistcontext');
             let contextView = new AccessionBatchesContextView({actions: actions});
             contextLayout.showChildView('content', contextView);
 
-            contextView.on("batch:create", function () {
-                let select = {
-                    "op": 'in',
-                    "term": 'id',
-                    "value": [view.model.id]
-                };
-                application.accession.controllers.batch.create(select);
+            // @todo setup list of selected batch or none meaning self (this.model.id)
+            // let select = {
+            //         "op": 'in',
+            //         "term": 'id',
+            //         "value": [view.model.id]
+            //     };
 
+            contextView.on("panel:create", function () {
+                self.onCreatePanel();
             });
+
+            contextView.on("panel:link-batches", function () {
+                self.onLinkToPanel();
+            });
+
             contextView.on("batch:unlink", function () {
-                application.accession.controllers.batch.unlinkBatches(this);
+                // window.application.accession.controllers.batch.unlinkBatches(this); @todo archive
             });
         }
     },
 
     onHideTab: function () {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },
 });
 

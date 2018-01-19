@@ -77,7 +77,6 @@ let Layout = LayoutView.extend({
             if (panelLayout.initialTab === 'descriptors') {
                 accessionPanelDescriptorCreateView.onShowTab();
             }
-
         } else {
             // get the layout before creating the view
             $.ajax({

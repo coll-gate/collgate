@@ -58,7 +58,6 @@ let View = AdvancedTable.extend({
 
     onRender: function () {
         View.__super__.onRender.apply(this, arguments);
-        //this.onShowTab();
     },
 
     onLinkToPanel: function () {
@@ -67,13 +66,14 @@ let View = AdvancedTable.extend({
             "term": 'id',
             "value": [this.model.id]
         };
-        application.accession.controllers.accessionpanel.linkAccessions(selection, null, null, null, this.collection);
+        window.application.accession.controllers.accessionpanel.linkAccessions(
+            selection, null, null, null, this.collection);
     },
 
     onShowTab: function () {
         let view = this;
 
-        let contextLayout = application.getView().getChildView('right');
+        let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();

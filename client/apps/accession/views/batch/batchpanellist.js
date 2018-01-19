@@ -67,17 +67,17 @@ let View = AdvancedTable.extend({
             "term": 'id',
             "value": [this.model.id]
         };
-        application.accession.controllers.batchpanel.linkBatches(selection, null, null, null, this.collection);
+        window.application.accession.controllers.batchpanel.linkBatches(selection, null, null, null, this.collection);
     },
 
     onShowTab: function () {
-        let view = this;
+        let self = this;
 
-        let contextLayout = application.getView().getChildView('right');
+        let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().showChildView('right', contextLayout);
+            window.application.getView().showChildView('right', contextLayout);
         }
 
         let TitleView = require('../../../main/views/titleview');
@@ -95,7 +95,7 @@ let View = AdvancedTable.extend({
         contextLayout.showChildView('content', contextView);
 
         contextView.on("panel:link-batches", function () {
-            view.onLinkToPanel();
+            self.onLinkToPanel();
         });
 
         View.__super__.onShowTab.apply(this, arguments);

@@ -33,11 +33,11 @@ let Router = Marionette.AppRouter.extend({
         });
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of accession panels")}));
 
-        let columns = application.main.cache.lookup({
+        let columns = window.application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.accessionpanel'}
         });
@@ -65,7 +65,7 @@ let Router = Marionette.AppRouter.extend({
         let panel = new PanelModel({id: id});
 
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         panel.fetch().then(function () {
             if (!defaultLayout.isRendered()) {
