@@ -11,7 +11,6 @@
 let Marionette = require('backbone.marionette');
 let Dialog = require('../../main/views/dialog');
 let DescriptorPanelView = require('../views/panel');
-let ModelCollection = require('../collections/descriptormodel');
 
 let View = Marionette.CompositeView.extend({
     template: require("../templates/layouteditor.html"),
@@ -51,7 +50,6 @@ let View = Marionette.CompositeView.extend({
 
             initialize: function () {
                 AddPanelDialog.__super__.initialize.apply(this);
-                this.modelCollection = new ModelCollection();
             },
 
             onRender: function () {

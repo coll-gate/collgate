@@ -13,17 +13,13 @@ let Backbone = require('backbone');
 let Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return window.application.url(['descriptor', 'group']);
+            return window.application.url(['descriptor', 'descriptor', 'group']);
         else
-            return window.application.url(['descriptor', 'group', this.get('id')]);
+            return window.application.url(['descriptor', 'descriptor', 'group', this.get('id')]);
     },
 
     defaults: {
-        id: null,
-        name: '',
-        num_descriptor_types: 0,
-        can_delete: false,
-        can_modify: false
+        group_name: ''
     },
 
     parse: function(data) {

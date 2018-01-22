@@ -21401,7 +21401,7 @@ module.exports = DescriptorFormatTypeManager;
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file descriptorgroup.js
+ * @file descriptor.js
  * @brief Group of descriptors model
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-07-20
@@ -21452,7 +21452,7 @@ module.exports = Model;
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file descriptortype.js
+ * @file descriptor.js
  * @brief Type of descriptor model
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-07-21
@@ -38742,7 +38742,7 @@ module.exports = TimeType;
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file descriptortype.js
+ * @file descriptor.js
  * @brief Types of descriptors collection
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-07-19
@@ -38803,7 +38803,7 @@ module.exports = Collection;
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file descriptorgroup.js
+ * @file descriptor.js
  * @brief Groups of descriptors collection
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-07-19
@@ -63250,7 +63250,7 @@ module.exports = View;
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file descriptorgroup.js
+ * @file descriptor.js
  * @brief Group of type of descriptor item view
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-07-20
@@ -63271,9 +63271,9 @@ var View = Marionette.View.extend({
             behaviorClass: __webpack_require__(8),
             actions: {
                 edit: {display: false},
-                tag: {display: true, title: _t("Edit label"), event: 'onRenameGroup'},
-                manage: {display: true, event: 'viewDescriptorType'},
-                remove: {display: true, event: 'deleteDescriptorGroup'}
+                tag: {display: true, title: _t("Edit label"), event: 'onRename'},
+                manage: {display: true, event: 'viewDescriptor'},
+                remove: {display: true, event: 'deleteDescriptor'}
             }
         }
     },
@@ -63286,9 +63286,9 @@ var View = Marionette.View.extend({
     },
 
     events: {
-       // 'click @ui.delete_btn': 'deleteDescriptorGroup',
-       'click @ui.rename_btn': 'onRenameGroup',
-       'click @ui.manage_btn': 'viewDescriptorType'
+       // 'click @ui.delete_btn': 'deleteDescriptor',
+       'click @ui.rename_btn': 'onRename',
+       'click @ui.manage_btn': 'viewDescriptor'
     },
 
     initialize: function () {
@@ -63312,12 +63312,12 @@ var View = Marionette.View.extend({
         return properties;
     },
 
-    viewDescriptorType: function () {
+    viewDescriptor: function () {
         Backbone.history.navigate("app/descriptor/group/" + this.model.id + "/type/", {trigger: true});
         return false;
     },
 
-    deleteDescriptorGroup: function () {
+    deleteDescriptor: function () {
         if (this.model.get('num_descriptor_types') === 0) {
             this.model.destroy({wait: true});
         } else {
@@ -63326,7 +63326,7 @@ var View = Marionette.View.extend({
         return false;
     },
 
-    onRenameGroup: function () {
+    onRename: function () {
         if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
             return false;
         }
@@ -63456,7 +63456,7 @@ module.exports = View;
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
- * @file descriptortype.js
+ * @file descriptor.js
  * @brief Type of descriptor item view
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-07-21
@@ -63479,8 +63479,8 @@ var View = Marionette.View.extend({
     },
 
     events: {
-        'click @ui.delete_btn': 'deleteDescriptorType',
-        'click @ui.edit_btn': 'viewDescriptorType',
+        'click @ui.delete_btn': 'deleteDescriptor',
+        'click @ui.edit_btn': 'viewDescriptor',
         'click @ui.manage_btn': 'viewDescriptorValue'
     },
 
@@ -63489,9 +63489,9 @@ var View = Marionette.View.extend({
             behaviorClass: __webpack_require__(8),
             actions: {
                 tag: {display: false},
-                edit: {display: true, event: 'viewDescriptorType'},
+                edit: {display: true, event: 'viewDescriptor'},
                 manage: {display: true, event: 'viewDescriptorValue'},
-                remove: {display: true, event: 'deleteDescriptorType'}
+                remove: {display: true, event: 'deleteDescriptor'}
             }
         }
     },
@@ -63527,7 +63527,7 @@ var View = Marionette.View.extend({
     onRender: function() {
     },
 
-    viewDescriptorType: function() {
+    viewDescriptor: function() {
         Backbone.history.navigate("app/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/', {trigger: true});
         return false;
     },
@@ -63541,7 +63541,7 @@ var View = Marionette.View.extend({
         return false;
     },
 
-    deleteDescriptorType: function () {
+    deleteDescriptor: function () {
         if (this.model.get('num_descriptor_values') === 0) {
             this.model.destroy({wait: true});
         } else {
@@ -65654,7 +65654,7 @@ module.exports = Router;
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file descriptormodeltype.js
+ * @file layoutdescriptor.js
  * @brief Types of models of descriptors collection
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-13
@@ -65695,7 +65695,7 @@ module.exports = Collection;
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file descriptormodeltype.js
+ * @file layoutdescriptor.js
  * @brief Type of model of descriptor model
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-13
@@ -66495,7 +66495,7 @@ module.exports = View;
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file descriptormodeltype.js
+ * @file layoutdescriptor.js
  * @brief Type of descriptor item view
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-07-21
@@ -68313,10 +68313,10 @@ var View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: __webpack_require__(8),
             actions: {
-                edit: {title: _t("Edit label"), event: 'viewDescriptorMetaModelDetails'},
+                edit: {title: _t("Edit label"), event: 'viewLayoutDetails'},
                 tag: {display: true, event: 'editLabel'},
                 manage: {display: true, event: 'viewDescriptorPanels'},
-                remove: {display: true, event: 'deleteDescriptorMetaModel'}
+                remove: {display: true, event: 'deleteLayout'}
             }
         }
     },
@@ -68329,10 +68329,10 @@ var View = Marionette.View.extend({
     },
 
     events: {
-        'click @ui.edit_btn': 'viewDescriptorMetaModelDetails',
+        'click @ui.edit_btn': 'viewLayoutDetails',
         'click @ui.tag_btn': 'editLabel',
         'click @ui.manage_btn': 'viewDescriptorPanels',
-        'click @ui.delete_btn': 'deleteDescriptorMetaModel'
+        'click @ui.delete_btn': 'deleteLayout'
     },
 
     initialize: function () {
@@ -68363,7 +68363,7 @@ var View = Marionette.View.extend({
         application.main.views.contentTypes.htmlFromValue(this.el);
     },
 
-    viewDescriptorMetaModelDetails: function () {
+    viewLayoutDetails: function () {
         Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/", {trigger: true});
     },
 
@@ -68371,7 +68371,7 @@ var View = Marionette.View.extend({
         Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/panel/", {trigger: true});
     },
 
-    deleteDescriptorMetaModel: function () {
+    deleteLayout: function () {
         // if (this.model.get('num_descriptor_models') === 0) {
         //     this.model.destroy({wait: true});
         // } else {
@@ -79085,7 +79085,7 @@ var View = Marionette.View.extend({
 
     events: {
         'click @ui.delete_group': 'deleteGroup',
-        'click @ui.change_name': 'onRenameGroup',
+        'click @ui.change_name': 'onRename',
         'click @ui.view_permissions': 'viewPermissions',
         'click @ui.view_users': 'viewUsers'
     },
@@ -79095,7 +79095,7 @@ var View = Marionette.View.extend({
             behaviorClass: __webpack_require__(8),
             actions: {
                 edit: {display: true, title: _t("Manage permissions"), event: 'viewPermissions'},
-                tag: {display: true, title: _t("Edit label"), event: 'onRenameGroup'},
+                tag: {display: true, title: _t("Edit label"), event: 'onRename'},
                 manage: {display: true, title: _t("Manage users"), event: 'viewUsers'},
                 remove: {display: true, event: 'deleteGroup'}
             }
@@ -79124,7 +79124,7 @@ var View = Marionette.View.extend({
         this.model.destroy({wait: true});
     },
 
-    onRenameGroup: function() {
+    onRename: function() {
         var ChangeName = __webpack_require__(16);
         var changeName = new ChangeName({
             model: this.model,

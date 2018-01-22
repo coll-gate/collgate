@@ -64,7 +64,7 @@ class CollGateDescriptor(ApplicationMain):
             # 'descriptormodel',
             'layout',
             'descriptorcolumns',
-            'layoutparameters'
+            # 'layoutparameters'
             )
         )
 

@@ -16,7 +16,7 @@ let View = AdvancedTable.extend({
     className: "object descriptor-group-list advanced-table-container",
     childView: DescriptorView,
     userSettingName: 'descriptor_list_columns',
-    userSettingVersion: '1.1',
+    userSettingVersion: '1.0',
 
     defaultColumns: [
         // {name: 'select', width: 'auto', sort_by: null},

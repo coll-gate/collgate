@@ -14,8 +14,10 @@ let Model = Backbone.Model.extend({
     url: function () {
         if (this.isNew()) {
             return window.application.url(['descriptor', 'descriptor']);
-        } else {
+        } else if (_.isNumber(this.get('id'))){
             return window.application.url(['descriptor', 'descriptor', this.get('id')]);
+        } else {
+            return window.application.url(['descriptor', 'descriptor', this.get('name')]);
         }
     },
 

@@ -1,6 +1,6 @@
 /**
  * @file layout.js
- * @brief Meta-model of descriptor item view
+ * @brief layout of descriptor item view
  * @author Frédéric SCHERMA (INRA UMR1095), Medhi BOULNEMOUR (INRA UMR1095)
  * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD

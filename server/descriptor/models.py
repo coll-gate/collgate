@@ -127,7 +127,7 @@ class Descriptor(Entity):
     """
 
     server_cache_update = ("descriptor", "entity_columns")
-    client_cache_update = ("entity_columns", "descriptors")
+    client_cache_update = ("entity_columns",)
 
     # unique name of type of descriptor
     name = models.CharField(unique=True, max_length=255, db_index=True)

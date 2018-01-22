@@ -136,16 +136,13 @@ DescriptorModule.prototype = {
         let DescriptorRouter = require('./routers/descriptor');
         this.routers.descriptor = new DescriptorRouter();
 
-        let DescriptorModelRouter = require('./routers/descriptormodel');
-        this.routers.descriptorModel = new DescriptorModelRouter();
-
         let LayoutRouter = require('./routers/layout');
         this.routers.descriptorMetaModel = new LayoutRouter();
 
         // let DescriptorGroupCollection = require('./collections/descriptorgroup');
         // this.collections.descriptorGroup = new DescriptorGroupCollection();
 
-        let DescriptorGroupCollection = require('./collections/descriptorgroup');
+        let DescriptorGroupCollection = require('./collections/descriptor');
         this.collections.descriptorGroup = new DescriptorGroupCollection();
 
         //

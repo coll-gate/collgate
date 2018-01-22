@@ -13,9 +13,9 @@ let Backbone = require('backbone');
 let Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew()) {
-            return window.application.url(['descriptor', 'layout', this.collection.layout_id, 'panel', this.getModelId(), 'descriptor']);
+            return window.application.url(['descriptor', 'layout', this.collection.model_id, 'panel', this.collection.panel_index, 'descriptor']);
         } else {
-            return window.application.url(['descriptor', 'layout', this.collection.layout_id, 'panel', this.getModelId(), 'descriptor', this.get('position')]);
+            return window.application.url(['descriptor', 'layout', this.collection.model_id, 'panel', this.collection.panel_index, 'descriptor', this.get('position')]);
         }
     },
 
@@ -23,7 +23,7 @@ let Model = Backbone.Model.extend({
         id: null,
         name: '',
         label: '',
-        position: 0,
+        position: null,
         mandatory: false,
         set_once: false
     },
@@ -53,15 +53,15 @@ let Model = Backbone.Model.extend({
         }
     },
 
-    getModelId: function() {
-        if (typeof this.model_id != 'undefined') {
-            return this.model_id;
-        } else if (this.get('model') != null) {
-            return this.model;
-        } else if (typeof this.collection != 'undefined') {
-            return this.collection.model_id;
-        }
-    }
+    // getModelId: function() {
+    //     if (typeof this.model_id != 'undefined') {
+    //         return this.model_id;
+    //     } else if (this.get('model') != null) {
+    //         return this.model;
+    //     } else if (typeof this.collection != 'undefined') {
+    //         return this.collection.model_id;
+    //     }
+    // }
 });
 
 module.exports = Model;

@@ -39,6 +39,11 @@ class RestDescriptorDescriptor(RestDescriptor):
     suffix = 'descriptor'
 
 
+class RestDescriptorDescriptorGroup(RestDescriptorDescriptor):
+    regex = r'^group/$'
+    suffix = 'group'
+
+
 class RestDescriptorDescriptorCount(RestDescriptorDescriptor):
     regex = r'^count/$'
     suffix = 'count'
@@ -151,6 +156,30 @@ class RestDescriptorDescriptorIdValueId(RestDescriptorDescriptorIdValue):
 # class RestDescriptorGroupIdTypeIdValueIdDisplay(RestDescriptorGroupIdTypeIdValueId):
 #     regex = r'^display/$'
 #     suffix = 'display'
+
+
+@RestDescriptorDescriptorGroup.def_auth_request(Method.GET, Format.JSON)
+def get_group_list(request):
+    group_list = Descriptor.objects.values_list('group_name').distinct()
+
+    items = []
+
+    for group_name in group_list:
+        g = {
+            'group_name': group_name
+        }
+
+        items.append(g)
+
+    results = {
+        'perms': [],
+        'items': items,
+        # 'prev': cq.prev_cursor,
+        # 'cursor': cursor,
+        # 'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
 
 
 @RestDescriptorDescriptor.def_auth_request(Method.GET, Format.JSON)

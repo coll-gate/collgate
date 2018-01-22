@@ -155,18 +155,18 @@ let View = Marionette.View.extend({
                 // ajax call
                 let position = elt.model.get('position');
                 let newPosition = this.model.get('position');
-                let modelId = this.model.collection.model_id;
+                let modelId = this.model.collection.panel_index;
                 let collection = this.model.collection;
 
                 $.ajax({
                     type: "PUT",
-                    url: window.application.url(['descriptor', 'layout', this.model.collection.layout_id, 'descriptor', 'order']),
+                    url: window.application.url(['descriptor', 'layout', this.model.collection.model_id, 'descriptor', 'order']),
                     dataType: 'json',
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({
                         current_position: elt.model.get('position'),
                         new_position: newPosition,
-                        current_panel: elt.model.model_id,
+                        current_panel: elt.model.collection.panel_index,
                         new_panel: modelId
                     })
                 }).done(function () {
@@ -216,7 +216,8 @@ let View = Marionette.View.extend({
                     }
 
                     // need to sort
-                    collection.sort();
+                    // collection.sort();
+                    collection.fetch();
                 }).fail(function () {
                     $.alert.error(_t('Unable to reorder the types of model of descriptor'));
                 })

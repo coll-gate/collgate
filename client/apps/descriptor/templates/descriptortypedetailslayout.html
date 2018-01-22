@@ -1,13 +1,12 @@
 <!--
  - @file descriptortypedetailslayout.html
- - @brief Template for the detailed layout of a type of descriptor (model)
+ - @brief Template for the detailed layout of a descriptor
  - @author Frédéric SCHERMA (INRA UMR1095)
  - @date 2017-01-25
  - @copyright Copyright (c) 2017 INRA/CIRAD
  - @license MIT (see LICENSE file)
  - @details 
 -->
-
 
 <div class="row">
     <div class="descriptor-type-name form-group col-md-6">
@@ -35,6 +34,7 @@
     <textarea id="descriptor_type_description" class="form-control" maxlength="1024"><%= description %></textarea>
 </div>
 
-<div class="descriptor-type-update form-group text-center">
+<div class="descriptor-type-update form-group pull-right">
     <button id="save" class="btn btn-success btn-block"><%- _t('Update') %></button>
 </div>
+
