@@ -69,6 +69,7 @@ let View = AdvancedTable.extend({
 
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
+        this.accessionId = options.accessionId || -1;
 
         // this.listenTo(this.collection, 'reset', this.render, this);
     },
@@ -80,11 +81,11 @@ let View = AdvancedTable.extend({
         if (this.collection.batch_type !== 'parents') {
             let self = this;
 
-            let contextLayout = application.getView().getChildView('right');
+            let contextLayout = window.application.getView().getChildView('right');
             if (!contextLayout) {
                 let DefaultLayout = require('../../../main/views/defaultlayout');
                 contextLayout = new DefaultLayout();
-                application.getView().showChildView('right', contextLayout);
+                window.application.getView().showChildView('right', contextLayout);
             }
 
             let TitleView = require('../../../main/views/titleview');
@@ -97,7 +98,11 @@ let View = AdvancedTable.extend({
             ];
 
             let AccessionBatchesContextView = require('./batchlistcontext');
-            let contextView = new AccessionBatchesContextView({actions: actions});
+            let contextView = new AccessionBatchesContextView({
+                actions: actions,
+                accessionId: self.accessionId
+            });
+
             contextLayout.showChildView('content', contextView);
 
             // @todo setup list of selected batch or none meaning self (this.model.id)

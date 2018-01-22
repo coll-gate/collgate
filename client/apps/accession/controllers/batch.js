@@ -21,7 +21,7 @@ let BatchLayout = require('../views/batch/batchlayout');
 let SearchEntityDialog = require('../views/search');
 
 let Controller = Marionette.Object.extend({
-    delete: function (model) {
+    destroy: function (model) {
         let DeletePanelDialog = Dialog.extend({
             template: require('../../main/templates/confirm.html'),
             templateContext: function () {

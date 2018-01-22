@@ -93,7 +93,7 @@ let View = Marionette.View.extend({
     },
 
     onDeletePanel: function () {
-        application.accession.controllers.batchpanel.delete(this.model);
+        application.accession.controllers.batchpanel.destroy(this.model);
     },
 
     onUnlinkPanel: function () {

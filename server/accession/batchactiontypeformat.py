@@ -34,16 +34,14 @@ class BatchActionController(object):
     def __init__(self, batch_action_type_format):
         self.type_format = batch_action_type_format
 
-    @property
     def naming_variables(self, accession):
         return {
             'ACCESSION_NAME': accession.name,
             'ACCESSION_CODE': accession.code
         }
 
-    @property
     def naming_constants(self, count, accession, batch_action):
-        constants = "" * count
+        constants = ["" for x in range(0, count)]
 
         # first retrieve constants from accession layout
         data = accession.descriptor_meta_model.parameters.get('data')
@@ -56,12 +54,15 @@ class BatchActionController(object):
                     i += 1
 
         # and override with batch action parameters
-        opts = batch_action.format.get('naming_options')
-        if opts:
-            i = 0
-            for opt in opts:
-                constants[i] = opt
-                i += 1
+        opts_data = batch_action.format.get('data')
+        if opts_data:
+            naming_options = opts_data.get('naming_options')
+
+            if naming_options:
+                i = 0
+                for opt in naming_options:
+                    constants[i] = opt
+                    i += 1
 
         return constants
 
@@ -200,10 +201,8 @@ class BatchActionTypeFormatManager(object):
         return list(cls.action_types.values())
 
     @classmethod
-    def get(cls, batch_action_type_format):
-        action_format = batch_action_type_format['type']
-
-        bat = cls.action_types.get(action_format)
+    def get(cls, batch_action_type_name):
+        bat = cls.action_types.get(batch_action_type_name)
         if bat is None:
             raise ValueError("Unsupported format of batch action type %s" % action_format)
 

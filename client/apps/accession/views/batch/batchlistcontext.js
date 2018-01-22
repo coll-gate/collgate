@@ -2,6 +2,7 @@
  * @file batchlistcontext.js
  * @brief Batch list context menu
  * @author Medhi BOULNEMOUR (INRA UMR1095)
+ * @author Frederic SCHERMA (INRA UMR1095)
  * @date 2017-11-06
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
@@ -18,7 +19,6 @@ let View = Marionette.View.extend({
         return {
             actions: this.getOption('actions'),
             options: {
-                // 'create': {className: 'btn-default', label: _t('Introduce a batch')},
                 'create-panel': {className: 'btn-default', label: _t('Create new panel')},
                 'link-to-panel': {className: 'btn-default', label: _t('Link to existing panel')},
                 'unlink-batches': {className: 'btn-danger', label: _t('Unlink batches')}
@@ -27,21 +27,19 @@ let View = Marionette.View.extend({
     },
 
     ui: {
-        //'create': 'button[name="create"]',
-        'create-panel': 'button[name="create-panel"]',
+         'create-panel': 'button[name="create-panel"]',
         'link-to-panel': 'button[name="link-to-panel"]',
         'unlink-batches': 'button[name="unlink-batches"]'
     },
 
     triggers: {
-        //"click @ui.create": "batch:create",
-        "click @ui.create-panel": "panel:create",
+         "click @ui.create-panel": "panel:create",
         "click @ui.link-to-panel": "panel:link-batches",
         "click @ui.unlink-batches": "batches:unlink"
     },
 
     initialize: function (options) {
-        options || (options = {actions: []});
+        this.accessionId = options.accessionId || -1;
     },
 
     onRender: function () {
@@ -68,8 +66,23 @@ let View = Marionette.View.extend({
     },
 
     onCreateAction: function(e) {
-        let val = $(e.target).selectpicker().val();
-        alert("@todo create an action of " + val);
+        let val = parseInt($(e.target).selectpicker().val());
+        let accessionId = this.getOption("accessionId");
+        let inputBatches = [];  // @todo
+
+        $.ajax({
+            type: "POST",
+            url: window.application.url(['accession', 'batchaction']),
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                "accession": accessionId,
+                "type": val,
+                "batches": inputBatches
+            })
+        }).done(function(data) {
+
+        });
     }
 });
 

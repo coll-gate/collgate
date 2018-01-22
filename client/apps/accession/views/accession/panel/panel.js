@@ -92,7 +92,7 @@ let View = Marionette.View.extend({
     },
 
     onDeletePanel: function () {
-        application.accession.controllers.accessionpanel.delete(this.model);
+        window.application.accession.controllers.accessionpanel.destroy(this.model);
     }
 });
 

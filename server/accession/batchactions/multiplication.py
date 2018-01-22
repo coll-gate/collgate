@@ -23,7 +23,11 @@ class BatchActionMultiplication(BatchActionController):
         super().__init__(batch_action_type_format)
 
     def create(self, batch_action_type, accession, user, input_batches=None):
-        naming_constants = self.naming_constants(1, accession, batch_action_type)
+        if not input_batches:
+            raise Exception("This batch action does take at least on batch in input")
+
+        name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
+        naming_constants = self.naming_constants(name_builder.num_constants, accession, batch_action_type)
         descriptors_map = {}      # @todo from config
 
         if input_batches is None:
@@ -54,8 +58,7 @@ class BatchActionMultiplication(BatchActionController):
                 # for each input batch create one output batch
                 for in_batch in in_batches:
                     batch = Batch()
-                    batch.name = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH).pick(
-                        self.naming_variables, naming_constants)
+                    batch.name = name_builder.pick(self.naming_variables(accession), naming_constants)
 
                     batch.accession = accession
                     batch.descriptor_meta_model = in_batch.descriptor_meta_model

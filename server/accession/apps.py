@@ -133,11 +133,11 @@ class CollGateAccession(ApplicationMain):
         # batch menu
         menu_batch = ModuleMenu('batch', _('Batch'), auth=AUTH_USER)
 
-        menu_batch.add_entry(
-            MenuEntry('create-batch', _('Introduce a batch'), "~accession/batch/create",
-                      icon=FaGlyph('plus'), order=1))
+        # menu_batch.add_entry(
+        #     MenuEntry('create-batch', _('Introduce a batch'), "~accession/batch/create",
+        #               icon=FaGlyph('plus'), order=1))
 
-        menu_batch.add_entry(MenuSeparator(100))
+        # menu_batch.add_entry(MenuSeparator(100))
         menu_batch.add_entry(
             MenuEntry('list-batches', _('List batches'), "#accession/batch/", icon=FaGlyph('list'), order=101))
         menu_batch.add_entry(

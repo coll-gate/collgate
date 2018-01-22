@@ -78,6 +78,7 @@ let View = Marionette.View.extend({
     },
 
     accessionCell: function (td, value) {
+        console.log(value)
         if (value && value.accession) {
             td.popupcell('init', {
                 label: value.name,
@@ -89,6 +90,21 @@ let View = Marionette.View.extend({
                 },
                 value: value.id
             });
+        }
+    },
+
+    batchActionTypeCell: function (td, value) {
+        if (value && value.type) {
+            /*td.popupcell('init', {
+                label: value.name,
+                className: 'batchaction',
+                type: 'entity',
+                format: {
+                    model: 'accession.batchaction',
+                    details: true
+                },
+                value: value.id
+            });*/
         }
     }
 });

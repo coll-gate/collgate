@@ -17,7 +17,7 @@ let AccessionPanelModel = require('../models/accessionpanel');
 let AccessionPanelLayout = require('../views/accession/panel/panellayout');
 
 let Controller = Marionette.Object.extend({
-    delete: function (model) {
+    destroy: function (model) {
         let DeletePanelDialog = Dialog.extend({
             template: require('../../main/templates/confirm.html'),
             templateContext: function () {

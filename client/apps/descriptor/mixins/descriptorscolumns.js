@@ -64,7 +64,7 @@ let DescriptorsColumnsView = {
 
                 done = true;
             } else if ("format" in options && options.format) {
-                let dft = application.descriptor.widgets.getElement(options.format.type);
+                let dft =  window.application.descriptor.widgets.getElement(options.format.type);
                 if (dft && dft.format) {
                     if (columnName.startsWith('#')) {
                         for (let j = 0; j < modelList.length; ++j) {
@@ -119,7 +119,7 @@ let DescriptorsColumnsView = {
 
     _fetchDescriptorsValue: function(modelList, columnName, options) {
         let descriptorName = columnName.replace(/^#/, '');
-        let cache = application.main.cache.get('descriptors', descriptorName);
+        let cache =  window.application.main.cache.get('descriptors', descriptorName);
 
         let toFetch = false;
         let now = Date.now();
@@ -182,7 +182,7 @@ let DescriptorsColumnsView = {
             }
         };
 
-        let promise = application.main.cache.fetch(parameters, Array.from(keys), false);
+        let promise =  window.application.main.cache.fetch(parameters, Array.from(keys), false);
 
         if (promise) {
             promise.done(function (data) {
@@ -236,12 +236,12 @@ let DescriptorsColumnsView = {
     _fetchStandardValue: function(modelList, columnName, options) {
         let parameters = {};
 
-        if (options.format.type === "descriptor_meta_model" && application.main.cache.hasFetcher('descriptor_meta_model')) {
+        if (options.format.type === "descriptor_meta_model" &&  window.application.main.cache.hasFetcher('descriptor_meta_model')) {
             parameters.type = 'descriptor_meta_model';
             parameters.format = {
                 'model': options.format.model
             }
-        } else if (options.format.type === "entity" && application.main.cache.hasFetcher('entity')) {
+        } else if (options.format.type === "entity" &&  window.application.main.cache.hasFetcher('entity')) {
             parameters.type = 'entity';
             parameters.format = {
                 'model': options.format.model,
@@ -252,7 +252,7 @@ let DescriptorsColumnsView = {
             return null;
         }
 
-        let cache = application.main.cache.get(parameters.type, options.format.model);
+        let cache = window.application.main.cache.get(parameters.type, options.format.model);
 
         let toFetch = false;
         let now = Date.now();
@@ -309,7 +309,7 @@ let DescriptorsColumnsView = {
         }
 
         let self = this;
-        let promise = application.main.cache.fetch(parameters, Array.from(keys), false);
+        let promise =  window.application.main.cache.fetch(parameters, Array.from(keys), false);
 
         if (promise) {
             promise.done(function (data) {

@@ -23,6 +23,9 @@ class BatchActionCreation(BatchActionController):
         super().__init__(batch_action_type_format)
 
     def create(self, batch_action_type, accession, user, input_batches=None):
+        if input_batches:
+            raise Exception("This batch action does not take any batches in input")
+
         name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
         naming_constants = self.naming_constants(name_builder.num_constants, accession, batch_action_type)
         descriptors_map = {}      # @todo from config
@@ -47,7 +50,7 @@ class BatchActionCreation(BatchActionController):
 
                 # now create the initial batch
                 batch = Batch()
-                batch.name = name_builder.pick(self.naming_variables, naming_constants)
+                batch.name = name_builder.pick(self.naming_variables(accession), naming_constants)
 
                 batch.accession = accession
                 batch.descriptor_meta_model = batch_layout
@@ -58,7 +61,7 @@ class BatchActionCreation(BatchActionController):
 
                 batch_action.output_batches.add(batch)
 
-        except IntegrityError:
+        except IntegrityError as e:
             raise Exception("Unable to create an new action (%s)" % self.type_format.name)
 
     def update(self, batch_action, user):

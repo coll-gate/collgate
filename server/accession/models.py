@@ -464,6 +464,33 @@ class BatchAction(Entity):
 
         default_permissions = list()
 
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'type': {
+                'label': _('Type'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'entity',
+                    'model': 'accession.batchactiontype',
+                    'details': True
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            },
+            'accession': {
+                'label': _('Accession'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'entity',
+                    'model': 'accession.accession',
+                    'details': True
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            }
+        }
+
 
 class Panel(Entity):
     """

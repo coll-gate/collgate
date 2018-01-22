@@ -45,9 +45,10 @@ class RestBatchIdBatchActionCount(RestBatchIdBatchAction):
 @RestBatchAction.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": BatchAction.NAME_VALIDATOR,
             "accession": {"type": "number"},
-            "type": {"type": "number"}
+            "type": {"type": "number"},
+            "batches": {"type": "array", "minItems": 0, "maxItems": 32768,
+                        "additionalItems": {"type": "number"}, "items": []}
         },
     }, perms={
         'accession.add_batchaction': _("You are not allowed to create an action for a batch")
@@ -56,19 +57,20 @@ class RestBatchIdBatchActionCount(RestBatchIdBatchAction):
 def create_batch_action(request):
     accession_id = int_arg(request.data.get('accession'))
     batch_action_type_id = int_arg(request.data.get('type'))
+    batches_id_list = request.data.get('batches')
 
     user = request.user
 
     accession = get_object_or_404(Accession, pk=accession_id)
     batch_action_type = get_object_or_404(BatchActionType, pk=batch_action_type_id)
 
-    # format type might be 'creation'
-    batch_action_type_format = BatchActionTypeFormatManager.get(batch_action_type.format.get('type'))
+    input_batches = Batch.objects.filter(id__in=batches_id_list)
 
-    batch_action = batch_action_type_format.controller().create(batch_action_type, accession, user)
+    batch_action_type_format = BatchActionTypeFormatManager.get(batch_action_type.format.get('type'))
+    batch_action = batch_action_type_format.controller().create(batch_action_type, accession, user, input_batches)
 
     result = {
-        'id': batch_action.pk,
+        'id': batch_action.id,
         'accession': accession_id,
         'user': user.username,
         'type': batch_action.type_id
@@ -117,7 +119,8 @@ def get_batch_action_list(request, bat_id):
         a = {
             'id': batch_action.id,
             'accession': batch_action.accession_id,
-            # @todo
+            'type': batch_action.type_id,
+            'data': batch_action.data
         }
 
         batch_action_list.append(a)

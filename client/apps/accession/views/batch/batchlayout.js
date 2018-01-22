@@ -137,7 +137,10 @@ let Layout = LayoutView.extend({
 
                 let BatchListView = require('./batchlist');
                 let batchListView = new BatchListView({
-                    collection: parentBatches, model: batchLayout.model, columns: data[0].value
+                    collection: parentBatches,
+                    model: batchLayout.model,
+                    accessionId: batchLayout.model.get('accession'),
+                    columns: data[0].value
                 });
 
                 let contentBottomFooterLayout = new ContentBottomLayout();
@@ -157,7 +160,10 @@ let Layout = LayoutView.extend({
 
                 let BatchChildrenListView = require('./batchchildrenlist');
                 let batchChildrenListView = new BatchChildrenListView({
-                    collection: childrenBatches, model: batchLayout.model, columns: data[0].columns
+                    collection: childrenBatches,
+                    accessionId: batchLayout.model.get('accession'),
+                    model: batchLayout.model,
+                    columns: data[0].columns
                 });
 
                 let contentBottomLayout = new ContentBottomLayout();
@@ -184,7 +190,10 @@ let Layout = LayoutView.extend({
 
                 let BatchPanelListView = require('./batchpanellist');
                 let batchPanelListView = new BatchPanelListView({
-                    collection: batchPanels, model: batchLayout.model, columns: data[0].value
+                    collection: batchPanels,
+                    accessionId: batchLayout.model.get('accession'),
+                    model: batchLayout.model,
+                    columns: data[0].value
                 });
 
                 let contentBottomLayout = new ContentBottomLayout();
@@ -221,7 +230,7 @@ let Layout = LayoutView.extend({
                 });
 
                 // get available columns
-                let columns4 = application.main.cache.lookup({
+                let columns4 = window.application.main.cache.lookup({
                     type: 'entity_columns',
                     format: {model: 'accession.accession'}
                 });

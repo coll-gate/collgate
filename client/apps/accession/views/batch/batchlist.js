@@ -61,45 +61,42 @@ let View = AdvancedTable.extend({
 
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
+        this.accessionId = options.accessionId || -1;
     },
 
     onShowTab: function () {
         View.__super__.onShowTab.apply(this);
 
-        // context only for children (sub-batches)
-        if (1) {//this.collection.batch_type !== 'parents') {
-            let self = this;
+        let self = this;
 
-            let contextLayout = window.application.getView().getChildView('right');
-            if (!contextLayout) {
-                let DefaultLayout = require('../../../main/views/defaultlayout');
-                contextLayout = new DefaultLayout();
-                window.application.getView().showChildView('right', contextLayout);
-            }
-
-            let TitleView = require('../../../main/views/titleview');
-            contextLayout.showChildView('title', new TitleView({title: _t("Batches actions")}));
-
-            let actions = [
-                'create-panel',
-                'link-to-panel'
-            ];
-
-            let AccessionBatchesContextView = require('./batchlistcontext');
-            let contextView = new AccessionBatchesContextView({actions: actions});
-            contextLayout.showChildView('content', contextView);
-
-            contextView.on("panel:create", function () {
-                self.onCreatePanel();
-            });
-
-            contextView.on("panel:link-batches", function () {
-                self.onLinkToPanel();
-            });
+        let contextLayout = window.application.getView().getChildView('right');
+        if (!contextLayout) {
+            let DefaultLayout = require('../../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            window.application.getView().showChildView('right', contextLayout);
         }
 
-        View.__super__.onShowTab.apply(this);
+        let TitleView = require('../../../main/views/titleview');
+        contextLayout.showChildView('title', new TitleView({title: _t("Batches actions")}));
 
+        let actions = [
+            'create-panel',
+            'link-to-panel'
+        ];
+
+        let BatchListContextView = require('./batchlistcontext');
+        let contextView = new BatchListContextView({actions: actions, accessionId: self.accessionId});
+        contextLayout.showChildView('content', contextView);
+
+        contextView.on("panel:create", function () {
+            self.onCreatePanel();
+        });
+
+        contextView.on("panel:link-batches", function () {
+            self.onLinkToPanel();
+        });
+
+        View.__super__.onShowTab.apply(this);
     },
 
     onCreatePanel: function () {

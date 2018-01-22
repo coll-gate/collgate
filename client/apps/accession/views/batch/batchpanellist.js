@@ -54,6 +54,7 @@ let View = AdvancedTable.extend({
 
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
+        this.accessionId = options.accessionId || -1;
     },
 
     onRender: function () {
@@ -91,7 +92,11 @@ let View = AdvancedTable.extend({
         ];
 
         let PanelBatchListContextView = require('./batchlistcontext');
-        let contextView = new PanelBatchListContextView({actions: actions});
+        let contextView = new PanelBatchListContextView({
+            actions: actions,
+            accessionId: self.accessionId
+        });
+
         contextLayout.showChildView('content', contextView);
 
         contextView.on("panel:link-batches", function () {

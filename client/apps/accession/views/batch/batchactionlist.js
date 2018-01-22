@@ -16,14 +16,13 @@ let TitleView = require('../../../main/views/titleview');
 let DescriptorsColumnsView = require('../../../descriptor/mixins/descriptorscolumns');
 let BatchModel = require('../../models/batch');
 let BatchActionModel = require('../../models/batchaction');
-let BatchLayout = require('./batchlayout');
 
 let View = AdvancedTable.extend({
     template: require("../../../descriptor/templates/entitylist.html"),
     className: "batch-action-list advanced-table-container",
     childView: BatchActionView,
     childViewContainer: 'tbody.entity-list',
-    userSettingVersion: '1.0',
+    userSettingVersion: '1.1',
 
     userSettingName: function () {
         return 'batch_action_list_columns';
@@ -31,7 +30,8 @@ let View = AdvancedTable.extend({
 
     defaultColumns: [
         {name: 'select', width: 'auto', sort_by: null},
-        // {name: 'name', width: 'auto', sort_by: '+0'},
+        {name: 'type', width: 'auto', sort_by: '+0'},
+        {name: 'accession', width: 'auto', sort_by: '+0'},
     ],
 
     columnsOptions: {
@@ -43,7 +43,20 @@ let View = AdvancedTable.extend({
             event: 'selectBatchAction',
             fixed: true
         },
-        // 'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-batch-details'},
+        'type': {
+            label: _t('Type'),
+            width: 'auto',
+            minWidth: true,
+            custom: 'batchActionTypeCell',
+            field: 'name'
+        },
+        'accession': {
+            label: _t('Accession'),
+            width: 'auto',
+            minWidth: true,
+            custom: 'accessionCell',
+            field: 'name'
+        }
     },
 
     templateContext: function () {
@@ -71,7 +84,7 @@ let View = AdvancedTable.extend({
 
         let self = this;
 
-        let contextLayout = application.getView().getChildView('right');
+        let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();

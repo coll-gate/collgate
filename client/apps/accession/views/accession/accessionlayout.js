@@ -142,7 +142,11 @@ let Layout = LayoutView.extend({
 
                 let BatchListView = require('../batch/batchlist');
                 let batchListView  = new BatchListView({
-                    collection: accessionBatches, model: accessionLayout.model, columns: data[0].value});
+                    collection: accessionBatches,
+                    model: accessionLayout.model,
+                    accessionId: accessionLayout.model.get('id'),
+                    columns: data[0].value
+                });
 
                 let contentBottomLayout = new ContentBottomLayout();
                 accessionLayout.showChildView('batches', contentBottomLayout);

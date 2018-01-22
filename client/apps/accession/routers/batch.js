@@ -36,11 +36,11 @@ let Router = Marionette.AppRouter.extend({
         });
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of batches")}));
 
-        let columns = application.main.cache.lookup({
+        let columns = window.application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.batch'}
         });
@@ -67,12 +67,12 @@ let Router = Marionette.AppRouter.extend({
         let collection = new BatchCollection({accession_id: id});
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of batches for the accession")}));
 
         // get available columns
-        let columns = application.main.cache.lookup({
+        let columns = window.application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.batch'}
         });
@@ -91,7 +91,7 @@ let Router = Marionette.AppRouter.extend({
         let batch = new BatchModel({id: id});
 
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         batch.fetch().then(function () {
             if (!defaultLayout.isRendered()) {
