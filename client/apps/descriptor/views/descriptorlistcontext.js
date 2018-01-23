@@ -19,19 +19,25 @@ let View = Marionette.View.extend({
             actions: this.getOption('actions'),
             options: {
                 'create-descriptor': {className: 'btn-default', label: _t('Create descriptor')},
-                'update-descriptor': {className: 'btn-success', label: _t('Update')}
+                'update-descriptor': {className: 'btn-success', label: _t('Update')},
+                'apply-descriptor': {className: 'btn-success', label: _t('Apply')},
+                'cancel-descriptor': {className: 'btn-default', label: _t('Cancel')}
             }
         }
     },
 
     ui: {
         'create-descriptor': 'button[name="create-descriptor"]',
-        'update-descriptor': 'button[name="update-descriptor"]'
+        'update-descriptor': 'button[name="update-descriptor"]',
+        'apply-descriptor': 'button[name="apply-descriptor"]',
+        'cancel-descriptor': 'button[name="cancel-descriptor"]'
     },
 
     triggers: {
         "click @ui.create-descriptor": "descriptor:create",
-        "click @ui.update-descriptor": "descriptor:update"
+        "click @ui.update-descriptor": "descriptor:update",
+        "click @ui.apply-descriptor": "descriptor:apply",
+        "click @ui.cancel-descriptor": "descriptor:cancel"
     },
 
     initialize: function(options) {

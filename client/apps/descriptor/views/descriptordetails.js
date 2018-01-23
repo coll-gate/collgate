@@ -22,11 +22,15 @@ let View = Marionette.View.extend({
         code: '#descriptor_type_code',
         description: '#descriptor_type_description',
         format_type: '#format_type',
-        save: '#save'
+        save: '#save',
+        apply: '#apply',
+        cancel: '#cancel'
     },
 
     events: {
         'click @ui.save': 'saveDescriptor',
+        'click @ui.apply': 'saveDescriptor',
+        'click @ui.cancel': 'cancelDescriptor',
         'input @ui.name': 'inputName',
         'change @ui.format_type': 'changeFormatType'
     },
@@ -50,7 +54,13 @@ let View = Marionette.View.extend({
         let actions = [];
 
         if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && this.model.get('can_modify')) {
-            actions.push('update-descriptor');
+
+            if (view.model.isNew()) {
+                actions.push('cancel-descriptor');
+                actions.push('apply-descriptor');
+            } else {
+                actions.push('update-descriptor');
+            }
         }
 
         if (actions.length) {
@@ -61,12 +71,33 @@ let View = Marionette.View.extend({
             contextView.on("descriptor:update", function () {
                 view.saveDescriptor();
             });
+            contextView.on("descriptor:apply", function () {
+                view.saveDescriptor();
+            });
+            contextView.on("descriptor:cancel", function () {
+                view.cancelDescriptor();
+            });
+
         } else {
             application.main.defaultRightView();
         }
     },
 
+    cancelDescriptor: function () {
+        Backbone.history.loadUrl();
+        this.destroy()
+
+    },
+
     onRender: function () {
+
+        if (this.model.isNew()) {
+            this.ui.save.hide();
+        } else {
+            this.ui.apply.hide();
+            this.ui.cancel.hide();
+        }
+
         let format = this.model.get('format');
         let content_el = null;
 
@@ -150,7 +181,7 @@ let View = Marionette.View.extend({
             format: format,
             description: description
         }, {wait: true}).done(function () {
-            $.alert.success(_t("Done"));
+            $.alert.success(_t("Done"))
         });
     }
 });
