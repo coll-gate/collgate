@@ -30,9 +30,6 @@ class BatchActionMultiplication(BatchActionController):
         naming_constants = self.naming_constants(name_builder.num_constants, accession, batch_action_type)
         descriptors_map = {}      # @todo from config
 
-        if input_batches is None:
-            input_batches = []
-
         try:
             with transaction.atomic():
                 batch_action = BatchAction()
@@ -50,13 +47,12 @@ class BatchActionMultiplication(BatchActionController):
                 batch_action.save()
 
                 # batch_layout = self.batch_layout(accession)
-                in_batches = Batch.objects.find(pk__in=input_batches)
 
                 # setup input batch
-                batch_action.input_batches = in_batches
+                batch_action.input_batches.add(*input_batches)
 
                 # for each input batch create one output batch
-                for in_batch in in_batches:
+                for in_batch in input_batches:
                     batch = Batch()
                     batch.name = name_builder.pick(self.naming_variables(accession), naming_constants)
 
@@ -67,8 +63,9 @@ class BatchActionMultiplication(BatchActionController):
                     # @todo update configured descriptors (date, type...)
                     batch.save()
 
-                batch_action.output_batches.add(batch)
+                    batch_action.output_batches.add(batch)
 
+                return batch_action
         except IntegrityError:
             raise Exception("Unable to create an new action (%s)" % self.type_format.name)
 

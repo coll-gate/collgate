@@ -318,6 +318,9 @@ class BatchActionTypeFormatMultiplication(BatchActionTypeFormat):
         self.verbose_name = _("Multiplication")
         self.format_fields = ["type"]
 
+        from accession.batchactions.multiplication import BatchActionMultiplication
+        self._controller = BatchActionMultiplication
+
     def validate(self, batch_action_type_format, value):
         """
         Validate the value according the format.

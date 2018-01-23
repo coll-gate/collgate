@@ -61,6 +61,7 @@ class BatchActionCreation(BatchActionController):
 
                 batch_action.output_batches.add(batch)
 
+                return batch_action
         except IntegrityError as e:
             raise Exception("Unable to create an new action (%s)" % self.type_format.name)
 

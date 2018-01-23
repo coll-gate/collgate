@@ -94,6 +94,7 @@ let View = AdvancedTable.extend({
         let PanelBatchListContextView = require('./batchlistcontext');
         let contextView = new PanelBatchListContextView({
             actions: actions,
+            advancedTable: self,
             accessionId: self.accessionId
         });
 

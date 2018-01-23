@@ -158,6 +158,12 @@ class Accession(DescribableEntity):
     def natural_name(self):
         return self.name
 
+    def details(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }
+
     @classmethod
     def make_search_by_name(cls, term):
         return Q(name__istartswith=term)
@@ -367,6 +373,9 @@ class BatchActionType(Entity):
     class Meta:
         verbose_name = _("batch action type")
 
+    def natural_name(self):
+        return self.get_label()
+
     @classmethod
     def get_defaults_columns(cls):
         return {
@@ -473,8 +482,7 @@ class BatchAction(Entity):
                 'query': True,
                 'format': {
                     'type': 'entity',
-                    'model': 'accession.batchactiontype',
-                    'details': True
+                    'model': 'accession.batchactiontype'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
@@ -484,8 +492,7 @@ class BatchAction(Entity):
                 'query': True,
                 'format': {
                     'type': 'entity',
-                    'model': 'accession.accession',
-                    'details': True
+                    'model': 'accession.accession'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             }

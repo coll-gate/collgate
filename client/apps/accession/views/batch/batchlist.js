@@ -85,7 +85,12 @@ let View = AdvancedTable.extend({
         ];
 
         let BatchListContextView = require('./batchlistcontext');
-        let contextView = new BatchListContextView({actions: actions, accessionId: self.accessionId});
+        let contextView = new BatchListContextView({
+            actions: actions,
+            advancedTable: self,
+            accessionId: self.accessionId
+        });
+
         contextLayout.showChildView('content', contextView);
 
         contextView.on("panel:create", function () {

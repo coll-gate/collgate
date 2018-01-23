@@ -27,19 +27,20 @@ let View = Marionette.View.extend({
     },
 
     ui: {
-         'create-panel': 'button[name="create-panel"]',
+        'create-panel': 'button[name="create-panel"]',
         'link-to-panel': 'button[name="link-to-panel"]',
         'unlink-batches': 'button[name="unlink-batches"]'
     },
 
     triggers: {
-         "click @ui.create-panel": "panel:create",
+        "click @ui.create-panel": "panel:create",
         "click @ui.link-to-panel": "panel:link-batches",
         "click @ui.unlink-batches": "batches:unlink"
     },
 
     initialize: function (options) {
         this.accessionId = options.accessionId || -1;
+        this.advancedTable = options.advancedTable || null;
     },
 
     onRender: function () {
@@ -70,6 +71,20 @@ let View = Marionette.View.extend({
         let accessionId = this.getOption("accessionId");
         let inputBatches = [];  // @todo
 
+        if (this.advancedTable && this.advancedTable.getSelection) {
+            let selection = this.advancedTable.getSelection('select');
+            if (typeof selection === "boolean") {
+                if (selection) {
+                    // how to support that, need many input collection on server side ...
+                    // inputBatches = advancedTable.collection.models
+                } else {
+                    inputBatches = null;
+                }
+            } else {
+                inputBatches = selection;
+            }
+        }
+
         $.ajax({
             type: "POST",
             url: window.application.url(['accession', 'batchaction']),
@@ -81,7 +96,7 @@ let View = Marionette.View.extend({
                 "batches": inputBatches
             })
         }).done(function(data) {
-
+            // @todo
         });
     }
 });

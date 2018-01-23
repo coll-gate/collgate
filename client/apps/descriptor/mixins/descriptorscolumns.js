@@ -54,7 +54,8 @@ let DescriptorsColumnsView = {
                     let cell = childView.$el.find('td[name="' + columnName + '"]');
 
                     if (options.custom) {
-                        childView[options.custom](cell);
+                        let value = model.get(columnName);
+                        childView[options.custom](cell, value);
                     }
 
                     if (cellClassName) {

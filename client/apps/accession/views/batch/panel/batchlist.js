@@ -59,13 +59,13 @@ let View = AdvancedTable.extend({
     },
 
     onShowTab: function () {
-        let view = this;
+        let self = this;
 
-        let contextLayout = application.getView().getChildView('right');
+        let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().showChildView('right', contextLayout);
+            window.application.getView().showChildView('right', contextLayout);
         }
 
         let TitleView = require('../../../../main/views/titleview');
@@ -80,25 +80,29 @@ let View = AdvancedTable.extend({
             'unlink-batches'
         ];
 
-        let PanelBatchListContextView = require('../batchlistcontext');
-        let contextView = new PanelBatchListContextView({actions: actions});
+        let BatchListContextView = require('../batchlistcontext');
+        let contextView = new BatchListContextView({
+            actions: actions,
+            advancedTable: self
+        });
+
         contextLayout.showChildView('content', contextView);
 
         contextView.on("panel:create", function () {
-            view.onCreatePanel();
+            self.onCreatePanel();
         });
         contextView.on("panel:link-batches", function () {
-            view.onLinkToPanel();
+            self.onLinkToPanel();
         });
         contextView.on("batches:unlink", function () {
-            view.onUnlinkBatches();
+            self.onUnlinkBatches();
         });
 
         View.__super__.onShowTab.apply(this, arguments);
     },
 
     onBeforeDetach: function () {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },
 
     onUnlinkBatches: function () {
@@ -146,13 +150,13 @@ let View = AdvancedTable.extend({
             console.error("Panel layout view is missing: updateAmount() can not find amount badge to update");
             return
         }
+
         $.ajax({
-                type: 'GET',
-                url: window.application.url(['accession', 'batchpanel', this.model.id, 'batches', 'count']),
-                dataType: 'json',
-                contentType: "application/json; charset=utf-8"
-            }
-        ).done(function (data) {
+            type: 'GET',
+            url: window.application.url(['accession', 'batchpanel', this.model.id, 'batches', 'count']),
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8"
+        }).done(function (data) {
             panelLayoutView.model.set('batches_amount', data.count);
             panelLayoutView.updateBatchesAmount(data.count);
         });
@@ -162,12 +166,14 @@ let View = AdvancedTable.extend({
         if (!this.getSelection('select')) {
             $.alert.warning(_t("No batch selected"));
         } else {
-            application.accession.controllers.batchpanel.create(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+            window.application.accession.controllers.batchpanel.create(
+                this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
         }
     },
 
     onLinkToPanel: function () {
-        application.accession.controllers.batchpanel.linkBatches(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+        window.application.accession.controllers.batchpanel.linkBatches(
+            this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
     }
 });
 

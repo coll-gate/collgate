@@ -1,7 +1,7 @@
 /**
  * @file batchactionlist.js
  * @brief Batch actions list for a specific batch
-  * @author Frederic SCHERMA (INRA UMR1095)
+ * @author Frederic SCHERMA (INRA UMR1095)
  * @date 2018-01-19
  * @copyright Copyright (c) 2018 INRA/CIRAD
  * @license MIT (see LICENSE file)
@@ -22,7 +22,7 @@ let View = AdvancedTable.extend({
     className: "batch-action-list advanced-table-container",
     childView: BatchActionView,
     childViewContainer: 'tbody.entity-list',
-    userSettingVersion: '1.1',
+    userSettingVersion: '1.0',
 
     userSettingName: function () {
         return 'batch_action_list_columns';
@@ -47,14 +47,12 @@ let View = AdvancedTable.extend({
             label: _t('Type'),
             width: 'auto',
             minWidth: true,
-            custom: 'batchActionTypeCell',
             field: 'name'
         },
         'accession': {
             label: _t('Accession'),
             width: 'auto',
             minWidth: true,
-            custom: 'accessionCell',
             field: 'name'
         }
     },

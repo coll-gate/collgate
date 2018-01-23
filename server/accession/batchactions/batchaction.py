@@ -42,13 +42,24 @@ class RestBatchIdBatchActionCount(RestBatchIdBatchAction):
     suffix = 'count'
 
 
+# @todo how to precise which collection when boolean ? temporary panel ?
 @RestBatchAction.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
             "accession": {"type": "number"},
             "type": {"type": "number"},
-            "batches": {"type": "array", "minItems": 0, "maxItems": 32768,
-                        "additionalItems": {"type": "number"}, "items": []}
+            "batches": {
+                "type": [{
+                    "type": "object",
+                    "properties": {
+                        "op": {"type": "string", "enum": ['in', 'notin']},
+                        "term": {"type": "string"},
+                        "value": {"type": "array", "minItems": 0, "maxItems": 32768, "additionalItems": {"type": "number"}, "items": []}
+                    },
+                }, {
+                    "type": "boolean"
+                }]
+            }
         },
     }, perms={
         'accession.add_batchaction': _("You are not allowed to create an action for a batch")
@@ -57,14 +68,21 @@ class RestBatchIdBatchActionCount(RestBatchIdBatchAction):
 def create_batch_action(request):
     accession_id = int_arg(request.data.get('accession'))
     batch_action_type_id = int_arg(request.data.get('type'))
-    batches_id_list = request.data.get('batches')
+    batches = request.data.get('batches')
 
     user = request.user
 
     accession = get_object_or_404(Accession, pk=accession_id)
     batch_action_type = get_object_or_404(BatchActionType, pk=batch_action_type_id)
 
-    input_batches = Batch.objects.filter(id__in=batches_id_list)
+    if batches and type(batches) is bool:
+        # @todo
+        input_batches = None
+    else:
+        if batches["op"] == "in":
+            input_batches = Batch.objects.filter(id__in=batches["value"])
+        elif batches["op"] == "notin":
+            input_batches = Batch.objects.all().exclude(id__in=batches["value"])
 
     batch_action_type_format = BatchActionTypeFormatManager.get(batch_action_type.format.get('type'))
     batch_action = batch_action_type_format.controller().create(batch_action_type, accession, user, input_batches)

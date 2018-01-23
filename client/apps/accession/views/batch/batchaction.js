@@ -75,37 +75,6 @@ let View = Marionette.View.extend({
 
     onDeleteBatchAction: function () {
         alert("@todo");
-    },
-
-    accessionCell: function (td, value) {
-        console.log(value)
-        if (value && value.accession) {
-            td.popupcell('init', {
-                label: value.name,
-                className: 'accession',
-                type: 'entity',
-                format: {
-                    model: 'accession.accession',
-                    details: true
-                },
-                value: value.id
-            });
-        }
-    },
-
-    batchActionTypeCell: function (td, value) {
-        if (value && value.type) {
-            /*td.popupcell('init', {
-                label: value.name,
-                className: 'batchaction',
-                type: 'entity',
-                format: {
-                    model: 'accession.batchaction',
-                    details: true
-                },
-                value: value.id
-            });*/
-        }
     }
 });
 

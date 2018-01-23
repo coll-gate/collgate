@@ -100,6 +100,7 @@ let View = AdvancedTable.extend({
             let AccessionBatchesContextView = require('./batchlistcontext');
             let contextView = new AccessionBatchesContextView({
                 actions: actions,
+                advancedTable: self,
                 accessionId: self.accessionId
             });
 

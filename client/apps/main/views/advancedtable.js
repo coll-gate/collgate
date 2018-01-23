@@ -20,7 +20,7 @@ const EXPONENT_MAP = {
     5: '⁶',
     6: '⁷',
     7: '⁸',
-    9: '⁹'
+    8: '⁹'
 };
 /*
 let TableBody = Marionette.CollectionView.extend({
