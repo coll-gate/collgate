@@ -843,7 +843,7 @@ def add_descriptor_for_layout(request, layout_id, pan_id):
     panels[int(pan_id)]['descriptors'].append(d)
     layout.save()
 
-    d['position'] = len(panels[int(pan_id)]['descriptors']) -1
+    d['position'] = len(panels[int(pan_id)]['descriptors']) - 1
     d['id'] = new_descriptor.id
 
     return HttpResponseRest(request, d)

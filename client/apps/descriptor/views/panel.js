@@ -57,7 +57,7 @@ let View = Marionette.CompositeView.extend({
                 panel_index: this.model.attributes.id
             });
 
-            this.listenTo(this.collection, 'change', this.render, this);
+            // this.listenTo(this.collection, 'add', this.render, this);
             // this.listenTo(this.collection, 'add', this.collection.fetch(), this);
             this.collection.fetch();
         },
@@ -378,27 +378,31 @@ let View = Marionette.CompositeView.extend({
                     let view = this;
 
                     let selected_values = view.ui.type_select.val();
-                    let descriptormodel_list = [];
-                    let i;
-                    for (i = 0; i < selected_values.length; i++) {
-                        let data = selected_values[i];
-                        let option_values = JSON.parse(data);
-                        let layoutDescriptor = new LayoutDescriptorModel({
-                            // id: option_values[1],
-                            name: option_values[0]
-                        }, {
-                            layout_id: view.collection.model_id
-                            // group_id: selected_values[0]
-                        });
-                        // layoutDescriptor.save();
-                        descriptormodel_list.push(layoutDescriptor);
-                        // view.collection.create(layoutDescriptor)
-                    }
 
-                    view.collection.add(descriptormodel_list);
-                    // view.collection.fetch();
+                    let saveLayoutDescriptors = function (i) {
+                        if (i < selected_values.length) {
+                            let data = selected_values[i];
+                            let option_values = JSON.parse(data);
+                            let layoutDescriptor = new LayoutDescriptorModel({
+                                name: option_values[0],
+                                label: option_values[0]
+                            }, {
+                                collection: view.collection
+                            });
 
-                    addDescriptorDialog.destroy()
+                            view.collection.create(layoutDescriptor, {
+                                success: function () {
+                                    i++;
+                                    saveLayoutDescriptors(i)
+                                }
+                            })
+                        } else {
+                            console.log('END!');
+                        }
+                    };
+
+                    saveLayoutDescriptors(0);
+                    addDescriptorDialog.destroy();
                 }
             });
 

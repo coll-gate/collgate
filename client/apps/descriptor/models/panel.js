@@ -17,7 +17,7 @@ let Model = Backbone.Model.extend({
         if (this.isNew()) {
             return window.application.url(['descriptor', 'layout', model_id, 'panel']);
         } else {
-            return window.application.url(['descriptor', 'layout', model_id, 'panel', this.get('id')]);
+            return window.application.url(['descriptor', 'layout', model_id, 'panel', this.get('position')]);
         }
     },
 
