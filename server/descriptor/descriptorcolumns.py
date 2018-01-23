@@ -96,7 +96,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
                     descriptor.format['display_fields'] = dft.display_fields
 
                 if (dft.column_display is True and not mode) or (dft.search_display is True and mode == 'search'):
-                    columns['#' + descriptor.name] = {
+                    columns['#' + descriptor.code] = {
                         'group_name': descriptor.group_name,
                         'label': descriptor.get_label(),
                         'query': query,
@@ -138,7 +138,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
 
             # if column.get('column_display', True):
             if (column.get('column_display', True) and not mode) or (
-                        column.get('search_display', True) and mode == 'search'):
+                    column.get('search_display', True) and mode == 'search'):
                 columns[name] = {
                     'group_name': descriptor_group_name,
                     'field': column.get('field', None),
@@ -155,7 +155,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     }
 
     # cache for 1 day
-    cache_manager.set('entity_columns', cache_name, results, 60*60*24)
+    cache_manager.set('entity_columns', cache_name, results, 60 * 60 * 24)
 
     return HttpResponseRest(request, results)
 
@@ -186,8 +186,9 @@ def get_description(model):
             for descriptor in panel.get('descriptors'):
                 descriptor = Descriptor.objects.get(name=descriptor.get('name'))
                 dft = DescriptorFormatTypeManager.get(descriptor.format)
-                results[descriptor.name] = {
-                    'name': descriptor.name,
+                results[descriptor.code] = {
+                    'name': descriptor.code,  # todo: Refactoring variable name from "name" to "code"!
+                    # 'code': descriptor.code,
                     'label': descriptor.get_label(),
                     # 'index': descriptor.index,
                     'handler': dft,
