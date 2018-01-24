@@ -15,7 +15,7 @@ from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from permission.utils import get_permissions_for
 
-from .models import Accession
+from .models import Accession, Batch, BatchView
 from .accession import RestAccessionId
 
 from django.utils.translation import ugettext_lazy as _
@@ -24,6 +24,11 @@ from django.utils.translation import ugettext_lazy as _
 class RestAccessionIdBatch(RestAccessionId):
     regex = r'^batch/$'
     name = 'batch'
+
+
+class RestAccessionIdBatchCount(RestAccessionIdBatch):
+    regex = r'^count/$'
+    name = 'count'
 
 
 class RestAccessionIdBatchSearch(RestAccessionIdBatch):
@@ -37,30 +42,41 @@ class RestAccessionIdBatchSearch(RestAccessionIdBatch):
 })
 def accession_batches_list(request, acc_id):
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
     accession = get_object_or_404(Accession, id=int(acc_id))
 
     # check permission on accession object
-    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model,
-                                accession.pk)
+    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model, accession.pk)
     if 'accession.get_accession' not in perms:
         raise PermissionDenied(_('Invalid permission to access to this accession'))
 
-    if cursor:
-        cursor = json.loads(cursor)
-        cursor_name, cursor_id = cursor
-        batches = accession.batches.filter(Q(name__gt=cursor_name))
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
     else:
-        batches = accession.batches.all()
+        order_by = sort_by
 
-    batches = batches.order_by('name')[:limit]
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Batch)
 
-    items_list = []
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
 
-    for batch in batches:
-        b = {
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.filter(accession=accession.id)
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+
+    batch_list = []
+
+    for batch in cq:
+        a = {
             'id': batch.pk,
             'name': batch.name,
             'accession': batch.accession_id,
@@ -68,26 +84,48 @@ def accession_batches_list(request, acc_id):
             'descriptors': batch.descriptors
         }
 
-        items_list.append(b)
-
-    if len(items_list) > 0:
-        # prev cursor (asc order)
-        obj = items_list[0]
-        prev_cursor = (obj['name'], obj['id'])
-
-        # next cursor (asc order)
-        obj = items_list[-1]
-        next_cursor = (obj['name'], obj['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
+        batch_list.append(a)
 
     results = {
         'perms': [],
-        'items': items_list,
-        'prev': prev_cursor,
+        'items': batch_list,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestAccessionIdBatchCount.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_accession': _("You are not allowed to get an accession"),
+    'accession.list_batch': _("You are not allowed to list batches for an accession")
+})
+def accession_batches_list_count(request, acc_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+
+    # check permission on accession object
+    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model, accession.pk)
+    if 'accession.get_accession' not in perms:
+        raise PermissionDenied(_('Invalid permission to access to this accession'))
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Batch)
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.filter(accession=accession.id)
+
+    count = cq.count()
+
+    results = {
+        'count': count
     }
 
     return HttpResponseRest(request, results)

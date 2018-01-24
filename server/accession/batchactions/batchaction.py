@@ -72,11 +72,15 @@ def create_batch_action(request):
 
     user = request.user
 
-    accession = get_object_or_404(Accession, pk=accession_id)
+    if accession_id > 0:
+        accession = get_object_or_404(Accession, pk=accession_id)
+    else:
+        accession = None
+
     batch_action_type = get_object_or_404(BatchActionType, pk=batch_action_type_id)
 
-    if batches and type(batches) is bool:
-        # @todo
+    if batches is not None and type(batches) is bool:
+        # @todo from which collection ?
         input_batches = None
     else:
         if batches["op"] == "in":

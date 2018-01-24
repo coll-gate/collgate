@@ -66,10 +66,11 @@ let View = Marionette.View.extend({
         });
     },
 
+
     onCreateAction: function(e) {
         let val = parseInt($(e.target).selectpicker().val());
         let accessionId = this.getOption("accessionId");
-        let inputBatches = [];  // @todo
+        let inputBatches = false;
 
         if (this.advancedTable && this.advancedTable.getSelection) {
             let selection = this.advancedTable.getSelection('select');
@@ -77,8 +78,6 @@ let View = Marionette.View.extend({
                 if (selection) {
                     // how to support that, need many input collection on server side ...
                     // inputBatches = advancedTable.collection.models
-                } else {
-                    inputBatches = null;
                 }
             } else {
                 inputBatches = selection;

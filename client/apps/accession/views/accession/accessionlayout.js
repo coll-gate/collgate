@@ -16,6 +16,7 @@ let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
 let ContentBottomFooterLayout = require('../../../main/views/contentbottomfooterlayout');
 let EntityPathView = require('../../../classification/views/entitypath');
 let AccessionDescriptorEditView = require('./accessiondescriptoredit');
+let EntityListFilterView = require('../../../descriptor/views/entitylistfilter');
 
 let Layout = LayoutView.extend({
     template: require("../../templates/accessionlayout.html"),
@@ -130,7 +131,7 @@ let Layout = LayoutView.extend({
             let accessionBatches = new BatchCollection([], {accession_id: this.model.get('id')});
 
             // get available columns
-            let columns1 = application.main.cache.lookup({
+            let columns1 = window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'accession.batch'}
             });
@@ -148,11 +149,19 @@ let Layout = LayoutView.extend({
                     columns: data[0].value
                 });
 
-                let contentBottomLayout = new ContentBottomLayout();
-                accessionLayout.showChildView('batches', contentBottomLayout);
+                let contentBottomFooterLayout = new ContentBottomFooterLayout();
+                accessionLayout.showChildView('batches', contentBottomFooterLayout);
 
-                contentBottomLayout.showChildView('content', batchListView);
-                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchListView}));
+                contentBottomFooterLayout.showChildView('content', batchListView);
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                    targetView: batchListView,
+                    collection: accessionBatches
+                }));
+
+                contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
+                    collection: accessionBatches,
+                    columns: data[0].value
+                }));
             });
 
             // classifications entry tab
@@ -160,7 +169,7 @@ let Layout = LayoutView.extend({
             let accessionClassificationEntries = new AccessionClassificationEntryCollection([], {accession_id: this.model.get('id')});
 
             // get available columns
-            let columns2 = application.main.cache.lookup({
+            let columns2 = window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'classification.classificationentry'}
             });
@@ -189,7 +198,7 @@ let Layout = LayoutView.extend({
             let accessionPanels = new PanelCollection({accession_id: this.model.get('id')});
 
             // get available columns
-            let columns3 = application.main.cache.lookup({
+            let columns3 = window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'accession.accessionpanel'}
             });

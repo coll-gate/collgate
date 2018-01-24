@@ -63,6 +63,7 @@ class BatchActionMultiplication(BatchActionController):
                     # @todo update configured descriptors (date, type...)
                     batch.save()
 
+                    batch.batches.add(in_batch)
                     batch_action.output_batches.add(batch)
 
                 return batch_action

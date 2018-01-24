@@ -34,11 +34,6 @@ class RestBatch(RestAccession):
     name = 'batch'
 
 
-class RestBatchNaming(RestBatch):
-    regex = r'^naming/$'
-    name = 'naming'
-
-
 class RestBatchSearch(RestBatch):
     regex = r'^search/$'
     suffix = 'search'
@@ -62,23 +57,6 @@ class RestBatchIdBatch(RestBatchId):
 class RestBatchIdParent(RestBatchId):
     regex = r'^parent/$'
     suffix = 'parent'
-
-
-@RestBatchNaming.def_auth_request(Method.GET, Format.JSON)
-def get_batch_naming(request):
-    """
-    Generate a new unique batch name. !!!
-    @todo not that !!! name is generated at creation, cannot be seen before ! same for accession ! remove that !
-    """
-    name = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH).pick({}, [""])
-
-    result = {
-        'name': name,
-        'app_label': "accession",
-        'model': "batch"
-    }
-
-    return HttpResponseRest(request, result)
 
 
 @RestBatchId.def_auth_request(Method.GET, Format.JSON)

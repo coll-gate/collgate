@@ -47,7 +47,8 @@ let Router = Marionette.AppRouter.extend({
 
         columns.done(function (data) {
             let batchListView = new BatchListView({
-                collection: collection, columns: data[0].value,
+                collection: collection,
+                columns: data[0].value,
                 onRender: function () {
                     this.onShowTab();
                 }
@@ -78,7 +79,11 @@ let Router = Marionette.AppRouter.extend({
         });
 
         $.when(columns, collection.fetch()).then(function (data) {
-            let batchListView = new BatchListView({collection: collection, columns: data[0].value});
+            let batchListView = new BatchListView({
+                collection: collection,
+                columns: data[0].value,
+                accessionId: id
+            });
 
             defaultLayout.showChildView('content', batchListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: batchListView}));
