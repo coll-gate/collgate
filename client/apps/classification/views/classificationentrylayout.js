@@ -37,7 +37,7 @@ let Layout = LayoutView.extend({
     initialize: function(options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:descriptor_meta_model', this.onLayoutChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onClassificationEntryCreate, this);
@@ -75,7 +75,7 @@ let Layout = LayoutView.extend({
         this.ui.related_tab.parent().removeClass('disabled');
     },
 
-    onDescriptorMetaModelChange: function(model, value) {
+    onLayoutChange: function(model, value) {
         if (value === null) {
             this.getRegion('descriptors').empty();
             // let ClassificationEntryDescriptorCreateView = require('./classificationentrydescriptorcreate');
@@ -198,7 +198,7 @@ let Layout = LayoutView.extend({
                     targetView: classificationEntryListView, collection: classificationEntryRelated}));
             });
 
-            this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+            this.onLayoutChange(this.model, this.model.get('descriptor_meta_model'));
             this.enableTabs();
         } else {
             // details views

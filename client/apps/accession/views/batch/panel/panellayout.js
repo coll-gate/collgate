@@ -34,7 +34,7 @@ let Layout = LayoutView.extend({
     initialize: function (options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:descriptor_meta_model', this.onLayoutChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onPanelCreate, this);
@@ -66,7 +66,7 @@ let Layout = LayoutView.extend({
         this.ui.batches_tab.parent().removeClass('disabled');
     },
 
-    onDescriptorMetaModelChange: function (model, value) {
+    onLayoutChange: function (model, value) {
         let panelLayout = this;
         if (value == null) {
             let BatchPanelDescriptorCreateView = require('./paneldescriptorcreate');
@@ -158,7 +158,7 @@ let Layout = LayoutView.extend({
             }
         });
 
-        this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+        this.onLayoutChange(this.model, this.model.get('descriptor_meta_model'));
         this.enableTabs();
     }
 });

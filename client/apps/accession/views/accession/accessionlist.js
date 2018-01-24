@@ -16,7 +16,7 @@ let View = AdvancedTable.extend({
     className: 'accession-list advanced-table-container',
     childView: AccessionView,
     userSettingName: 'accessions_list_columns',
-    userSettingVersion: '1.1',
+    userSettingVersion: '1.0',
 
     defaultColumns: [
         {name: 'select', width: 'auto', sort_by: null},

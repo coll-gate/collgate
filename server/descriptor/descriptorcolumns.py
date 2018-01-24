@@ -187,8 +187,8 @@ def get_description(model):
                 descriptor = Descriptor.objects.get(name=descriptor.get('name'))
                 dft = DescriptorFormatTypeManager.get(descriptor.format)
                 results[descriptor.code] = {
-                    'name': descriptor.code,  # todo: Refactoring variable name from "name" to "code"!
-                    # 'code': descriptor.code,
+                    'code': descriptor.code,
+                    'name': descriptor.name,
                     'label': descriptor.get_label(),
                     # 'index': descriptor.index,
                     'handler': dft,

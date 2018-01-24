@@ -5,14 +5,15 @@
  * @date 2016-12-19
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 let DescribableDetails = require('../../../descriptor/views/describabledetails');
 let AccessionDescriptorEditView = require('./accessiondescriptoredit');
+let DescriptorCollection = require('../../../descriptor/collections/descriptor');
 
 let View = DescribableDetails.extend({
-    onShowTab: function() {
+    onShowTab: function () {
         let view = this;
 
         let contextLayout = application.getView().getChildView('right');
@@ -36,7 +37,7 @@ let View = DescribableDetails.extend({
         });
     },
 
-    onHideTab: function() {
+    onHideTab: function () {
         application.main.defaultRightView();
     },
 
@@ -45,9 +46,21 @@ let View = DescribableDetails.extend({
 
         // update the layout content
         let accessionLayout = application.main.viewContent().getChildView('content');
+        let view = this;
 
-        let view = new AccessionDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
-        accessionLayout.showChildView('descriptors', view);
+        this.descriptorCollection = new DescriptorCollection([], {
+            model_id: view.descriptorMetaModelLayout.id
+        });
+
+        this.descriptorCollection.fetch().then(function () {
+            let accessionDescriptorEditView = new AccessionDescriptorEditView({
+                model: view.model,
+                descriptorMetaModelLayout: view.descriptorMetaModelLayout,
+                descriptorCollection: view.descriptorCollection
+
+            });
+            accessionLayout.showChildView('descriptors', accessionDescriptorEditView);
+        });
     }
 });
 

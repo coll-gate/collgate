@@ -31,7 +31,7 @@ let Layout = LayoutView.extend({
     initialize: function(options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:descriptor_meta_model', this.onLayoutChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onEstablishmentCreate, this);
@@ -46,7 +46,7 @@ let Layout = LayoutView.extend({
         Backbone.history.navigate('app/organisation/establishment/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
     },
 
-    onDescriptorMetaModelChange: function(model, value) {
+    onLayoutChange: function(model, value) {
         if (value == null) {
             this.getRegion('descriptors').empty();
         } else {

@@ -5,7 +5,7 @@
  * @date 2016-12-20
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 let ItemView = require('../../main/views/itemview');
@@ -15,10 +15,19 @@ let View = ItemView.extend({
     template: require('../templates/describabledetails.html'),
 
     templateContext: function () {
+        let result = {};
+
+        let i;
+        for (i = 0; i < this.descriptorCollection.length; i++) {
+            let model = this.descriptorCollection.models[i];
+            result[model.get('name')] = model.attributes;
+        }
+
         return {
-            panels: this.descriptorMetaModelLayout.panels,
-            target: this.descriptorMetaModelLayout.target
-        };
+            panels: this.descriptorMetaModelLayout.layout_content.panels,
+            target: this.descriptorMetaModelLayout.target,
+            descriptors_data: result
+        }
     },
 
     ui: {
@@ -27,37 +36,37 @@ let View = ItemView.extend({
         "showDescriptorHistory": "span.show-descriptor-history"
     },
 
-    triggers: {
-    },
+    triggers: {},
 
     events: {
         "click @ui.modify": "onModify",
         "click @ui.showDescriptorHistory": "onShowDescriptorHistory"
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
         View.__super__.initialize.apply(this);
 
         this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
-
+        this.descriptorCollection = options.descriptorCollection;
         this.listenTo(this.model, 'change:descriptors', this.render, this);
     },
 
-    onRender: function() {
+    onRender: function () {
         let view = this;
         let model = this.model;
-        let descriptors = model.get('descriptors');
+        // let descriptors = model.get('descriptors');
 
-        $.each(this.ui.descriptor, function(index) {
+        $.each(this.ui.descriptor, function (index) {
             let el = $(this);
 
             let pi = el.attr('panel-index');
             let i = el.attr('index');
-            let descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-            let descriptorType = descriptorModelType.descriptor_type;
-            let format = descriptorType.format;
+            let id = el.attr('descriptor');
+            let descriptorType = view.descriptorCollection.get(id);
+            // let descriptorType = descriptorModelType.descriptor_type;
+            let format = descriptorType.get('format');
 
-            let values = model.get('descriptors')[descriptorModelType.name];
+            let values = (model.get('descriptors')[descriptorType.get('code')] ? model.get('descriptors')[descriptorType.get('code')] : null);
 
             let widget = application.descriptor.widgets.newElement(format.type);
             if (widget) {
@@ -69,25 +78,25 @@ let View = ItemView.extend({
 
                 widget.set(format, true, values, {
                     descriptorTypeId: descriptorType.id,
-                    descriptorModelType: descriptorModelType
+                    descriptorModelType: descriptorType.attributes
                 });
             }
 
             // save the descriptor format type widget instance
-            descriptorModelType.widget = widget;
+            descriptorType.widget = widget;
         });
     },
 
-    onDomRefresh: function() {
-        for (let pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (let i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                let descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+    onDomRefresh: function () {
+        for (let pi = 0; pi < this.descriptorMetaModelLayout.layout_content.panels.length; ++pi) {
+            for (let i = 0; i < this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors.length; ++i) {
+                let descriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
                 let condition = descriptorModelType.condition;
 
-                if (condition.defined) {
+                if (condition && condition.defined) {
                     // search the target descriptor type for the condition
                     let target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    let targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+                    let targetDescriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[target.attr('panel-index')].descriptors[target.attr('index')];
 
                     // initial state of the condition
                     let display = true;
@@ -107,11 +116,11 @@ let View = ItemView.extend({
         }
     },
 
-    onBeforeDetach: function() {
+    onBeforeDetach: function () {
         // destroy any widgets
-        for (let pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (let i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                let descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (let pi = 0; pi < this.descriptorMetaModelLayout.layout_content.panels.length; ++pi) {
+            for (let i = 0; i < this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors.length; ++i) {
+                let descriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.destroy();
                 }
@@ -123,23 +132,23 @@ let View = ItemView.extend({
 
     },
 
-    onShowHistory: function() {
+    onShowHistory: function () {
         // @todo
         alert("@todo");
     },
 
-    onShowDescriptorHistory: function(e) {
+    onShowDescriptorHistory: function (e) {
         let tr = $(e.target).closest("tr");
         let panelIndex = tr.attr("panel-index");
         let index = tr.attr("index");
 
-        let dmt = this.descriptorMetaModelLayout.panels[panelIndex].descriptor_model.descriptor_model_types[index];
+        let dmt = this.descriptorMetaModelLayout.layout_content.panels[panelIndex].descriptor_model.descriptor_model_types[index];
         if (dmt && dmt.widget) {
             let tokens = this.model.url().split('/');
 
-            let appLabel = tokens[tokens.length-4];
-            let modelName = tokens[tokens.length-3];
-            let objectId = tokens[tokens.length-2];
+            let appLabel = tokens[tokens.length - 4];
+            let modelName = tokens[tokens.length - 3];
+            let objectId = tokens[tokens.length - 2];
             let valueName = '#' + dmt.name;
 
             let options = {};

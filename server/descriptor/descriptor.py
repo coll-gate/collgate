@@ -1917,7 +1917,7 @@ def get_some_display_values_for_descriptor_model_type(request, dmt_name):
     """
     Returns all the value of the related type of model of descriptor.
     """
-    dmt = get_object_or_404(Descriptor, code=dmt_name)
+    dmt = get_object_or_404(Descriptor, name=dmt_name)
 
     limit = 100
     format_type = dmt.format
