@@ -30,7 +30,9 @@ let View = DescribableEdit.extend({
         let AccessionDescriptorView = require('./accessiondescriptor');
         let accessionDescriptorView = new AccessionDescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+            descriptorMetaModelLayout: view.descriptorMetaModelLayout,
+            descriptorCollection: view.descriptorCollection
+        });
 
         accessionLayout.showChildView('descriptors', accessionDescriptorView);
     },

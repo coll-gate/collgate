@@ -10,7 +10,6 @@
 
 let DescribableDetails = require('../../../descriptor/views/describabledetails');
 let AccessionDescriptorEditView = require('./accessiondescriptoredit');
-let DescriptorCollection = require('../../../descriptor/collections/descriptor');
 
 let View = DescribableDetails.extend({
     onShowTab: function () {
@@ -48,19 +47,14 @@ let View = DescribableDetails.extend({
         let accessionLayout = application.main.viewContent().getChildView('content');
         let view = this;
 
-        this.descriptorCollection = new DescriptorCollection([], {
-            model_id: view.descriptorMetaModelLayout.id
-        });
+        let accessionDescriptorEditView = new AccessionDescriptorEditView({
+            model: view.model,
+            descriptorMetaModelLayout: view.descriptorMetaModelLayout,
+            descriptorCollection: view.descriptorCollection
 
-        this.descriptorCollection.fetch().then(function () {
-            let accessionDescriptorEditView = new AccessionDescriptorEditView({
-                model: view.model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout,
-                descriptorCollection: view.descriptorCollection
-
-            });
-            accessionLayout.showChildView('descriptors', accessionDescriptorEditView);
         });
+        accessionLayout.showChildView('descriptors', accessionDescriptorEditView);
+
     }
 });
 

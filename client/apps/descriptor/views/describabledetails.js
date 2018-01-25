@@ -17,11 +17,14 @@ let View = ItemView.extend({
     templateContext: function () {
         let result = {};
 
-        let i;
-        for (i = 0; i < this.descriptorCollection.length; i++) {
-            let model = this.descriptorCollection.models[i];
-            result[model.get('name')] = model.attributes;
+        if (this.descriptorCollection) {
+            let i;
+            for (i = 0; i < this.descriptorCollection.length; i++) {
+                let model = this.descriptorCollection.models[i];
+                result[model.get('name')] = model.attributes;
+            }
         }
+
 
         return {
             panels: this.descriptorMetaModelLayout.layout_content.panels,
@@ -142,7 +145,8 @@ let View = ItemView.extend({
         let panelIndex = tr.attr("panel-index");
         let index = tr.attr("index");
 
-        let dmt = this.descriptorMetaModelLayout.layout_content.panels[panelIndex].descriptor_model.descriptor_model_types[index];
+        let dmt = this.descriptorMetaModelLayout.layout_content.panels[panelIndex].descriptors[index];
+        dmt = this.descriptorCollection.findWhere({name: dmt.name});
         if (dmt && dmt.widget) {
             let tokens = this.model.url().split('/');
 

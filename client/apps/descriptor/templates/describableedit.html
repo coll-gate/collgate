@@ -30,7 +30,7 @@
                             <tbody>
                                 <% var i = 0; %>
                                 <% _.each(panel.descriptors, function(layoutdescriptor) { %>
-                                    <% var descriptor = descriptors_data[layoutdescriptor.name]; console.log(layoutdescriptor);%>
+                                    <% var descriptor = descriptors_data[layoutdescriptor.name];%>
                                     <% var format = descriptor.format; %>
                                     <% var mandatory = descriptor.mandatory ? "mandatory-field" : ""; %>
                                     <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor.id %>" code="<%= descriptor.code %>">

@@ -64,6 +64,11 @@ class RestDescriptorDescriptorIdValue(RestDescriptorDescriptorId):
     suffix = 'value'
 
 
+class RestDescriptorDescriptorIdValueDisplay(RestDescriptorDescriptorIdValue):
+    regex = r'^display/$'
+    suffix = 'display'
+
+
 class RestDescriptorDescriptorIdValueId(RestDescriptorDescriptorIdValue):
     regex = r'^(?P<val_id>[a-zA-Z0-9:_\.]+)/$'
     suffix = 'id'
@@ -1369,9 +1374,9 @@ def get_value_for_descriptor(request, typ_id, val_id):
 #     }
 #
 #     return HttpResponseRest(request, result)
-#
-#
-# @RestDescriptorGroupIdTypeIdValueIdDisplay.def_auth_request(Method.GET, Format.JSON)
+
+
+# @RestDescriptorDescriptorIdValueIdDisplay.def_auth_request(Method.GET, Format.JSON)
 # def get_display_value_for_descriptor_type_and_group(request, typ_id, val_id):
 #     """
 #     Get a single value for a type of descriptor.
@@ -1697,74 +1702,74 @@ def get_value_for_descriptor(request, typ_id, val_id):
 #             })
 #
 #     return HttpResponseRest(request, values)
-#
-#
-# @cache_page(60 * 60 * 24)
-# @RestDescriptorTypeIdValueDisplay.def_auth_request(Method.GET, Format.JSON)
-# def get_all_display_values_for_descriptor_type(request, typ_id):
-#     """
-#     Returns all the value of the related type of descriptor order and formatted as described.
-#     """
-#     dt = get_object_or_404(Descriptor, id=int(typ_id))
-#
-#     limit = 30
-#
-#     format_type = dt.format
-#     list_type = format_type.get('list_type', '')
-#
-#     # safe limitation
-#     if not list_type:
-#         raise SuspiciousOperation(_("This type of descriptor does not contains a list"))
-#     elif list_type == 'dropdown':
-#         limit = 512
-#     elif list_type == 'autocomplete':
-#         raise SuspiciousOperation(_("List of values are not available for drop-down"))
-#
-#     sort_by = format_type.get('sortby_field', 'id')
-#     values = []
-#
-#     c, n, values_list = dt.get_values(sort_by, False, None, limit)
-#
-#     if format_type['display_fields'] == 'value0':
-#         for value in values_list:
-#             values.append({
-#                 'id': value['id'],
-#                 'value': value['id'],
-#                 'label': value['value0']
-#             })
-#     elif format_type['display_fields'] == 'value1':
-#         for value in values_list:
-#             values.append({
-#                 'id': value['id'],
-#                 'value': value['id'],
-#                 'label': value['value1']
-#             })
-#     elif format_type['display_fields'] == 'value0-value1':
-#         for value in values_list:
-#             values.append({
-#                 'id': value['id'],
-#                 'value': value['id'],
-#                 'label': "%s - %s" % (value['value0'], value['value1'])
-#             })
-#     elif format_type['display_fields'] == 'ordinal-value0':
-#         for value in values_list:
-#             values.append({
-#                 'id': value['id'],
-#                 'value': value['id'],
-#                 'label': "%i - %s" % (value['ordinal'], value['value0'])
-#             })
-#     elif format_type['display_fields'] == 'hier0-value1':
-#         for value in values_list:
-#             shift_size = value['value0'].count('.')
-#
-#             values.append({
-#                 'id': value['id'],
-#                 'value': value['id'],
-#                 'label': value['value1'],
-#                 'offset': shift_size
-#             })
-#
-#     return HttpResponseRest(request, values)
+
+
+@cache_page(60 * 60 * 24)
+@RestDescriptorDescriptorIdValueDisplay.def_auth_request(Method.GET, Format.JSON)
+def get_all_display_values_for_descriptor_type(request, typ_id):
+    """
+    Returns all the value of the related type of descriptor order and formatted as described.
+    """
+    dt = get_object_or_404(Descriptor, id=int(typ_id))
+
+    limit = 30
+
+    format_type = dt.format
+    list_type = format_type.get('list_type', '')
+
+    # safe limitation
+    if not list_type:
+        raise SuspiciousOperation(_("This type of descriptor does not contains a list"))
+    elif list_type == 'dropdown':
+        limit = 512
+    elif list_type == 'autocomplete':
+        raise SuspiciousOperation(_("List of values are not available for drop-down"))
+
+    sort_by = format_type.get('sortby_field', 'id')
+    values = []
+
+    c, n, values_list = dt.get_values(sort_by, False, None, limit)
+
+    if format_type['display_fields'] == 'value0':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value0']
+            })
+    elif format_type['display_fields'] == 'value1':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value1']
+            })
+    elif format_type['display_fields'] == 'value0-value1':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': "%s - %s" % (value['value0'], value['value1'])
+            })
+    elif format_type['display_fields'] == 'ordinal-value0':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': "%i - %s" % (value['ordinal'], value['value0'])
+            })
+    elif format_type['display_fields'] == 'hier0-value1':
+        for value in values_list:
+            shift_size = value['value0'].count('.')
+
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value1'],
+                'offset': shift_size
+            })
+
+    return HttpResponseRest(request, values)
 #
 #
 # @RestDescriptorDescriptorSearch.def_auth_request(Method.GET, Format.JSON, parameters=('value',))

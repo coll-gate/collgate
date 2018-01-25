@@ -51,7 +51,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.groupEl = this._createInputGroup(parent, "fa-list", select, options.history);
 
                 // init the autocomplete
-                let url = window.application.url(['descriptor', 'type', options.descriptorTypeId]);
+                let url = window.application.url(['descriptor', 'descriptor', options.descriptorTypeId]);
                 let initials = [];
 
                 let container = parent.closest('div.modal-dialog').parent();
@@ -121,7 +121,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
                 // init the selectpicker
-                let url = window.application.url(['descriptor', 'type', options.descriptorTypeId]);
+                let url = window.application.url(['descriptor', 'descriptor', options.descriptorTypeId]);
 
                 // refresh values (@todo could be cached but how)
                 this.promise = $.ajax({
@@ -209,7 +209,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        let url = window.application.url(['descriptor', 'type', options.descriptorTypeId]);
+        let url = window.application.url(['descriptor', 'descriptor', options.descriptorTypeId]);
 
         if (this.readOnly) {
             let type = this;
