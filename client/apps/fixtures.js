@@ -5,11 +5,17 @@
  * @date 2017-06-29
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details
+ * @details https://github.com/select2/select2/issues/4614
  */
 
 (function($) {
     $.fn.fixSelect2Position = function (el) {
+        $(this).data('select2').on('results:message', function (params) {
+            this.dropdown._resizeDropdown();
+            this.dropdown._positionDropdown();
+        });
+    };
+    /*$.fn.fixSelect2Position = function (el) {
         $(this).on('select2:open', function (e) {
             let sel = $(this).parent().find('.select2-container');
             let el = $(sel.get(0));
@@ -27,5 +33,5 @@
                 dropdown.css('top', (top + el.height()) + 'px');
             }
         });
-    };
+    };*/
 })(jQuery);

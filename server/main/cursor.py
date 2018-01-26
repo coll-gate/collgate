@@ -8,11 +8,13 @@
 # @license MIT (see LICENSE file)
 # @details
 
+import re
+import datetime
+
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models, ProgrammingError, connection
 from django.db.models import prefetch_related_objects
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
-import re
 
 from django.utils import translation
 
@@ -203,6 +205,9 @@ class CursorQuery(object):
             elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
                 self.model_fields[field.name] = ('INTEGER', 'INTEGER', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
+            elif type(field) is models.fields.DateTimeField:
+                self.model_fields[field.name] = ('DATETIME', 'DATETIME', field.null)
+                self.query_select.append('"%s"."%s"' % (db_table, field.name))
             elif type(field) is JSONField:
                 self.model_fields[field.name] = ('JSON', 'JSON', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
@@ -381,6 +386,11 @@ class CursorQuery(object):
                     return "0"
                 else:
                     return "NULL"
+            elif field_data[1] == 'DATETIME':
+                if field_data[2]:
+                    return "'1900-01-01 00:00:00'::timestamp"
+                else:
+                    return "NULL"
             else:
                 if field_data[2]:
                     return "''"
@@ -403,6 +413,9 @@ class CursorQuery(object):
                 return "0"
             else:
                 return "NULL"
+        elif field_data[1] == 'DATETIME':
+            dt = datetime.datetime.strptime(value.replace("'", "''"), '%Y-%m-%d %H:%M:%S')
+            return "'" + dt.strftime('%Y-%m-%d %H:%M:%S') + "'::timestamp"
         else:
             return "'" + value.replace("'", "''") + "'"
 
@@ -852,24 +865,36 @@ class CursorQuery(object):
             return 'FALSE'
 
         if field_model[2]:  # is null
-            if field_model[0] == 'FK':  # @todo and lookup on db model field name ?
+            if field_model[0] == 'FK':
                 return 'COALESCE("%s"."%s_id", %s) %s %s' % (
                     table_name, field_name, coalesce_value, operator, final_value)
+
             elif field_model[0] == 'JSON':
                 return 'COALESCE("%s"."%s"->>\'%s\', %s) %s %s' % (
                     table_name, field_name, sub_field_name, coalesce_value, operator, final_value)
+
+            elif field_model[0] == 'DATETIME':  # timestamp at precision at seconds
+                return 'date_trunc(\'seconds\', "%s"."%s") %s %s' % (
+                    table_name, field_name, operator, final_value)
+
             else:
                 return 'COALESCE("%s"."%s", %s) %s %s' % (
                     table_name, field_name, coalesce_value, operator, final_value)
         else:
             if field_model[0] == 'FK':
                 return '"%s"."%s_id" %s %s' % (table_name, field_name, operator, final_value)
+
             elif field_model[0] == 'JSON':
                 return '"%s"."%s"->>\'%s\' %s %s' % (
                     table_name, field_name, sub_field_name, operator, final_value)
 
+            elif field_model[0] == 'DATETIME':  # timestamp at precision at seconds
+                return 'date_trunc(\'seconds\', "%s"."%s") %s %s' % (
+                    table_name, field_name, operator, final_value)
+
             elif field_model[0] == 'ARRAY' and isinstance(operator, list) and operator[0] == 'NOT':
                 return 'NOT "%s"."%s" %s %s' % (table_name, field_name, operator[1], final_value)
+
             else:
                 return '"%s"."%s" %s %s' % (table_name, field_name, operator, final_value)
 

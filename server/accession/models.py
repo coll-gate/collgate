@@ -491,6 +491,14 @@ class Action(Entity):
     @classmethod
     def get_defaults_columns(cls):
         return {
+            'created_date': {
+                'label': _('Date'),
+                'query': False,
+                'format': {
+                    'type': 'datetime',
+                },
+                'available_operators': ['lte', 'gte', 'eq', 'neq']
+            },
             'type': {
                 'label': _('Type'),
                 'field': 'name',
@@ -499,7 +507,7 @@ class Action(Entity):
                     'type': 'entity',
                     'model': 'accession.actiontype'
                 },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+                'available_operators': ['eq', 'neq', 'in', 'notin']
             },
             'accession': {
                 'label': _('Accession'),
@@ -509,7 +517,7 @@ class Action(Entity):
                     'type': 'entity',
                     'model': 'accession.accession'
                 },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+                'available_operators': ['eq', 'neq', 'in', 'notin']
             }
         }
 

@@ -36,7 +36,7 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
             this.groupEl = this._createInputGroup(parent, "fa-calendar-times-o", input, options.history);
 
             input.datetimepicker({
-                locale: session.language,
+                locale: window.session.language,
                 format: $.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss',  // 24h
                 showTodayButton: true,
                 showClear: true,
@@ -134,7 +134,7 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
                 let date = this.el.data('DateTimePicker').date();
                 if (date != null) {
                     // format to iso datetime
-                    return date.format();
+                    return date.format("YYYY-MM-DD HH:mm:ss");
                 } else {
                     return null;
                 }

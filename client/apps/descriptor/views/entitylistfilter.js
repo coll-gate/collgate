@@ -18,6 +18,7 @@ let View = Marionette.View.extend({
     ui: {
         filter_btn: 'button.entity-filter',
         entity_field: 'select.entity-field',
+        operator: 'select[name=operator]',
         search_value: 'input.search-value',
         search_group: 'div.search-value-group'
     },
@@ -25,6 +26,7 @@ let View = Marionette.View.extend({
     events: {
         'click @ui.filter_btn': 'onFilter',
         'change @ui.entity_field': 'onChangeField',
+        'change @ui.operator': 'onChangeOperator',
         'input @ui.search_value': 'onSearchValue'
     },
 
@@ -51,6 +53,7 @@ let View = Marionette.View.extend({
             return a.label.localeCompare(b.label);
         });
 
+        let defaultField = false;
         for (let c in columnsByLabel) {
             let column = columnsByLabel[c];
 
@@ -58,12 +61,20 @@ let View = Marionette.View.extend({
             option.attr('value', column.name);
 
             this.ui.entity_field.append(option);
+
+            if (column.name === "name") {
+                defaultField = true;
+            }
         }
 
-        $(this.ui.entity_field).selectpicker({
+        this.ui.entity_field.selectpicker({
             style: 'btn-default',
             container: 'body'
-        }).selectpicker('val', 'name');
+        });
+
+        if (defaultField) {
+            this.ui.entity_field.selectpicker('val', 'name');
+        }
 
         // initial
         this.onChangeField();
@@ -72,7 +83,7 @@ let View = Marionette.View.extend({
     onFilter: function () {
         if (this.validateSearchValue()) {
             let field = this.ui.entity_field.val();
-            let op = "eq";
+            let op = this.ui.operator.val();
             let value = null;
 
             if (field === "name" || field === "@label") {
@@ -85,7 +96,7 @@ let View = Marionette.View.extend({
                 value = this.$el.find(".search-value").val().trim();
             }
 
-            if (value !== null) {
+            if (value !== null || op === "isnull" || op === "notnull") {
                 this.collection.filters = [{
                     type: 'term',
                     field: field,
@@ -142,8 +153,45 @@ let View = Marionette.View.extend({
         this.ui.search_value.cleanField();
         this.ui.search_group.empty();
 
+        let operators_labels = {
+            'isnull': _t('Undefined'),
+            'notnull': _t('Defined'),
+            'eq': _t('Exact'),
+            'neq': _t('Different from'),
+            'in': _t('Include'),
+            'notin': _t('Not include'),
+            'icontains': _t('Contains'),
+            'lte': _t('Lesser than'),
+            'gte': _t('Greater than'),
+            'contains': _t('belong to (intersection)'),
+            'not_contains': _t('Not belong to (intersection)'),
+            'overlap': _t('Belong to (union)'),
+            'not_overlap': _t('Not belong to (union)'),
+            'contained_by': _t('Contained by'),
+            'not_contained_by': _t('Not contained by')
+        };
+
+        let operators = column.available_operators || ['eq', 'neq'];
+        this.ui.operator.children('option').remove();
+
+        if (operators) {
+            for (let i = 0; i < operators.length; i++) {
+                let operator_code = operators[i];
+                this.ui.operator.append('<option value="' + operator_code + '">' + operators_labels[operator_code] + '</option>');
+            }
+
+            this.ui.operator.selectpicker('refresh');
+            if (operators) {
+                if (operators.includes('eq')) {
+                    this.ui.operator.selectpicker().selectpicker('val', 'eq');
+                } else {
+                    this.ui.operator.selectpicker().selectpicker('val', operators[0]);
+                }
+            }
+        }
+
         if (column.format) {
-            this.widget = application.descriptor.widgets.newElement(column.format.type);
+            this.widget = window.application.descriptor.widgets.newElement(column.format.type);
             if (this.widget) {
                 this.widget.create(column.format, this.ui.search_group, {
                     readOnly: false,
@@ -162,6 +210,53 @@ let View = Marionette.View.extend({
             this.widget = null;
         }
 
+        // or default input
+        let input = $('<input type="text" class="search-value form-control" name="search-value"/>');
+        this.ui.search_group.append(input);
+
+        input.on('keydown', function(e) {
+            if (e.keyCode === 13) {
+               self.onFilter();
+            }
+        }).on('input', $.proxy(this.onSearchValue, this));
+    },
+
+    onChangeOperator: function() {
+        let self = this;
+        let field = this.ui.entity_field.val();
+        let column = this.getOption('columns')[field] || {};
+        let op = this.ui.operator.val();
+
+        if (this.widget) {
+            this.widget.destroy();
+            this.widget = null;
+        }
+
+        this.ui.search_value.cleanField();
+        this.ui.search_group.empty();
+
+        if (column.format) {
+            this.widget = window.application.descriptor.widgets.newElement(column.format.type);
+            if (this.widget) {
+                this.widget.create(column.format, this.ui.search_group, {
+                    multiple: op === "in" || op === "notin",
+                    readOnly: false,
+                    descriptorTypeId: column.type
+                });
+
+                this.widget.el.on('keydown', function(e) {
+                    if (e.keyCode === 13) {
+                       self.onFilter();
+                    }
+                }).on('input', $.proxy(this.onSearchValue, this));
+
+                return;
+            }
+
+            this.widget = null;
+        }
+
+        // or default input
         let input = $('<input type="text" class="search-value form-control" name="search-value"/>');
         this.ui.search_group.append(input);
 

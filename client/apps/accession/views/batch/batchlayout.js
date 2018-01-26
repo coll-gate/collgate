@@ -12,7 +12,9 @@ let LayoutView = require('../../../main/views/layout');
 let AccessionModel = require('../../models/accession');
 let ScrollingMoreView = require('../../../main/views/scrollingmore');
 let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
+let ContentBottomFooterLayout = require('../../../main/views/contentbottomfooterlayout');
 let BatchDescriptorEditView = require('./batchdescriptoredit');
+let EntityListFilterView = require('../../../descriptor/views/entitylistfilter');
 
 let Layout = LayoutView.extend({
     template: require("../../templates/batchlayout.html"),
@@ -140,7 +142,7 @@ let Layout = LayoutView.extend({
                     columns: data[0].value
                 });
 
-                let contentBottomFooterLayout = new ContentBottomLayout();
+                let contentBottomFooterLayout = new ContentBottomFooterLayout();
                 batchLayout.showChildView('parents', contentBottomFooterLayout);
 
                 contentBottomFooterLayout.showChildView('content', batchListView);
@@ -270,11 +272,16 @@ let Layout = LayoutView.extend({
                         collection: actions, model: batchLayout.model, columns: data[0].value
                     });
 
-                    let contentBottomLayout = new ContentBottomLayout();
-                    batchLayout.showChildView('actions', contentBottomLayout);
+                    let contentBottomFooterLayout = new ContentBottomFooterLayout();
+                    batchLayout.showChildView('actions', contentBottomFooterLayout);
 
-                    contentBottomLayout.showChildView('content', actionListView);
-                    contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: actionListView}));
+                    contentBottomFooterLayout.showChildView('content', actionListView);
+                    contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: actionListView}));
+
+                    contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
+                        collection: actions,
+                        columns: data[0].value
+                    }));
 
                     // batchActionListView.query(); here or $.when
                 });

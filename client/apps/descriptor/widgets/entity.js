@@ -27,7 +27,8 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
         options || (options = {
             history: false,
             readOnly: false,
-            multiple: false
+            multiple: false,
+            container: undefined
         });
 
         if (options.readOnly) {
@@ -49,7 +50,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
                 let container = parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
-                    container = this.groupEl;  // parent.closest('div.panel');
+                    container = options.container ? options.container : this.groupEl;  // parent.closest('div.panel');
                 }
 
                 let params = {

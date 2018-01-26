@@ -123,6 +123,7 @@ def get_batch_id_action_list(request, bat_id):
 
     # @todo filter for action relating this batch as input...
     cq.join('input_batches')
+    # cq.filter(input_batches__in=int(bat_id))
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -134,7 +135,7 @@ def get_batch_id_action_list(request, bat_id):
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
-    print(cq.sql())
+    # print(cq.sql())
     batch_action_list = []
 
     for action in cq:
@@ -142,7 +143,8 @@ def get_batch_id_action_list(request, bat_id):
             'id': action.id,
             'accession': action.accession_id,
             'type': action.type_id,
-            'data': action.data
+            'data': action.data,
+            'created_date': action.created_date.strftime("%Y-%m-%d %H:%M:%S")
         }
 
         batch_action_list.append(a)
@@ -159,12 +161,12 @@ def get_batch_id_action_list(request, bat_id):
 
 
 @RestBatchIdActionCount.def_auth_request(Method.GET, Format.JSON, perms={
-    'accession.list_batchaction': _("You are not allowed to list the batch actions")
+    'accession.list_action': _("You are not allowed to list the actions")
 })
 def get_batch_id_action_list_count(request, bat_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(Action)
-    return 0
+
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
         cq.filter(search)
@@ -173,8 +175,11 @@ def get_batch_id_action_list_count(request, bat_id):
         filters = json.loads(request.GET['filters'])
         cq.filter(filters)
 
+    # @todo filter for action relating this batch as input...
+    cq.join('input_batches')
+
     count = cq.count()
-    cq.filter(input_batches__in=int(bat_id))
+    # cq.filter(input_batches__in=int(bat_id))
 
     results = {
         'count': count
