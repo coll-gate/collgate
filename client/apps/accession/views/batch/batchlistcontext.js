@@ -47,7 +47,7 @@ let View = Marionette.View.extend({
         let self = this;
 
         let createAction = $('<select name="action-type" data-width="100%" data-style="btn-success" title="' + _t('Create an action') + '"></select>');
-        let BatchActionTypeCollection = require('../../collections/batchactiontype');
+        let BatchActionTypeCollection = require('../../collections/actiontype');
 
         let batchActionTypeCollection = new BatchActionTypeCollection();
         batchActionTypeCollection.fetch({}).done(function (data) {
@@ -86,7 +86,7 @@ let View = Marionette.View.extend({
 
         $.ajax({
             type: "POST",
-            url: window.application.url(['accession', 'batchaction']),
+            url: window.application.url(['accession', 'action']),
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({

@@ -1,6 +1,6 @@
 /**
  * @file complement.js
- * @brief Display and manage a complement format of type of batch-action
+ * @brief Display and manage a complement format of type of action
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-19
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -8,22 +8,22 @@
  * @details
  */
 
-let BatchActionFormatType = require('./batchactiontypeformat');
+let ActionFormatType = require('./actiontypeformat');
 let Marionette = require('backbone.marionette');
 
 let Format = function() {
-    BatchActionFormatType.call(this);
+    ActionFormatType.call(this);
 
     this.name = "complement";
     this.group = "standard";
 };
 
-_.extend(Format.prototype, BatchActionFormatType.prototype, {
+_.extend(Format.prototype, ActionFormatType.prototype, {
 
 });
 
-Format.BatchActionTypeFormatDetailsView = Marionette.View.extend({
-    className: 'batchactiontype-format-details-format',
+Format.ActionTypeFormatDetailsView = Marionette.View.extend({
+    className: 'action-format-details-format',
     template: require('../templates/actions/complement.html'),
 
     initialize: function() {

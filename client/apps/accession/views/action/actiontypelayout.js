@@ -1,6 +1,6 @@
 /**
- * @file batchactiontypelayout.js
- * @brief Optimized layout for batch action details
+ * @file actiontypelayout.js
+ * @brief Optimized layout for action details
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-07
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -9,12 +9,12 @@
  */
 
 let LayoutView = require('../../../main/views/layout');
-let BatchActionTypeModel = require('../../models/batchactiontype');
+let ActionTypeModel = require('../../models/actiontype');
 let ScrollingMoreView = require('../../../main/views/scrollingmore');
 let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
 
 let Layout = LayoutView.extend({
-    template: require("../../templates/batchactiontype/layout.html"),
+    template: require("../../templates/actiontype/layout.html"),
 
     attributes: {
         style: "height: 100%;"
@@ -23,7 +23,7 @@ let Layout = LayoutView.extend({
     ui: {
         configuration_tab: 'a[aria-controls=configuration]',
         accessions_tab: 'a[aria-controls=accessions]',
-        format_type: 'select.batch-action-type-format-type',
+        format_type: 'select.action-type-format-type',
         description: 'textarea[name=description]',
         config_save: 'button[name=save]'
     },
@@ -53,7 +53,7 @@ let Layout = LayoutView.extend({
         this.render();
 
         // and update history
-        Backbone.history.navigate('app/accession/batchactiontype/' + this.model.get('id') + '/', {
+        Backbone.history.navigate('app/accession/actiontype/' + this.model.get('id') + '/', {
             /*trigger: true,*/
             replace: false
         });
@@ -72,8 +72,8 @@ let Layout = LayoutView.extend({
 
         // update the contextual region according to the format
         let Element = window.application.accession.actions.getElement(formatType);
-        if (Element && Element.BatchActionTypeFormatDetailsView) {
-            this.showChildView('contextual', new Element.BatchActionTypeFormatDetailsView({model: this.model}));
+        if (Element && Element.ActionTypeFormatDetailsView) {
+            this.showChildView('contextual', new Element.ActionTypeFormatDetailsView({model: this.model}));
         } else {
             this.getRegion('contextual').empty();
         }
@@ -83,23 +83,23 @@ let Layout = LayoutView.extend({
         let format = this.model.get('format');
         let batchLayout = this;
 
-        window.application.accession.views.batchActionTypeFormats.drawSelect(
+        window.application.accession.views.actionTypeFormats.drawSelect(
             this.ui.format_type, true, false, format.type || 'creation');
 
         if (!this.model.isNew()) {
             // configuration tab
             let Element = window.application.accession.actions.getElement(format.type || 'creation');
-            let batchActionFormatType = new Element.BatchActionTypeFormatDetailsView({model: this.model});
+            let actionFormatType = new Element.ActionTypeFormatDetailsView({model: this.model});
             this.ui.format_type.prop('disabled', true).selectpicker('refresh');
 
-            batchLayout.showChildView('contextual', batchActionFormatType);
+            batchLayout.showChildView('contextual', actionFormatType);
 
             this.enableTabs();
         } else {
             let Element = window.application.accession.actions.getElement(format.type || 'creation');
-            let batchActionFormatType = new Element.BatchActionTypeFormatDetailsView({model: this.model});
+            let actionFormatType = new Element.ActionTypeFormatDetailsView({model: this.model});
 
-            batchLayout.showChildView('contextual', batchActionFormatType);
+            batchLayout.showChildView('contextual', actionFormatType);
 
             // not available tabs
             this.disableAccessionsTab();
@@ -150,12 +150,12 @@ let Layout = LayoutView.extend({
             if (model.isNew()) {
                 model.save({description: description, format: format}, {wait: true}).then(function () {
                     $.alert.success(_t("Successfully changed !"));
-                    Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
+                    Backbone.history.navigate('app/accession/actiontype/' + model.get('id') + '/', {trigger: true, replace: true});
                 });
             } else {
                 model.save({description: description, format: format}, {wait: true, patch: true}).then(function () {
                     $.alert.success(_t("Successfully changed !"));
-                    Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
+                    Backbone.history.navigate('app/accession/actiontype/' + model.get('id') + '/', {trigger: true, replace: true});
                 });
             }
         }

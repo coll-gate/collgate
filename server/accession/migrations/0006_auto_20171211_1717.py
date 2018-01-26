@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
             name='descriptor_meta_model',
         ),
         migrations.AlterField(
-            model_name='batchactiontype',
+            model_name='actiontype',
             name='format',
             field=django.contrib.postgres.fields.jsonb.JSONField(default={'type': 'undefined'}),
         ),

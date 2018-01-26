@@ -210,6 +210,13 @@ class Accession(DescribableEntity):
             'name': self.name
         }
 
+    def data(self, field=None, default=None):
+        data = self.descriptor_meta_model.parameters.get('data')
+        if data and field in data:
+            return data.get(field)
+        else:
+            return default
+
 
 class AccessionSynonym(EntitySynonym):
     """
@@ -352,9 +359,9 @@ class Batch(DescribableEntity):
         }
 
 
-class BatchActionType(Entity):
+class ActionType(Entity):
     """
-    Type of batch-action.
+    Type of action.
     """
 
     # unique name of the action
@@ -384,7 +391,7 @@ class BatchActionType(Entity):
                 'query': False,
                 'format': {
                     'type': 'string',
-                    'model': 'accession.batchactiontype'
+                    'model': 'accession.action'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
@@ -393,7 +400,7 @@ class BatchActionType(Entity):
                 'query': False,
                 'format': {
                     'type': 'string',
-                    'model': 'accession.batchactiontype'
+                    'model': 'accession.action'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
@@ -427,32 +434,40 @@ class BatchActionType(Entity):
     def on_client_cache_update(self):
         return [{
             'category': 'accession',
-            'name': "batch_action_types",
+            'name': "action_types",
             'values': None
         }]
 
     def on_server_cache_update(self):
         return [{
             'category': 'accession',
-            'name': "batch_action_types",
+            'name': "action_types",
             'values': None
         }]
 
     def in_usage(self):
-        return BatchAction.objects.filter(type_id=self.id).exists()
+        return Action.objects.filter(type_id=self.id).exists()
+
+    def data(self, field=None, default=None):
+        data = self.format.get('data')
+        if data and field in data:
+            return data.get(field)
+        else:
+            return default
 
 
-class BatchAction(Entity):
+class Action(Entity):
     """
-    A batch-action defines a process of creation or update of one or more output batches and a list of input batches
+    An action defines a process of creation or update of one or more output and a list of input batch or accessions
     altered or not modified, plus the relating accession.
+    @todo update to support accessions
     """
 
     # actor of the action
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     # action type
-    type = models.ForeignKey(to=BatchActionType, on_delete=models.PROTECT)
+    type = models.ForeignKey(to=ActionType, on_delete=models.PROTECT)
 
     # related parent accession
     accession = models.ForeignKey(Accession, db_index=True, on_delete=models.PROTECT)
@@ -467,7 +482,7 @@ class BatchAction(Entity):
     data = JSONField(default={"status": "created"})
 
     class Meta:
-        verbose_name = _("batch action")
+        verbose_name = _("action")
 
         index_together = (("accession", "type"),)
 
@@ -482,7 +497,7 @@ class BatchAction(Entity):
                 'query': True,
                 'format': {
                     'type': 'entity',
-                    'model': 'accession.batchactiontype'
+                    'model': 'accession.actiontype'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },

@@ -1,6 +1,6 @@
 /**
- * @file batchaction.js
- * @brief Batch action model view.
+ * @file action.js
+ * @brief Action model view.
  * @author Frederic SCHERMA (INRA UMR1095)
  * @date 2018-01-19
  * @copyright Copyright (c) 2018 INRA/CIRAD
@@ -12,7 +12,7 @@ let Marionette = require('backbone.marionette');
 
 let View = Marionette.View.extend({
     tagName: 'tr',
-    className: 'object batch-action element',
+    className: 'object action element',
     attributes: function () {
         return {
             'scope': 'row',
@@ -29,7 +29,7 @@ let View = Marionette.View.extend({
     },
 
     ui: {
-        details: 'td.view-batch-action-details'
+        details: 'td.view-action-details'
     },
 
     events: {
@@ -70,7 +70,7 @@ let View = Marionette.View.extend({
     },
 
     viewDetails: function () {
-        Backbone.history.navigate('app/accession/batchaction/' + this.model.get('id') + '/', {trigger: true});
+        Backbone.history.navigate('app/accession/action/' + this.model.get('id') + '/', {trigger: true});
     },
 
     onDeleteBatchAction: function () {

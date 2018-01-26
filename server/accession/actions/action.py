@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file batchaction
+# @file action
 # @brief collgate 
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2018-01-05
@@ -14,36 +14,36 @@ from django.utils.translation import ugettext_lazy as _
 
 from accession.base import RestAccession
 from accession.batch import RestBatchId
-from accession.batchactiontypeformat import BatchActionTypeFormatManager
-from accession.models import BatchAction, Accession, BatchActionType, Batch
+from accession.actiontypeformat import ActionTypeFormatManager
+from accession.models import Action, Accession, ActionType, Batch
 
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Method, Format
 from igdectk.rest.response import HttpResponseRest
 
 
-class RestBatchAction(RestAccession):
-    regex = r'^batchaction/$'
-    name = 'batchaction'
+class RestAction(RestAccession):
+    regex = r'^action/$'
+    name = 'action'
 
 
-class RestBatchActionId(RestAccession):
+class RestActionId(RestAccession):
     regex = r'^(?P<bat_id>[0-9]+)/$'
     suffix = 'id'
 
 
-class RestBatchIdBatchAction(RestBatchId):
-    regex = r'^batchaction/$'
-    suffix = 'batchaction'
+class RestBatchIdAction(RestBatchId):
+    regex = r'^action/$'
+    suffix = 'action'
 
 
-class RestBatchIdBatchActionCount(RestBatchIdBatchAction):
+class RestBatchIdActionCount(RestBatchIdAction):
     regex = r'^count/$'
     suffix = 'count'
 
 
 # @todo how to precise which collection when boolean ? temporary panel ?
-@RestBatchAction.def_auth_request(Method.POST, Format.JSON, content={
+@RestAction.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
             "accession": {"type": "number"},
@@ -62,12 +62,12 @@ class RestBatchIdBatchActionCount(RestBatchIdBatchAction):
             }
         },
     }, perms={
-        'accession.add_batchaction': _("You are not allowed to create an action for a batch")
+        'accession.add_action': _("You are not allowed to create an action")
     }
-)
-def create_batch_action(request):
+                             )
+def create_action(request):
     accession_id = int_arg(request.data.get('accession'))
-    batch_action_type_id = int_arg(request.data.get('type'))
+    action_type_id = int_arg(request.data.get('type'))
     batches = request.data.get('batches')
 
     user = request.user
@@ -77,7 +77,7 @@ def create_batch_action(request):
     else:
         accession = None
 
-    batch_action_type = get_object_or_404(BatchActionType, pk=batch_action_type_id)
+    batch_action_type = get_object_or_404(ActionType, pk=action_type_id)
 
     if batches is not None and type(batches) is bool:
         # @todo from which collection ?
@@ -88,7 +88,7 @@ def create_batch_action(request):
         elif batches["op"] == "notin":
             input_batches = Batch.objects.all().exclude(id__in=batches["value"])
 
-    batch_action_type_format = BatchActionTypeFormatManager.get(batch_action_type.format.get('type'))
+    batch_action_type_format = ActionTypeFormatManager.get(batch_action_type.format.get('type'))
     batch_action = batch_action_type_format.controller().create(batch_action_type, accession, user, input_batches)
 
     result = {
@@ -101,17 +101,17 @@ def create_batch_action(request):
     return HttpResponseRest(request, result)
 
 
-@RestBatchIdBatchAction.def_auth_request(Method.GET, Format.JSON, perms={
-    'accession.get_batchaction': _("You are not allowed to get a batch action"),
-    'accession.list_batchaction': _("You are not allowed to list the batch actions")
+@RestBatchIdAction.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_action': _("You are not allowed to get an action"),
+    'accession.list_action': _("You are not allowed to list actions")
 })
-def get_batch_action_list(request, bat_id):
+def get_batch_id_action_list(request, bat_id):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
     sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    # @todo how to manage permission to list only auth batches actions
+    # @todo how to manage permission to list only auth actions
 
     if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
         order_by = sort_by + ['id']
@@ -119,7 +119,7 @@ def get_batch_action_list(request, bat_id):
         order_by = sort_by
 
     from main.cursor import CursorQuery
-    cq = CursorQuery(BatchAction)
+    cq = CursorQuery(Action)
 
     # @todo filter for action relating this batch as input...
     cq.join('input_batches')
@@ -137,12 +137,12 @@ def get_batch_action_list(request, bat_id):
     print(cq.sql())
     batch_action_list = []
 
-    for batch_action in cq:
+    for action in cq:
         a = {
-            'id': batch_action.id,
-            'accession': batch_action.accession_id,
-            'type': batch_action.type_id,
-            'data': batch_action.data
+            'id': action.id,
+            'accession': action.accession_id,
+            'type': action.type_id,
+            'data': action.data
         }
 
         batch_action_list.append(a)
@@ -158,12 +158,12 @@ def get_batch_action_list(request, bat_id):
     return HttpResponseRest(request, results)
 
 
-@RestBatchIdBatchActionCount.def_auth_request(Method.GET, Format.JSON, perms={
+@RestBatchIdActionCount.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_batchaction': _("You are not allowed to list the batch actions")
 })
-def get_batch_list_count(request, bat_id):
+def get_batch_id_action_list_count(request, bat_id):
     from main.cursor import CursorQuery
-    cq = CursorQuery(BatchAction)
+    cq = CursorQuery(Action)
     return 0
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])

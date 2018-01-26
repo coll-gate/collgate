@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file batchaction.py
+# @file action.py
 # @brief collgate 
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2018-01-05

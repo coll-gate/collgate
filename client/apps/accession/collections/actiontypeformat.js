@@ -1,6 +1,6 @@
 /**
- * @file batchactiontypeformat.js
- * @brief Batch action type format collection
+ * @file actiontypeformat.js
+ * @brief Action type format collection
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-15
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -8,10 +8,10 @@
  * @details
  */
 
-let FormatModel = require('../models/batchactiontypeformat');
+let FormatModel = require('../models/actiontypeformat');
 
 let Collection = Backbone.Collection.extend({
-    url: window.application.url(['accession', 'batchactiontype', 'format']),
+    url: window.application.url(['accession', 'actiontype', 'format']),
     model: FormatModel,
 
     initialize: function(models, options) {

@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file batchactiontype.py
+# @file action.py
 # @brief collgate 
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-11-30
@@ -10,31 +10,31 @@
 
 import sys
 
-from accession.models import BatchActionType
+from accession.models import ActionType
 from main.api.basefactory import BaseFactory
 
 
-class BatchActionTypeFactory(BaseFactory):
+class ActionTypeFactory(BaseFactory):
 
     def __init__(self):
-        super(BatchActionTypeFactory, self).__init__()
+        super(ActionTypeFactory, self).__init__()
 
         self.name = "action_type"
-        self.model = BatchActionType
+        self.model = ActionType
 
     def create_or_update(self, manager, data, bulk=True):
-        sys.stdout.write("   + Create types of batch action...\n")
+        sys.stdout.write("   + Create types of action...\n")
 
         if type(data) is not dict:
             data = {
                 data['name']: data
             }
 
-        # create/update any type of batch action
+        # create/update any type of action
         for k, v in data.items():
             action_type_name = v['name']
 
-            action_type_model, created = BatchActionType.objects.update_or_create(
+            action_type_model, created = ActionType.objects.update_or_create(
                 name=action_type_name,
                 defaults={
                     'label': v['label'],

@@ -1,6 +1,6 @@
 /**
- * @file batchactiontype.js
- * @brief Batch action type controller
+ * @file actiontype.js
+ * @brief Action type controller
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-19
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -10,27 +10,27 @@
 
 let Marionette = require('backbone.marionette');
 
-let BatchActionTypeModel = require('../models/batchactiontype');
+let ActionTypeModel = require('../models/actiontype');
 
 let DefaultLayout = require('../../main/views/defaultlayout');
 let TitleView = require('../../main/views/titleview');
 let Dialog = require('../../main/views/dialog');
 
-let BatchActionTypeLayout = require('../views/batchactiontype/batchactiontypelayout');
+let ActionTypeLayout = require('../views/action/actiontypelayout');
 
 let Controller = Marionette.Object.extend({
 
     create: function() {
         $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.batchactiontype']),
+            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.action']),
             dataType: 'json'
         }).done(function(data) {
-            let CreateBatchActionTypeDialog = Dialog.extend({
+            let CreateActionTypeDialog = Dialog.extend({
                 attributes: {
-                    'id': 'dlg_create_batchactiontype'
+                    'id': 'dlg_create_actiontype'
                 },
-                template: require('../templates/batchactiontype/batchactiontypecreate.html'),
+                template: require('../templates/actiontype/actiontypecreate.html'),
 
                 ui: {
                     validate: "button.continue",
@@ -46,19 +46,20 @@ let Controller = Marionette.Object.extend({
                 },
 
                 initialize: function (options) {
-                    CreateBatchActionTypeDialog.__super__.initialize.apply(this);
+                    CreateActionTypeDialog.__super__.initialize.apply(this);
                 },
 
                 onRender: function () {
-                    CreateBatchActionTypeDialog.__super__.onRender.apply(this);
+                    CreateActionTypeDialog.__super__.onRender.apply(this);
 
-                    application.accession.views.batchActionTypeFormats.drawSelect(this.ui.format_type, true, false, 'creation');
+                    window.application.accession.views.actionTypeFormats.drawSelect(
+                        this.ui.format_type, true, false, 'creation');
                 },
 
                 onBeforeDestroy: function() {
                     this.ui.format_type.selectpicker('destroy');
 
-                    CreateBatchActionTypeDialog.__super__.onBeforeDestroy.apply(this);
+                    CreateActionTypeDialog.__super__.onBeforeDestroy.apply(this);
                 },
 
                 onNameInput: function () {
@@ -74,7 +75,7 @@ let Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: window.application.url(['accession', 'batchactiontype', 'search']),
+                            url: window.application.url(['accession', 'action', 'search']),
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
@@ -151,7 +152,7 @@ let Controller = Marionette.Object.extend({
                         let formatType = this.ui.format_type.val();
 
                         // create a new local model and open an edit view with this model
-                        let model = new BatchActionTypeModel({
+                        let model = new ActionTypeModel({
                             name: name,
                             label: label,
                             format: {type: formatType}
@@ -160,21 +161,21 @@ let Controller = Marionette.Object.extend({
                         view.destroy();
 
                         let defaultLayout = new DefaultLayout();
-                        application.main.showContent(defaultLayout);
+                        window.application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
                             title: _t("Batch action type"),
                             model: model
                         }));
 
-                        let batchActionTypeLayout = new BatchActionTypeLayout({model: model});
-                        defaultLayout.showChildView('content', batchActionTypeLayout);
+                        let actionTypeLayout = new ActionTypeLayout({model: model});
+                        defaultLayout.showChildView('content', actionTypeLayout);
                     }
                 }
             });
 
-            let createBatchActionTypeView = new CreateBatchActionTypeDialog();
-            createBatchActionTypeView.render();
+            let createActionTypeView = new CreateActionTypeDialog();
+            createActionTypeView.render();
         });
     }
 });

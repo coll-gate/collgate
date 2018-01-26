@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='batchactiontype',
+            model_name='actiontype',
             name='description',
             field=models.TextField(blank=True, default=''),
         ),

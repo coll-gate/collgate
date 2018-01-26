@@ -1,6 +1,5 @@
 {
   "A parent must be specified": "Un parent doit être spécifié",
-  "Accession actions": "",
   "Apply": "Appliquer",
   "Are you sure you want to delete any descriptors for this classification entry ?": "Etes-vous sûr de vouloir supprimer tout les descripteurs pour cette entrée de classification ?",
   "Cancel": "Annuler",
@@ -42,7 +41,6 @@
   "Language": "Language",
   "Level": "Niveau",
   "List of classifications": "Liste des classifications",
-  "List of classifications entries": "Liste des entrées de classification",
   "Manage ranks": "Gérer les rangs",
   "Modify": "Modifier",
   "Name": "Nom",

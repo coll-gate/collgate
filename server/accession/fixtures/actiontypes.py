@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file batchactiontypes.py
+# @file actiontypes.py
 # @brief collgate
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-11-30
@@ -8,7 +8,7 @@
 # @license MIT (see LICENSE file)
 # @details
 
-BATCH_ACTION_TYPES = {
+ACTION_TYPES = {
     'introduction': {
         'id': None,
         'name': 'introduction',
@@ -103,9 +103,9 @@ BATCH_ACTION_TYPES = {
 
 
 def fixture(fixture_manager, factory_manager):
-    from accession.api.batchactiontype import BatchActionTypeFactory
+    from accession.api.actiontype import ActionTypeFactory
 
-    factory = BatchActionTypeFactory()
+    factory = ActionTypeFactory()
     factory_manager.register(factory)
 
-    factory.create_or_update(factory_manager, BATCH_ACTION_TYPES, False)
+    factory.create_or_update(factory_manager, ACTION_TYPES, False)

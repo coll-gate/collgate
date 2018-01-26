@@ -1,5 +1,5 @@
 /**
- * @file batchactionlist.js
+ * @file actionlist.js
  * @brief Batch actions list for a specific batch
  * @author Frederic SCHERMA (INRA UMR1095)
  * @date 2018-01-19
@@ -8,19 +8,19 @@
  * @details
  */
 
-let BatchActionView = require('./batchaction');
+let ActionView = require('./action');
 let AdvancedTable = require('../../../main/views/advancedtable');
 let Dialog = require('../../../main/views/dialog');
 let DefaultLayout = require('../../../main/views/defaultlayout');
 let TitleView = require('../../../main/views/titleview');
 let DescriptorsColumnsView = require('../../../descriptor/mixins/descriptorscolumns');
 let BatchModel = require('../../models/batch');
-let BatchActionModel = require('../../models/batchaction');
+let BatchActionModel = require('../../models/action');
 
 let View = AdvancedTable.extend({
     template: require("../../../descriptor/templates/entitylist.html"),
-    className: "batch-action-list advanced-table-container",
-    childView: BatchActionView,
+    className: "action-list advanced-table-container",
+    childView: ActionView,
     childViewContainer: 'tbody.entity-list',
     userSettingVersion: '1.0',
 

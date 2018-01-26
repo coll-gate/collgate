@@ -1,6 +1,6 @@
 /**
- * @file batchactiontypeformat.js
- * @brief Base class for any batch action type format.
+ * @file actiontypeformat.js
+ * @brief Base class for any action type format.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-11
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -10,16 +10,16 @@
 
 let Marionette = require('backbone.marionette');
 
-let BatchActionTypeFormat = function() {
+let ActionTypeFormat = function() {
     this.name = "";         // format name
     this.group = "";        // related informal group name
 };
 
-BatchActionTypeFormat.prototype = {
+ActionTypeFormat.prototype = {
 };
 
-BatchActionTypeFormat.BatchActionTypeFormatDetailsView = Marionette.View.extend({
-    className: 'batchactiontype-format-details',
+ActionTypeFormat.ActionTypeFormatDetailsView = Marionette.View.extend({
+    className: 'action-format-details',
     template: "<div></div>",
 
     initialize: function() {
@@ -35,4 +35,4 @@ BatchActionTypeFormat.BatchActionTypeFormatDetailsView = Marionette.View.extend(
     }
 });
 
-module.exports = BatchActionTypeFormat;
+module.exports = ActionTypeFormat;

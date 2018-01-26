@@ -1,6 +1,6 @@
 /**
- * @file batchaction.js
- * @brief Batch-action model
+ * @file action.js
+ * @brief Action model
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-08
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -13,16 +13,16 @@ let Backbone = require('backbone');
 let Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return window.application.url(['accession', 'batchaction']);
+            return window.application.url(['accession', 'action']);
         else
-            return window.application.url(['accession', 'batchaction', this.get('id')]);
+            return window.application.url(['accession', 'action', this.get('id')]);
     },
 
     defaults: {
         id: 0,
         name: '',
         input_batches: [],
-        output_batched: [],
+        output_batches: [],
         accession: null,
         type: null
     },

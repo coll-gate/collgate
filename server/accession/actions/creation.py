@@ -10,29 +10,35 @@
 
 from django.db import transaction, IntegrityError
 
-from accession.batchactiontypeformat import BatchActionTypeFormatManager, BatchActionTypeFormatCreation
-from accession.batchactiontypeformat import BatchActionController
-from accession.models import BatchActionType, BatchAction, Batch
+from accession.actiontypeformat import ActionTypeFormatManager, ActionTypeFormatCreation
+from accession.actiontypeformat import ActionController
+from accession.models import ActionType, Action, Batch
 from accession.namebuilder import NameBuilderManager
 from descriptor.models import DescriptorMetaModel as Layout
 
 
-class BatchActionCreation(BatchActionController):
+class ActionCreation(ActionController):
 
-    def __init__(self, batch_action_type_format):
-        super().__init__(batch_action_type_format)
+    def __init__(self, action_type_format):
+        super().__init__(action_type_format)
 
-    def create(self, batch_action_type, accession, user, input_batches=None):
+    def create(self, action_type, accession, user, input_batches=None):
         if input_batches:
             raise Exception("This batch action does not take any batches in input")
 
+        # @todo if we prefer introduction process then accession must be null and created during this process
+
         name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
-        naming_constants = self.naming_constants(name_builder.num_constants, accession, batch_action_type)
+        naming_constants = self.naming_constants(
+            name_builder.num_constants,
+            accession.data('naming_options'),
+            action_type.data('naming_options'))
+
         descriptors_map = {}      # @todo from config
 
         try:
             with transaction.atomic():
-                batch_action = BatchAction()
+                batch_action = Action()
                 batch_action.user = user
                 batch_action.accession = accession
 
@@ -41,7 +47,7 @@ class BatchActionCreation(BatchActionController):
                     'type': self.type_format.name
                 }
 
-                batch_action.type = batch_action_type
+                batch_action.type = action_type
                 batch_action.data = data
 
                 batch_action.save()
@@ -50,7 +56,7 @@ class BatchActionCreation(BatchActionController):
 
                 # now create the initial batch
                 batch = Batch()
-                batch.name = name_builder.pick(self.naming_variables(accession), naming_constants)
+                batch.name = name_builder.pick(self.naming_variables(accession.name, accession.code), naming_constants)
 
                 batch.accession = accession
                 batch.descriptor_meta_model = batch_layout
@@ -65,5 +71,5 @@ class BatchActionCreation(BatchActionController):
         except IntegrityError as e:
             raise Exception("Unable to create an new action (%s)" % self.type_format.name)
 
-    def update(self, batch_action, user):
+    def update(self, action, user):
         pass

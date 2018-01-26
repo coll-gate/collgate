@@ -13,3 +13,7 @@ from .development import *
 LOGGING['loggers']['django.db']['level'] = 'INFO'
 
 PURGE_SERVER_CACHE = True
+
+AUDIT_MIGRATION = {
+    'USERNAME': "admin"
+}

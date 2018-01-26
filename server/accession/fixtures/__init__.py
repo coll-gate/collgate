@@ -11,7 +11,7 @@
 ORDER = [
     'sequences',
     'entitysynonymtypes',
-    'batchactiontypes',
+    'actiontypes',
     'descriptorsgroups',
     'descriptorstypes',
     'mcpdtypes',

@@ -1,5 +1,5 @@
 /**
- * @file batchactiontypelistcontext.js
+ * @file actiontypelistcontext.js
  * @brief Accession list context menu
  * @author Frederic SCHERMA (INRA UMR1095)
  * @date 2017-12-07
@@ -18,23 +18,17 @@ let View = Marionette.View.extend({
         return {
             actions: this.getOption('actions'),
             options: {
-                'create-batch-action-type': {className: 'btn-default', label: _t('Create type of action')},
-                // 'xxx': {className: 'btn-success', label: _t('XXxx')},
-                // 'yyy': {className: 'btn-default', label: _t('YYyy')}
+                'create-action-type': {className: 'btn-default', label: _t('Create type of action')}
             }
         }
     },
 
     ui: {
-        'create-batch-action-type': 'button[name="create-batch-action-type"]',
-        // 'apply': 'button[name="apply"]',
-        // 'cancel': 'button[name="cancel"]'
+        'create-action-type': 'button[name="create-action-type"]'
     },
 
     triggers: {
-        "click @ui.create-batch-action-type": "batch-action-type:create",
-        // "click @ui.apply": "describable:apply",
-        // "click @ui.cancel": "describable:cancel"
+        "click @ui.create-action-type": "action-type:create"
     },
 
     initialize: function(options) {

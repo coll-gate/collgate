@@ -1,6 +1,6 @@
 /**
- * @file batchactiontypelist.js
- * @brief Batch action type list view
+ * @file actiontypelist.js
+ * @brief Action type list view
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-01
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -8,14 +8,14 @@
  * @details
  */
 
-let BatchActionTypeView = require('./batchactiontype');
+let ActionTypeView = require('./actiontype');
 let AdvancedTable = require('../../../main/views/advancedtable');
 let DescriptorsColumnsView = require('../../../descriptor/mixins/descriptorscolumns');
 
 let View = AdvancedTable.extend({
-    className: 'batchactiontype-list advanced-table-container',
-    childView: BatchActionTypeView,
-    userSettingName: 'batchactiontype_list_columns',
+    className: 'action-list advanced-table-container',
+    childView: ActionTypeView,
+    userSettingName: 'actiontype_list_columns',
     userSettingVersion: '1.0',
 
     defaultColumns: [
@@ -24,8 +24,8 @@ let View = AdvancedTable.extend({
     ],
 
     columnsOptions: {
-        'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-batchactiontype-details'},
-        '@label': {label: _t('Label'), width: 'auto', minWidth: true, event: 'view-batchactiontype-details'},
+        'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-action-details'},
+        '@label': {label: _t('Label'), width: 'auto', minWidth: true, event: 'view-action-details'},
     },
 
     initialize: function (options) {
@@ -36,43 +36,43 @@ let View = AdvancedTable.extend({
 
     onRender: function () {
         View.__super__.onRender.apply(this, arguments);
-        //this.onShowTab();
+        this.onShowTab();
     },
 
     onShowTab: function () {
         let view = this;
 
-        let contextLayout = application.getView().getChildView('right');
+        let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().showChildView('right', contextLayout);
+            window.application.getView().showChildView('right', contextLayout);
         }
 
         let TitleView = require('../../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: _t("Actions on batch action type"), glyphicon: 'fa-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Options"), glyphicon: 'fa-wrench'}));
 
         let actions = [
-            'create-batch-action-type'
+            'create-action-type'
         ];
 
-        let ListContextView = require('./batchactiontypelistcontext');
+        let ListContextView = require('./actiontypelistcontext');
         let contextView = new ListContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
-        contextView.on("batch-action-type:create", function () {
-            view.onCreateBatchActionType();
+        contextView.on("action-type:create", function () {
+            view.onCreateActionType();
         });
 
         View.__super__.onShowTab.apply(this, arguments);
     },
 
     onBeforeDetach: function () {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },
 
-    onCreateBatchActionType: function() {
-        window.application.accession.controllers.batchactiontype.create();
+    onCreateActionType: function() {
+        window.application.accession.controllers.actiontype.create();
     }
 });
 

@@ -24,7 +24,8 @@ AccessionModule.prototype = {
         this.controllers = {};
 
         try {
-            i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/default.json'));
+            window.i18next.default.addResources(
+                window.session.language, 'default', require('./locale/' + session.language + '/default.json'));
         } catch (e) {
             console.warn("No translation found for the current language. Fallback to english language");
         }
@@ -44,11 +45,11 @@ AccessionModule.prototype = {
         }
 
         //
-        // batch action format types
+        // action format types
         //
 
-        let BatchActionFormatTypeManager = require('./actions/batchactionformattypemanager');
-        this.actions = new BatchActionFormatTypeManager();
+        let ActionFormatTypeManager = require('./actions/actionformattypemanager');
+        this.actions = new ActionFormatTypeManager();
 
         // register the standard format type of descriptors
         let actions = [
@@ -73,7 +74,7 @@ AccessionModule.prototype = {
         // cache
         //
 
-        app.main.cache.register('batch_action_types');
+        app.main.cache.register('action_types');
 
         //
         // main collections
@@ -92,23 +93,23 @@ AccessionModule.prototype = {
         });
 
         // @todo may be a cache collection or uses a cachefetcher for batch action type
-        let BatchActionTypeCollection = require('./collections/batchactiontype');
-        this.collections.batchActionTypes = new BatchActionTypeCollection();
+        let ActionTypeCollection = require('./collections/actiontype');
+        this.collections.actionTypes = new ActionTypeCollection();
 
-        this.views.batchActionTypes = new SelectOption({
-            className: 'batch-action-type',
-            collection: this.collections.batchActionTypes
+        this.views.actionTypes = new SelectOption({
+            className: 'action-type',
+            collection: this.collections.actionTypes
         });
 
         this.collections.conditionList = new Backbone.Collection();
 
-        let BatchActionTypeFormatCollection = require('./collections/batchactiontypeformat');
-        this.collections.batchActionTypeFormats = new BatchActionTypeFormatCollection();
+        let ActionTypeFormatCollection = require('./collections/actiontypeformat');
+        this.collections.actionTypeFormats = new ActionTypeFormatCollection();
 
-        this.views.batchActionTypeFormats = new SelectOption({
+        this.views.actionTypeFormats = new SelectOption({
             // sync: true,
-            className: 'batch-action-type-format',
-            collection: this.collections.batchActionTypeFormats,
+            className: 'action-type-format',
+            collection: this.collections.actionTypeFormats,
         });
 
         //
@@ -119,13 +120,13 @@ AccessionModule.prototype = {
         let BatchController = require('./controllers/batch');
         let AccessionPanelController = require('./controllers/accessionpanel');
         let BatchPanelController = require('./controllers/batchpanel');
-        let BatchActionTypeController = require('./controllers/batchactiontype');
+        let ActionTypeController = require('./controllers/actiontype');
 
         this.controllers.accession = new AccessionController();
         this.controllers.batch = new BatchController();
         this.controllers.accessionpanel = new AccessionPanelController();
         this.controllers.batchpanel = new BatchPanelController();
-        this.controllers.batchactiontype = new BatchActionTypeController();
+        this.controllers.actiontype = new ActionTypeController();
 
         //
         // routers
@@ -140,8 +141,8 @@ AccessionModule.prototype = {
         let AccessionPanelRouter = require('./routers/accessionpanel');
         this.routers.accessionpanel = new AccessionPanelRouter();
 
-        let BatchActionTypeRouter = require('./routers/batchactiontype');
-        this.routers.batchactiontype = new BatchActionTypeRouter();
+        let BatchActionTypeRouter = require('./routers/actiontype');
+        this.routers.actiontype = new BatchActionTypeRouter();
 
         let BatchPanelRouter = require('./routers/batchpanel');
         this.routers.batchpanel = new BatchPanelRouter();

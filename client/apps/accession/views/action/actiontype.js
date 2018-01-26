@@ -1,5 +1,5 @@
 /**
- * @file batchactiontype.js
+ * @file actiontype.js
  * @brief Batch action type view
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-02-15
@@ -12,7 +12,7 @@ let Marionette = require('backbone.marionette');
 
 let View = Marionette.View.extend({
     tagName: 'tr',
-    className: 'object batch-action-type element',
+    className: 'object action-type element',
     attributes: function () {
         return {
             'scope': 'row',
@@ -32,16 +32,16 @@ let View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: require('../../../main/behaviors/actionbuttonevents'),
             actions: {
-                edit: {display: true, title: _t("Rename type of batch action"), event: 'renameBatchActionType'},
+                edit: {display: true, title: _t("Rename type of action"), event: 'renameActionType'},
                 tag: {display: true, title: _t("Edit label"), event: 'editLabel'},
                 manage: {display: true, event: 'viewDetails'},
-                remove: {display: true, event: 'onDeleteBatchActionType'}
+                remove: {display: true, event: 'onDeleteActionType'}
             }
         }
     },
 
     ui: {
-        details: 'td.view-batchactiontype-details',
+        details: 'td.view-action-details',
         delete_btn: 'td.action.remove',
         edit_label_btn: 'td.action.edit-label',
         edit2_label_btn: 'td.action.rename',
@@ -51,7 +51,7 @@ let View = Marionette.View.extend({
     events: {
         'click @ui.details': 'viewDetails',
         // 'click @ui.edit_label_btn': 'editLabel',
-        // 'click @ui.edit2_label_btn': 'renameBatchActionType',
+        // 'click @ui.edit2_label_btn': 'renameActionType',
         // 'click @ui.manage_btn': 'viewDetails'
     },
 
@@ -78,10 +78,10 @@ let View = Marionette.View.extend({
     },
 
     viewDetails: function () {
-        Backbone.history.navigate('app/accession/batchactiontype/' + this.model.get('id') + '/', {trigger: true});
+        Backbone.history.navigate('app/accession/actiontype/' + this.model.get('id') + '/', {trigger: true});
     },
 
-    onDeleteBatchActionType: function () {
+    onDeleteActionType: function () {
         this.model.destroy({wait: true});
     },
 
@@ -93,18 +93,18 @@ let View = Marionette.View.extend({
         let ChangeLabel = require('../../../main/views/entitychangelabel');
         let changeLabel = new ChangeLabel({
             model: this.model,
-            title: _t("Change the labels for the type of batch action")});
+            title: _t("Change the labels for the type of action")});
 
         changeLabel.render();
 
         return false;
     },
 
-    renameBatchActionType: function() {
+    renameActionType: function() {
         let ChangeName = require('../../../main/views/entityrename');
         let changeName = new ChangeName({
             model: this.model,
-            title: _t("Rename the type of batch action")
+            title: _t("Rename the type of action")
         });
 
         changeName.render();

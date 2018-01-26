@@ -1,5 +1,5 @@
 <!--
- - @file batchactiontype/layout.html
+ - @file actiontype/layout.html
  - @brief
  - @author Frédéric SCHERMA (INRA UMR1095)
  - @date 2017-12-07
@@ -20,18 +20,18 @@
         <div role="tabpanel" class="tab-pane active" name="configuration" style="height: 100%; overflow-y: auto;">
             <div class="tab-frame">
                 <div class="row">
-                    <div class="batch-action-type-format-type-group form-group">
+                    <div class="action-type-format-type-group form-group">
                         <label><%- _t('Type of format') %></label>
-                        <select class="batch-action-type-format-type form-control"></select>
+                        <select class="action-type-format-type form-control"></select>
                     </div>
                 </div>
                 <div class="contextual-region"></div>
                 <div class="naming-options"></div>
-                <div class="batch-action-type-description form-group">
+                <div class="action-type-description form-group">
                     <label><%- _t('Description') %></label>
                     <textarea name="description" class="form-control" maxlength="1024" style="min-height: 2.5em; min-width: 100%; max-width: 100%;"><%= description %></textarea>
                 </div>
-                <div class="batch-action-type-update form-group text-center">
+                <div class="action-type-update form-group text-center">
                     <button name="save" class="btn btn-success btn-block"><%- _t('Update') %></button>
                 </div>
             </div>

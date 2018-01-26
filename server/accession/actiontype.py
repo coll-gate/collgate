@@ -1,7 +1,7 @@
 # -*- coding: utf-8; -*-
 #
-# @file batchactiontype.py
-# @brief coll-gate batch-action rest handler
+# @file action.py
+# @brief coll-gate action rest handler
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
@@ -14,84 +14,84 @@ from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.views.decorators.cache import cache_page
 
-from accession.batchactiontypeformat import BatchActionTypeFormatManager
+from accession.actiontypeformat import ActionTypeFormatManager
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cache import cache_manager
 from main.models import InterfaceLanguages
 from permission.utils import get_permissions_for
 
-from .models import BatchActionType
+from .models import ActionType
 from .base import RestAccession
 
 from django.utils.translation import ugettext_lazy as _
 
 
-class RestBatchActionType(RestAccession):
-    regex = r'^batchactiontype/$'
-    name = 'batchactiontype'
+class RestActionType(RestAccession):
+    regex = r'^actiontype/$'
+    name = 'actiontype'
 
 
-class RestBatchActionTypeCount(RestBatchActionType):
+class RestActionTypeCount(RestActionType):
         regex = r'^count/$'
         name = 'count'
 
 
-class RestBatchActionTypeSearch(RestBatchActionType):
+class RestActionTypeSearch(RestActionType):
     regex = r'^search/$'
     name = 'search'
 
 
-class RestBatchActionTypeId(RestBatchActionType):
-    regex = r'^(?P<bat_id>[0-9]+)/$'
+class RestActionTypeId(RestActionType):
+    regex = r'^(?P<act_id>[0-9]+)/$'
     suffix = 'id'
 
 
-class RestBatchActionTypeFormat(RestBatchActionType):
+class RestActionTypeFormat(RestActionType):
     regex = r'^format/$'
     suffix = 'format'
 
 
-class RestBatchActionTypeIdLabel(RestBatchActionTypeId):
+class RestActionTypeIdLabel(RestActionTypeId):
     regex = r'^label/$'
     suffix = 'label'
 
 
 # @cache_page(60*60*24)   # @todo named cache mechanism
-# @RestBatchActionType.def_request(Method.GET, Format.JSON)
-# def get_batch_action_type_list(request):
+# @RestActionType.def_request(Method.GET, Format.JSON)
+# def get_action_type_list(request):
 #     """
-#     Get the list of type of batch-action in JSON
-#     @todo invalid cache on batch_action_type model changes
+#     Get the list of type of action in JSON
+#     @todo invalid cache on action_type model changes
 #     @todo filter using cursor
 #     """
-#     cache_name = 'batch_action_types'
-#     batch_action_types = cache_manager.get('accession', cache_name)
+#     cache_name = 'action_types'
+#     action_types = cache_manager.get('accession', cache_name)
 #
-#     if batch_action_types:
-#         return HttpResponseRest(request, batch_action_types)
+#     if action_types:
+#         return HttpResponseRest(request, action_types)
 #
-#     batch_action_types = []
+#     action_types = []
 #
-#     for batch_action_type in BatchActionType.objects.all():
-#         batch_action_types.append({
-#             'id': batch_action_type.id,
-#             'name': batch_action_type.name,
-#             # 'value': batch_action_type.name,
-#             'label': batch_action_type.get_label(),
-#             'format': batch_action_type.format
+#     for action_type in ActionType.objects.all():
+#         action_types.append({
+#             'id': action_types.id,
+#             'name': action_types.name,
+#             # 'value': action_types.name,
+#             'label': action_types.get_label(),
+#             'format': action_types.format
 #         })
 #
 #     # cache for 24h
-#     cache_manager.set('accession', cache_name, batch_action_types, 60*60*24)
+#     cache_manager.set('accession', cache_name, action_types, 60*60*24)
 #
-#     return HttpResponseRest(request, batch_action_types)
+#     return HttpResponseRest(request, action_types)
 
 
-@RestBatchActionTypeCount.def_auth_request(Method.GET, Format.JSON)
-def get_batch_action_type_list_count(request):
+@RestActionTypeCount.def_auth_request(Method.GET, Format.JSON)
+def get_action_type_list_count(request):
     from main.cursor import CursorQuery
-    cq = CursorQuery(BatchActionType)
+    cq = CursorQuery(ActionType)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -110,19 +110,19 @@ def get_batch_action_type_list_count(request):
     return HttpResponseRest(request, results)
 
 
-@RestBatchActionType.def_request(Method.GET, Format.JSON)
-def get_batch_action_type_list(request):
+@RestActionType.def_request(Method.GET, Format.JSON)
+def get_action_type_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
     sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
     # @todo named cache mechanism when no filters and default order
-    # cache_name = 'batch_action_types'
-    # batch_action_types = cache_manager.get('accession', cache_name)
+    # cache_name = 'action_types'
+    # action_types = cache_manager.get('accession', cache_name)
     #
-    # if batch_action_types:
-    #     return HttpResponseRest(request, batch_action_types)
+    # if action_types:
+    #     return HttpResponseRest(request, action_types)
 
     if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
         order_by = sort_by + ['id']
@@ -130,7 +130,7 @@ def get_batch_action_type_list(request):
         order_by = sort_by
 
     from main.cursor import CursorQuery
-    cq = CursorQuery(BatchActionType)
+    cq = CursorQuery(ActionType)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -143,34 +143,34 @@ def get_batch_action_type_list(request):
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
 
-    batch_action_types_items = []
+    action_types_items = []
 
-    for batch_action_type in cq:
-        batch_action_types_items.append({
-            'id': batch_action_type.id,
-            'name': batch_action_type.name,
-            # 'value': batch_action_type.name,
-            'label': batch_action_type.get_label(),
-            'format': batch_action_type.format,
-            'description': batch_action_type.description
+    for action_type in cq:
+        action_types_items.append({
+            'id': action_type.id,
+            'name': action_type.name,
+            # 'value': action_type.name,
+            'label': action_type.get_label(),
+            'format': action_type.format,
+            'description': action_type.description
         })
 
     results = {
         'perms': [],
-        'items': batch_action_types_items,
+        'items': action_types_items,
         'prev': cq.prev_cursor,
         'cursor': cursor,
         'next': cq.next_cursor,
     }
 
     # cache for 24h
-    # cache_manager.set('accession', cache_name, batch_action_types, 60*60*24)
+    # cache_manager.set('accession', cache_name, action_types, 60*60*24)
 
     return HttpResponseRest(request, results)
 
 
-@RestBatchActionTypeSearch.def_request(Method.GET, Format.JSON)
-def get_batch_action_type_search(request):
+@RestActionTypeSearch.def_request(Method.GET, Format.JSON)
+def get_action_type_search(request):
     filters = json.loads(request.GET['filters'])
 
     results_per_page = int_arg(request.GET.get('more', 30))
@@ -180,9 +180,9 @@ def get_batch_action_type_search(request):
     if cursor:
         cursor = json.loads(cursor)
         cursor_name, cursor_id = cursor
-        qs = BatchActionType.objects.filter(Q(name__gt=cursor_name))
+        qs = ActionType.objects.filter(Q(name__gt=cursor_name))
     else:
-        qs = BatchActionType.objects.all()
+        qs = ActionType.objects.all()
 
     if 'name' in filters['fields']:
         name_method = filters.get('method', 'ieq')
@@ -195,12 +195,12 @@ def get_batch_action_type_search(request):
 
     items_list = []
 
-    for batchactiontype in qs:
-        label = batchactiontype.name
+    for actiontype in qs:
+        label = actiontype.name
 
         b = {
-            'id': batchactiontype.id,
-            'value': batchactiontype.name,
+            'id': actiontype.id,
+            'value': actiontype.name,
             'label': label
         }
 
@@ -229,37 +229,36 @@ def get_batch_action_type_search(request):
     return HttpResponseRest(request, results)
 
 
-@RestBatchActionTypeId.def_auth_request(Method.GET, Format.JSON, perms={
-    'accession.get_accession': _("You are not allowed to get a batch action type")
+@RestActionTypeId.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_actiontype': _("You are not allowed to get an action type")
 })
-def get_batch_action_type_details_json(request, bat_id):
+def get_action_type_details_json(request, act_id):
     """
-    Get the details of a batch action type.
+    Get the details of a action type.
     """
-
-    batch_action_type = BatchActionType.objects.get(id=int(bat_id))
+    action_type = ActionType.objects.get(id=int(act_id))
 
     result = {
-        'id': batch_action_type.id,
-        'name': batch_action_type.name,
-        'label': batch_action_type.get_label(),
-        'format': batch_action_type.format,
-        'description': batch_action_type.description
+        'id': action_type.id,
+        'name': action_type.name,
+        'label': action_type.get_label(),
+        'format': action_type.format,
+        'description': action_type.description
     }
 
     return HttpResponseRest(request, result)
 
 
 @cache_page(60*60*24)
-@RestBatchActionTypeFormat.def_request(Method.GET, Format.JSON)
+@RestActionTypeFormat.def_request(Method.GET, Format.JSON)
 def get_format_type_list(request):
     """
-    Return the list of format of batch action type
+    Return the list of format of action type
     """
     groups = {}
     items = {}
 
-    for ft in BatchActionTypeFormatManager.values():
+    for ft in ActionTypeFormatManager.values():
         if ft.group:
             if ft.group.name not in groups:
                 groups[ft.group.name] = {
@@ -268,7 +267,7 @@ def get_format_type_list(request):
                 }
 
         if ft.name in items:
-            raise SuspiciousOperation("Already registered format of batch action type %s" % ft.name)
+            raise SuspiciousOperation("Already registered format of action type %s" % ft.name)
 
         items[ft.name] = {
             'id': ft.name,
@@ -288,19 +287,19 @@ def get_format_type_list(request):
     return HttpResponseRest(request, results)
 
 
-@RestBatchActionTypeId.def_auth_request(Method.PATCH, Format.JSON, content={
+@RestActionTypeId.def_auth_request(Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
             "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
             "format": {"type": "object", "required": False},
-            "label": BatchActionType.LABEL_VALIDATOR_OPTIONAL
+            "label": ActionType.LABEL_VALIDATOR_OPTIONAL
         },
     },
-    perms={
-      'accession.change_batchactiontype': _("You are not allowed to modify a batch action type"),
+                                   perms={
+      'accession.change_actiontype': _("You are not allowed to modify an action type"),
     })
-def patch_batch_action_type(request, bat_id):
-    batch_action_type = get_object_or_404(BatchActionType, id=int(bat_id))
+def patch_action_type(request, act_id):
+    action_type = get_object_or_404(ActionType, id=int(act_id))
 
     entity_status = request.data.get("entity_status")
     description = request.data.get("description")
@@ -308,81 +307,80 @@ def patch_batch_action_type(request, bat_id):
     format_data = request.data.get("format")
 
     result = {
-        'id': batch_action_type.id
+        'id': action_type.id
     }
 
-    if entity_status is not None and batch_action_type.entity_status != entity_status:
-        batch_action_type.set_status(entity_status)
+    if entity_status is not None and action_type.entity_status != entity_status:
+        action_type.set_status(entity_status)
         result['entity_status'] = entity_status
-        batch_action_type.update_field('entity_status')
+        action_type.update_field('entity_status')
 
     if description is not None:
-        batch_action_type.description = description
+        action_type.description = description
         result['description'] = description
-        batch_action_type.update_field('description')
+        action_type.update_field('description')
 
     if label is not None:
         lang = translation.get_language()
-        batch_action_type.set_label(lang, label)
+        action_type.set_label(lang, label)
         result['label'] = label
-        batch_action_type.update_field('label')
+        action_type.update_field('label')
 
     if format_data is not None:
-        if batch_action_type.format.get('type', 'undefined') != batch_action_type.format['type']:
+        if action_type.format.get('type', 'undefined') != action_type.format['type']:
             raise SuspiciousOperation(_("It is not possible to change the format type"))
 
         # format validation
-        BatchActionTypeFormatManager.check(format_data)
+        ActionTypeFormatManager.check(format_data)
 
-        batch_action_type.format = format_data
+        action_type.format = format_data
         result['format'] = format_data
-        batch_action_type.update_field('format')
+        action_type.update_field('format')
 
-    batch_action_type.save()
+    action_type.save()
 
     return HttpResponseRest(request, result)
 
 
-@RestBatchActionTypeId.def_auth_request(Method.DELETE, Format.JSON, perms={
-         'accession.delete_batchactiontype': _('You are not allowed to remove a batch action type'),
-    },
-    staff=True)
-def delete_batch_action_type(request, bat_id):
+@RestActionTypeId.def_auth_request(Method.DELETE, Format.JSON, perms={
+         'accession.delete_actiontype': _('You are not allowed to remove an action type'),
+    }, staff=True)
+def delete_action_type(request, act_id):
     """
     If possible delete a descriptor model type from de descriptor model.
     It is not possible if there is data using the model of descriptor or the status is valid.
     """
-    batch_action_type = get_object_or_404(BatchActionType, id=int(bat_id))
+    action_type = get_object_or_404(ActionType, id=int(act_id))
 
-    if batch_action_type.in_usage():
-        raise SuspiciousOperation(_("There is some data using the batch action type"))
+    if action_type.in_usage():
+        raise SuspiciousOperation(_("There is some data using the action type"))
 
-    batch_action_type.delete()
+    action_type.delete()
 
     return HttpResponseRest(request, {})
 
 
-@RestBatchActionType.def_auth_request(
+@RestActionType.def_auth_request(
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": BatchActionType.NAME_VALIDATOR,
+            "name": ActionType.NAME_VALIDATOR,
             "format": {"type": "object", "required": False},
-            "label": BatchActionType.LABEL_VALIDATOR_OPTIONAL,
+            "label": ActionType.LABEL_VALIDATOR_OPTIONAL,
             "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
         }
     },
     perms={
-        'descriptor.add_batchactiontype': _('You are not allowed to create a batch action type'),
+        'descriptor.add_actiontype': _('You are not allowed to create an action type'),
     },
     staff=True)
-def create_batch_action_type(request):
+def create_action_type(request):
     """
-    Create a new batch action type
+    Create a new action type
     """
     # check name uniqueness
-    if BatchActionType.objects.filter(name=request.data['name']).exists():
-        raise SuspiciousOperation(_('A batch action with a similar name already exists'))
+    if ActionType.objects.filter(name=request.data['name']).exists():
+        raise SuspiciousOperation(_('An action with a similar name already exists'))
 
     description = request.data.get("description")
     label = request.data.get("label")
@@ -391,37 +389,37 @@ def create_batch_action_type(request):
 
     if format_data['type'] != 'undefined':
         # format validation
-        BatchActionTypeFormatManager.check(format_data)
+        ActionTypeFormatManager.check(format_data)
 
-    # create the batch action type
-    batch_action_type = BatchActionType()
+    # create the action type
+    action_type = ActionType()
 
-    batch_action_type.name = request.data['name']
-    batch_action_type.set_label(lang, label)
-    batch_action_type.description = description
-    batch_action_type.format = format_data
+    action_type.name = request.data['name']
+    action_type.set_label(lang, label)
+    action_type.description = description
+    action_type.format = format_data
 
-    batch_action_type.save()
+    action_type.save()
 
     result = {
-        'id': batch_action_type.id,
-        'name': batch_action_type.name,
-        'label': batch_action_type.get_label(),
-        'format': batch_action_type.format,
-        'description': batch_action_type.description
+        'id': action_type.id,
+        'name': action_type.name,
+        'label': action_type.get_label(),
+        'format': action_type.format,
+        'description': action_type.description
     }
 
     return HttpResponseRest(request, result)
 
 
-@RestBatchActionTypeIdLabel.def_auth_request(Method.GET, Format.JSON)
-def get_all_labels_of_batch_action_type(request, bat_id):
+@RestActionTypeIdLabel.def_auth_request(Method.GET, Format.JSON)
+def get_all_labels_of_action_type(request, act_id):
     """
     Returns labels for each language related to the user interface.
     """
-    batch_action_type = get_object_or_404(BatchActionType, id=int(bat_id))
+    action_type = get_object_or_404(ActionType, id=int(act_id))
 
-    label_dict = batch_action_type.label
+    label_dict = action_type.label
 
     # complete with missing languages
     for lang, lang_label in InterfaceLanguages.choices():
@@ -433,21 +431,21 @@ def get_all_labels_of_batch_action_type(request, bat_id):
     return HttpResponseRest(request, results)
 
 
-@RestBatchActionTypeIdLabel.def_auth_request(
+@RestActionTypeIdLabel.def_auth_request(
     Method.PUT, Format.JSON, content={
         "type": "object",
-        "additionalProperties": BatchActionType.LABEL_VALIDATOR
+        "additionalProperties": ActionType.LABEL_VALIDATOR
     },
     perms={
-        'accession.change_batchactiontype': _('You are not allowed to modify a batch action type'),
+        'accession.change_actiontype': _('You are not allowed to modify an action type'),
     },
     staff=True)
-def change_all_labels_of_batch_action_type(request, bat_id):
+def change_all_labels_of_action_type(request, act_id):
     """
     Changes all the label, for each language related to the user interface.
     Returns only the local label.
     """
-    batch_action_type = get_object_or_404(BatchActionType, id=int(bat_id))
+    action_type = get_object_or_404(ActionType, id=int(act_id))
 
     labels = request.data
 
@@ -457,13 +455,13 @@ def change_all_labels_of_batch_action_type(request, bat_id):
         if lang not in languages_values:
             raise SuspiciousOperation(_("Unsupported language identifier"))
 
-    batch_action_type.label = labels
+    action_type.label = labels
 
-    batch_action_type.update_field('label')
-    batch_action_type.save()
+    action_type.update_field('label')
+    action_type.save()
 
     result = {
-        'label': batch_action_type.get_label()
+        'label': action_type.get_label()
     }
 
     return HttpResponseRest(request, result)

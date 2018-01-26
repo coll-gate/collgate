@@ -15,7 +15,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from accession.batchactiontypeformat import BatchActionTypeFormatManager
+from accession.actiontypeformat import ActionTypeFormatManager
 from accession.namebuilder import NameBuilderManager
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel

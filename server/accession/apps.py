@@ -33,8 +33,8 @@ class CollGateAccession(ApplicationMain):
         # different types of formats for meta-model of descriptors for this module
         self.meta_model_types = []
 
-        # different type of formats for batch-action-type
-        self.batch_action_type_formats = []
+        # different type of formats for action-type
+        self.action_type_formats = []
 
     def ready(self):
         super().ready()
@@ -57,14 +57,14 @@ class CollGateAccession(ApplicationMain):
         accession_module.include_urls((
             'base',
             'accessionsynonym',
-            'batchactiontype',
+            'actiontype',
+            'actions.action',
             'accession',
             'accessionbatch',
             'batch',
             'accessionpanel',
             'batchpanel',
             'accessionclassificationentry',
-            'batchactions.batchaction'
             )
         )
 
@@ -98,16 +98,16 @@ class CollGateAccession(ApplicationMain):
         # and register them
         DescriptorMetaModelTypeManager.register(self.meta_model_types)
 
-        # and the batch action type formats
-        from accession import batchactiontypeformat
+        # and the action type formats
+        from accession import actiontypeformat
 
-        for element in dir(batchactiontypeformat):
-            attr = getattr(batchactiontypeformat, element)
-            if type(attr) is type and batchactiontypeformat.BatchActionTypeFormat in attr.__bases__:
-                self.batch_action_type_formats.append(attr())
+        for element in dir(actiontypeformat):
+            attr = getattr(actiontypeformat, element)
+            if type(attr) is type and actiontypeformat.ActionTypeFormat in attr.__bases__:
+                self.action_type_formats.append(attr())
 
-        from accession.batchactiontypeformat import BatchActionTypeFormatManager
-        BatchActionTypeFormatManager.register(self.batch_action_type_formats)
+        from accession.actiontypeformat import ActionTypeFormatManager
+        ActionTypeFormatManager.register(self.action_type_formats)
 
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)
@@ -154,6 +154,10 @@ class CollGateAccession(ApplicationMain):
         # action menu
         menu_action = ModuleMenu('action', _('Action'), auth=AUTH_USER)
 
+        menu_action.add_entry(
+            MenuEntry('introduction', _('Introduction'), "~accession/action/introduction",
+                      icon=FaGlyph('file-text-o'), order=1))
+
         accession_module.add_menu(menu_action)
 
         # accession administration menu
@@ -162,7 +166,7 @@ class CollGateAccession(ApplicationMain):
         # descriptor related menus
         menu_administration.add_entry(MenuSeparator(500))
         menu_administration.add_entry(
-            MenuEntry('list-batch-action-type', _('Batch action types'), "#accession/batchactiontype/",
+            MenuEntry('list-action-type', _('Action types'), "#accession/actiontype/",
                       icon=FaGlyph('cubes'), order=501, auth=AUTH_STAFF))
         accession_module.add_menu(menu_administration)
 

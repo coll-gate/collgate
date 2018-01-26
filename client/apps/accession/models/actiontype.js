@@ -1,6 +1,6 @@
 /**
- * @file batchactiontype.js
- * @brief Batch-action type model
+ * @file actiontype.js
+ * @brief Action type model
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-02-23
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -13,9 +13,9 @@ let Backbone = require('backbone');
 let Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew()) {
-            return window.application.url(['accession', 'batchactiontype']);
+            return window.application.url(['accession', 'actiontype']);
         } else {
-            return window.application.url(['accession', 'batchactiontype', this.get('id')]);
+            return window.application.url(['accession', 'actiontype', this.get('id')]);
         }
     },
 

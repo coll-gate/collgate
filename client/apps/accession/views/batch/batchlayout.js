@@ -251,30 +251,30 @@ let Layout = LayoutView.extend({
                 // });
 
                 // actions list tab
-                let BatchActionCollection = require('../../collections/batchaction');
-                let batchActions = new BatchActionCollection({batch_id: batchLayout.model.get('id')});
+                let ActionCollection = require('../../collections/action');
+                let actions = new ActionCollection({batch_id: batchLayout.model.get('id')});
 
                 // get available columns
                 let columns5 = window.application.main.cache.lookup({
                     type: 'entity_columns',
-                    format: {model: 'accession.batchaction'}
+                    format: {model: 'accession.action'}
                 });
 
-                $.when(columns5, batchActions.fetch()).then(function (data) {
+                $.when(columns5, actions.fetch()).then(function (data) {
                     if (!batchLayout.isRendered()) {
                         return;
                     }
 
-                    let BatchActionListView = require('./batchactionlist');
-                    let batchActionListView = new BatchActionListView({
-                        collection: batchActions, model: batchLayout.model, columns: data[0].value
+                    let ActionListView = require('../action/actionlist');
+                    let actionListView = new ActionListView({
+                        collection: actions, model: batchLayout.model, columns: data[0].value
                     });
 
                     let contentBottomLayout = new ContentBottomLayout();
                     batchLayout.showChildView('actions', contentBottomLayout);
 
-                    contentBottomLayout.showChildView('content', batchActionListView);
-                    contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchActionListView}));
+                    contentBottomLayout.showChildView('content', actionListView);
+                    contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: actionListView}));
 
                     // batchActionListView.query(); here or $.when
                 });

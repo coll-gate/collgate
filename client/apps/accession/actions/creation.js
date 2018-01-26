@@ -1,6 +1,6 @@
 /**
  * @file creation.js
- * @brief Display and manage a creation format of type of batch-action
+ * @brief Display and manage a creation format of type of action
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-11
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -8,22 +8,22 @@
  * @details
  */
 
-let BatchActionFormatType = require('./batchactiontypeformat');
+let ActionFormatType = require('./actiontypeformat');
 let Marionette = require('backbone.marionette');
 
 let CreationFormat = function() {
-    BatchActionFormatType.call(this);
+    ActionFormatType.call(this);
 
     this.name = "creation";
     this.group = "standard";
 };
 
-_.extend(CreationFormat.prototype, BatchActionFormatType.prototype, {
+_.extend(CreationFormat.prototype, ActionFormatType.prototype, {
 
 });
 
-CreationFormat.BatchActionTypeFormatDetailsView = Marionette.View.extend({
-    className: 'batchactiontype-format-details-format',
+CreationFormat.ActionTypeFormatDetailsView = Marionette.View.extend({
+    className: 'action-format-details-format',
     template: require('../templates/actions/creation.html'),
 
     initialize: function() {
