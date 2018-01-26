@@ -54,9 +54,19 @@ class RestBatchIdBatch(RestBatchId):
     suffix = 'batch'
 
 
+class RestBatchIdBatchCount(RestBatchIdBatch):
+    regex = r'^count/$'
+    suffix = 'count'
+
+
 class RestBatchIdParent(RestBatchId):
     regex = r'^parent/$'
     suffix = 'parent'
+
+
+class RestBatchIdParentCount(RestBatchIdParent):
+    regex = r'^count/$'
+    suffix = 'count'
 
 
 @RestBatchId.def_auth_request(Method.GET, Format.JSON)
@@ -315,6 +325,39 @@ def get_batch_batches_list(request, bat_id):
     return HttpResponseRest(request, results)
 
 
+@RestBatchIdBatchCount.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_accession': _("You are not allowed to get an accession"),
+    'accession.list_batch': _("You are not allowed to list children batches for a batch")
+})
+def get_batch_children_batches_list_count(request, bat_id):
+    cursor = request.GET.get('cursor')
+
+    parent_batch = get_object_or_404(Batch, id=int(bat_id))
+
+    # check permission on accession object
+    perms = get_permissions_for(
+        request.user,
+        parent_batch.accession.content_type.app_label,
+        parent_batch.accession.content_type.model,
+        parent_batch.accession.pk)
+    if 'accession.get_accession' not in perms:
+        raise PermissionDenied(_('Invalid permission to access to this accession'))
+
+    if cursor:
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
+        batches = parent_batch.children.filter(Q(name__gt=cursor_name))
+    else:
+        batches = parent_batch.children.all()
+
+    results = {
+        'count': batches.count()
+    }
+
+    return HttpResponseRest(request, results)
+
+
+
 @RestBatchIdParent.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.get_accession': _("You are not allowed to get an accession"),
     'accession.list_batch': _("You are not allowed to list parent batches for a batch")
@@ -375,6 +418,37 @@ def get_batch_parents_batches_list(request, bat_id):
         'prev': prev_cursor,
         'cursor': cursor,
         'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestBatchIdParentCount.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_accession': _("You are not allowed to get an accession"),
+    'accession.list_batch': _("You are not allowed to list parent batches for a batch")
+})
+def get_batch_parents_batches_list_count(request, bat_id):
+    cursor = request.GET.get('cursor')
+    parent_batch = get_object_or_404(Batch, id=int(bat_id))
+
+    # check permission on accession object
+    perms = get_permissions_for(
+        request.user,
+        parent_batch.accession.content_type.app_label,
+        parent_batch.accession.content_type.model,
+        parent_batch.accession.pk)
+    if 'accession.get_accession' not in perms:
+        raise PermissionDenied(_('Invalid permission to access to this accession'))
+
+    if cursor:
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
+        batches = parent_batch.batches.filter(Q(name__gt=cursor_name))
+    else:
+        batches = parent_batch.batches.all()
+
+    results = {
+        'count': batches.count()
     }
 
     return HttpResponseRest(request, results)

@@ -146,7 +146,15 @@ let Layout = LayoutView.extend({
                 batchLayout.showChildView('parents', contentBottomFooterLayout);
 
                 contentBottomFooterLayout.showChildView('content', batchListView);
-                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchListView}));
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                    targetView: batchListView,
+                    collection: parentBatches
+                }));
+
+                contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
+                    collection: parentBatches,
+                    columns: data[0].value
+                }));
             });
 
             // children batches tab
@@ -165,11 +173,19 @@ let Layout = LayoutView.extend({
                     columns: data[0].columns
                 });
 
-                let contentBottomLayout = new ContentBottomLayout();
-                batchLayout.showChildView('batches', contentBottomLayout);
+                let contentBottomFooterLayout = new ContentBottomFooterLayout();
+                batchLayout.showChildView('batches', contentBottomFooterLayout);
 
-                contentBottomLayout.showChildView('content', batchChildrenListView);
-                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchChildrenListView}));
+                contentBottomFooterLayout.showChildView('content', batchChildrenListView);
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                    targetView: batchChildrenListView,
+                    collection: childrenBatches
+                }));
+
+                contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
+                    collection: childrenBatches,
+                    columns: data[0].value
+                }));
             });
 
             // panels tab
@@ -195,11 +211,19 @@ let Layout = LayoutView.extend({
                     columns: data[0].value
                 });
 
-                let contentBottomLayout = new ContentBottomLayout();
-                batchLayout.showChildView('panels', contentBottomLayout);
+                let contentBottomFooterLayout = new ContentBottomFooterLayout();
+                batchLayout.showChildView('panels', contentBottomFooterLayout);
 
-                contentBottomLayout.showChildView('content', batchPanelListView);
-                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchPanelListView}));
+                contentBottomFooterLayout.showChildView('content', batchPanelListView);
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                    targetView: batchPanelListView,
+                    collection: batchPanels
+                }));
+
+                contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
+                    collection: batchPanels,
+                    columns: data[0].value
+                }));
 
                 // batchPanelListView.query(); here or $.when
             });
@@ -276,7 +300,10 @@ let Layout = LayoutView.extend({
                     batchLayout.showChildView('actions', contentBottomFooterLayout);
 
                     contentBottomFooterLayout.showChildView('content', actionListView);
-                    contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: actionListView}));
+                    contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                        targetView: actionListView,
+                        collection: actions
+                    }));
 
                     contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
                         collection: actions,
