@@ -74,9 +74,9 @@ class RestDescriptorDescriptorIdValueId(RestDescriptorDescriptorIdValue):
     suffix = 'id'
 
 
-class RestDescriptorNameValuesList(RestDescriptor):
-    regex = r'^descriptor-values-list/(?P<dmt_name>[a-zA-Z0-9\-\_\.]+)/$'
-    suffix = 'search'
+class RestDescriptorNameOrCodeValuesList(RestDescriptor):
+    regex = r'^descriptor-values-list/(?P<descriptor_name_or_code>[a-zA-Z0-9\-\_\.]+)/$'
+    suffix = 'descriptor'
 
 # class RestDescriptorType(RestDescriptor):
 #     regex = r'^type/$'
@@ -1917,20 +1917,24 @@ def get_all_display_values_for_descriptor_type(request, typ_id):
 #     return HttpResponseRest(request, results)
 
 
-@RestDescriptorNameValuesList.def_auth_request(Method.GET, Format.JSON, parameters=('values',))
-def get_some_display_values_for_descriptor_model_type(request, dmt_name):
+@RestDescriptorNameOrCodeValuesList.def_auth_request(Method.GET, Format.JSON, parameters=('values',))
+def get_some_display_values_for_descriptor_model_type(request, descriptor_name_or_code):
     """
-    Returns all the value of the related type of model of descriptor.
+    Returns all the value of the related of descriptor from descriptor name or code.
     """
-    dmt = get_object_or_404(Descriptor, name=dmt_name)
+
+    if Descriptor.objects.filter(code=descriptor_name_or_code):
+        descriptor = Descriptor.objects.get(code=descriptor_name_or_code)
+    else:
+        descriptor = get_object_or_404(Descriptor, name=descriptor_name_or_code)
 
     limit = 100
-    format_type = dmt.format
+    format_type = descriptor.format
 
     # json array
     values = json.loads(request.GET['values'])
 
     # no cursor, simple list, limited to 100 elements per call
-    results = DescriptorFormatTypeManager.get_display_values_for(format_type, dmt, values, limit)
+    results = DescriptorFormatTypeManager.get_display_values_for(format_type, descriptor, values, limit)
 
     return HttpResponseRest(request, results)
