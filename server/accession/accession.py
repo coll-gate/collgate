@@ -440,71 +440,71 @@ def search_accession(request):
     return HttpResponseRest(request, results)
 
 
-# @RestAccessionId.def_auth_request(Method.PATCH, Format.JSON, content={
-#         "type": "object",
-#         "properties": {
-#             "primary_classification_entry": {"type": "integer", "required": False},
-#             "entity_status": Accession.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-#             "descriptors": {"type": "object", "required": False},
-#         },
-#     },
-#     perms={
-#       'accession.change_accession': _("You are not allowed to modify an accession"),
-#     })
-# def patch_accession(request, acc_id):
-#     accession = get_object_or_404(Accession, id=int(acc_id))
-#
-#     entity_status = request.data.get("entity_status")
-#     descriptors = request.data.get("descriptors")
-#
-#     result = {
-#         'id': accession.id
-#     }
-#
-#     try:
-#         with transaction.atomic():
-#             if 'primary_classification_entry' in request.data:
-#                 primary_classification_entry_id = int(request.data['primary_classification_entry'])
-#                 primary_classification_entry = get_object_or_404(ClassificationEntry,
-#                                                                  id=primary_classification_entry_id)
-#
-#                 # update FK
-#                 accession.primary_classification_entry = primary_classification_entry
-#                 result['primary_classification_entry'] = primary_classification_entry.id
-#
-#                 # and replace from classification entry M2M previous primary
-#                 accession_classification_entry = get_object_or_404(
-#                     AccessionClassificationEntry, accession=accession, primary=True)
-#
-#                 accession_classification_entry.classification_entry = primary_classification_entry
-#                 accession_classification_entry.save()
-#
-#                 accession.update_field('primary_classification_entry')
-#
-#             if entity_status is not None and accession.entity_status != entity_status:
-#                 accession.set_status(entity_status)
-#                 result['entity_status'] = entity_status
-#                 accession.update_field('entity_status')
-#
-#             if descriptors is not None:
-#                 # update descriptors
-#                 descriptors_builder = DescriptorsBuilder(accession)
-#
-#                 descriptors_builder.check_and_update(accession.layout, descriptors)
-#
-#                 accession.descriptors = descriptors_builder.descriptors
-#                 result['descriptors'] = accession.descriptors
-#
-#                 descriptors_builder.update_associations()
-#
-#                 accession.update_descriptors(descriptors_builder.changed_descriptors())
-#                 accession.update_field('descriptors')
-#
-#             accession.save()
-#     except IntegrityError as e:
-#         DescriptorModelType.integrity_except(Accession, e)
-#
-#     return HttpResponseRest(request, result)
+@RestAccessionId.def_auth_request(Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "primary_classification_entry": {"type": "integer", "required": False},
+            "entity_status": Accession.ENTITY_STATUS_VALIDATOR_OPTIONAL,
+            "descriptors": {"type": "object", "required": False},
+        },
+    },
+    perms={
+      'accession.change_accession': _("You are not allowed to modify an accession"),
+    })
+def patch_accession(request, acc_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+
+    entity_status = request.data.get("entity_status")
+    descriptors = request.data.get("descriptors")
+
+    result = {
+        'id': accession.id
+    }
+
+    try:
+        with transaction.atomic():
+            if 'primary_classification_entry' in request.data:
+                primary_classification_entry_id = int(request.data['primary_classification_entry'])
+                primary_classification_entry = get_object_or_404(ClassificationEntry,
+                                                                 id=primary_classification_entry_id)
+
+                # update FK
+                accession.primary_classification_entry = primary_classification_entry
+                result['primary_classification_entry'] = primary_classification_entry.id
+
+                # and replace from classification entry M2M previous primary
+                accession_classification_entry = get_object_or_404(
+                    AccessionClassificationEntry, accession=accession, primary=True)
+
+                accession_classification_entry.classification_entry = primary_classification_entry
+                accession_classification_entry.save()
+
+                accession.update_field('primary_classification_entry')
+
+            if entity_status is not None and accession.entity_status != entity_status:
+                accession.set_status(entity_status)
+                result['entity_status'] = entity_status
+                accession.update_field('entity_status')
+
+            if descriptors is not None:
+                # update descriptors
+                descriptors_builder = DescriptorsBuilder(accession)
+
+                descriptors_builder.check_and_update(accession.layout, descriptors)
+
+                accession.descriptors = descriptors_builder.descriptors
+                result['descriptors'] = accession.descriptors
+
+                descriptors_builder.update_associations()
+
+                accession.update_descriptors(descriptors_builder.changed_descriptors())
+                accession.update_field('descriptors')
+
+            accession.save()
+    except IntegrityError as e:
+        DescriptorModelType.integrity_except(Accession, e)
+
+    return HttpResponseRest(request, result)
 
 
 @RestAccessionId.def_auth_request(Method.DELETE, Format.JSON, perms={

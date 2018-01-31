@@ -703,7 +703,7 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
 
         # check if the value exists
         try:
-            descriptor_model_type.descriptor_type.get_value(value)
+            descriptor_model_type.get_value(value)
         except ObjectDoesNotExist:
             return _("The descriptor value must exists")
 
