@@ -979,6 +979,28 @@ class Descriptor(Entity):
 
         return values_list
 
+    @classmethod
+    def integrity_except(cls, model_class, exception):
+        """
+        Parse and interpret the integrity exception during describable save.
+        :param model_class: Model class of the describable
+        :param exception: IntegrityError exception instance
+        :raise SuspiciousOperation with a human readable error.
+        """
+        # logger.error(repr(exception))
+
+        # duplicate constraint
+        if exception.args[0].startswith('duplicate key value violates unique constraint'):
+            field = exception.args[0].split("'")[1]
+            try:
+                dmt = Descriptor.objects.get(name=field)
+            except Descriptor.DoesNotExist:
+                raise SuspiciousOperation(_("Unable to update the %s" % str(model_class._meta.verbose_name)))
+
+            raise SuspiciousOperation(_("The value of the descriptor %s must be unique." % dmt.get_label()))
+
+        raise SuspiciousOperation(_("Unable to save the %s" % str(model_class._meta.verbose_name)))
+
 
 class DescriptorValue(Entity):
     """

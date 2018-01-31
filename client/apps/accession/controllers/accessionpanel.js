@@ -141,7 +141,7 @@ let Controller = Marionette.Object.extend({
                             search: search
                         },
                         descriptors: {},
-                        descriptor_meta_model: null
+                        layout: null
                     });
 
                     view.destroy();

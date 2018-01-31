@@ -11,7 +11,7 @@
 from descriptor.describable import DescriptorsBuilder
 from django.contrib.contenttypes.models import ContentType
 # from descriptor.models import Layout, DescriptorModelType
-from descriptor.models import Layout
+from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from django.db.models import Q, Prefetch
 from igdectk.rest.response import HttpResponseRest
@@ -133,122 +133,123 @@ def count_accession_panels(request, acc_id):
     return HttpResponseRest(request, results)
 
 
-# @RestAccessionPanel.def_auth_request(Method.POST, Format.JSON, content={
-#     "type": "object",
-#     "properties": {
-#         "name": AccessionPanel.NAME_VALIDATOR,
-#         "selection": {
-#             "type": "object",
-#             "properties": {
-#                 "select": {
-#                     "type": [
-#                         {
-#                             "type": "object",
-#                             "properties": {
-#                                 "op": {"enum": ['in', 'notin']},
-#                                 "term": {"type": "string"},
-#                                 "value": {"type": "array"},
-#                             },
-#                         },
-#                         {
-#                             "type": "boolean"
-#                         }
-#                     ]
-#                 },
-#
-#             },
-#             "additionalProperties": {
-#                 "from": {
-#                     "type": "object",
-#                     "properties": {
-#                         "content_type": {"type": "string"},
-#                         "id": {"type": "integer"}
-#                     }
-#                 },
-#                 "search": {"type": "object"},
-#                 "filters": {"type": "object"}
-#             }
-#         }
-#     }
-# }, perms={
-#     'accession.add_accessionpanel': _("You are not allowed to create an accession panel")
-# })
-# def create_panel(request):
-#     name = request.data['name']
-#     selection = request.data['selection']['select']
-#     related_entity = request.data['selection']['from']
-#     search = request.data['selection']['search']
-#     filters = request.data['selection']['filters']
-#     layout_id = request.data['layout']
-#     descriptors = request.data['descriptors']
-#
-#     layout = None
-#
-#     # check uniqueness of the name
-#     if AccessionPanel.objects.filter(name=name).exists():
-#         raise SuspiciousOperation(_("The name of the panel is already used"))
-#
-#     if layout_id is not None:
-#         content_type = get_object_or_404(ContentType, app_label="accession", model="accessionpanel")
-#         layout = get_object_or_404(Layout, id=int_arg(layout_id), target=content_type)
-#
-#     from main.cursor import CursorQuery
-#     cq = CursorQuery(Accession)
-#
-#     if search:
-#         cq.filter(search)
-#
-#     if filters:
-#         cq.filter(filters)
-#
-#     if related_entity:
-#         label, model = related_entity['content_type'].split('.')
-#         content_type = get_object_or_404(ContentType, app_label=label, model=model)
-#         model_class = content_type.model_class()
-#         cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
-#
-#     try:
-#         with transaction.atomic():
-#             panel = AccessionPanel(name=name)
-#             panel.layout = layout
-#             panel.count = 0
-#
-#             # descriptors
-#             descriptors_builder = DescriptorsBuilder(panel)
-#
-#             descriptors_builder.check_and_update(layout, descriptors)
-#             panel.descriptors = descriptors_builder.descriptors
-#
-#             panel.save()
-#
-#             # update owner on external descriptors
-#             descriptors_builder.update_associations()
-#
-#             if isinstance(selection, bool):
-#                 if selection is True:
-#                     panel.accessions.add(*cq)
-#                     panel.count = cq.count()
-#
-#             elif selection['op'] == 'in':
-#                 panel.accessions.add(*cq.filter(id__in=selection['value']))
-#                 panel.count = cq.filter(id__in=selection['value']).count()
-#
-#             elif selection['op'] == 'notin':
-#                 panel.accessions.add(*cq.filter(id__notin=selection['value']))
-#                 panel.count = cq.filter(id__notin=selection['value']).count()
-#
-#     except IntegrityError as e:
-#         DescriptorModelType.integrity_except(AccessionPanel, e)
-#
-#     response = {
-#         'id': panel.pk,
-#         'name': panel.name,
-#         'layout': panel.layout.pk if panel.layout else None,
-#         'descriptors': panel.descriptors,
-#         'accessions_amount': panel.count
-#     }
-#
-#     return HttpResponseRest(request, response)
+@RestAccessionPanel.def_auth_request(Method.POST, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "name": AccessionPanel.NAME_VALIDATOR,
+        "selection": {
+            "type": "object",
+            "properties": {
+                "select": {
+                    "type": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "op": {"enum": ['in', 'notin']},
+                                "term": {"type": "string"},
+                                "value": {"type": "array"},
+                            },
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                },
+
+            },
+            "additionalProperties": {
+                "from": {
+                    "type": "object",
+                    "properties": {
+                        "content_type": {"type": "string"},
+                        "id": {"type": "integer"}
+                    }
+                },
+                "search": {"type": "object"},
+                "filters": {"type": "object"}
+            }
+        }
+    }
+}, perms={
+    'accession.add_accessionpanel': _("You are not allowed to create an accession panel")
+})
+def create_panel(request):
+    name = request.data['name']
+    selection = request.data['selection']['select']
+    related_entity = request.data['selection']['from']
+    search = request.data['selection']['search']
+    filters = request.data['selection']['filters']
+    layout_id = request.data['layout']
+    descriptors = request.data['descriptors']
+
+    layout = None
+
+    # check uniqueness of the name
+    if AccessionPanel.objects.filter(name=name).exists():
+        raise SuspiciousOperation(_("The name of the panel is already used"))
+
+    if layout_id is not None:
+        content_type = get_object_or_404(ContentType, app_label="accession", model="accessionpanel")
+        layout = get_object_or_404(Layout, id=int_arg(layout_id), target=content_type)
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Accession)
+
+    if search:
+        cq.filter(search)
+
+    if filters:
+        cq.filter(filters)
+
+    if related_entity:
+        label, model = related_entity['content_type'].split('.')
+        content_type = get_object_or_404(ContentType, app_label=label, model=model)
+        model_class = content_type.model_class()
+        cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
+
+    try:
+        with transaction.atomic():
+            acc_panel = AccessionPanel(name=name)
+            acc_panel.layout = layout
+            acc_panel.count = 0
+
+            # descriptors
+            descriptors_builder = DescriptorsBuilder(acc_panel)
+
+            if layout:
+                descriptors_builder.check_and_update(layout, descriptors)
+                acc_panel.descriptors = descriptors_builder.descriptors
+
+            acc_panel.save()
+
+            # update owner on external descriptors
+            descriptors_builder.update_associations()
+
+            if isinstance(selection, bool):
+                if selection is True:
+                    acc_panel.accessions.add(*cq)
+                    acc_panel.count = cq.count()
+
+            elif selection['op'] == 'in':
+                acc_panel.accessions.add(*cq.filter(id__in=selection['value']))
+                acc_panel.count = cq.filter(id__in=selection['value']).count()
+
+            elif selection['op'] == 'notin':
+                acc_panel.accessions.add(*cq.filter(id__notin=selection['value']))
+                acc_panel.count = cq.filter(id__notin=selection['value']).count()
+
+    except IntegrityError as e:
+        Descriptor.integrity_except(AccessionPanel, e)
+
+    response = {
+        'id': acc_panel.pk,
+        'name': acc_panel.name,
+        'layout': acc_panel.layout.pk if acc_panel.layout else None,
+        'descriptors': acc_panel.descriptors,
+        'accessions_amount': acc_panel.count
+    }
+
+    return HttpResponseRest(request, response)
 
 
 @RestAccessionPanelId.def_request(Method.GET, Format.JSON)
@@ -344,107 +345,107 @@ def delete_panel(request, panel_id):
     return HttpResponseRest(request, {})
 
 
-# @RestAccessionPanelId.def_auth_request(Method.PATCH, Format.JSON, perms={
-#     'accession.change_accessionpanel': _("You are not allowed to modify accession panel")
-# },
-#                                        content={
-#                                            "type": "object",
-#                                            "properties": {
-#                                                # "entity_status": AccessionPanel.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-#                                                "layout": {"type": ["integer", "null"],
-#                                                                          'required': False},
-#                                                "descriptors": {"type": "object", "required": False},
-#                                            },
-#                                            "additionalProperties": {
-#                                                "name": AccessionPanel.NAME_VALIDATOR
-#                                            }
-#                                        })
-# def modify_panel(request, panel_id):
-#     panel = get_object_or_404(AccessionPanel, id=int(panel_id))
-#     # entity_status = request.data.get("entity_status")
-#     descriptors = request.data.get("descriptors")
-#
-#     result = {
-#         'id': panel.id
-#     }
-#
-#     try:
-#         with transaction.atomic():
-#             # if entity_status is not None and panel.entity_status != entity_status:
-#             #     panel.set_status(entity_status)
-#             #     result['entity_status'] = entity_status
-#
-#             if 'name' in request.data:
-#                 name = request.data['name']
-#
-#                 if AccessionPanel.objects.filter(name=name).exists():
-#                     raise SuspiciousOperation(_("The name of the panel is already used"))
-#
-#                 panel.name = name
-#                 result['name'] = name
-#
-#             if 'layout' in request.data:
-#                 layout_id = request.data["layout"]
-#
-#                 # changing of layout erase all previous descriptors values
-#                 if layout_id is None and panel.layout is not None:
-#                     # clean previous descriptors and owns
-#                     descriptors_builder = DescriptorsBuilder(panel)
-#
-#                     descriptors_builder.clear(panel.layout)
-#
-#                     panel.layout = None
-#                     panel.descriptors = {}
-#
-#                     descriptors_builder.update_associations()
-#
-#                     result['layout'] = None
-#                     result['descriptors'] = {}
-#
-#                 elif layout_id is not None:
-#                     # existing descriptors and new layout is different : first clean previous descriptors
-#                     if panel.layout is not None and panel.layout.pk != layout_id:
-#                         # clean previous descriptors and owns
-#                         descriptors_builder = DescriptorsBuilder(panel)
-#
-#                         descriptors_builder.clear(panel.layout)
-#
-#                         panel.layout = None
-#                         panel.descriptors = {}
-#
-#                         descriptors_builder.update_associations()
-#
-#                     # and set the new one
-#                     content_type = get_object_or_404(ContentType, app_label="accession", model="accessionpanel")
-#                     layout = get_object_or_404(Layout, id=layout_id, target=content_type)
-#
-#                     panel.layout = layout
-#                     panel.descriptors = {}
-#
-#                     result['layout'] = layout.id
-#                     result['descriptors'] = {}
-#
-#                     panel.update_field(['layout', 'descriptors'])
-#
-#             if descriptors is not None:
-#                 # update descriptors
-#                 descriptors_builder = DescriptorsBuilder(panel)
-#
-#                 descriptors_builder.check_and_update(panel.layout, descriptors)
-#
-#                 panel.descriptors = descriptors_builder.descriptors
-#                 result['descriptors'] = panel.descriptors
-#
-#                 descriptors_builder.update_associations()
-#
-#                 panel.update_descriptors(descriptors_builder.changed_descriptors())
-#                 panel.update_field('descriptors')
-#
-#             panel.save()
-#     except IntegrityError as e:
-#         DescriptorModelType.integrity_except(Accession, e)
-#
-#     return HttpResponseRest(request, result)
+@RestAccessionPanelId.def_auth_request(Method.PATCH, Format.JSON, perms={
+    'accession.change_accessionpanel': _("You are not allowed to modify accession panel")
+},
+                                       content={
+                                           "type": "object",
+                                           "properties": {
+                                               # "entity_status": AccessionPanel.ENTITY_STATUS_VALIDATOR_OPTIONAL,
+                                               "layout": {"type": ["integer", "null"],
+                                                                         'required': False},
+                                               "descriptors": {"type": "object", "required": False},
+                                           },
+                                           "additionalProperties": {
+                                               "name": AccessionPanel.NAME_VALIDATOR
+                                           }
+                                       })
+def modify_panel(request, panel_id):
+    acc_panel = get_object_or_404(AccessionPanel, id=int(panel_id))
+    # entity_status = request.data.get("entity_status")
+    descriptors = request.data.get("descriptors")
+
+    result = {
+        'id': acc_panel.id
+    }
+
+    try:
+        with transaction.atomic():
+            # if entity_status is not None and panel.entity_status != entity_status:
+            #     panel.set_status(entity_status)
+            #     result['entity_status'] = entity_status
+
+            if 'name' in request.data:
+                name = request.data['name']
+
+                if AccessionPanel.objects.filter(name=name).exists():
+                    raise SuspiciousOperation(_("The name of the panel is already used"))
+
+                acc_panel.name = name
+                result['name'] = name
+
+            if 'layout' in request.data:
+                layout_id = request.data["layout"]
+
+                # changing of layout erase all previous descriptors values
+                if layout_id is None and acc_panel.layout is not None:
+                    # clean previous descriptors and owns
+                    descriptors_builder = DescriptorsBuilder(acc_panel)
+
+                    descriptors_builder.clear(acc_panel.layout)
+
+                    acc_panel.layout = None
+                    acc_panel.descriptors = {}
+
+                    descriptors_builder.update_associations()
+
+                    result['layout'] = None
+                    result['descriptors'] = {}
+
+                elif layout_id is not None:
+                    # existing descriptors and new layout is different : first clean previous descriptors
+                    if acc_panel.layout is not None and acc_panel.layout.pk != layout_id:
+                        # clean previous descriptors and owns
+                        descriptors_builder = DescriptorsBuilder(acc_panel)
+
+                        descriptors_builder.clear(acc_panel.layout)
+
+                        acc_panel.layout = None
+                        acc_panel.descriptors = {}
+
+                        descriptors_builder.update_associations()
+
+                    # and set the new one
+                    content_type = get_object_or_404(ContentType, app_label="accession", model="accessionpanel")
+                    layout = get_object_or_404(Layout, id=layout_id, target=content_type)
+
+                    acc_panel.layout = layout
+                    acc_panel.descriptors = {}
+
+                    result['layout'] = layout.id
+                    result['descriptors'] = {}
+
+                    acc_panel.update_field(['layout', 'descriptors'])
+
+            if descriptors is not None:
+                # update descriptors
+                descriptors_builder = DescriptorsBuilder(acc_panel)
+
+                descriptors_builder.check_and_update(acc_panel.layout, descriptors)
+
+                acc_panel.descriptors = descriptors_builder.descriptors
+                result['descriptors'] = acc_panel.descriptors
+
+                descriptors_builder.update_associations()
+
+                acc_panel.update_descriptors(descriptors_builder.changed_descriptors())
+                acc_panel.update_field('descriptors')
+
+            acc_panel.save()
+    except IntegrityError as e:
+        Descriptor.integrity_except(Accession, e)
+
+    return HttpResponseRest(request, result)
 
 
 # todo: set correct permissions... maybe list_panel_accession???
@@ -551,107 +552,107 @@ def get_panel_accession_list(request, panel_id):
     return HttpResponseRest(request, results)
 
 
-# @RestAccessionPanelAccessions.def_auth_request(Method.PATCH, Format.JSON, content={
-#     "type": "object",
-#     "properties": {
-#         "action": {"type": "string", "enum": ['add', 'remove']},
-#         "selection": {
-#             "type": "object",
-#             "properties": {
-#                 "select": {
-#                     "type": [
-#                         {
-#                             "type": "object",
-#                             "properties": {
-#                                 "op": {"type": "string", "enum": ['in', 'notin']},
-#                                 "term": {"type": "string"},
-#                                 "value": {"type": "array"},
-#                             },
-#                         },
-#                         {
-#                             "type": "boolean"
-#                         }
-#                     ]
-#                 },
-#
-#             },
-#             "additionalProperties": {
-#                 "from": {
-#                     "type": "object",
-#                     "properties": {
-#                         "content_type": {"type": "string"},
-#                         "id": {"type": "integer"}
-#                     }
-#                 },
-#                 "search": {"type": "object"},
-#                 "filters": {"type": "object"}
-#             }
-#         }
-#     }
-#
-# }, perms={
-#     'accession.change_accessionpanel': _("You are not allowed to modify accession panel")
-# })
-# def modify_panel_accessions(request, panel_id):
-#     action = request.data['action']
-#     selection = request.data['selection']['select']
-#     panel = AccessionPanel.objects.get(id=int_arg(panel_id))
-#
-#     from main.cursor import CursorQuery
-#     cq = CursorQuery(Accession)
-#
-#     if request.data['selection'].get('filters'):
-#         cq.filter(request.data['selection'].get('filters'))
-#
-#     if request.data['selection'].get('search'):
-#         cq.filter(request.data['selection'].get('search'))
-#
-#     if request.data['selection'].get('from'):
-#         related_entity = request.data['selection']['from']
-#         label, model = related_entity['content_type'].split('.')
-#         content_type = get_object_or_404(ContentType, app_label=label, model=model)
-#         model_class = content_type.model_class()
-#         cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
-#
-#     if action == 'remove':
-#         try:
-#             with transaction.atomic():
-#                 if isinstance(selection, bool):
-#                     if selection is True:
-#                         panel.accessions.remove(*cq)
-#
-#                 elif selection['op'] == 'in':
-#                     panel.accessions.remove(*cq.filter(id__in=selection['value']))
-#
-#                 elif selection['op'] == 'notin':
-#                     panel.accessions.remove(*cq.filter(id__notin=selection['value']))
-#
-#                 panel.save()
-#
-#         except IntegrityError as e:
-#             DescriptorModelType.integrity_except(AccessionPanel, e)
-#
-#     elif action == 'add':
-#         try:
-#             with transaction.atomic():
-#                 if isinstance(selection, bool):
-#                     if selection is True:
-#                         panel.accessions.add(*cq)
-#
-#                 elif selection['op'] == 'in':
-#                     panel.accessions.add(*cq.filter(id__in=selection['value']))
-#
-#                 elif selection['op'] == 'notin':
-#                     panel.accessions.add(*cq.filter(id__notin=selection['value']))
-#
-#                 panel.save()
-#
-#         except IntegrityError as e:
-#             DescriptorModelType.integrity_except(AccessionPanel, e)
-#     else:
-#         raise SuspiciousOperation('Invalid action')
-#
-#     return HttpResponseRest(request, {})
+@RestAccessionPanelAccessions.def_auth_request(Method.PATCH, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "action": {"type": "string", "enum": ['add', 'remove']},
+        "selection": {
+            "type": "object",
+            "properties": {
+                "select": {
+                    "type": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "op": {"type": "string", "enum": ['in', 'notin']},
+                                "term": {"type": "string"},
+                                "value": {"type": "array"},
+                            },
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                },
+
+            },
+            "additionalProperties": {
+                "from": {
+                    "type": "object",
+                    "properties": {
+                        "content_type": {"type": "string"},
+                        "id": {"type": "integer"}
+                    }
+                },
+                "search": {"type": "object"},
+                "filters": {"type": "object"}
+            }
+        }
+    }
+
+}, perms={
+    'accession.change_accessionpanel': _("You are not allowed to modify accession panel")
+})
+def modify_panel_accessions(request, panel_id):
+    action = request.data['action']
+    selection = request.data['selection']['select']
+    acc_panel = AccessionPanel.objects.get(id=int_arg(panel_id))
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Accession)
+
+    if request.data['selection'].get('filters'):
+        cq.filter(request.data['selection'].get('filters'))
+
+    if request.data['selection'].get('search'):
+        cq.filter(request.data['selection'].get('search'))
+
+    if request.data['selection'].get('from'):
+        related_entity = request.data['selection']['from']
+        label, model = related_entity['content_type'].split('.')
+        content_type = get_object_or_404(ContentType, app_label=label, model=model)
+        model_class = content_type.model_class()
+        cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
+
+    if action == 'remove':
+        try:
+            with transaction.atomic():
+                if isinstance(selection, bool):
+                    if selection is True:
+                        acc_panel.accessions.remove(*cq)
+
+                elif selection['op'] == 'in':
+                    acc_panel.accessions.remove(*cq.filter(id__in=selection['value']))
+
+                elif selection['op'] == 'notin':
+                    acc_panel.accessions.remove(*cq.filter(id__notin=selection['value']))
+
+                acc_panel.save()
+
+        except IntegrityError as e:
+            Descriptor.integrity_except(AccessionPanel, e)
+
+    elif action == 'add':
+        try:
+            with transaction.atomic():
+                if isinstance(selection, bool):
+                    if selection is True:
+                        acc_panel.accessions.add(*cq)
+
+                elif selection['op'] == 'in':
+                    acc_panel.accessions.add(*cq.filter(id__in=selection['value']))
+
+                elif selection['op'] == 'notin':
+                    acc_panel.accessions.add(*cq.filter(id__notin=selection['value']))
+
+                acc_panel.save()
+
+        except IntegrityError as e:
+            Descriptor.integrity_except(AccessionPanel, e)
+    else:
+        raise SuspiciousOperation('Invalid action')
+
+    return HttpResponseRest(request, {})
 
 
 @RestAccessionPanelSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
