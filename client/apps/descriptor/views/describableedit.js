@@ -165,6 +165,7 @@ let View = ItemView.extend({
                 let descriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.destroy();
+                    descriptorModelType.widget = null;
                 }
             }
         }
@@ -238,7 +239,7 @@ let View = ItemView.extend({
             for (let i = 0; i < this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors.length; ++i) {
                 let descriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
                 if (descriptorModelType.widget) {
-                    descriptorModelType.widget.destroy();
+                    descriptorModelType.widget.cancel();
                 }
             }
         }
