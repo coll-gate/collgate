@@ -20,7 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 from accession import localsettings
 from descriptor.describable import DescriptorsBuilder
 # from descriptor.models import Layout, DescriptorModelType
-from descriptor.models import Layout
+from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.models import Language
@@ -51,130 +51,130 @@ class RestAccessionId(RestAccessionAccession):
     suffix = 'id'
 
 
-# @RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={
-#     "type": "object",
-#     "properties": {
-#         "name": AccessionSynonym.NAME_VALIDATOR,
-#         "code": AccessionSynonym.CODE_VALIDATOR,
-#         "layout": {"type": "number"},
-#         "primary_classification_entry": {"type": "number"},
-#         "descriptors": {"type": "object"},
-#         "language": AccessionSynonym.LANGUAGE_VALIDATOR
-#     },
-# }, perms={
-#     'accession.add_accession': _("You are not allowed to create an accession")
-# })
-# def create_accession(request):
-#     name = request.data['name']
-#     code = request.data['code']
-#     layout_id = int_arg(request.data['layout'])
-#     primary_classification_entry_id = int_arg(request.data['primary_classification_entry'])
-#     descriptors = request.data['descriptors']
-#     language = request.data['language']
-#
-#     # check uniqueness of the code for any type of synonym
-#     if AccessionSynonym.objects.filter(name=code).exists():
-#         raise SuspiciousOperation(_("The code of the accession is already used as a synonym name"))
-#
-#     # check uniqueness of the code
-#     if Accession.objects.filter(code=code).exists():
-#         raise SuspiciousOperation(_("The code of the accession is already used"))
-#
-#     if not Language.objects.filter(code=language).exists():
-#         raise SuspiciousOperation(_("The language is not supported"))
-#
-#     if name == code:
-#         raise SuspiciousOperation(_("The code and the name of the accession must be different"))
-#
-#     content_type = get_object_or_404(ContentType, app_label="accession", model="accession")
-#     layout = get_object_or_404(Layout, id=layout_id, target=content_type)
-#
-#     try:
-#         with transaction.atomic():
-#             # common properties
-#             accession = Accession()
-#             accession.name = name
-#             accession.code = code
-#             accession.layout = layout
-#
-#             # primary classification entry
-#             primary_classification_entry = get_object_or_404(ClassificationEntry, id=primary_classification_entry_id)
-#             accession.primary_classification_entry = primary_classification_entry
-#
-#             # descriptors
-#             descriptors_builder = DescriptorsBuilder(accession)
-#
-#             descriptors_builder.check_and_update(layout, descriptors)
-#             accession.descriptors = descriptors_builder.descriptors
-#
-#             accession.save()
-#
-#             # update owner on external descriptors
-#             descriptors_builder.update_associations()
-#
-#             # primary classifications in M2M
-#             AccessionClassificationEntry.objects.create(
-#                 accession=accession, classification_entry=primary_classification_entry, primary=True)
-#
-#             # initial synonym GRC code
-#             grc_code = AccessionSynonym(
-#                 entity=accession,
-#                 name=code,
-#                 synonym_type_id=localsettings.synonym_type_accession_code,
-#                 language='en')
-#             grc_code.save()
-#
-#             # primary synonym if defined
-#             primary_name = AccessionSynonym(
-#                 entity=accession,
-#                 name=name,
-#                 synonym_type_id=localsettings.synonym_type_accession_name,
-#                 language=language)
-#             primary_name.save()
-#
-#             accession.synonyms.add(grc_code)
-#             accession.synonyms.add(primary_name)
-#
-#             # add related classification entries
-#             classification_entry_bulk = []
-#             for classification_entry in primary_classification_entry.related.all():
-#                 ace = AccessionClassificationEntry(
-#                     primary=False,
-#                     accession=accession,
-#                     classification_entry=classification_entry
-#                 )
-#
-#                 classification_entry_bulk.append(ace)
-#
-#             AccessionClassificationEntry.objects.bulk_create(classification_entry_bulk)
-#
-#     except IntegrityError as e:
-#         DescriptorModelType.integrity_except(Accession, e)
-#
-#     response = {
-#         'id': accession.pk,
-#         'name': accession.name,
-#         'code': accession.code,
-#         'layout': layout.id,
-#         'primary_classification_entry': primary_classification_entry.id,
-#         'descriptors': descriptors,
-#         'synonyms': [
-#             {
-#                 'id': grc_code.id,
-#                 'name': grc_code.name,
-#                 'synonym_type': grc_code.synonym_type_id,
-#                 'language': grc_code.language
-#             },
-#             {
-#                 'id': primary_name.id,
-#                 'name': primary_name.name,
-#                 'synonym_type': primary_name.synonym_type_id,
-#                 'language': primary_name.language
-#             }
-#         ]
-#     }
-#
-#     return HttpResponseRest(request, response)
+@RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "name": AccessionSynonym.NAME_VALIDATOR,
+        "code": AccessionSynonym.CODE_VALIDATOR,
+        "layout": {"type": "number"},
+        "primary_classification_entry": {"type": "number"},
+        "descriptors": {"type": "object"},
+        "language": AccessionSynonym.LANGUAGE_VALIDATOR
+    },
+}, perms={
+    'accession.add_accession': _("You are not allowed to create an accession")
+})
+def create_accession(request):
+    name = request.data['name']
+    code = request.data['code']
+    layout_id = int_arg(request.data['layout'])
+    primary_classification_entry_id = int_arg(request.data['primary_classification_entry'])
+    descriptors = request.data['descriptors']
+    language = request.data['language']
+
+    # check uniqueness of the code for any type of synonym
+    if AccessionSynonym.objects.filter(name=code).exists():
+        raise SuspiciousOperation(_("The code of the accession is already used as a synonym name"))
+
+    # check uniqueness of the code
+    if Accession.objects.filter(code=code).exists():
+        raise SuspiciousOperation(_("The code of the accession is already used"))
+
+    if not Language.objects.filter(code=language).exists():
+        raise SuspiciousOperation(_("The language is not supported"))
+
+    if name == code:
+        raise SuspiciousOperation(_("The code and the name of the accession must be different"))
+
+    content_type = get_object_or_404(ContentType, app_label="accession", model="accession")
+    layout = get_object_or_404(Layout, id=layout_id, target=content_type)
+
+    try:
+        with transaction.atomic():
+            # common properties
+            accession = Accession()
+            accession.name = name
+            accession.code = code
+            accession.layout = layout
+
+            # primary classification entry
+            primary_classification_entry = get_object_or_404(ClassificationEntry, id=primary_classification_entry_id)
+            accession.primary_classification_entry = primary_classification_entry
+
+            # descriptors
+            descriptors_builder = DescriptorsBuilder(accession)
+
+            descriptors_builder.check_and_update(layout, descriptors)
+            accession.descriptors = descriptors_builder.descriptors
+
+            accession.save()
+
+            # update owner on external descriptors
+            descriptors_builder.update_associations()
+
+            # primary classifications in M2M
+            AccessionClassificationEntry.objects.create(
+                accession=accession, classification_entry=primary_classification_entry, primary=True)
+
+            # initial synonym GRC code
+            grc_code = AccessionSynonym(
+                entity=accession,
+                name=code,
+                synonym_type_id=localsettings.synonym_type_accession_code,
+                language='en')
+            grc_code.save()
+
+            # primary synonym if defined
+            primary_name = AccessionSynonym(
+                entity=accession,
+                name=name,
+                synonym_type_id=localsettings.synonym_type_accession_name,
+                language=language)
+            primary_name.save()
+
+            accession.synonyms.add(grc_code)
+            accession.synonyms.add(primary_name)
+
+            # add related classification entries
+            classification_entry_bulk = []
+            for classification_entry in primary_classification_entry.related.all():
+                ace = AccessionClassificationEntry(
+                    primary=False,
+                    accession=accession,
+                    classification_entry=classification_entry
+                )
+
+                classification_entry_bulk.append(ace)
+
+            AccessionClassificationEntry.objects.bulk_create(classification_entry_bulk)
+
+    except IntegrityError as e:
+        Descriptor.integrity_except(Accession, e)
+
+    response = {
+        'id': accession.pk,
+        'name': accession.name,
+        'code': accession.code,
+        'layout': layout.id,
+        'primary_classification_entry': primary_classification_entry.id,
+        'descriptors': accession.descriptors,
+        'synonyms': [
+            {
+                'id': grc_code.id,
+                'name': grc_code.name,
+                'synonym_type': grc_code.synonym_type_id,
+                'language': grc_code.language
+            },
+            {
+                'id': primary_name.id,
+                'name': primary_name.name,
+                'synonym_type': primary_name.synonym_type_id,
+                'language': primary_name.language
+            }
+        ]
+    }
+
+    return HttpResponseRest(request, response)
 
 
 @RestAccessionAccessionCount.def_auth_request(Method.GET, Format.JSON, perms={
@@ -502,7 +502,7 @@ def patch_accession(request, acc_id):
 
             accession.save()
     except IntegrityError as e:
-        DescriptorModelType.integrity_except(Accession, e)
+        Descriptor.integrity_except(Accession, e)
 
     return HttpResponseRest(request, result)
 

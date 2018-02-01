@@ -239,6 +239,8 @@ let Layout = LayoutView.extend({
                 }));
             });
 
+            let model = this.model;
+
             // descriptors edit tab
             $.ajax({
                 method: "GET",
@@ -255,8 +257,8 @@ let Layout = LayoutView.extend({
                         return;
                     }
 
-                    let AccessionDescriptorView = require('./accessiondescriptor');
-                    let accessionDescriptorView = new AccessionDescriptorView({
+                    // let AccessionDescriptorView = require('./accessiondescriptor');
+                    let accessionDescriptorView = new AccessionDescriptorEditView({
                         model: model,
                         descriptorMetaModelLayout: data,
                         descriptorCollection: view.descriptorCollection

@@ -22,7 +22,7 @@ let Model = Backbone.Model.extend({
         id: null,
         name: '',
         selection: {},
-        descriptor_meta_model: null,
+        layout: null,
         descriptors: {}
     },
 

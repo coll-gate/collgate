@@ -312,7 +312,7 @@ let Controller = Marionette.Object.extend({
                             code: code,
                             name: name,
                             primary_classification_entry: primaryClassificationEntryId,
-                            descriptor_meta_model: descriptorMetaModelId,
+                            layout: descriptorMetaModelId,
                             language: this.ui.language.val()
                         });
 
