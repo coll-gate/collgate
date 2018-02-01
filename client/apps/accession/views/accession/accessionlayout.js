@@ -242,18 +242,28 @@ let Layout = LayoutView.extend({
             // descriptors edit tab
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
+                url: window.application.url(['descriptor', 'layout', this.model.get('layout')]),
                 dataType: 'json'
             }).done(function (data) {
-                if (!accessionLayout.isRendered()) {
-                    return;
-                }
+                let view = this;
 
-                let accessionDescriptorView = new AccessionDescriptorEditView({
-                    model: accessionLayout.model, descriptorMetaModelLayout: data
+                this.descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
                 });
+                this.descriptorCollection.fetch().then(function () {
+                    if (!accessionLayout.isRendered()) {
+                        return;
+                    }
 
-                accessionLayout.showChildView('descriptors', accessionDescriptorView);
+                    let AccessionDescriptorView = require('./accessiondescriptor');
+                    let accessionDescriptorView = new AccessionDescriptorView({
+                        model: model,
+                        descriptorMetaModelLayout: data,
+                        descriptorCollection: view.descriptorCollection
+
+                    });
+                    accessionLayout.showChildView('descriptors', accessionDescriptorView);
+                });
             });
 
             // not available tabs

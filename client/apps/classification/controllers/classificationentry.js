@@ -23,7 +23,7 @@ let Controller = Marionette.Object.extend({
     create: function() {
         $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'classification.classificationentry']),
+            url: window.application.url(['descriptor', 'layout', 'for-describable', 'classification.classificationentry']),
             dataType: 'json'
         }).done(function(data) {
             let CreateClassificationEntryDialog = Dialog.extend({

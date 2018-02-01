@@ -27,7 +27,7 @@ let View = DescribableDetails.extend({
 
         let actions = [];
 
-        if (!this.model.get('descriptor_meta_model')) {
+        if (!this.model.get('layout')) {
             actions.push('add');
         } else {
             actions.push('modify');

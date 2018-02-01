@@ -34,7 +34,7 @@ let View = Marionette.View.extend({
 
             $.ajax({
                 type: "GET",
-                url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.batchpanel']),
+                url: window.application.url(['descriptor', 'layout', 'for-describable', 'accession.batchpanel']),
                 dataType: 'json'
             }).done(function (data) {
                 let CreateDescriptorView = Dialog.extend({

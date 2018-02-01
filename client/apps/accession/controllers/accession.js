@@ -25,7 +25,7 @@ let Controller = Marionette.Object.extend({
     create: function() {
         $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.accession']),
+            url: window.application.url(['descriptor', 'layout', 'for-describable', 'accession.accession']),
             dataType: 'json'
         }).done(function(data) {
             let CreateAccessionDialog = Dialog.extend({
@@ -274,7 +274,7 @@ let Controller = Marionette.Object.extend({
                     let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                     if (isNaN(descriptorMetaModelId)) {
-                        $.alert.error(_t("The meta-model of descriptors must be defined"));
+                        $.alert.error(_t("The layout of descriptors must be defined"));
                         valid = false;
                     }
 

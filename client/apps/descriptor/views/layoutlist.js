@@ -1,6 +1,6 @@
 /**
  * @file descriptormetamodellist.js
- * @brief List of meta-model of descriptors view
+ * @brief List of layout of descriptors view
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD

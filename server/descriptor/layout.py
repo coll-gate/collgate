@@ -261,17 +261,17 @@ def get_layout_for_describable(request, content_type_name):
 
     layouts = Layout.objects.filter(target=content_type)
 
-    layouts = []
+    items = []
 
     for layout in layouts:
-        layouts.append({
+        items.append({
             'id': layout.id,
             'name': layout.name,
             'label': layout.get_label(),
             'parameters': layout.parameters
         })
 
-    return HttpResponseRest(request, layouts)
+    return HttpResponseRest(request, items)
 
 
 @RestLayoutId.def_auth_request(Method.GET, Format.JSON)

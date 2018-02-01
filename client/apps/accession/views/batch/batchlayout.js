@@ -13,6 +13,7 @@ let AccessionModel = require('../../models/accession');
 let ScrollingMoreView = require('../../../main/views/scrollingmore');
 let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
 let BatchDescriptorEditView = require('./batchdescriptoredit');
+let DescriptorCollection = require('../../../descriptor/collections/layoutdescriptor');
 
 let Layout = LayoutView.extend({
     template: require("../../templates/batchlayout.html"),
@@ -94,19 +95,28 @@ let Layout = LayoutView.extend({
             // get the layout before creating the view
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', value, 'layout']),
+                url: window.application.url(['descriptor', 'layout', value]),
                 dataType: 'json'
             }).done(function (data) {
-                if (!batchLayout.isRendered()) {
-                    return;
-                }
+                let view = this;
 
-                let BatchDescriptorView = require('./batchdescriptor');
-                let batchDescriptorView = new BatchDescriptorView({
-                    model: model,
-                    descriptorMetaModelLayout: data
+                this.descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
                 });
-                batchLayout.showChildView('descriptors', batchDescriptorView);
+                this.descriptorCollection.fetch().then(function () {
+                    if (!batchLayout.isRendered()) {
+                        return;
+                    }
+
+                    let BatchDescriptorView = require('./batchdescriptor');
+                    let batchDescriptorView = new BatchDescriptorView({
+                        model: batchLayout.model,
+                        descriptorMetaModelLayout: data,
+                        descriptorCollection: view.descriptorCollection
+
+                    });
+                    batchLayout.showChildView('descriptors', batchDescriptorView);
+                });
 
                 // // manually called
                 // if (batchLayout.activeTab === 'descriptors') {
@@ -242,24 +252,34 @@ let Layout = LayoutView.extend({
             });
 
 
-            this.onLayoutChange(this.model, this.model.get('descriptor_meta_model'));
+            this.onLayoutChange(this.model, this.model.get('layout'));
             this.enableTabs();
         } else {
             // descriptors edit tab
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
+                url: window.application.url(['descriptor', 'layout', this.model.get('layout')]),
                 dataType: 'json'
             }).done(function (data) {
-                if (!batchLayout.isRendered()) {
-                    return;
-                }
+                let view = this;
 
-                let batchDescriptorView = new BatchDescriptorEditView({
-                    model: batchLayout.model, descriptorMetaModelLayout: data
+                this.descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
                 });
+                this.descriptorCollection.fetch().then(function () {
+                    if (!batchLayout.isRendered()) {
+                        return;
+                    }
 
-                batchLayout.showChildView('descriptors', batchDescriptorView);
+                    // let AccessionDescriptorView = require('./accessiondescriptor');
+                    let batchDescriptorView = new BatchDescriptorEditView({
+                        model: batchLayout.model,
+                        descriptorMetaModelLayout: data,
+                        descriptorCollection: view.descriptorCollection
+
+                    });
+                    batchLayout.showChildView('descriptors', batchDescriptorView);
+                });
             });
 
             // not available tabs

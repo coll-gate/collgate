@@ -80,7 +80,7 @@ let View = Dialog.extend({
 
         $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'meta-model', 'for-describable', entityType]),
+            url: window.application.url(['descriptor', 'layout', 'for-describable', entityType]),
             dataType: 'json',
         }).done(function (data) {
             view.ui.meta_model.children('option').remove();

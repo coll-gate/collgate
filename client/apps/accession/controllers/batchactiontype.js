@@ -23,7 +23,7 @@ let Controller = Marionette.Object.extend({
     create: function() {
         $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.batchactiontype']),
+            url: window.application.url(['descriptor', 'layout', 'for-describable', 'accession.batchactiontype']),
             dataType: 'json'
         }).done(function(data) {
             let CreateBatchActionTypeDialog = Dialog.extend({

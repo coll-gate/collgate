@@ -35,7 +35,7 @@ let View = Marionette.View.extend({
 
         $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'classification.classificationentry']),
+            url: window.application.url(['descriptor', 'layout', 'for-describable', 'classification.classificationentry']),
             dataType: 'json',
         }).done(function(data) {
             let CreateDescriptorView = Dialog.extend({
@@ -87,7 +87,7 @@ let View = Marionette.View.extend({
 
                         $.ajax({
                             method: "GET",
-                            url: window.application.url(['descriptor', 'meta-model', metaModel, 'layout']),
+                            url: window.application.url(['descriptor', 'layout', metaModel]),
                             dataType: 'json',
                         }).done(function(data) {
                             let classificationEntryDescriptorView = new ClassificationEntryDescriptorView({

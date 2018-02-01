@@ -88,7 +88,7 @@ let Layout = LayoutView.extend({
             // get the layout before creating the view
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', value, 'layout']),
+                url: window.application.url(['descriptor', 'layout', value]),
                 dataType: 'json'
             }).done(function (data) {
                 if (!classificationEntryLayout.isRendered()) {
@@ -198,7 +198,7 @@ let Layout = LayoutView.extend({
                     targetView: classificationEntryListView, collection: classificationEntryRelated}));
             });
 
-            this.onLayoutChange(this.model, this.model.get('descriptor_meta_model'));
+            this.onLayoutChange(this.model, this.model.get('layout'));
             this.enableTabs();
         } else {
             // details views
@@ -233,7 +233,7 @@ let Layout = LayoutView.extend({
             // descriptors edit tab
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
+                url: window.application.url(['descriptor', 'layout', this.model.get('layout')]),
                 dataType: 'json'
             }).done(function(data) {
                 if (!classificationEntryLayout.isRendered()) {

@@ -65,7 +65,7 @@ let Controller = Marionette.Object.extend({
 
         $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.batch']),
+            url: window.application.url(['descriptor', 'layout', 'for-describable', 'accession.batch']),
             dataType: 'json'
         }).done(function (data) {
             let CreateBatchView = Dialog.extend({
@@ -192,13 +192,13 @@ let Controller = Marionette.Object.extend({
                     if (this.validate()) {
                         let name = this.ui.name.val().trim();
                         let accession = parseInt(this.ui.accession.val());
-                        let metaModel = parseInt(this.ui.meta_model.val());
+                        let layout = parseInt(this.ui.meta_model.val());
 
                         // create a new local model and open an edit view with this model
                         let model = new BatchModel({
                             name: name,
                             accession: accession,
-                            descriptor_meta_model: metaModel,
+                            layout: layout,
                             selection: {
                                 select: selection,
                                 from: related_entity,
