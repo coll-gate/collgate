@@ -15,7 +15,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from accession.actiontypeformat import ActionTypeFormatManager
+from accession.actions.actionstepformat import ActionStepFormatManager
 from accession.namebuilder import NameBuilderManager
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel
@@ -95,7 +95,8 @@ def get_batch_details_json(request, bat_id):
 @RestBatch.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": Batch.NAME_VALIDATOR,
+            # "name": Batch.NAME_VALIDATOR,
+            "naming_options": {"type": "array", 'minItems': 0, 'maxItems': 10, 'additionalItems': {'type': 'any'}, 'items': []},
             "descriptor_meta_model": {"type": "number"},
             "accession": {"type": "number"},
             "descriptors": {"type": "object"}
@@ -110,8 +111,8 @@ def create_batch(request):
     by an action of creation.
     This method still because of its interest during development process.
     """
-
-    name = request.data['name']
+    # name = request.data['name']
+    naming_options = request.data['naming_options']
     dmm_id = int_arg(request.data['descriptor_meta_model'])
     accession_id = int_arg(request.data['accession'])
     descriptors = request.data['descriptors']
@@ -121,6 +122,14 @@ def create_batch(request):
     related_entity = request.data['selection']['from']
     search = request.data['selection']['search']
     filters = request.data['selection']['filters']
+
+    # naming
+    accession = get_object_or_404(Accession, id=accession_id)
+    naming_variables = {
+        'ACCESSION_NAME': accession.name,
+        'ACCESSION_CODE': accession.code
+    }
+    name = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH).pick(naming_variables, naming_options)
 
     # check uniqueness of the name
     if Batch.objects.filter(name=name).exists():
@@ -355,7 +364,6 @@ def get_batch_children_batches_list_count(request, bat_id):
     }
 
     return HttpResponseRest(request, results)
-
 
 
 @RestBatchIdParent.def_auth_request(Method.GET, Format.JSON, perms={

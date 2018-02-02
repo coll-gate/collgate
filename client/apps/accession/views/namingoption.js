@@ -13,6 +13,9 @@ let Marionette = require('backbone.marionette');
 let View = Marionette.View.extend({
     tagName: 'div',
     className: 'naming-option',
+    attributes: {
+        'style': 'padding-top: 5px; padding-bottom: 10px; margin-bottom: 10px; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;'
+    },
     template: require('../templates/namingoption.html'),
     templateContext: function () {
         return {
@@ -42,6 +45,11 @@ let View = Marionette.View.extend({
         }
 
         return res;
+    },
+
+    validateNamingOptions: function() {
+        // @todo
+        return true;
     }
 });
 

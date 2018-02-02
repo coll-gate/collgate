@@ -31,8 +31,8 @@ let View = DescribableDetails.extend({
             actions.push('add');
         } else {
             actions.push('modify');
-            // actions.push('replace');
-            // actions.push('delete');
+            // actionstep.push('replace');
+            // actionstep.push('delete');
         }
 
         let ClassificationEntryDescriptorContextView = require('./classificationentrydescriptorcontext');

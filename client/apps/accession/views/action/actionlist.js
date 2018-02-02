@@ -90,14 +90,14 @@ let View = AdvancedTable.extend({
         }
 
         let TitleView = require('../../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: _t("Batches actions")}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Batches actionstep")}));
 
         let actions = [
         ];
 
         // @todo what needed
         // let AccessionBatchesContextView = require('./batchactionlistcontext');
-        // let contextView = new AccessionBatchesContextView({actions: actions});
+        // let contextView = new AccessionBatchesContextView({actionstep: actionstep});
         // contextLayout.showChildView('content', contextView);
     },
 

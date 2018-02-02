@@ -36,11 +36,6 @@ class RestAccessionAccession(RestAccession):
     name = 'accession'
 
 
-class RestAccessionNaming(RestAccessionAccession):
-    regex = r'^naming/$'
-    name = 'naming'
-
-
 class RestAccessionSearch(RestAccessionAccession):
     regex = r'^search/$'
     suffix = 'search'
@@ -56,27 +51,12 @@ class RestAccessionId(RestAccessionAccession):
     suffix = 'id'
 
 
-@RestAccessionNaming.def_auth_request(Method.GET, Format.JSON)
-def get_accession_naming(request):
-    """
-    Generate a new unique accession name.
-    """
-    name = NameBuilderManager.get(NameBuilderManager.GLOBAL_ACCESSION).pick([])
-
-    result = {
-        'name': name,
-        'app_label': "accession",
-        'model': "accession"
-    }
-
-    return HttpResponseRest(request, result)
-
-
 @RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={
     "type": "object",
     "properties": {
         "name": AccessionSynonym.NAME_VALIDATOR,
-        "code": AccessionSynonym.CODE_VALIDATOR,
+        "naming_options": {"type": "array", 'minItems': 0, 'maxItems': 10, 'additionalItems': {'type': 'any'}, 'items': []},
+        # "code": AccessionSynonym.CODE_VALIDATOR,
         "descriptor_meta_model": {"type": "number"},
         "primary_classification_entry": {"type": "number"},
         "descriptors": {"type": "object"},
@@ -87,11 +67,18 @@ def get_accession_naming(request):
 })
 def create_accession(request):
     name = request.data['name']
-    code = request.data['code']
+    naming_options = request.data['naming_options']
+    # code = request.data['code']
     dmm_id = int_arg(request.data['descriptor_meta_model'])
     primary_classification_entry_id = int_arg(request.data['primary_classification_entry'])
     descriptors = request.data['descriptors']
     language = request.data['language']
+
+    if not Language.objects.filter(code=language).exists():
+        raise SuspiciousOperation(_("The language is not supported"))
+
+    naming_variables = {}
+    code = NameBuilderManager.get(NameBuilderManager.GLOBAL_ACCESSION).pick(naming_variables, naming_options)
 
     # check uniqueness of the code for any type of synonym
     if AccessionSynonym.objects.filter(name=code).exists():
@@ -100,9 +87,6 @@ def create_accession(request):
     # check uniqueness of the code
     if Accession.objects.filter(code=code).exists():
         raise SuspiciousOperation(_("The code of the accession is already used"))
-
-    if not Language.objects.filter(code=language).exists():
-        raise SuspiciousOperation(_("The language is not supported"))
 
     if name == code:
         raise SuspiciousOperation(_("The code and the name of the accession must be different"))

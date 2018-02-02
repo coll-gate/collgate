@@ -14,7 +14,7 @@ let Behavior = Marionette.Behavior.extend({
 
     defaultTemplate: _.template(
         '<div class="clearfix cell-context-menu" style="position: absolute; display:none;">' +
-            '<ul class="actions-list">' +
+            '<ul class="actionstep-list">' +
                 '<li class="action"><a href="#" name="copy-value">' + _t("Copy value to clipboard") + '</a></li>' +
             '</ul>' +
         '</div>'),

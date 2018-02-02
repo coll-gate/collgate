@@ -29,13 +29,7 @@ let Controller = Marionette.Object.extend({
             dataType: 'json'
         });
 
-        let naming = $.ajax({
-            type: "GET",
-            url: window.application.url(['accession', 'accession', 'naming']),
-            dataType: 'json'
-        });
-
-        $.when(description, naming).then(function(data, naming) {
+        description.then(function(data) {
             let CreateAccessionDialog = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_accession'
@@ -43,13 +37,12 @@ let Controller = Marionette.Object.extend({
                 template: require('../templates/accessioncreate.html'),
                 templateContext: function () {
                     return {
-                        meta_models: data[0]
+                        meta_models: data
                     };
                 },
 
                 ui: {
                     validate: "button.continue",
-                    code: "#accession_code",
                     name: "#accession_name",
                     language: "#accession_language",
                     descriptor_meta_model: "#meta_model",
@@ -59,10 +52,13 @@ let Controller = Marionette.Object.extend({
 
                 events: {
                     'click @ui.validate': 'onContinue',
-                    'input @ui.code': 'onCodeInput',
                     'input @ui.name': 'onNameInput',
                     'change @ui.descriptor_meta_model': 'onChangeDescriptorMetaModel',
                     'change @ui.primary_classification': 'onChangePrimaryClassification'
+                },
+
+                regions: {
+                    'namingOptions': 'div.naming-options'
                 },
 
                 initialize: function (options) {
@@ -80,9 +76,28 @@ let Controller = Marionette.Object.extend({
                 onRender: function () {
                     CreateAccessionDialog.__super__.onRender.apply(this);
 
-                    application.main.views.languages.drawSelect(this.ui.language);
+                    window.application.main.views.languages.drawSelect(this.ui.language);
                     this.ui.descriptor_meta_model.selectpicker({});
                     this.ui.primary_classification.selectpicker({});
+
+                    // naming options
+                    let self = this;
+
+                    $.ajax({
+                        type: "GET",
+                        url: window.application.url(['accession', 'naming', 'accession']),
+                        dataType: 'json',
+                    }).done(function(data) {
+                        let NamingOptionsView = require('../views/namingoption');
+                        let len = (data.format.match(/{CONST}/g) || []).length;
+
+                        let namingOptions = new Array(len);
+
+                        self.showChildView("namingOptions", new NamingOptionsView({
+                            namingFormat: data.format,
+                            namingOptions: namingOptions
+                        }));
+                    });
 
                     // on default descriptor meta-model
                     this.onChangeDescriptorMetaModel();
@@ -171,43 +186,42 @@ let Controller = Marionette.Object.extend({
                     ).fixSelect2Position();
                 },
 
-                onCodeInput: function () {
-                    let code = this.ui.code.val().trim();
-
-                    if (this.validateCode()) {
-                        let filters = {
-                            method: 'ieq',
-                            fields: ['code'],
-                            'code': code
-                        };
-
-                        $.ajax({
-                            type: "GET",
-                            url: window.application.url(['accession', 'accession', 'search']),
-                            dataType: 'json',
-                            contentType: 'application/json; charset=utf8',
-                            data: {filters: JSON.stringify(filters)},
-                            el: this.ui.code,
-                        }).done(function (data) {
-                            for (let i in data.items) {
-                                let t = data.items[i];
-
-                                if (t.value.toUpperCase() === code.toUpperCase()) {
-                                    $(this.el).validateField('failed', _t('Code of accession already used'));
-                                    return;
-                                }
-                            }
-
-                            $(this.el).validateField('ok');
-                        });
-                    }
-                },
+                // onCodeInput: function () {
+                //     let code = this.ui.code.val().trim();
+                //
+                //     if (this.validateCode()) {
+                //         let filters = {
+                //             method: 'ieq',
+                //             fields: ['code'],
+                //             'code': code
+                //         };
+                //
+                //         $.ajax({
+                //             type: "GET",
+                //             url: window.application.url(['accession', 'accession', 'search']),
+                //             dataType: 'json',
+                //             contentType: 'application/json; charset=utf8',
+                //             data: {filters: JSON.stringify(filters)},
+                //             el: this.ui.code,
+                //         }).done(function (data) {
+                //             for (let i in data.items) {
+                //                 let t = data.items[i];
+                //
+                //                 if (t.value.toUpperCase() === code.toUpperCase()) {
+                //                     $(this.el).validateField('failed', _t('Code of accession already used'));
+                //                     return;
+                //                 }
+                //             }
+                //
+                //             $(this.el).validateField('ok');
+                //         });
+                //     }
+                // },
 
                 onNameInput: function () {
                     let name = this.ui.name.val().trim();
                     let self = this;
 
-                    // @todo must respect the nomenclature from the meta-model
                     if (this.validateName()) {
                         let filters = {
                             method: 'ieq',
@@ -222,7 +236,8 @@ let Controller = Marionette.Object.extend({
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
                         }).done(function (data) {
-                            let accessionCodeId = application.accession.collections.accessionSynonymTypes.findWhere({name: "accession_code"}).get('id');
+                            let accessionCodeId = window.application.accession.collections.accessionSynonymTypes.findWhere(
+                                {name: "accession_code"}).get('id');
 
                             for (let i in data.items) {
                                 let t = data.items[i];
@@ -238,24 +253,24 @@ let Controller = Marionette.Object.extend({
                     }
                 },
 
-                validateCode: function() {
-                    let v = this.ui.code.val().trim();
-
-                    if (v.length > 128) {
-                        this.ui.code.validateField('failed', _t('characters_max', {count: 128}));
-                        return false;
-                    } else if (v.length < 1) {
-                        this.ui.code.validateField('failed', _t('characters_min', {count: 1}));
-                        return false;
-                    }
-
-                    if (v === this.ui.name.val().trim()) {
-                        this.ui.code.validateField('failed', 'Code and name must be different');
-                        return false;
-                    }
-
-                    return true;
-                },
+                // validateCode: function() {
+                //     let v = this.ui.code.val().trim();
+                //
+                //     if (v.length > 128) {
+                //         this.ui.code.validateField('failed', _t('characters_max', {count: 128}));
+                //         return false;
+                //     } else if (v.length < 1) {
+                //         this.ui.code.validateField('failed', _t('characters_min', {count: 1}));
+                //         return false;
+                //     }
+                //
+                //     if (v === this.ui.name.val().trim()) {
+                //         this.ui.code.validateField('failed', 'Code and name must be different');
+                //         return false;
+                //     }
+                //
+                //     return true;
+                // },
 
                 validateName: function() {
                     let v = this.ui.name.val().trim();
@@ -268,10 +283,10 @@ let Controller = Marionette.Object.extend({
                         return false;
                     }
 
-                    if (v === this.ui.code.val().trim()) {
-                        this.ui.name.validateField('failed', 'Code and name must be different');
-                        return false;
-                    }
+                    // if (v === this.ui.code.val().trim()) {
+                    //     this.ui.name.validateField('failed', 'Code and name must be different');
+                    //     return false;
+                    // }
 
                     return true;
                 },
@@ -291,14 +306,8 @@ let Controller = Marionette.Object.extend({
                         valid = false;
                     }
 
-                    if (this.ui.code.val().trim() === this.ui.name.val().trim()) {
-                        this.ui.code.validateField('failed', _t('Code and name must be different'));
-                        this.ui.name.validateField('failed', _t('Code and name must be different'));
-                    }
-
-                     if (this.ui.code.hasClass('invalid') ||
-                         this.ui.name.hasClass('invalid') ||
-                         this.ui.primary_classification_entry.hasClass('invalid')) {
+                    // @todo could have an API to validate naming options to uses here
+                     if (this.ui.name.hasClass('invalid') || this.ui.primary_classification_entry.hasClass('invalid')) {
                         valid = false;
                     }
 
@@ -309,16 +318,16 @@ let Controller = Marionette.Object.extend({
                     let view = this;
 
                     if (this.validate()) {
-                        let code = this.ui.code.val().trim();
                         let name = this.ui.name.val().trim();
+                        let namingOptions = this.getChildView('namingOptions').getNamingOptions();
 
                         let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
                         let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                         // create a new local model and open an edit view with this model
                         let model = new AccessionModel({
-                            code: code,
                             name: name,
+                            naming_options: namingOptions,
                             primary_classification_entry: primaryClassificationEntryId,
                             descriptor_meta_model: descriptorMetaModelId,
                             language: this.ui.language.val()
@@ -327,7 +336,7 @@ let Controller = Marionette.Object.extend({
                         view.destroy();
 
                         let defaultLayout = new DefaultLayout();
-                        application.main.showContent(defaultLayout);
+                        window.application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
                             title: _t("Accession"),
@@ -342,9 +351,6 @@ let Controller = Marionette.Object.extend({
 
             let createAccessionView = new CreateAccessionDialog();
             createAccessionView.render();
-
-            // generated name
-            createAccessionView.ui.code.val(naming[0].name);
         });
     },
 

@@ -1,6 +1,6 @@
 /**
- * @file actiontypeformat.js
- * @brief Base class for any action type format.
+ * @file actionstepformat.js
+ * @brief Base class for any action step format.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-11
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -10,16 +10,16 @@
 
 let Marionette = require('backbone.marionette');
 
-let ActionTypeFormat = function() {
+let ActionStepFormat = function() {
     this.name = "";         // format name
     this.group = "";        // related informal group name
 };
 
-ActionTypeFormat.prototype = {
+ActionStepFormat.prototype = {
 };
 
-ActionTypeFormat.ActionTypeFormatDetailsView = Marionette.View.extend({
-    className: 'action-format-details',
+ActionStepFormat.ActionStepFormatDetailsView = Marionette.View.extend({
+    className: 'action-step-format-details',
     template: "<div></div>",
 
     initialize: function() {
@@ -35,4 +35,4 @@ ActionTypeFormat.ActionTypeFormatDetailsView = Marionette.View.extend({
     }
 });
 
-module.exports = ActionTypeFormat;
+module.exports = ActionStepFormat;

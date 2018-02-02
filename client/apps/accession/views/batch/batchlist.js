@@ -77,7 +77,7 @@ let View = AdvancedTable.extend({
         }
 
         let TitleView = require('../../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: _t("Batches actions")}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Batches actionstep")}));
 
         let actions = [
             'create-panel',

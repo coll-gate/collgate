@@ -372,7 +372,7 @@ class ActionType(Entity):
     label = JSONField(default={})
 
     # Format of the action (can define a lot of parameters, like input, output, process...)
-    format = JSONField(default={"type": "undefined"})
+    format = JSONField(default={"steps": []})
 
     # informative description.
     description = models.TextField(blank=True, default="")
@@ -404,15 +404,15 @@ class ActionType(Entity):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
-            '$format': {
-                'label': _('Type'),
-                'field': 'type->name',
-                'query': False,
-                'format': {
-                    'type': 'string',
-                    'model': 'accession.batchactionformattype'
-                }
-            }
+            # '$format': {
+            #     'label': _('Type'),
+            #     'field': 'type->name',
+            #     'query': False,
+            #     'format': {
+            #         'type': 'string',
+            #         'model': 'accession.batchactionformattype'
+            #     }
+            # }
         }
 
     def set_label(self, lang, label):

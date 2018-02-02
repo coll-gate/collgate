@@ -171,7 +171,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                     type.el.val(display);
                 });
             } else {
-                this.el.attr('value', "").el.val("");
+                this.el.attr('value', "").val("");
             }
         } else {
             if (definesValues) {

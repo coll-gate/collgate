@@ -7,6 +7,7 @@
 # @copyright Copyright (c) 2018 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details
+
 import json
 
 from django.shortcuts import get_object_or_404
@@ -14,7 +15,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from accession.base import RestAccession
 from accession.batch import RestBatchId
-from accession.actiontypeformat import ActionTypeFormatManager
 from accession.models import Action, Accession, ActionType, Batch
 
 from igdectk.common.helpers import int_arg
@@ -88,22 +88,24 @@ def create_action(request):
         elif batches["op"] == "notin":
             input_batches = Batch.objects.all().exclude(id__in=batches["value"])
 
-    batch_action_type_format = ActionTypeFormatManager.get(batch_action_type.format.get('type'))
-    batch_action = batch_action_type_format.controller().create(batch_action_type, accession, user, input_batches)
-
-    result = {
-        'id': batch_action.id,
-        'accession': accession_id,
-        'user': user.username,
-        'type': batch_action.type_id
-    }
+    # @todo step by step...
+    # batch_action_type_format = ActionStepFormatManager.get(batch_action_type.format.get('type'))
+    # batch_action = batch_action_type_format.controller().create(batch_action_type, accession, user, input_batches)
+    #
+    # result = {
+    #     'id': batch_action.id,
+    #     'accession': accession_id,
+    #     'user': user.username,
+    #     'type': batch_action.type_id
+    # }
+    result = {}
 
     return HttpResponseRest(request, result)
 
 
 @RestBatchIdAction.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.get_action': _("You are not allowed to get an action"),
-    'accession.list_action': _("You are not allowed to list actions")
+    'accession.list_action': _("You are not allowed to list actionstep")
 })
 def get_batch_id_action_list(request, bat_id):
     results_per_page = int_arg(request.GET.get('more', 30))
@@ -111,7 +113,7 @@ def get_batch_id_action_list(request, bat_id):
     limit = results_per_page
     sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    # @todo how to manage permission to list only auth actions
+    # @todo how to manage permission to list only auth actionstep
 
     if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
         order_by = sort_by + ['id']
@@ -161,7 +163,7 @@ def get_batch_id_action_list(request, bat_id):
 
 
 @RestBatchIdActionCount.def_auth_request(Method.GET, Format.JSON, perms={
-    'accession.list_action': _("You are not allowed to list the actions")
+    'accession.list_action': _("You are not allowed to list the actionstep")
 })
 def get_batch_id_action_list_count(request, bat_id):
     from main.cursor import CursorQuery

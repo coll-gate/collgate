@@ -23,7 +23,7 @@ let View = Marionette.View.extend({
     },
 
     ui: {
-        'refresh': 'span.refresh-actions'
+        'refresh': 'span.refresh-actionstep'
     },
 
     events: {

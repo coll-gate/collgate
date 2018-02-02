@@ -11,7 +11,6 @@
 let LayoutView = require('../../../main/views/layout');
 let AccessionModel = require('../../models/accession');
 let ScrollingMoreView = require('../../../main/views/scrollingmore');
-let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
 let ContentBottomFooterLayout = require('../../../main/views/contentbottomfooterlayout');
 let BatchDescriptorEditView = require('./batchdescriptoredit');
 let EntityListFilterView = require('../../../descriptor/views/entitylistfilter');
@@ -27,7 +26,7 @@ let Layout = LayoutView.extend({
         descriptors_tab: 'a[aria-controls=descriptors]',
         parents_tab: 'a[aria-controls=parents]',
         batches_tab: 'a[aria-controls=batches]',
-        actions_tab: 'a[aria-controls=actions]',
+        actions_tab: 'a[aria-controls=actionstep]',
         panels_tab: 'a[aria-controls=panels]'
     },
 
@@ -36,7 +35,7 @@ let Layout = LayoutView.extend({
         'descriptors': "div.tab-pane[name=descriptors]",
         'parents': "div.tab-pane[name=parents]",
         'batches': "div.tab-pane[name=batches]",
-        'actions': "div.tab-pane[name=actions]",
+        'actions': "div.tab-pane[name=actionstep]",
         'panels': "div.tab-pane[name=panels]"
     },
 
@@ -228,8 +227,6 @@ let Layout = LayoutView.extend({
                 // batchPanelListView.query(); here or $.when
             });
 
-            let AccessionCollection = require('../../collections/accession');
-
             let accession = new AccessionModel({id: this.model.get('accession')});
             accession.fetch().then(function () {
                 if (!batchLayout.isRendered()) {
@@ -242,41 +239,7 @@ let Layout = LayoutView.extend({
 
                 batchLayout.showChildView('details', batchPath);
 
-                // let accessions = new AccessionCollection([], {
-                //     filters: [{
-                //         "type": "term",
-                //         "field": "code",
-                //         "value": accession.attributes.code,
-                //         "op": "eq"
-                //     }]
-                // });
-                //
-                // // get available columns
-                // let columns4 = window.application.main.cache.lookup({
-                //     type: 'entity_columns',
-                //     format: {model: 'accession.accession'}
-                // });
-                //
-                // $.when(columns4, accessions.fetch()).then(function (data) {
-                //     if (!batchLayout.isRendered()) {
-                //         return;
-                //     }
-                //
-                //     let BatchAccessionListView = require('./../accession/accessionlist');
-                //     let batchAccessionListView = new BatchAccessionListView({
-                //         collection: accessions, model: batchLayout.model, columns: data[0].value
-                //     });
-                //
-                //     let contentBottomLayout = new ContentBottomLayout();
-                //     batchLayout.showChildView('accessions', contentBottomLayout);
-                //
-                //     contentBottomLayout.showChildView('content', batchAccessionListView);
-                //     contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchAccessionListView}));
-                //
-                //     // batchAccessionListView.query(); here or $.when
-                // });
-
-                // actions list tab
+                // actionstep list tab
                 let ActionCollection = require('../../collections/action');
                 let actions = new ActionCollection({batch_id: batchLayout.model.get('id')});
 
@@ -317,7 +280,7 @@ let Layout = LayoutView.extend({
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
             this.enableTabs();
         } else {
-            // descriptors edit tab (should no longer happen now with actions)
+            // descriptors edit tab
             $.ajax({
                 method: "GET",
                 url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),

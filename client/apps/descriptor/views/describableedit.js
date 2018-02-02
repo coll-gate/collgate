@@ -34,7 +34,7 @@ let View = ItemView.extend({
     },
 
     initialize: function(options) {
-        View.__super__.initialize.apply(this);
+        View.__super__.initialize.apply(this, arguments);
 
         this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
 
@@ -75,7 +75,7 @@ let View = ItemView.extend({
                 }
             }
 
-            let widget = application.descriptor.widgets.newElement(format.type);
+            let widget = window.application.descriptor.widgets.newElement(format.type);
             if (widget) {
                 widget.create(format, el.children('td.descriptor-value'), {
                     readOnly: false,
@@ -155,6 +155,7 @@ let View = ItemView.extend({
                 let descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.destroy();
+                    descriptorModelType.widget = null;
                 }
             }
         }

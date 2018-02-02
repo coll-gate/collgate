@@ -12,10 +12,11 @@ let Backbone = require('backbone');
 
 let Model = Backbone.Model.extend({
     url: function() {
-        if (this.isNew())
+        if (this.isNew()) {
             return window.application.url(['accession', 'batch']);
-        else
+        } else {
             return window.application.url(['accession', 'batch', this.get('id')]);
+        }
     },
 
     defaults: {
@@ -33,10 +34,10 @@ let Model = Backbone.Model.extend({
     validate: function(attrs) {
         let errors = {};
         let hasError = false;
-        if (!attrs.name) {
-            errors.name = 'Name must be valid and at least 3 characters length';
-            hasError = true;
-        }
+        // if (!attrs.name) {
+        //     errors.name = 'Name must be valid and at least 3 characters length';
+        //     hasError = true;
+        // }
 
         if (hasError) {
           return errors;

@@ -33,20 +33,20 @@ let ActionBtnEvents = Marionette.Behavior.extend({
 /*
     changeButtonMode: function () {
         let group = this.$el.children('div.row-action-group');
-        let numButtons = group.children('div.action.actions-buttons')[0].childElementCount;
+        let numButtons = group.children('div.action.actionstep-buttons')[0].childElementCount;
         group.css('margin-left', (-numButtons * 24 - 10).toString() + 'px');
 
         // $(window).on('resize', function change_btn_mode() {
         //     let btn_size = null;
         //     if ($(window).width() <= 1024) {
         //         group.css("display", "block");
-        //         group.children('div.action.actions-buttons').removeClass('btn-group-xs');
-        //         group.children('div.action.actions-buttons').addClass('btn-group-md');
+        //         group.children('div.action.actionstep-buttons').removeClass('btn-group-xs');
+        //         group.children('div.action.actionstep-buttons').addClass('btn-group-md');
         //         btn_size = 42;
         //     } else {
         //         group.css("display", "none");
-        //         group.children('div.action.actions-buttons').removeClass('btn-group-md');
-        //         group.children('div.action.actions-buttons').addClass('btn-group-xs');
+        //         group.children('div.action.actionstep-buttons').removeClass('btn-group-md');
+        //         group.children('div.action.actionstep-buttons').addClass('btn-group-xs');
         //         btn_size = 24;
         //     }
         //

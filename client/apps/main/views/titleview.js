@@ -79,12 +79,12 @@ let TitleView = Marionette.View.extend({
             }
 
             // with or without extra code, or name or finally label
-            if (this.model.has('name') && this.model.has('code')) {
+            if (this.model.has('name') && this.model.has('code') && this.model.get('code') !== "") {
                 this.ui.object.html(this.model.get('name') + ' (' + this.model.get('code') + ')');
             } else if (this.model.has('name')) {
-                this.ui.object.html(this.model.get('name'));
+                this.ui.object.html(this.model.get('name') || "...");
             } else if (this.model.has('label')) {
-                this.ui.object.html(this.model.get('label'));
+                this.ui.object.html(this.model.get('label') || "...");
             }
         } else if (this.getOption('object')) {
             if (!this.ui.object.is(":visible")) {

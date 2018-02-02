@@ -1,6 +1,6 @@
 /**
- * @file sanitation.js
- * @brief Display and manage a sanitation test format of type of action
+ * @file batchconsumerbatchproducer.js
+ * @brief Batch consumer - Batch producer step
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-19
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -8,23 +8,23 @@
  * @details
  */
 
-let ActionFormatType = require('./actiontypeformat');
+let ActionStepFormat = require('./actionstepformat');
 let Marionette = require('backbone.marionette');
 
 let Format = function() {
-    ActionFormatType.call(this);
+    ActionStepFormat.call(this);
 
-    this.name = "sanitation";
+    this.name = "batchconsumer_batchproducer";
     this.group = "standard";
 };
 
-_.extend(Format.prototype, ActionFormatType.prototype, {
+_.extend(Format.prototype, ActionStepFormat.prototype, {
 
 });
 
-Format.ActionTypeFormatDetailsView = Marionette.View.extend({
-    className: 'action-format-details-format',
-    template: require('../templates/actions/sanitation.html'),
+Format.ActionStepFormatDetailsView = Marionette.View.extend({
+    className: 'action-step-format-details',
+    template: require('../templates/actionstep/batchconsumerbatchproducer.html'),
 
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);

@@ -23,10 +23,9 @@ let View = DescribableEdit.extend({
 
         // does not reload models, just redo the views
         let view = this;
-        let name = this.model.get('name');
 
         // update the layout content
-        let batchLayout = application.main.viewContent().getChildView('content');
+        let batchLayout = window.application.main.viewContent().getChildView('content');
 
         let BatchDescriptorView = require('./batchdescriptor');
         let batchDescriptorView = new BatchDescriptorView({
@@ -38,7 +37,7 @@ let View = DescribableEdit.extend({
 
     onApply: function () {
         // does not reload models, save and redo the views
-        let view = this;
+        let self = this;
         let model = this.model;
 
         let descriptors = this.prepareDescriptors();
@@ -46,29 +45,29 @@ let View = DescribableEdit.extend({
             return;
         }
 
-        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
+        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew(), success: function () {
             //Backbone.history.navigate('app/accession/batch/' + model.get('id') + '/', {trigger: true, replace: true});
-            let batchLayout = application.main.viewContent().getChildView('content');
+            let batchLayout = window.application.main.viewContent().getChildView('content');
 
             // update the layout content
             let BatchDescriptorView = require('./batchdescriptor');
             let batchDescriptorView = new BatchDescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+                descriptorMetaModelLayout: self.descriptorMetaModelLayout});
 
             batchLayout.showChildView('descriptors', batchDescriptorView);
-        });
+        }});
     },
 
     onShowTab: function() {
         let view = this;
 
         // contextual panel
-        let contextLayout = application.getView().getChildView('right');
+        let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().showChildView('right', contextLayout);
+            window.application.getView().showChildView('right', contextLayout);
         }
 
         let TitleView = require('../../../main/views/titleview');
@@ -90,7 +89,7 @@ let View = DescribableEdit.extend({
     },
 
     onHideTab: function() {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     }
 });
 

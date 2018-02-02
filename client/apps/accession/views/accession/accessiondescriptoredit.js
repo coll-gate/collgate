@@ -25,7 +25,7 @@ let View = DescribableEdit.extend({
         let view = this;
 
         // update the layout content
-        let accessionLayout = application.main.viewContent().getChildView('content');
+        let accessionLayout = window.application.main.viewContent().getChildView('content');
 
         let AccessionDescriptorView = require('./accessiondescriptor');
         let accessionDescriptorView = new AccessionDescriptorView({
@@ -45,8 +45,8 @@ let View = DescribableEdit.extend({
             return;
         }
 
-        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
-            let accessionLayout = application.main.viewContent().getChildView('content');
+        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew(), success: function () {
+            let accessionLayout = window.application.main.viewContent().getChildView('content');
 
             // update the layout content
             let AccessionDescriptorView = require('./accessiondescriptor');
@@ -55,18 +55,18 @@ let View = DescribableEdit.extend({
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
             accessionLayout.showChildView('descriptors', accessionDescriptorView);
-        });
+        }});
     },
 
     onShowTab: function() {
         let view = this;
 
         // contextual panel
-        let contextLayout = application.getView().getChildView('right');
+        let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().showChildView('right', contextLayout);
+            window.application.getView().showChildView('right', contextLayout);
         }
 
         let TitleView = require('../../../main/views/titleview');
@@ -88,7 +88,7 @@ let View = DescribableEdit.extend({
     },
 
     onHideTab: function() {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     }
 });
 

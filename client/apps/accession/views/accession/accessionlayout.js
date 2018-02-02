@@ -246,7 +246,8 @@ let Layout = LayoutView.extend({
                 }
 
                 let accessionDescriptorView = new AccessionDescriptorEditView({
-                    model: accessionLayout.model, descriptorMetaModelLayout: data});
+                    model: accessionLayout.model, descriptorMetaModelLayout: data
+                });
 
                 accessionLayout.showChildView('descriptors', accessionDescriptorView);
             });

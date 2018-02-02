@@ -12,12 +12,13 @@
 <div class="column" style="margin-top: 10px; height: calc(100% - 1px);">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="div.tab-pane[name=configuration]" aria-controls="configuration" role="tab" data-toggle="tab"><%= _t("Configuration") %></a></li>
-        <li role="presentation"><a href="div.tab-pane[name=accessions]" aria-controls="accessions" role="tab" data-toggle="tab"><%= _t("Accessions") %></a></li>
+        <li role="presentation" class="active"><a href="div.tab-pane[name=general]" aria-controls="general" role="tab" data-toggle="tab"><%= _t("General") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=inputs]" aria-controls="inputs" role="tab" data-toggle="tab"><%= _t("Inputs") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=steps]" aria-controls="steps" role="tab" data-toggle="tab"><%= _t("Steps") %></a></li>
     </ul>
     <!-- Tab panes -->
     <div class="tab-content col-lg-offset-2 col-lg-8" style="height: calc(100% - 42px - 10px);">
-        <div role="tabpanel" class="tab-pane active" name="configuration" style="height: 100%; overflow-y: auto;">
+        <div role="tabpanel" class="tab-pane active" name="general" style="height: 100%; overflow-y: auto;">
             <div class="tab-frame">
                 <div class="row">
                     <div class="action-type-format-type-group form-group">
@@ -25,17 +26,21 @@
                         <select class="action-type-format-type form-control"></select>
                     </div>
                 </div>
-                <div class="contextual-region"></div>
-                <div class="naming-options"></div>
-                <div class="action-type-description form-group">
-                    <label><%- _t('Description') %></label>
-                    <textarea name="description" class="form-control" maxlength="1024" style="min-height: 2.5em; min-width: 100%; max-width: 100%;"><%= description %></textarea>
+                <div class="row">
+                    <div class="form-group">
+                        <label><%- _t('Description') %></label>
+                        <textarea maxlength="1024" class="form-control" name="description" style="min-width: 100%; max-width: 100%; min-height: 3em; max-height: 10em;"><%= description %></textarea>
+                    </div>
                 </div>
+                <div class="contextual-region"></div>
+                <!-- move to each step -->
+                <div class="naming-options"></div>
                 <div class="action-type-update form-group text-center">
                     <button name="save" class="btn btn-success btn-block"><%- _t('Update') %></button>
                 </div>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane" name="accessions" style="height: 100%; overflow-y: auto;"></div>
+        <div role="tabpanel" class="tab-pane" name="inputs" style="height: 100%; overflow-y: auto;"></div>
+        <div role="tabpanel" class="tab-pane" name="steps" style="height: 100%; overflow-y: auto;"></div>
     </div>
 </div>

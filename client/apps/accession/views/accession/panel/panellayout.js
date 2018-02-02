@@ -22,7 +22,7 @@ let Layout = LayoutView.extend({
     },
 
     ui: {
-        accessions_tab: 'a[aria-controls=accessions]',
+        inputs_tab: 'a[aria-controls=accessions]',
         accessions_badge: '#accessions-badge'
     },
 
@@ -59,11 +59,11 @@ let Layout = LayoutView.extend({
     },
 
     disableEntitiesTab: function () {
-        this.ui.accessions_tab.parent().addClass('disabled');
+        this.ui.inputs_tab.parent().addClass('disabled');
     },
 
     enableTabs: function () {
-        this.ui.accessions_tab.parent().removeClass('disabled');
+        this.ui.inputs_tab.parent().removeClass('disabled');
     },
 
     onDescriptorMetaModelChange: function (model, value) {

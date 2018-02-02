@@ -35,8 +35,7 @@ let Controller = Marionette.Object.extend({
                 ui: {
                     validate: "button.continue",
                     name: "input[name=name]",
-                    label: "input[name=label]",
-                    format_type: "select[name=format]"
+                    label: "input[name=label]"
                 },
 
                 events: {
@@ -51,14 +50,9 @@ let Controller = Marionette.Object.extend({
 
                 onRender: function () {
                     CreateActionTypeDialog.__super__.onRender.apply(this);
-
-                    window.application.accession.views.actionTypeFormats.drawSelect(
-                        this.ui.format_type, true, false, 'creation');
                 },
 
                 onBeforeDestroy: function() {
-                    this.ui.format_type.selectpicker('destroy');
-
                     CreateActionTypeDialog.__super__.onBeforeDestroy.apply(this);
                 },
 
@@ -75,7 +69,7 @@ let Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: window.application.url(['accession', 'action', 'search']),
+                            url: window.application.url(['accession', 'actiontype', 'search']),
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
@@ -128,12 +122,6 @@ let Controller = Marionette.Object.extend({
 
                 validate: function() {
                     let valid = this.validateName();
-                    let formatType = this.ui.format_type.val();
-
-                    if (formatType === "") {
-                        $.alert.error(_t("The format must be defined"));
-                        valid = false;
-                    }
 
                      if (this.ui.name.hasClass('invalid') ||
                          this.ui.label.hasClass('invalid')) {
@@ -149,13 +137,11 @@ let Controller = Marionette.Object.extend({
                     if (this.validate()) {
                         let name = this.ui.name.val().trim();
                         let label = this.ui.label.val().trim();
-                        let formatType = this.ui.format_type.val();
 
                         // create a new local model and open an edit view with this model
                         let model = new ActionTypeModel({
                             name: name,
-                            label: label,
-                            format: {type: formatType}
+                            label: label
                         });
 
                         view.destroy();

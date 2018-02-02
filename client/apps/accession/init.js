@@ -48,26 +48,20 @@ AccessionModule.prototype = {
         // action format types
         //
 
-        let ActionFormatTypeManager = require('./actions/actionformattypemanager');
+        let ActionFormatTypeManager = require('./actionstep/actionstepformatmanager');
         this.actions = new ActionFormatTypeManager();
 
         // register the standard format type of descriptors
         let actions = [
-            'creation',
-            'multiplication',
-            'regeneration',
-            'complement',
-            'sample',
-            'sanitation',
-            'characterization',
-            'conformity_test',
-            'elimination',
-            'dispatch'
+            'accession_list',
+            'accession_refinement',
+            'batchconsumer_batchmodifier',
+            'batchconsumer_batchproducer',
         ];
 
         for (let i = 0; i < actions.length; ++i) {
             let moduleName = actions[i].replace(/_/g, '').toLowerCase();
-            this.actions.registerElement(actions[i], require('./actions/' + moduleName));
+            this.actions.registerElement(actions[i], require('./actionstep/' + moduleName));
         }
 
         //

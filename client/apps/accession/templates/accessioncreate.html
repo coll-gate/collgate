@@ -25,16 +25,11 @@
                     </select>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <label class="control-label" for="accession_code"><%= _t("Code of the accession (must be unique)") %></label>
-                            <input class="form-control name" id="accession_code" type="text" name="accession" value="" maxlength="128" autofocus="" readonly="readonly" autocomplete="off" style="width:100%;">
-                        </div>
-                    </div>
+                    <div class="naming-options col-xs-12"></div>
                     <div class="col-xs-8">
                         <div class="form-group">
                             <label class="control-label" for="accession_name"><%= _t("Principal name of the accession") %></label>
-                            <input class="form-control name" id="accession_name" type="text" name="accession" value="" maxlength="128" autocomplete="off" style="width:100%;">
+                            <input class="form-control name" id="accession_name" type="text" name="accession" value="" maxlength="128" autocomplete="off" style="width:100%;" autofocus="">
                         </div>
                     </div>
                     <div class="col-xs-4">

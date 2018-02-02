@@ -33,8 +33,8 @@ class CollGateAccession(ApplicationMain):
         # different types of formats for meta-model of descriptors for this module
         self.meta_model_types = []
 
-        # different type of formats for action-type
-        self.action_type_formats = []
+        # different formats of action step
+        self.action_step_formats = []
 
     def ready(self):
         super().ready()
@@ -57,7 +57,7 @@ class CollGateAccession(ApplicationMain):
         accession_module.include_urls((
             'base',
             'accessionsynonym',
-            'actiontype',
+            'actions.actiontype',
             'actions.action',
             'accession',
             'accessionbatch',
@@ -99,15 +99,15 @@ class CollGateAccession(ApplicationMain):
         DescriptorMetaModelTypeManager.register(self.meta_model_types)
 
         # and the action type formats
-        from accession import actiontypeformat
+        from accession.actions import actionstepformat
 
-        for element in dir(actiontypeformat):
-            attr = getattr(actiontypeformat, element)
-            if type(attr) is type and actiontypeformat.ActionTypeFormat in attr.__bases__:
-                self.action_type_formats.append(attr())
+        for element in dir(actionstepformat):
+            attr = getattr(actionstepformat, element)
+            if type(attr) is type and actionstepformat.ActionStepFormat in attr.__bases__:
+                self.action_step_formats.append(attr())
 
-        from accession.actiontypeformat import ActionTypeFormatManager
-        ActionTypeFormatManager.register(self.action_type_formats)
+        from accession.actions.actionstepformat import ActionStepFormatManager
+        ActionStepFormatManager.register(self.action_step_formats)
 
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)
@@ -133,11 +133,11 @@ class CollGateAccession(ApplicationMain):
         # batch menu
         menu_batch = ModuleMenu('batch', _('Batch'), auth=AUTH_USER)
 
-        # menu_batch.add_entry(
-        #     MenuEntry('create-batch', _('Introduce a batch'), "~accession/batch/create",
-        #               icon=FaGlyph('plus'), order=1))
+        menu_batch.add_entry(
+            MenuEntry('create-batch', _('Introduce a batch'), "~accession/batch/create",
+                      icon=FaGlyph('plus'), order=1))
 
-        # menu_batch.add_entry(MenuSeparator(100))
+        menu_batch.add_entry(MenuSeparator(100))
         menu_batch.add_entry(
             MenuEntry('list-batches', _('List batches'), "#accession/batch/", icon=FaGlyph('list'), order=101))
         menu_batch.add_entry(

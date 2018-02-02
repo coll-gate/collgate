@@ -61,7 +61,7 @@ MenuEntry.prototype.render = function(parent) {
 };
 
 MenuEntry.prototype.bind = function() {
-    // href starting with ~ are actions that directly call a controller,
+    // href starting with ~ are actionstep that directly call a controller,
     // but doesn't modify the URL neither the history
     if (this.url.startsWith("~") && this.url.length > 1) {
         let aEl = this.$el.children("a.url");

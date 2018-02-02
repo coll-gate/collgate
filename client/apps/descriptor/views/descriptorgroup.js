@@ -12,7 +12,7 @@ let Marionette = require('backbone.marionette');
 
 let View = Marionette.View.extend({
     tagName: 'tr',
-    className: 'element object descriptor-group actions',
+    className: 'element object descriptor-group actionstep',
     template: require('../templates/descriptorgroup.html'),
 
     behaviors: {

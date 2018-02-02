@@ -1609,9 +1609,9 @@ let View = Marionette.CompositeView.extend({
             } else if ("field" in column && column.field) {
                 // sub-field
                 return columnName + "->" + column.field;
-            } else if ("display_fields" in column.format && column.format.display_fields) {
+            } else if ("sortby_field" in column.format && column.format.sortby_field) {
                 // sub-field
-                return columnName + "->" + column.format.display_fields;
+                return columnName + "->" + column.format.sortby_field;
             } else {
                 // unknown
                 return columnName;

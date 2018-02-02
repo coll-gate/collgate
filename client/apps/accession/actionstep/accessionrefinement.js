@@ -1,6 +1,6 @@
 /**
- * @file dispatch.js
- * @brief Display and manage an dispatch test format of type of action
+ * @file accessionrefinement.js
+ * @brief Accession refinement
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-19
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -8,23 +8,23 @@
  * @details
  */
 
-let ActionFormatType = require('./actiontypeformat');
+let ActionStepFormat = require('./actionstepformat');
 let Marionette = require('backbone.marionette');
 
 let Format = function() {
-    ActionFormatType.call(this);
+    ActionStepFormat.call(this);
 
-    this.name = "dispatch";
+    this.name = "accession_refinement";
     this.group = "standard";
 };
 
-_.extend(Format.prototype, ActionFormatType.prototype, {
+_.extend(Format.prototype, ActionStepFormat.prototype, {
 
 });
 
-Format.ActionTypeFormatDetailsView = Marionette.View.extend({
-    className: 'action-format-details-format',
-    template: require('../templates/actions/dispatch.html'),
+Format.ActionStepFormatDetailsView = Marionette.View.extend({
+    className: 'action-step-format-details',
+    template: require('../templates/actionstep/accessionrefinement.html'),
 
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);

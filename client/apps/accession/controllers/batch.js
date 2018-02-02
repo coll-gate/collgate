@@ -69,13 +69,7 @@ let Controller = Marionette.Object.extend({
             dataType: 'json'
         });
 
-        let naming = $.ajax({
-            type: "GET",
-            url: window.application.url(['accession', 'batch', 'naming']),
-            dataType: 'json'
-        });
-
-        $.when(layouts, naming).then(function (data, naming) {
+        layouts.then(function (data) {
             let CreateBatchView = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_batch'
@@ -83,23 +77,24 @@ let Controller = Marionette.Object.extend({
                 template: require('../templates/navbatchcreate.html'),
                 templateContext: function () {
                     return {
-                        meta_models: data[0],
+                        meta_models: data,
                         title: (!selection) ? _t("Introduce a batch") : _t("Introduce a sub-batch"),
-                        name: (!selection) ? _t("Name of the batch") : _t("Name of the sub-batch")
                     };
                 },
 
                 ui: {
                     validate: "button.continue",
-                    name: "#batch_name",
                     meta_model: "#meta_model",
                     accession: "#accession"
                 },
 
                 events: {
                     'click @ui.validate': 'onContinue',
-                    'input @ui.name': 'onNameInput',
                     'change @ui.accession': 'validateAccession'
+                },
+
+                regions: {
+                    'namingOptions': 'div.naming-options'
                 },
 
                 onRender: function () {
@@ -121,6 +116,25 @@ let Controller = Marionette.Object.extend({
                             placeholder: _t("Enter a accession name. 3 characters at least for auto-completion")
                         })
                     );
+
+                    // naming options
+                    let self = this;
+
+                    $.ajax({
+                        type: "GET",
+                        url: window.application.url(['accession', 'naming', 'batch']),
+                        dataType: 'json',
+                    }).done(function(data) {
+                        let NamingOptionsView = require('../views/namingoption');
+                        let len = (data.format.match(/{CONST}/g) || []).length;
+
+                        let namingOptions = new Array(len);
+
+                        self.showChildView("namingOptions", new NamingOptionsView({
+                            namingFormat: data.format,
+                            namingOptions: namingOptions
+                        }));
+                    });
                 },
 
                 onBeforeDestroy: function () {
@@ -128,49 +142,6 @@ let Controller = Marionette.Object.extend({
                     this.ui.accession.select2('destroy');
 
                     CreateBatchView.__super__.onBeforeDestroy.apply(this);
-                },
-
-                onNameInput: function () {
-                    let name = this.ui.name.val().trim();
-
-                    if (this.validateName()) {
-                        let filters = {
-                            method: 'ieq',
-                            fields: ['name'],
-                            'name': name
-                        };
-
-                        $.ajax({
-                            type: "GET",
-                            url: window.application.url(['accession', 'batch', 'search']),
-                            dataType: 'json',
-                            contentType: 'application/json; charset=utf8',
-                            data: {filters: JSON.stringify(filters)},
-                            el: this.ui.name
-                        }).done(function (data) {
-                            for (let i in data.items) {
-                                let t = data.items[i];
-                                if (t.label.toUpperCase() === name.toUpperCase()) {
-                                    $(this.el).validateField('failed', _t('Batch name already exist'));
-                                    return;
-                                }
-                            }
-                            $(this.el).validateField('ok');
-                        });
-                    }
-                },
-
-                validateName: function () {
-                    let v = this.ui.name.val().trim();
-
-                    if (v.length > 128) {
-                        $(this.ui.name).validateField('failed', _t('characters_max', {count: 128}));
-                        return false;
-                    } else if (v.length < 3) {
-                        $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
-                        return false;
-                    }
-                    return true;
                 },
 
                 validateAccession: function () {
@@ -189,22 +160,21 @@ let Controller = Marionette.Object.extend({
                 },
 
                 validate: function () {
-                    let valid_name = this.validateName();
                     let valid_accession = this.validateAccession();
-                    return (valid_name && valid_accession);
+                    return valid_accession;
                 },
 
                 onContinue: function () {
-                    let view = this;
+                    let self = this;
 
                     if (this.validate()) {
-                        let name = this.ui.name.val().trim();
+                        let namingOptions = this.getChildView('namingOptions').getNamingOptions();
                         let accession = parseInt(this.ui.accession.val());
                         let metaModel = parseInt(this.ui.meta_model.val());
 
                         // create a new local model and open an edit view with this model
                         let model = new BatchModel({
-                            name: name,
+                            naming_options: namingOptions,
                             accession: accession,
                             descriptor_meta_model: metaModel,
                             selection: {
@@ -215,10 +185,10 @@ let Controller = Marionette.Object.extend({
                             },
                         });
 
-                        view.destroy();
+                        self.destroy();
 
                         let defaultLayout = new DefaultLayout();
-                        application.main.showContent(defaultLayout);
+                        window.application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
                             title: _t("Batch"),
@@ -233,9 +203,6 @@ let Controller = Marionette.Object.extend({
 
             let createBatchView = new CreateBatchView();
             createBatchView.render();
-
-            // generated name
-            createBatchView.ui.name.val(naming[0].name);
         });
     },
 

@@ -13,7 +13,7 @@ let Dialog = require('../../main/views/dialog');
 
 let View = Marionette.View.extend({
     tagName: 'tr',
-    className: 'element object descriptor-value actions',
+    className: 'element object descriptor-value actionstep',
     template: require('../templates/descriptorvalue.html'),
     // templateContext: function () {
     //     // let ctx = this.model;

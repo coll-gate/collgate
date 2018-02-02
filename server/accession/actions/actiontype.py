@@ -14,15 +14,15 @@ from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.views.decorators.cache import cache_page
 
-from accession.actiontypeformat import ActionTypeFormatManager
+from accession.actions.actionstepformat import ActionStepFormatManager
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cache import cache_manager
 from main.models import InterfaceLanguages
 from permission.utils import get_permissions_for
 
-from .models import ActionType
-from .base import RestAccession
+from accession.models import ActionType
+from accession.base import RestAccession
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -258,7 +258,7 @@ def get_format_type_list(request):
     groups = {}
     items = {}
 
-    for ft in ActionTypeFormatManager.values():
+    for ft in ActionStepFormatManager.values():
         if ft.group:
             if ft.group.name not in groups:
                 groups[ft.group.name] = {
@@ -331,7 +331,7 @@ def patch_action_type(request, act_id):
             raise SuspiciousOperation(_("It is not possible to change the format type"))
 
         # format validation
-        ActionTypeFormatManager.check(format_data)
+        ActionStepFormatManager.check(format_data)
 
         action_type.format = format_data
         result['format'] = format_data
@@ -389,7 +389,7 @@ def create_action_type(request):
 
     if format_data['type'] != 'undefined':
         # format validation
-        ActionTypeFormatManager.check(format_data)
+        ActionStepFormatManager.check(format_data)
 
     # create the action type
     action_type = ActionType()
