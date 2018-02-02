@@ -5,14 +5,14 @@
  * @date 2016-12-29
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 let DescribableDetails = require('../../descriptor/views/describabledetails');
 let ClassificationEntryDescriptorEditView = require('./classificationentrydescriptoredit');
 
 let View = DescribableDetails.extend({
-    onShowTab: function() {
+    onShowTab: function () {
         let view = this;
 
         let contextLayout = application.getView().getChildView('right');
@@ -66,18 +66,22 @@ let View = DescribableDetails.extend({
         // });
     },
 
-    onHideTab: function() {
+    onHideTab: function () {
         application.main.defaultRightView();
     },
 
-    onModify: function() {
+    onModify: function () {
         // does not reload models, just redo the views
 
         // update the descriptor part of the classificationEntry layout
         let classificationEntryLayout = application.main.viewContent().getChildView('content');
 
         let view = new ClassificationEntryDescriptorEditView({
-            model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+            model: this.model,
+            descriptorMetaModelLayout: this.descriptorMetaModelLayout,
+            descriptorCollection: this.descriptorCollection
+        });
+
         classificationEntryLayout.showChildView('descriptors', view);
     }
 });

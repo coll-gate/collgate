@@ -126,7 +126,7 @@ let Controller = Marionette.Object.extend({
 
                     if (this.validate()) {
                         let model = new OrganisationModel({
-                            descriptor_meta_model: data[0].id,
+                            layout: data[0].id,
                             name: name,
                             type: this.ui.type.val(),
                             grc: to_grc

@@ -61,7 +61,8 @@ let View = DescribableDetails.extend({
 
         let view = new BatchPanelDescriptorEditView({
             model: this.model,
-            descriptorMetaModelLayout: this.descriptorMetaModelLayout
+            descriptorMetaModelLayout: this.descriptorMetaModelLayout,
+            descriptorCollection: this.descriptorCollection
         });
         batchPanelLayout.showChildView('descriptors', view);
     }

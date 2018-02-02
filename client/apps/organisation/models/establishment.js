@@ -22,7 +22,7 @@ let Model = Backbone.Model.extend({
         id: null,
         name: "",
         organisation: null,
-        descriptor_meta_model: null,
+        layout: null,
         descriptors: {}
     }
 });
