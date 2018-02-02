@@ -97,6 +97,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
 
                 if (dft.column_display is True and not mode) or (dft.search_display is True and mode == 'search'):
                     columns['#' + descriptor.code] = {
+                        'id': descriptor.id,
                         'group_name': descriptor.group_name,
                         'label': descriptor.get_label(),
                         'query': query,
