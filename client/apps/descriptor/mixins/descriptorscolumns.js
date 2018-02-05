@@ -236,8 +236,8 @@ let DescriptorsColumnsView = {
     _fetchStandardValue: function(modelList, columnName, options) {
         let parameters = {};
 
-        if (options.format.type === "layout" && application.main.cache.hasFetcher('descriptor_meta_model')) {
-            parameters.type = 'descriptor_meta_model';
+        if (options.format.type === "layout" && application.main.cache.hasFetcher('layout')) {
+            parameters.type = 'layout';
             parameters.format = {
                 'model': options.format.model
             }

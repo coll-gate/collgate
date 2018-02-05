@@ -24,8 +24,8 @@ let View = AdvancedTable.extend({
     defaultColumns: [
         {name: 'name', width: 'auto', sort_by: '+0'},
         {name: 'type', width: 'auto', sort_by: null},
-        {name: '#organisation_acronym', width: 'auto', sort_by: null},
-        {name: '#organisation_code', width: 'auto', sort_by: null},
+        // {name: '#organisation_acronym', width: 'auto', sort_by: null},
+        // {name: '#organisation_code', width: 'auto', sort_by: null},
         {name: 'grc', width: 'auto', sort_by: null},
         {name: 'num_establishments', width: 'auto', sort_by: null},
     ],
@@ -33,8 +33,8 @@ let View = AdvancedTable.extend({
     columnsOptions: {
         'name': {label: _t('Name'), minWidth: true, event: 'view-organisation'},
         'type': {label: _t('Type'), minWidth: true, custom: 'organisationTypeCell'},
-        '#organisation_acronym': {label: _t('Acronym'), minWidth: true, format: {type: 'string'}},
-        '#organisation_code': {label: _t('Code'), minWidth: true, format: {type: 'string'}},
+        // '#organisation_acronym': {label: _t('Acronym'), minWidth: true, format: {type: 'string'}},
+        // '#organisation_code': {label: _t('Code'), minWidth: true, format: {type: 'string'}},
         'grc': {label: _t('GRC'), minWidth: true, custom: 'organisationGRCCell'},
         'num_establishments': {
             label: _t('Establishments'), minWidth: true, event: 'view-establishments', custom: 'numEstablishmentsCell'

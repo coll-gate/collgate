@@ -31,7 +31,7 @@ let View = DescribableEdit.extend({
         let DescriptorView = require('../views/descriptor');
         let descriptorView = new DescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout,
+            layoutData: view.layoutData,
             descriptorCollection: view.descriptorCollection
         });
 
@@ -57,7 +57,7 @@ let View = DescribableEdit.extend({
             let DescriptorView = require('../views/descriptor');
             let descriptorView = new DescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout,
+                layoutData: view.layoutData,
                 descriptorCollection: view.descriptorCollection
             });
 

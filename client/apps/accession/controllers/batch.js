@@ -75,7 +75,7 @@ let Controller = Marionette.Object.extend({
                 template: require('../templates/navbatchcreate.html'),
                 templateContext: function () {
                     return {
-                        meta_models: data,
+                        layouts: data,
                         title: (!selection) ? _t("Introduce a batch") : _t("Introduce a sub-batch"),
                         name: (!selection) ? _t("Name of the batch") : _t("Name of the sub-batch")
                     };
@@ -84,7 +84,7 @@ let Controller = Marionette.Object.extend({
                 ui: {
                     validate: "button.continue",
                     name: "#batch_name",
-                    meta_model: "#meta_model",
+                    layout: "#layout",
                     accession: "#accession"
                 },
 
@@ -98,7 +98,7 @@ let Controller = Marionette.Object.extend({
                     CreateBatchView.__super__.onRender.apply(this);
 
                     application.main.views.languages.drawSelect(this.ui.language);
-                    this.ui.meta_model.selectpicker({});
+                    this.ui.layout.selectpicker({});
 
                     this.ui.accession.select2(Search(
                         this.ui.accession.parent(),
@@ -116,7 +116,7 @@ let Controller = Marionette.Object.extend({
                 },
 
                 onBeforeDestroy: function () {
-                    this.ui.meta_model.selectpicker('destroy');
+                    this.ui.layout.selectpicker('destroy');
                     this.ui.accession.select2('destroy');
 
                     CreateBatchView.__super__.onBeforeDestroy.apply(this);
@@ -192,7 +192,7 @@ let Controller = Marionette.Object.extend({
                     if (this.validate()) {
                         let name = this.ui.name.val().trim();
                         let accession = parseInt(this.ui.accession.val());
-                        let layout = parseInt(this.ui.meta_model.val());
+                        let layout = parseInt(this.ui.layout.val());
 
                         // create a new local model and open an edit view with this model
                         let model = new BatchModel({

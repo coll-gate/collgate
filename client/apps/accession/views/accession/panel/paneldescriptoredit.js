@@ -30,7 +30,9 @@ let View = DescribableEdit.extend({
         let AccessionPanelDescriptorView = require('./paneldescriptor');
         let accessionPanelDescriptorView = new AccessionPanelDescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+            layoutData: view.layoutData,
+            descriptorCollection: view.descriptorCollection
+        });
 
         accessionPanelLayout.showChildView('descriptors', accessionPanelDescriptorView);
     },
@@ -52,7 +54,9 @@ let View = DescribableEdit.extend({
             let AccessionPanelDescriptorView = require('./paneldescriptor');
             let accessionPanelDescriptorView = new AccessionPanelDescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+                layoutData: view.layoutData,
+                descriptorCollection: view.descriptorCollection
+            });
 
             accessionPanelLayout.showChildView('descriptors', accessionPanelDescriptorView);
         });

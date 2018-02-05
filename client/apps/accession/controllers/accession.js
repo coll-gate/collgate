@@ -35,7 +35,7 @@ let Controller = Marionette.Object.extend({
                 template: require('../templates/accessioncreate.html'),
                 templateContext: function () {
                     return {
-                        meta_models: data
+                        layouts: data
                     };
                 },
 
@@ -44,7 +44,7 @@ let Controller = Marionette.Object.extend({
                     code: "#accession_code",
                     name: "#accession_name",
                     language: "#accession_language",
-                    descriptor_meta_model: "#meta_model",
+                    layout: "#layout",
                     primary_classification: "#primary_classification",
                     primary_classification_entry: "#primary_classification_entry"
                 },
@@ -53,7 +53,7 @@ let Controller = Marionette.Object.extend({
                     'click @ui.validate': 'onContinue',
                     'input @ui.code': 'onCodeInput',
                     'input @ui.name': 'onNameInput',
-                    'change @ui.descriptor_meta_model': 'onChangeDescriptorMetaModel',
+                    'change @ui.layout': 'onChangeDescriptorMetaModel',
                     'change @ui.primary_classification': 'onChangePrimaryClassification'
                 },
 
@@ -73,15 +73,15 @@ let Controller = Marionette.Object.extend({
                     CreateAccessionDialog.__super__.onRender.apply(this);
 
                     application.main.views.languages.drawSelect(this.ui.language);
-                    this.ui.descriptor_meta_model.selectpicker({});
+                    this.ui.layout.selectpicker({});
                     this.ui.primary_classification.selectpicker({});
 
-                    // on default descriptor meta-model
+                    // on default descriptor layout
                     this.onChangeDescriptorMetaModel();
                 },
 
                 getDescriptorMetaModelClassifications: function () {
-                    let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    let descriptorMetaModelId = parseInt(this.ui.layout.val());
 
                     let value = Object.resolve(descriptorMetaModelId + ".parameters.data.primary_classification", this.descriptorMetaModels);
                     if (value) {
@@ -93,7 +93,7 @@ let Controller = Marionette.Object.extend({
 
                 onBeforeDestroy: function() {
                     this.ui.language.selectpicker('destroy');
-                    this.ui.descriptor_meta_model.selectpicker('destroy');
+                    this.ui.layout.selectpicker('destroy');
                     this.ui.primary_classification.selectpicker('destroy');
 
                     if (this.ui.primary_classification_entry.data('select2')) {
@@ -199,7 +199,7 @@ let Controller = Marionette.Object.extend({
                     let name = this.ui.name.val().trim();
                     let self = this;
 
-                    // @todo must respect the nomenclature from the meta-model
+                    // @todo must respect the nomenclature from the layout
                     if (this.validateName()) {
                         let filters = {
                             method: 'ieq',
@@ -270,7 +270,7 @@ let Controller = Marionette.Object.extend({
 
                 validate: function() {
                     let valid = this.validateName();
-                    let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    let descriptorMetaModelId = parseInt(this.ui.layout.val());
                     let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                     if (isNaN(descriptorMetaModelId)) {
@@ -304,7 +304,7 @@ let Controller = Marionette.Object.extend({
                         let code = this.ui.code.val().trim();
                         let name = this.ui.name.val().trim();
 
-                        let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                        let descriptorMetaModelId = parseInt(this.ui.layout.val());
                         let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                         // create a new local model and open an edit view with this model

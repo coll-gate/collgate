@@ -23,8 +23,8 @@ let View = ItemView.extend({
         }
 
         return {
-            panels: this.descriptorMetaModelLayout.layout_content.panels,
-            target: this.descriptorMetaModelLayout.target,
+            panels: this.layoutData.layout_content.panels,
+            target: this.layoutData.target,
             descriptors_data: result
         }
     },
@@ -45,7 +45,7 @@ let View = ItemView.extend({
     initialize: function(options) {
         View.__super__.initialize.apply(this);
 
-        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
+        this.layoutData = options.layoutData;
         this.descriptorCollection = options.descriptorCollection;
 
         // no need to follow changes during edition
@@ -62,7 +62,7 @@ let View = ItemView.extend({
 
             let pi = el.attr('panel-index');
             let i = el.attr('index');
-            let descriptorModelType = view.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
+            let descriptorModelType = view.layoutData.layout_content.panels[pi].descriptors[i];
             let descriptorType = view.descriptorCollection.findWhere({name: descriptorModelType.name});
             let format = descriptorType.get('format');
 
@@ -112,9 +112,9 @@ let View = ItemView.extend({
         let descriptors = {};
 
         // firstly make a list for each descriptor of which descriptors need them for a condition
-        for (let pi = 0; pi < this.descriptorMetaModelLayout.layout_content.panels.length; ++pi) {
-            for (let i = 0; i < this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors.length; ++i) {
-                let descriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
+        for (let pi = 0; pi < this.layoutData.layout_content.panels.length; ++pi) {
+            for (let i = 0; i < this.layoutData.layout_content.panels[pi].descriptors.length; ++i) {
+                let descriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
                 let condition = descriptorModelType.condition;
 
                 // if given set initials values for the widget
@@ -125,7 +125,7 @@ let View = ItemView.extend({
                 if (condition && condition.defined) {
                     /* @todo optimize with model not dom */
                     let target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    let targetDescriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[target.attr('panel-index')].descriptors[target.attr('index')];
+                    let targetDescriptorModelType = this.layoutData.layout_content.panels[target.attr('panel-index')].descriptors[target.attr('index')];
 
                     if (targetDescriptorModelType.widget && descriptorModelType.widget) {
                         if (targetDescriptorModelType.id in descriptors) {
@@ -160,9 +160,9 @@ let View = ItemView.extend({
 
     onBeforeDetach: function() {
         // destroy any widgets
-        for (let pi = 0; pi < this.descriptorMetaModelLayout.layout_content.panels.length; ++pi) {
-            for (let i = 0; i < this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors.length; ++i) {
-                let descriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
+        for (let pi = 0; pi < this.layoutData.layout_content.panels.length; ++pi) {
+            for (let i = 0; i < this.layoutData.layout_content.panels[pi].descriptors.length; ++i) {
+                let descriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.destroy();
                     descriptorModelType.widget = null;
@@ -174,10 +174,10 @@ let View = ItemView.extend({
     findDescriptorModelTypeForConditionTarget: function(target) {
         let pi = target.attr('panel-index');
         let i = target.attr('index');
-        let targetDescriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
+        let targetDescriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
 
         // find el from target
-        let descriptorModelTypes = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors;
+        let descriptorModelTypes = this.layoutData.layout_content.panels[pi].descriptors;
         for (let i = 0; i < descriptorModelTypes.length; ++i) {
             if (descriptorModelTypes[i].condition.target === targetDescriptorModelType.id) {
                 let descriptorModelType = descriptorModelTypes[i];
@@ -196,9 +196,9 @@ let View = ItemView.extend({
     prepareDescriptors: function () {
         let descriptors = {};
 
-        for (let pi = 0; pi < this.descriptorMetaModelLayout.layout_content.panels.length; ++pi) {
-            for (let i = 0; i < this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors.length; ++i) {
-                let descriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
+        for (let pi = 0; pi < this.layoutData.layout_content.panels.length; ++pi) {
+            for (let i = 0; i < this.layoutData.layout_content.panels[pi].descriptors.length; ++i) {
+                let descriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
 
                 let mandatory = descriptorModelType.mandatory;
 
@@ -235,9 +235,9 @@ let View = ItemView.extend({
 
     cancel: function() {
         // destroy any widgets
-        for (let pi = 0; pi < this.descriptorMetaModelLayout.layout_content.panels.length; ++pi) {
-            for (let i = 0; i < this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors.length; ++i) {
-                let descriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
+        for (let pi = 0; pi < this.layoutData.layout_content.panels.length; ++pi) {
+            for (let i = 0; i < this.layoutData.layout_content.panels[pi].descriptors.length; ++i) {
+                let descriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.cancel();
                 }
@@ -271,7 +271,7 @@ let View = ItemView.extend({
         let panelIndex = tr.attr("panel-index");
         let index = tr.attr("index");
 
-        let dmt = this.descriptorMetaModelLayout.layout_content.panels[panelIndex].descriptors[index];
+        let dmt = this.layoutData.layout_content.panels[panelIndex].descriptors[index];
         if (dmt && dmt.widget) {
             let tokens = this.model.url().split('/');
 

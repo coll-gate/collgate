@@ -1,6 +1,6 @@
 /**
  * @file descriptormetamodel.js
- * @brief Meta-model of descriptors collection
+ * @brief layout of descriptors collection
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD

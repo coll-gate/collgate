@@ -325,13 +325,19 @@ let View = Marionette.CompositeView.extend({
                         view.descriptorGroupCollection.fetch().then(function () {
                             view.ui.type_select.children('option').remove();
 
+                            let fetching;
+                            if (panel_descriptors_ids.length) {
 
-                            view.descriptorTypeCollection.fetch({
-                                data: {
-                                    search: '[{"type":"term","field": "id", "value": [' + panel_descriptors_ids.join(',') + '], "op":"notin"}]'
-                                }
-                            }).then(function () {
+                                fetching = view.descriptorTypeCollection.fetch({
+                                    data: {
+                                        search: '[{"type":"term","field": "id", "value": [' + panel_descriptors_ids.join(',') + '], "op":"notin"}]'
+                                    }
+                                });
+                            } else {
+                                fetching = view.descriptorTypeCollection.fetch();
+                            }
 
+                            fetching.then(function () {
                                 // Create drop-down descriptor groups
                                 let i;
                                 let opt_group_list = [];

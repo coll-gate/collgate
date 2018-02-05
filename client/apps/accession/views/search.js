@@ -19,14 +19,14 @@ let View = Dialog.extend({
                 {id: 'accession.accession', label: _t('Accession')},
                 {id: 'accession.batch', label: _t('Batch')}
             ],
-            meta_models: []
+            layouts: []
         };
     },
 
     ui: {
         search: "button.search",
         save: "button.save",
-        meta_model: "#meta_model",
+        layout: "#layout",
         entity_type: "#entity_type",
         add: "span.action.add",
         error_msg: '#error-msg'
@@ -35,7 +35,7 @@ let View = Dialog.extend({
     events: {
         'click @ui.search': 'onSearch',
         'change @ui.entity_type': 'onChangeEntityType',
-        'change @ui.meta_model': 'onChangeMetaModel',
+        'change @ui.layout': 'onChangeMetaModel',
         'click @ui.add': 'onAddSearchRow',
         'click @ui.save': 'onSave'
     },
@@ -52,7 +52,7 @@ let View = Dialog.extend({
         View.__super__.onRender.apply(this);
 
         this.ui.entity_type.selectpicker({}).selectpicker('val', this.getOption('entity'));
-        this.ui.meta_model.selectpicker({});
+        this.ui.layout.selectpicker({});
 
         this.getRegion('conditions').show(new ConditionCollection({
             collection: application.accession.collections.conditionList,
@@ -75,7 +75,7 @@ let View = Dialog.extend({
 
     onChangeEntityType: function () {
         let entityType = this.ui.entity_type.selectpicker('val');
-        this.ui.meta_model.prop('disabled', false);
+        this.ui.layout.prop('disabled', false);
         let view = this;
 
         $.ajax({
@@ -83,22 +83,22 @@ let View = Dialog.extend({
             url: window.application.url(['descriptor', 'layout', 'for-describable', entityType]),
             dataType: 'json',
         }).done(function (data) {
-            view.ui.meta_model.children('option').remove();
+            view.ui.layout.children('option').remove();
 
             for (let i = 0; i < data.length; ++i) {
                 let opt = $('<option></option>');
                 opt.attr('value', data[i].id);
                 opt.html(data[i].label);
 
-                view.ui.meta_model.append(opt);
+                view.ui.layout.append(opt);
             }
 
             if (data.length === 1) {
-                view.ui.meta_model.selectpicker('val', view.ui.meta_model.children("option:first").val());
-                view.ui.meta_model.prop('disabled', true)
+                view.ui.layout.selectpicker('val', view.ui.layout.children("option:first").val());
+                view.ui.layout.prop('disabled', true)
             }
 
-            view.ui.meta_model.selectpicker('refresh');
+            view.ui.layout.selectpicker('refresh');
 
             application.accession.collections.conditionList = new Backbone.Collection();
             view.getRegion('conditions').show(new ConditionCollection({
@@ -120,7 +120,7 @@ let View = Dialog.extend({
 
     refreshFieldList: function (childview) {
         let entityType = this.ui.entity_type.selectpicker('val');
-        const metaModels = this.ui.meta_model.selectpicker('val');
+        const metaModels = this.ui.layout.selectpicker('val');
         let selects = null;
 
         if (childview) {
@@ -141,7 +141,7 @@ let View = Dialog.extend({
 
         application.main.cache.lookup({
             type: 'entity_columns',
-            format: {model: entityType, descriptor_meta_models: descriptorMetaModels, mode: 'search'}
+            format: {model: entityType, layouts: descriptorMetaModels, mode: 'search'}
 
         }).done(function (data) {
             $(selects).children('option').remove().end();
@@ -276,7 +276,7 @@ let View = Dialog.extend({
 
     onBeforeDestroy: function () {
         this.ui.entity_type.selectpicker('destroy');
-        this.ui.meta_model.selectpicker('destroy');
+        this.ui.layout.selectpicker('destroy');
 
         let rows = this.$el.find('div.search-condition');
         $.each(rows, function (i, el) {

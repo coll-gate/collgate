@@ -83,7 +83,7 @@ let View = Marionette.View.extend({
         // if (this.model.get('num_descriptor_models') === 0) {
         //     this.model.destroy({wait: true});
         // } else {
-        //     $.alert.error(_t("It is not permitted to delete a meta-model of descriptor that contains some panels"));
+        //     $.alert.error(_t("It is not permitted to delete a layout of descriptor that contains some panels"));
         // }
         this.model.destroy({wait: true});
     },

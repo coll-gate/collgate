@@ -12,6 +12,7 @@ let LayoutView = require('../../../../main/views/layout');
 let ContentBottomFooterLayout = require('../../../../main/views/contentbottomfooterlayout');
 let ScrollingMoreView = require('../../../../main/views/scrollingmore');
 let EntityListFilterView = require('../../../../descriptor/views/entitylistfilter');
+let DescriptorCollection = require('../../../../descriptor/collections/layoutdescriptor');
 
 let Layout = LayoutView.extend({
     template: require("../../../templates/batchpanellayout.html"),
@@ -34,7 +35,7 @@ let Layout = LayoutView.extend({
     initialize: function (options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onLayoutChange, this);
+        this.listenTo(this.model, 'change:layout', this.onLayoutChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onPanelCreate, this);
@@ -85,16 +86,24 @@ let Layout = LayoutView.extend({
                 url: window.application.url(['descriptor', 'layout', value]),
                 dataType: 'json'
             }).done(function (data) {
-                let PanelDescriptorView = require('./paneldescriptor');
-                let panelDescriptorView = new PanelDescriptorView({
-                    model: model,
-                    descriptorMetaModelLayout: data
-                });
-                panelLayout.showChildView('descriptors', panelDescriptorView);
 
-                if (panelLayout.initialTab === 'descriptors') {
-                    panelDescriptorView.onShowTab();
-                }
+                panelLayout.descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
+                });
+
+                panelLayout.descriptorCollection.fetch().then(function () {
+                    let PanelDescriptorView = require('./paneldescriptor');
+                    let panelDescriptorView = new PanelDescriptorView({
+                        model: model,
+                        layoutData: data,
+                        descriptorCollection: panelLayout.descriptorCollection
+                    });
+                    panelLayout.showChildView('descriptors', panelDescriptorView);
+
+                    if (panelLayout.initialTab === 'descriptors') {
+                        panelDescriptorView.onShowTab();
+                    }
+                });
             });
         }
     },

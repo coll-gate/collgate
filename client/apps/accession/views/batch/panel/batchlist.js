@@ -23,7 +23,7 @@ let View = AdvancedTable.extend({
     defaultColumns: [
         {name: 'select', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
-        {name: 'descriptor_meta_model', width: 'auto', sort_by: null},
+        {name: 'layout', width: 'auto', sort_by: null},
     ],
 
     columnsOptions: {
@@ -36,7 +36,7 @@ let View = AdvancedTable.extend({
             fixed: true
         },
         'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-batch-details'},
-        'descriptor_meta_model': {label: _t('Model'), width: 'auto', minWidth: true},
+        'layout': {label: _t('Layout'), width: 'auto', minWidth: true},
     },
 
     templateContext: function () {
@@ -146,16 +146,18 @@ let View = AdvancedTable.extend({
             console.error("Panel layout view is missing: updateAmount() can not find amount badge to update");
             return
         }
-        $.ajax({
-                type: 'GET',
-                url: window.application.url(['accession', 'batchpanel', this.model.id, 'batches', 'count']),
-                dataType: 'json',
-                contentType: "application/json; charset=utf-8"
-            }
-        ).done(function (data) {
-            panelLayoutView.model.set('batches_amount', data.count);
-            panelLayoutView.updateBatchesAmount(data.count);
-        });
+        panelLayoutView.updateBatchesAmount(this.model.count);
+
+        // $.ajax({
+        //         type: 'GET',
+        //         url: window.application.url(['accession', 'batchpanel', this.model.id, 'batches', 'count']),
+        //         dataType: 'json',
+        //         contentType: "application/json; charset=utf-8"
+        //     }
+        // ).done(function (data) {
+        //     panelLayoutView.model.set('batches_amount', data.count);
+        //     panelLayoutView.updateBatchesAmount(data.count);
+        // });
     },
 
     onCreatePanel: function () {

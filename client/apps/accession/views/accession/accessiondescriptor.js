@@ -49,7 +49,7 @@ let View = DescribableDetails.extend({
 
         let accessionDescriptorEditView = new AccessionDescriptorEditView({
             model: view.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout,
+            layoutData: view.layoutData,
             descriptorCollection: view.descriptorCollection
 
         });

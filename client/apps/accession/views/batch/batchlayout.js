@@ -45,7 +45,7 @@ let Layout = LayoutView.extend({
     initialize: function (model, options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onLayoutChange, this);
+        this.listenTo(this.model, 'change:layout', this.onLayoutChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onBatchCreate, this);
@@ -111,7 +111,7 @@ let Layout = LayoutView.extend({
                     let BatchDescriptorView = require('./batchdescriptor');
                     let batchDescriptorView = new BatchDescriptorView({
                         model: batchLayout.model,
-                        descriptorMetaModelLayout: data,
+                        layoutData: data,
                         descriptorCollection: view.descriptorCollection
 
                     });
@@ -274,7 +274,7 @@ let Layout = LayoutView.extend({
                     // let AccessionDescriptorView = require('./accessiondescriptor');
                     let batchDescriptorView = new BatchDescriptorEditView({
                         model: batchLayout.model,
-                        descriptorMetaModelLayout: data,
+                        layoutData: data,
                         descriptorCollection: view.descriptorCollection
 
                     });

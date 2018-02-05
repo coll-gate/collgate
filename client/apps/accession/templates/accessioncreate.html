@@ -17,10 +17,10 @@
         <div class="modal-body">
             <form>
                 <div class="form-group">
-                    <label class="control-label" for="meta_model"><%= _t("Template") %></label>
-                    <select id="meta_model" style="width:100%;" class="form-control">
-                        <% _.each(meta_models, function(meta_model) { %>
-                            <option value="<%= meta_model.id %>"><%= meta_model.label %></option>
+                    <label class="control-label" for="layout"><%= _t("Template") %></label>
+                    <select id="layout" style="width:100%;" class="form-control">
+                        <% _.each(layouts, function(layout) { %>
+                            <option value="<%= layout.id %>"><%= layout.label %></option>
                         <% }) %>
                     </select>
                 </div>

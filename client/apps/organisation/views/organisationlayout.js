@@ -70,7 +70,7 @@ let Layout = LayoutView.extend({
                     let DescriptorView = require('../views/descriptor');
                     let descriptorView = new DescriptorView({
                         model: model,
-                        descriptorMetaModelLayout: data,
+                        layoutData: data,
                         descriptorCollection: descriptorCollection
                     });
                     organisationLayout.showChildView('descriptors', descriptorView);
@@ -146,7 +146,7 @@ let Layout = LayoutView.extend({
                 }).done(function (data) {
                     let descriptorView = new DescriptorEditView({
                         model: organisationLayout.model,
-                        descriptorMetaModelLayout: data,
+                        layoutData: data,
                         descriptorCollection: descriptorCollection
                     });
 

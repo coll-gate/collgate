@@ -227,7 +227,7 @@ def create_layout(request):
         'description': layout.description,
         'parameters': layout.parameters,
         'target': '.'.join(content_type.natural_key()),
-        'num_descriptor_models': 0
+        # 'num_descriptor_models': 0
     }
 
     return HttpResponseRest(request, result)
@@ -298,9 +298,9 @@ def get_layout(request, layout_id):
 def delete_layout(request, layout_id):
     layout = get_object_or_404(Layout, id=int(layout_id))
 
-    if layout.descriptor_models.all().count() > 0:
-        raise SuspiciousOperation(
-            _('It is not possible to remove a layout of descriptor that contains models of descriptor'))
+    # if layout.descriptor_models.all().count() > 0:
+    #     raise SuspiciousOperation(
+    #         _('It is not possible to remove a layout of descriptor that contains models of descriptor'))
 
     if layout.in_usage():
         raise SuspiciousOperation(_("There is some data using the layout of descriptor"))
@@ -416,7 +416,7 @@ def search_layouts(request):
         content_type = get_object_or_404(ContentType, app_label=app_name, model=model)
         layouts = layouts.filter(target=content_type)
 
-    layouts = layouts.annotate(Count('descriptor_models'))
+    # layouts = layouts.annotate(Count('descriptor_models'))
     layouts_list = []
 
     if layouts is not None:
@@ -425,7 +425,7 @@ def search_layouts(request):
                 "id": layout.id,
                 "name": layout.name,
                 "label": layout.get_label(),
-                'num_descriptor_models': layout.descriptor_models__count
+                # 'num_descriptor_models': layout.descriptor_models__count
             })
 
     response = {
@@ -460,15 +460,17 @@ def list_descriptor_panels_for_layout(request, layout_id):
     #     'descriptor_model')[:limit]
 
     panels_list = []
-    i = 0
-    for panel in layout.layout_content.get('panels'):
-        lang = translation.get_language()
-        panels_list.append({
-            'id': i,
-            'label': panel['label'].get(lang, "en"),
-            'position': i,
-        })
-        i += 1
+
+    if layout.layout_content.get('panels'):
+        i = 0
+        for panel in layout.layout_content.get('panels'):
+            lang = translation.get_language()
+            panels_list.append({
+                'id': i,
+                'label': panel['label'].get(lang, "en"),
+                'position': i,
+            })
+            i += 1
 
     if len(panels_list) > 0:
         # prev cursor (asc order)
@@ -510,6 +512,10 @@ def create_panel_for_layout(request, layout_id):
     lang = translation.get_language()
 
     layout = get_object_or_404(Layout, id=int(layout_id))
+
+    if not layout.layout_content.get('panels'):
+        layout.layout_content = {'panels': []}
+
     panel_list = layout.layout_content.get('panels')
 
     panel = {

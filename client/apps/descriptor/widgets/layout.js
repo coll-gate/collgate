@@ -1,6 +1,6 @@
 /**
  * @file descriptormetamodel.js
- * @brief Display and manage a meta-model of descriptor reference value format
+ * @brief Display and manage a layout of descriptor reference value format
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-07-10
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -13,7 +13,7 @@ let DescriptorFormatType = require('./descriptorformattype');
 let DescriptorMetaModel = function () {
     DescriptorFormatType.call(this);
 
-    this.name = "descriptor_meta_model";
+    this.name = "layout";
     this.group = "reference";
 
     this.searchUrl = null;
@@ -39,7 +39,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
             this.groupEl = this._createInputGroup(parent, "fa-th-large", select, options.history);
 
             // init the autocomplete
-            let url = window.application.url(['descriptor', 'meta-model']);
+            let url = window.application.url(['descriptor', 'layout']);
             let initials = [];
 
             let container = parent.closest('div.modal-dialog').parent();
@@ -136,7 +136,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        let url = window.application.url(['descriptor', 'meta-model']);
+        let url = window.application.url(['descriptor', 'layout']);
 
         if (this.readOnly) {
             let type = this;

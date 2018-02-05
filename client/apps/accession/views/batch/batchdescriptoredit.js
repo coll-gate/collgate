@@ -31,7 +31,7 @@ let View = DescribableEdit.extend({
         let BatchDescriptorView = require('./batchdescriptor');
         let batchDescriptorView = new BatchDescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout,
+            layoutData: view.layoutData,
             descriptorCollection: view.descriptorCollection
         });
 
@@ -56,7 +56,7 @@ let View = DescribableEdit.extend({
             let BatchDescriptorView = require('./batchdescriptor');
             let batchDescriptorView = new BatchDescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout,
+                layoutData: view.layoutData,
                 descriptorCollection: view.descriptorCollection
             });
 

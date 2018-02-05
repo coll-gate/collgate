@@ -30,7 +30,7 @@ let View = DescribableEdit.extend({
         let AccessionDescriptorView = require('./accessiondescriptor');
         let accessionDescriptorView = new AccessionDescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout,
+            layoutData: view.layoutData,
             descriptorCollection: view.descriptorCollection
         });
 
@@ -54,7 +54,7 @@ let View = DescribableEdit.extend({
             let AccessionDescriptorView = require('./accessiondescriptor');
             let accessionDescriptorView = new AccessionDescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout,
+                layoutData: view.layoutData,
                 descriptorCollection: view.descriptorCollection
             });
 

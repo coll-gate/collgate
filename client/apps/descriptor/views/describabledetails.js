@@ -27,8 +27,8 @@ let View = ItemView.extend({
 
 
         return {
-            panels: this.descriptorMetaModelLayout.layout_content.panels,
-            target: this.descriptorMetaModelLayout.target,
+            panels: this.layoutData.layout_content.panels,
+            target: this.layoutData.target,
             descriptors_data: result
         }
     },
@@ -49,7 +49,7 @@ let View = ItemView.extend({
     initialize: function (options) {
         View.__super__.initialize.apply(this);
 
-        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
+        this.layoutData = options.layoutData;
         this.descriptorCollection = options.descriptorCollection;
         this.listenTo(this.model, 'change:descriptors', this.render, this);
     },
@@ -91,15 +91,15 @@ let View = ItemView.extend({
     },
 
     onDomRefresh: function () {
-        for (let pi = 0; pi < this.descriptorMetaModelLayout.layout_content.panels.length; ++pi) {
-            for (let i = 0; i < this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors.length; ++i) {
-                let descriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
+        for (let pi = 0; pi < this.layoutData.layout_content.panels.length; ++pi) {
+            for (let i = 0; i < this.layoutData.layout_content.panels[pi].descriptors.length; ++i) {
+                let descriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
                 let condition = descriptorModelType.condition;
 
                 if (condition && condition.defined) {
                     // search the target descriptor type for the condition
                     let target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    let targetDescriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[target.attr('panel-index')].descriptors[target.attr('index')];
+                    let targetDescriptorModelType = this.layoutData.layout_content.panels[target.attr('panel-index')].descriptors[target.attr('index')];
 
                     // initial state of the condition
                     let display = true;
@@ -121,9 +121,9 @@ let View = ItemView.extend({
 
     onBeforeDetach: function () {
         // destroy any widgets
-        for (let pi = 0; pi < this.descriptorMetaModelLayout.layout_content.panels.length; ++pi) {
-            for (let i = 0; i < this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors.length; ++i) {
-                let descriptorModelType = this.descriptorMetaModelLayout.layout_content.panels[pi].descriptors[i];
+        for (let pi = 0; pi < this.layoutData.layout_content.panels.length; ++pi) {
+            for (let i = 0; i < this.layoutData.layout_content.panels[pi].descriptors.length; ++i) {
+                let descriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.destroy();
                 }
@@ -145,7 +145,7 @@ let View = ItemView.extend({
         let panelIndex = tr.attr("panel-index");
         let index = tr.attr("index");
 
-        let dmt = this.descriptorMetaModelLayout.layout_content.panels[panelIndex].descriptors[index];
+        let dmt = this.layoutData.layout_content.panels[panelIndex].descriptors[index];
         dmt = this.descriptorCollection.findWhere({name: dmt.name});
         if (dmt && dmt.widget) {
             let tokens = this.model.url().split('/');

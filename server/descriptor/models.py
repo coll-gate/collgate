@@ -59,6 +59,7 @@ class MultipleObjectsReturned(Exception):
     """The query returned multiple objects when only one was expected."""
     pass
 
+
 # class DescriptorGroup(Entity):
 #     """
 #     Category of a type of descriptor.
@@ -1659,16 +1660,13 @@ class Layout(Entity):
         from django.apps import apps
         describable_entities = apps.get_app_config('descriptor').describable_entities
 
-        # @todo could be optimized ?
+        # @todo: could be optimized ? Specified kind of describable entity!
         for de in describable_entities:
             field_name = de._meta.model_name + '_set'
 
             attr = getattr(self, field_name)
             if attr and attr.filter(layout=self).exists():
                 return True
-
-            return False
-
         return False
 
     def audit_create(self, user):

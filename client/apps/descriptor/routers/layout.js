@@ -1,6 +1,6 @@
 /**
  * @file layout.js
- * @brief Descriptor meta-model router
+ * @brief Descriptor layout router
  * @author Frédéric SCHERMA (INRA UMR1095), Medhi BOULNEMOUR (INRA UMR1095)
  * @date 2016-10-26
  * @copyright Copyright (c) 2016 INRA/CIRAD

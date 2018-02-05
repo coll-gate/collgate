@@ -1,6 +1,6 @@
 /**
  * @file layout.js
- * @brief Meta-model of descriptor
+ * @brief layout of descriptor
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD

@@ -33,14 +33,14 @@ let Controller = Marionette.Object.extend({
                 template: require('../templates/classificationentrycreate.html'),
                 templateContext: function () {
                     return {
-                        meta_models: data
+                        layouts: data
                     };
                 },
 
                 ui: {
                     create: "button.create",
                     language: "#classification_entry_language",
-                    descriptor_meta_model: "#meta_model",
+                    layout: "#layout",
                     name: "#classification_entry_name",
                     classification: "#classification",
                     rank: "#classification_rank",
@@ -51,7 +51,7 @@ let Controller = Marionette.Object.extend({
                 events: {
                     'click @ui.create': 'onCreate',
                     'input @ui.name': 'onNameInput',
-                    'change @ui.descriptor_meta_model': 'onChangeDescriptorMetaModel',
+                    'change @ui.layout': 'onChangeDescriptorMetaModel',
                     'change @ui.classification': 'onChangeClassification',
                     'change @ui.rank': 'onChangeRank'
                 },
@@ -75,16 +75,16 @@ let Controller = Marionette.Object.extend({
 
                     application.main.views.languages.drawSelect(this.ui.language);
 
-                    this.ui.descriptor_meta_model.selectpicker({});
+                    this.ui.layout.selectpicker({});
                     this.ui.classification.selectpicker({});
                     this.ui.rank.selectpicker({});
 
-                    // on default descriptor meta-model
+                    // on default descriptor layout
                     this.onChangeDescriptorMetaModel();
                 },
 
                 onBeforeDestroy: function () {
-                    this.ui.descriptor_meta_model.selectpicker('destroy');
+                    this.ui.layout.selectpicker('destroy');
                     this.ui.classification.selectpicker('destroy');
                     this.ui.rank.selectpicker('destroy');
 
@@ -96,7 +96,7 @@ let Controller = Marionette.Object.extend({
                 },
 
                 getDescriptorMetaModelClassifications: function () {
-                    let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    let descriptorMetaModelId = parseInt(this.ui.layout.val());
 
                     let value = Object.resolve(descriptorMetaModelId + ".parameters.data.classification", this.descriptorMetaModels);
                     if (value) {
@@ -294,14 +294,14 @@ let Controller = Marionette.Object.extend({
                     if (this.validate()) {
                         let name = this.ui.name.val().trim();
 
-                        let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                        let descriptorMetaModelId = parseInt(this.ui.layout.val());
                         let rankId = parseInt(this.ui.rank.val());
                         let parentId = parseInt(this.ui.parent.val()) || null;
 
                         // create a new local model and open an edit view with this model
                         let model = new ClassificationEntryModel({
                             name: name,
-                            descriptor_meta_model: descriptorMetaModelId,
+                            layout: descriptorMetaModelId,
                             parent: parentId,
                             rank: rankId,
                             language: this.ui.language.val()

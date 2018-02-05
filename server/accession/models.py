@@ -257,7 +257,7 @@ class Batch(DescribableEntity):
     def get_defaults_columns(cls):
         return {
             'layout': {
-                'label': _('Model'),
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {
@@ -500,7 +500,7 @@ class BatchPanel(Panel):
     def get_defaults_columns(cls):
         return {
             'layout': {
-                'label': _('Model'),
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {
@@ -551,7 +551,7 @@ class AccessionPanel(Panel):
     def get_defaults_columns(cls):
         return {
             'layout': {
-                'label': _('Model'),
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {
@@ -672,7 +672,7 @@ class AccessionView(models.Model):
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
             'layout': {
-                'label': _('Model'),
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {
@@ -754,7 +754,7 @@ class BatchView(models.Model):
     def get_defaults_columns(cls):
         return {
             'layout': {
-                'label': _('Model'),
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {

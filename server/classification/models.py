@@ -307,7 +307,7 @@ class ClassificationEntry(Entity):
                 }
             },
             'layout': {
-                'label': _('Model'),
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {

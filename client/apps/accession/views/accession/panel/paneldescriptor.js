@@ -61,7 +61,7 @@ let View = DescribableDetails.extend({
 
         let view = new AccessionPanelDescriptorEditView({
             model: this.model,
-            descriptorMetaModelLayout: this.descriptorMetaModelLayout,
+            layoutData: this.layoutData,
             descriptorCollection: this.descriptorCollection
         });
         accessionPanelLayout.showChildView('descriptors', view);

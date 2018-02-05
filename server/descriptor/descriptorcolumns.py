@@ -84,26 +84,27 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     # entity model
 
     for layout in layouts:
-        for panel in layout.layout_content.get('panels'):
-            for descriptor in panel.get('descriptors'):
-                descriptor = Descriptor.objects.get(name=descriptor.get('name'))
-                dft = DescriptorFormatTypeManager.get(descriptor.format)
+        if layout.layout_content.get('panels'):
+            for panel in layout.layout_content.get('panels'):
+                for descriptor in panel.get('descriptors'):
+                    descriptor = Descriptor.objects.get(name=descriptor.get('name'))
+                    dft = DescriptorFormatTypeManager.get(descriptor.format)
 
-                query = True if dft.related_model(descriptor.format) else False
+                    query = True if dft.related_model(descriptor.format) else False
 
-                # display_fields comes by default from dft is defined
-                if dft.display_fields is not None and 'display_fields' not in descriptor.format:
-                    descriptor.format['display_fields'] = dft.display_fields
+                    # display_fields comes by default from dft is defined
+                    if dft.display_fields is not None and 'display_fields' not in descriptor.format:
+                        descriptor.format['display_fields'] = dft.display_fields
 
-                if (dft.column_display is True and not mode) or (dft.search_display is True and mode == 'search'):
-                    columns['#' + descriptor.code] = {
-                        'id': descriptor.id,
-                        'group_name': descriptor.group_name,
-                        'label': descriptor.get_label(),
-                        'query': query,
-                        'format': descriptor.format,
-                        'available_operators': dft.available_operators
-                    }
+                    if (dft.column_display is True and not mode) or (dft.search_display is True and mode == 'search'):
+                        columns['#' + descriptor.code] = {
+                            'id': descriptor.id,
+                            'group_name': descriptor.group_name,
+                            'label': descriptor.get_label(),
+                            'query': query,
+                            'format': descriptor.format,
+                            'available_operators': dft.available_operators
+                        }
 
     # for dmt in dmts:
     #     descriptor_format = dmt.descriptor_type.format
@@ -183,18 +184,19 @@ def get_description(model):
     results = {}
 
     for layout in layouts:
-        for panel in layout.layout_content.get('panels'):
-            for descriptor in panel.get('descriptors'):
-                descriptor = Descriptor.objects.get(name=descriptor.get('name'))
-                dft = DescriptorFormatTypeManager.get(descriptor.format)
-                results[descriptor.code] = {
-                    'code': descriptor.code,
-                    'name': descriptor.name,
-                    'label': descriptor.get_label(),
-                    # 'index': descriptor.index,
-                    'handler': dft,
-                    'format': descriptor.format
-                }
+        if layout.layout_content.get('panels'):
+            for panel in layout.layout_content.get('panels'):
+                for descriptor in panel.get('descriptors'):
+                    descriptor = Descriptor.objects.get(name=descriptor.get('name'))
+                    dft = DescriptorFormatTypeManager.get(descriptor.format)
+                    results[descriptor.code] = {
+                        'code': descriptor.code,
+                        'name': descriptor.name,
+                        'label': descriptor.get_label(),
+                        # 'index': descriptor.index,
+                        'handler': dft,
+                        'format': descriptor.format
+                    }
 
     # for dmt in dmts:
     #     descriptor_format = dmt.descriptor_type.format

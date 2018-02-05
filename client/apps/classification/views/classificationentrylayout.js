@@ -37,7 +37,7 @@ let Layout = LayoutView.extend({
     initialize: function(options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onLayoutChange, this);
+        this.listenTo(this.model, 'change:layout', this.onLayoutChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onClassificationEntryCreate, this);
@@ -98,7 +98,7 @@ let Layout = LayoutView.extend({
                 let ClassificationEntryDescriptorView = require('./classificationentrydescriptor');
                 let classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
                     model: model,
-                    descriptorMetaModelLayout: data
+                    layoutData: data
                 });
 
                 classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
@@ -241,7 +241,7 @@ let Layout = LayoutView.extend({
                 }
 
                 let classificationEntryDescriptorView = new ClassificationEntryDescriptorEditView({
-                    model: classificationEntryLayout.model, descriptorMetaModelLayout: data});
+                    model: classificationEntryLayout.model, layoutData: data});
 
                 classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
             });

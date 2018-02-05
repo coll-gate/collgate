@@ -61,7 +61,7 @@ let View = DescribableDetails.extend({
         //
         //     confirmDialog.on('dialog:confirm', function() {
         //         // this will update the model and so on the view
-        //         view.model.save({descriptor_meta_model: null}, {patch: true, trigger: true});
+        //         view.model.save({layout: null}, {patch: true, trigger: true});
         //     });
         // });
     },
@@ -78,7 +78,7 @@ let View = DescribableDetails.extend({
 
         let view = new ClassificationEntryDescriptorEditView({
             model: this.model,
-            descriptorMetaModelLayout: this.descriptorMetaModelLayout,
+            layoutData: this.layoutData,
             descriptorCollection: this.descriptorCollection
         });
 

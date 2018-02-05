@@ -11,7 +11,7 @@
 from descriptor.describable import DescriptorsBuilder
 from django.contrib.contenttypes.models import ContentType
 # from descriptor.models import Layout, DescriptorModelType
-from descriptor.models import Layout
+from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from django.db.models import Q, Prefetch
@@ -113,118 +113,123 @@ def get_panel_list(request):
     return HttpResponseRest(request, results)
 
 
-# @RestBatchPanel.def_auth_request(Method.POST, Format.JSON, content={
-#     "type": "object",
-#     "properties": {
-#         "name": BatchPanel.NAME_VALIDATOR,
-#         "selection": {
-#             "type": "object",
-#             "properties": {
-#                 "select": {
-#                     "type": [
-#                         {
-#                             "type": "object",
-#                             "properties": {
-#                                 "op": {"enum": ['in', 'notin']},
-#                                 "term": {"type": "string"},
-#                                 "value": {"type": "array"},
-#                             },
-#                         },
-#                         {
-#                             "type": "boolean"
-#                         }
-#                     ]
-#                 },
-#
-#             },
-#             "additionalProperties": {
-#                 "from": {
-#                     "type": "object",
-#                     "properties": {
-#                         "content_type": {"type": "string"},
-#                         "id": {"type": "integer"}
-#                     }
-#                 },
-#                 "search": {"type": "object"},
-#                 "filters": {"type": "object"}
-#             }
-#         }
-#     }
-# }, perms={
-#     'accession.add_batchpanel': _("You are not allowed to create a batch panel")
-# })
-# def create_batch_panel(request):
-#     name = request.data['name']
-#     selection = request.data['selection']['select']
-#     related_entity = request.data['selection']['from']
-#     search = request.data['selection']['search']
-#     filters = request.data['selection']['filters']
-#     layout_id = request.data['layout']
-#     descriptors = request.data['descriptors']
-#
-#     layout = None
-#
-#     # check uniqueness of the name
-#     if BatchPanel.objects.filter(name=name).exists():
-#         raise SuspiciousOperation(_("The name of the panel is already used"))
-#
-#     if layout_id is not None:
-#         content_type = get_object_or_404(ContentType, app_label="accession", model="batchpanel")
-#         layout = get_object_or_404(Layout, id=int_arg(layout_id), target=content_type)
-#
-#     from main.cursor import CursorQuery
-#     cq = CursorQuery(Batch)
-#
-#     if search:
-#         cq.filter(search)
-#
-#     if filters:
-#         cq.filter(filters)
-#
-#     if related_entity:
-#         label, model = related_entity['content_type'].split('.')
-#         content_type = get_object_or_404(ContentType, app_label=label, model=model)
-#         model_class = content_type.model_class()
-#         cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
-#
-#     try:
-#         with transaction.atomic():
-#             panel = BatchPanel(name=name)
-#
-#             panel.layout = layout
-#
-#             # descriptors
-#             descriptors_builder = DescriptorsBuilder(panel)
-#
-#             descriptors_builder.check_and_update(layout, descriptors)
-#             panel.descriptors = descriptors_builder.descriptors
-#
-#             panel.save()
-#
-#             # update owner on external descriptors
-#             descriptors_builder.update_associations()
-#
-#             if isinstance(selection, bool):
-#                 if selection is True:
-#                     panel.batches.add(*cq)
-#
-#             elif selection['op'] == 'in':
-#                 panel.batches.add(*cq.filter(id__in=selection['value']))
-#
-#             elif selection['op'] == 'notin':
-#                 panel.batches.add(*cq.filter(id__notin=selection['value']))
-#
-#     except IntegrityError as e:
-#         DescriptorModelType.integrity_except(BatchPanel, e)
-#
-#     response = {
-#         'id': panel.pk,
-#         'name': panel.name,
-#         'layout': panel.layout.pk if panel.layout else None,
-#         'descriptors': panel.descriptors
-#     }
-#
-#     return HttpResponseRest(request, response)
+@RestBatchPanel.def_auth_request(Method.POST, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "name": BatchPanel.NAME_VALIDATOR,
+        "selection": {
+            "type": "object",
+            "properties": {
+                "select": {
+                    "type": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "op": {"enum": ['in', 'notin']},
+                                "term": {"type": "string"},
+                                "value": {"type": "array"},
+                            },
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                },
+
+            },
+            "additionalProperties": {
+                "from": {
+                    "type": "object",
+                    "properties": {
+                        "content_type": {"type": "string"},
+                        "id": {"type": "integer"}
+                    }
+                },
+                "search": {"type": "object"},
+                "filters": {"type": "object"}
+            }
+        }
+    }
+}, perms={
+    'accession.add_batchpanel': _("You are not allowed to create a batch panel")
+})
+def create_batch_panel(request):
+    name = request.data['name']
+    selection = request.data['selection']['select']
+    related_entity = request.data['selection']['from']
+    search = request.data['selection']['search']
+    filters = request.data['selection']['filters']
+    layout_id = request.data['layout']
+    descriptors = request.data['descriptors']
+
+    layout = None
+
+    # check uniqueness of the name
+    if BatchPanel.objects.filter(name=name).exists():
+        raise SuspiciousOperation(_("The name of the panel is already used"))
+
+    if layout_id is not None:
+        content_type = get_object_or_404(ContentType, app_label="accession", model="batchpanel")
+        layout = get_object_or_404(Layout, id=int_arg(layout_id), target=content_type)
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Batch)
+
+    if search:
+        cq.filter(search)
+
+    if filters:
+        cq.filter(filters)
+
+    if related_entity:
+        label, model = related_entity['content_type'].split('.')
+        content_type = get_object_or_404(ContentType, app_label=label, model=model)
+        model_class = content_type.model_class()
+        cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
+
+    try:
+        with transaction.atomic():
+            batch_panel = BatchPanel(name=name)
+            batch_panel.layout = layout
+            batch_panel.count = 0
+
+            # descriptors
+            descriptors_builder = DescriptorsBuilder(batch_panel)
+
+            if layout:
+                descriptors_builder.check_and_update(layout, descriptors)
+                batch_panel.descriptors = descriptors_builder.descriptors
+
+            batch_panel.save()
+
+            # update owner on external descriptors
+            descriptors_builder.update_associations()
+
+            if isinstance(selection, bool):
+                if selection is True:
+                    batch_panel.batches.add(*cq)
+                    batch_panel.count = cq.count()
+
+            elif selection['op'] == 'in':
+                batch_panel.batches.add(*cq.filter(id__in=selection['value']))
+                batch_panel.count = cq.filter(id__in=selection['value']).count()
+
+            elif selection['op'] == 'notin':
+                batch_panel.batches.add(*cq.filter(id__notin=selection['value']))
+                batch_panel.count = cq.filter(id__notin=selection['value']).count()
+
+    except IntegrityError as e:
+        Descriptor.integrity_except(BatchPanel, e)
+
+    response = {
+        'id': batch_panel.pk,
+        'name': batch_panel.name,
+        'layout': batch_panel.layout.pk if batch_panel.layout else None,
+        'descriptors': batch_panel.descriptors,
+        'batches_amount': batch_panel.count
+    }
+
+    return HttpResponseRest(request, response)
 
 
 @RestBatchPanelId.def_request(Method.GET, Format.JSON)
@@ -235,109 +240,110 @@ def get_batch_panel(request, panel_id):
         'id': panel.pk,
         'name': panel.name,
         'layout': panel.layout.pk if panel.layout else None,
-        'descriptors': panel.descriptors
+        'descriptors': panel.descriptors,
+        'batches_amount': panel.batches.count()
     }
 
     return HttpResponseRest(request, results)
 
 
-# @RestBatchPanelId.def_auth_request(Method.PATCH, Format.JSON, content={
-#    "type": "object",
-#    "properties": {
-#        "layout": {"type": ["integer", "null"], 'required': False},
-#        "descriptors": {"type": "object", "required": False},
-#    },
-#    "additionalProperties": {
-#        "name": BatchPanel.NAME_VALIDATOR
-#    }
-# }, perms={
-#     'accession.change_batchpanel': _("You are not allowed to modify batch panel")
-# })
-# def modify_panel(request, panel_id):
-#     panel = get_object_or_404(BatchPanel, id=int(panel_id))
-#     descriptors = request.data.get("descriptors")
-#
-#     result = {
-#         'id': panel.id
-#     }
-#
-#     try:
-#         with transaction.atomic():
-#             if 'name' in request.data:
-#                 name = request.data['name']
-#
-#                 if BatchPanel.objects.filter(name=name).exists():
-#                     raise SuspiciousOperation(_("The name of the panel is already used"))
-#
-#                 panel.name = name
-#                 result['name'] = name
-#
-#                 panel.update_field('name')
-#
-#             if 'layout' in request.data:
-#                 layout_id = request.data["layout"]
-#
-#                 # changing of layout erase all previous descriptors values
-#                 if layout_id is None and panel.layout is not None:
-#                     # clean previous descriptors and owns
-#                     descriptors_builder = DescriptorsBuilder(panel)
-#
-#                     descriptors_builder.clear(panel.layout)
-#
-#                     panel.layout = None
-#                     panel.descriptors = {}
-#
-#                     descriptors_builder.update_associations()
-#
-#                     result['layout'] = None
-#                     result['descriptors'] = {}
-#
-#                     panel.update_field(['layout', 'descriptors'])
-#
-#                 elif layout_id is not None:
-#                     # existing descriptors and new layout is different : first clean previous descriptors
-#                     if panel.layout is not None and panel.layout.pk != layout_id:
-#                         # clean previous descriptors and owns
-#                         descriptors_builder = DescriptorsBuilder(panel)
-#
-#                         descriptors_builder.clear(panel.layout)
-#
-#                         panel.layout = None
-#                         panel.descriptors = {}
-#
-#                         descriptors_builder.update_associations()
-#
-#                     # and set the new one
-#                     content_type = get_object_or_404(ContentType, app_label="accession", model="batchpanel")
-#                     layout = get_object_or_404(Layout, id=layout_id, target=content_type)
-#
-#                     panel.layout = layout
-#                     panel.descriptors = {}
-#
-#                     result['layout'] = layout.id
-#                     result['descriptors'] = {}
-#
-#                     panel.update_field(['layout', 'descriptors'])
-#
-#             if descriptors is not None:
-#                 # update descriptors
-#                 descriptors_builder = DescriptorsBuilder(panel)
-#
-#                 descriptors_builder.check_and_update(panel.layout, descriptors)
-#
-#                 panel.descriptors = descriptors_builder.descriptors
-#                 result['descriptors'] = panel.descriptors
-#
-#                 descriptors_builder.update_associations()
-#
-#                 panel.update_descriptors(descriptors_builder.changed_descriptors())
-#                 panel.update_field('descriptors')
-#
-#             panel.save()
-#     except IntegrityError as e:
-#         DescriptorModelType.integrity_except(Batch, e)
-#
-#     return HttpResponseRest(request, result)
+@RestBatchPanelId.def_auth_request(Method.PATCH, Format.JSON, content={
+   "type": "object",
+   "properties": {
+       "layout": {"type": ["integer", "null"], 'required': False},
+       "descriptors": {"type": "object", "required": False},
+   },
+   "additionalProperties": {
+       "name": BatchPanel.NAME_VALIDATOR
+   }
+}, perms={
+    'accession.change_batchpanel': _("You are not allowed to modify batch panel")
+})
+def modify_panel(request, panel_id):
+    panel = get_object_or_404(BatchPanel, id=int(panel_id))
+    descriptors = request.data.get("descriptors")
+
+    result = {
+        'id': panel.id
+    }
+
+    try:
+        with transaction.atomic():
+            if 'name' in request.data:
+                name = request.data['name']
+
+                if BatchPanel.objects.filter(name=name).exists():
+                    raise SuspiciousOperation(_("The name of the panel is already used"))
+
+                panel.name = name
+                result['name'] = name
+
+                panel.update_field('name')
+
+            if 'layout' in request.data:
+                layout_id = request.data["layout"]
+
+                # changing of layout erase all previous descriptors values
+                if layout_id is None and panel.layout is not None:
+                    # clean previous descriptors and owns
+                    descriptors_builder = DescriptorsBuilder(panel)
+
+                    descriptors_builder.clear(panel.layout)
+
+                    panel.layout = None
+                    panel.descriptors = {}
+
+                    descriptors_builder.update_associations()
+
+                    result['layout'] = None
+                    result['descriptors'] = {}
+
+                    panel.update_field(['layout', 'descriptors'])
+
+                elif layout_id is not None:
+                    # existing descriptors and new layout is different : first clean previous descriptors
+                    if panel.layout is not None and panel.layout.pk != layout_id:
+                        # clean previous descriptors and owns
+                        descriptors_builder = DescriptorsBuilder(panel)
+
+                        descriptors_builder.clear(panel.layout)
+
+                        panel.layout = None
+                        panel.descriptors = {}
+
+                        descriptors_builder.update_associations()
+
+                    # and set the new one
+                    content_type = get_object_or_404(ContentType, app_label="accession", model="batchpanel")
+                    layout = get_object_or_404(Layout, id=layout_id, target=content_type)
+
+                    panel.layout = layout
+                    panel.descriptors = {}
+
+                    result['layout'] = layout.id
+                    result['descriptors'] = {}
+
+                    panel.update_field(['layout', 'descriptors'])
+
+            if descriptors is not None:
+                # update descriptors
+                descriptors_builder = DescriptorsBuilder(panel)
+
+                descriptors_builder.check_and_update(panel.layout, descriptors)
+
+                panel.descriptors = descriptors_builder.descriptors
+                result['descriptors'] = panel.descriptors
+
+                descriptors_builder.update_associations()
+
+                panel.update_descriptors(descriptors_builder.changed_descriptors())
+                panel.update_field('descriptors')
+
+            panel.save()
+    except IntegrityError as e:
+        Descriptor.integrity_except(Batch, e)
+
+    return HttpResponseRest(request, result)
 
 
 @RestBatchPanelCount.def_auth_request(Method.GET, Format.JSON, perms={
@@ -483,107 +489,107 @@ def get_panel_batch_list(request, panel_id):
     return HttpResponseRest(request, results)
 
 
-# @RestBatchPanelBatches.def_auth_request(Method.PATCH, Format.JSON, content={
-#     "type": "object",
-#     "properties": {
-#         "action": {"type": "string", "enum": ['add', 'remove']},
-#         "selection": {
-#             "type": "object",
-#             "properties": {
-#                 "select": {
-#                     "type": [
-#                         {
-#                             "type": "object",
-#                             "properties": {
-#                                 "op": {"type": "string", "enum": ['in', 'notin']},
-#                                 "term": {"type": "string"},
-#                                 "value": {"type": "array"},
-#                             },
-#                         },
-#                         {
-#                             "type": "boolean"
-#                         }
-#                     ]
-#                 },
-#
-#             },
-#             "additionalProperties": {
-#                 "from": {
-#                     "type": "object",
-#                     "properties": {
-#                         "content_type": {"type": "string"},
-#                         "id": {"type": "integer"}
-#                     }
-#                 },
-#                 "search": {"type": "object"},
-#                 "filters": {"type": "object"}
-#             }
-#         }
-#     }
-#
-# }, perms={
-#     'accession.change_batchpanel': _("You are not allowed to modify batch panel")
-# })
-# def modify_panel_batches(request, panel_id):
-#     action = request.data['action']
-#     selection = request.data['selection']['select']
-#     panel = BatchPanel.objects.get(id=int_arg(panel_id))
-#
-#     from main.cursor import CursorQuery
-#     cq = CursorQuery(Batch)
-#
-#     if request.data['selection'].get('filters'):
-#         cq.filter(request.data['selection'].get('filters'))
-#
-#     if request.data['selection'].get('search'):
-#         cq.filter(request.data['selection'].get('search'))
-#
-#     if request.data['selection'].get('from'):
-#         related_entity = request.data['selection']['from']
-#         label, model = related_entity['content_type'].split('.')
-#         content_type = get_object_or_404(ContentType, app_label=label, model=model)
-#         model_class = content_type.model_class()
-#         cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
-#
-#     if action == 'remove':
-#         try:
-#             with transaction.atomic():
-#                 if isinstance(selection, bool):
-#                     if selection is True:
-#                         panel.batches.remove(*cq)
-#
-#                 elif selection['op'] == 'in':
-#                     panel.batches.remove(*cq.filter(id__in=selection['value']))
-#
-#                 elif selection['op'] == 'notin':
-#                     panel.batches.remove(*cq.filter(id__notin=selection['value']))
-#
-#                 panel.save()
-#
-#         except IntegrityError as e:
-#             DescriptorModelType.integrity_except(BatchPanel, e)
-#
-#     elif action == 'add':
-#         try:
-#             with transaction.atomic():
-#                 if isinstance(selection, bool):
-#                     if selection is True:
-#                         panel.batches.add(*cq)
-#
-#                 elif selection['op'] == 'in':
-#                     panel.batches.add(*cq.filter(id__in=selection['value']))
-#
-#                 elif selection['op'] == 'notin':
-#                     panel.batches.add(*cq.filter(id__notin=selection['value']))
-#
-#                 panel.save()
-#
-#         except IntegrityError as e:
-#             DescriptorModelType.integrity_except(BatchPanel, e)
-#     else:
-#         raise SuspiciousOperation('Invalid action')
-#
-#     return HttpResponseRest(request, {})
+@RestBatchPanelBatches.def_auth_request(Method.PATCH, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "action": {"type": "string", "enum": ['add', 'remove']},
+        "selection": {
+            "type": "object",
+            "properties": {
+                "select": {
+                    "type": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "op": {"type": "string", "enum": ['in', 'notin']},
+                                "term": {"type": "string"},
+                                "value": {"type": "array"},
+                            },
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                },
+
+            },
+            "additionalProperties": {
+                "from": {
+                    "type": "object",
+                    "properties": {
+                        "content_type": {"type": "string"},
+                        "id": {"type": "integer"}
+                    }
+                },
+                "search": {"type": "object"},
+                "filters": {"type": "object"}
+            }
+        }
+    }
+
+}, perms={
+    'accession.change_batchpanel': _("You are not allowed to modify batch panel")
+})
+def modify_panel_batches(request, panel_id):
+    action = request.data['action']
+    selection = request.data['selection']['select']
+    panel = BatchPanel.objects.get(id=int_arg(panel_id))
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Batch)
+
+    if request.data['selection'].get('filters'):
+        cq.filter(request.data['selection'].get('filters'))
+
+    if request.data['selection'].get('search'):
+        cq.filter(request.data['selection'].get('search'))
+
+    if request.data['selection'].get('from'):
+        related_entity = request.data['selection']['from']
+        label, model = related_entity['content_type'].split('.')
+        content_type = get_object_or_404(ContentType, app_label=label, model=model)
+        model_class = content_type.model_class()
+        cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
+
+    if action == 'remove':
+        try:
+            with transaction.atomic():
+                if isinstance(selection, bool):
+                    if selection is True:
+                        panel.batches.remove(*cq)
+
+                elif selection['op'] == 'in':
+                    panel.batches.remove(*cq.filter(id__in=selection['value']))
+
+                elif selection['op'] == 'notin':
+                    panel.batches.remove(*cq.filter(id__notin=selection['value']))
+
+                panel.save()
+
+        except IntegrityError as e:
+            Descriptor.integrity_except(BatchPanel, e)
+
+    elif action == 'add':
+        try:
+            with transaction.atomic():
+                if isinstance(selection, bool):
+                    if selection is True:
+                        panel.batches.add(*cq)
+
+                elif selection['op'] == 'in':
+                    panel.batches.add(*cq.filter(id__in=selection['value']))
+
+                elif selection['op'] == 'notin':
+                    panel.batches.add(*cq.filter(id__notin=selection['value']))
+
+                panel.save()
+
+        except IntegrityError as e:
+            Descriptor.integrity_except(BatchPanel, e)
+    else:
+        raise SuspiciousOperation('Invalid action')
+
+    return HttpResponseRest(request, {})
 
 
 # todo: set correct permissions... maybe list_panel_accession???

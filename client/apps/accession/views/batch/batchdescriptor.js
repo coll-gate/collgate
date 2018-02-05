@@ -47,7 +47,7 @@ let View = DescribableDetails.extend({
         // update the layout content
         let batchLayout = application.main.viewContent().getChildView('content');
 
-        let view = new BatchDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout,
+        let view = new BatchDescriptorEditView({model: this.model, layoutData: this.layoutData,
             descriptorCollection: this.descriptorCollection
         });
         batchLayout.showChildView('descriptors', view);

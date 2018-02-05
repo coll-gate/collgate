@@ -97,7 +97,7 @@ DescriptorModule.prototype = {
             'enum_single',
             'enum_pair',
             'enum_ordinal',
-            'descriptor_meta_model'
+            'layout'
         ];
 
         for (let i = 0; i < widgets.length; ++i) {
@@ -106,7 +106,7 @@ DescriptorModule.prototype = {
         }
 
         //
-        // descriptor meta-model types
+        // descriptor layout types
         //
 
         let DescriptorMetaModelTypeManager = require('./descriptormetamodeltypes/descriptormetamodeltypemanager');
@@ -117,7 +117,7 @@ DescriptorModule.prototype = {
         //
 
         app.main.cache.register('descriptors');
-        app.main.cache.register('descriptor_meta_model');
+        app.main.cache.register('layout');
         app.main.cache.register('entity_columns');
 
         let DescriptorMetaModelCacheFetcher = require('./utils/descriptormetamodelcachefetcher');

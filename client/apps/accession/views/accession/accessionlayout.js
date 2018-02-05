@@ -106,7 +106,7 @@ let Layout = LayoutView.extend({
                     let AccessionDescriptorView = require('./accessiondescriptor');
                     let accessionDescriptorView = new AccessionDescriptorView({
                         model: model,
-                        descriptorMetaModelLayout: data,
+                        layoutData: data,
                         descriptorCollection: view.descriptorCollection
 
                     });
@@ -260,7 +260,7 @@ let Layout = LayoutView.extend({
                     // let AccessionDescriptorView = require('./accessiondescriptor');
                     let accessionDescriptorView = new AccessionDescriptorEditView({
                         model: model,
-                        descriptorMetaModelLayout: data,
+                        layoutData: data,
                         descriptorCollection: view.descriptorCollection
 
                     });

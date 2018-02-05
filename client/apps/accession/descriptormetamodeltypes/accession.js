@@ -1,6 +1,6 @@
 /**
  * @file accession.js
- * @brief Accession specialization for descriptor meta-model type.
+ * @brief Accession specialization for descriptor layout type.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-09-13
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -15,7 +15,7 @@ let Accession = DescriptorMetaModelType.extend({
 
     ui: {
         'primary_classification': 'select.primary-classification',
-        'batch_descriptor_meta_models_group': 'div.batch-descriptor-meta-models-group'
+        'batch_layouts_group': 'div.batch-descriptor-meta-models-group'
     },
 
     onRender: function () {
@@ -37,12 +37,12 @@ let Accession = DescriptorMetaModelType.extend({
         });
 
         // batches list
-        let batchesListValues = Object.resolve('data.batch_descriptor_meta_models', this.model.get('parameters')) || [];
+        let batchesListValues = Object.resolve('data.batch_layouts', this.model.get('parameters')) || [];
 
-        this.batchesWidget = application.descriptor.widgets.newElement('descriptor_meta_model');
+        this.batchesWidget = application.descriptor.widgets.newElement('layout');
         this.batchesWidget.create(
             {model: 'accession.batch'},
-            this.ui.batch_descriptor_meta_models_group, {
+            this.ui.batch_layouts_group, {
                 readOnly: false,
                 multiple: true
             });
@@ -55,7 +55,7 @@ let Accession = DescriptorMetaModelType.extend({
     getData: function () {
         return {
             'primary_classification': parseInt(this.ui.primary_classification.val()),
-            'batch_descriptor_meta_models': this.batchesWidget.values() || []
+            'batch_layouts': this.batchesWidget.values() || []
         }
     },
 

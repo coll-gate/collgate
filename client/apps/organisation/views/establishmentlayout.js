@@ -61,7 +61,7 @@ let Layout = LayoutView.extend({
                 let DescriptorView = require('../views/descriptor');
                 let descriptorView = new DescriptorView({
                     model: model,
-                    descriptorMetaModelLayout: data
+                    layoutData: data
                 });
                 establishmentLayout.showChildView('descriptors', descriptorView);
             });
@@ -134,7 +134,7 @@ let Layout = LayoutView.extend({
                 dataType: 'json'
             }).done(function(data) {
                 let descriptorView = new DescriptorEditView({
-                    model: establishmentLayout.model, descriptorMetaModelLayout: data});
+                    model: establishmentLayout.model, layoutData: data});
 
                 establishmentLayout.showChildView('descriptors', descriptorView);
             });

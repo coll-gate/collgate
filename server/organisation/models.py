@@ -57,7 +57,7 @@ class Organisation(DescribableEntity):
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
             'layout': {
-                'label': _('Model'),
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {
@@ -200,7 +200,7 @@ class Establishment(DescribableEntity):
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
             'layout': {
-                'label': _('Model'),
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {

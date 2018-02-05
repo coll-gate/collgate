@@ -18,7 +18,7 @@ let View = AdvancedTable.extend({
     childView: AccessionView,
     childViewContainer: 'tbody.entity-list',
     userSettingName: 'panel_accessions_list_columns',
-    userSettingVersion: '1.0',
+    userSettingVersion: '1.2',
 
     defaultColumns: [
         {name: 'select', width: 'auto', sort_by: null},
@@ -48,7 +48,7 @@ let View = AdvancedTable.extend({
             custom: 'primaryClassificationEntryCell',
             field: 'name'
         },
-        'layout': {label: _t('Model'), width: 'auto', minWidth: true},
+        'layout': {label: _t('Layout'), width: 'auto', minWidth: true},
         'synonym': {
             label: _t('Synonym'),
             width: 'auto',
