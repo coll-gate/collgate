@@ -22,7 +22,6 @@ let Layout = LayoutView.extend({
 
     ui: {
         general_tab: 'a[aria-controls=general]',
-        inputs_tab: 'a[aria-controls=inputs]',
         steps_tab: 'a[aria-controls=steps]',
         format_type: 'select.action-type-format-type',
         description: 'textarea[name=description]',
@@ -33,7 +32,6 @@ let Layout = LayoutView.extend({
         'contextual': "div.contextual-region",
         'namingOptions': "div.naming-options",
         'general': "div.tab-pane[name=general]",
-        'inputs': "div.tab-pane[name=inputs]",
         'steps': "div.tab-pane[name=steps]",
     },
 
@@ -62,7 +60,6 @@ let Layout = LayoutView.extend({
     },
 
     enableTabs: function () {
-        this.ui.inputs_tab.parent().removeClass('disabled');
         this.ui.steps_tab.parent().removeClass('disabled');
     },
 
@@ -87,11 +84,11 @@ let Layout = LayoutView.extend({
 
         if (!this.model.isNew()) {
             // configuration tab
-            let Element = window.application.accession.actions.getElement(format.type || 'creation');
-            let actionFormatType = new Element.ActionStepFormatDetailsView({model: this.model});
-            this.ui.format_type.prop('disabled', true).selectpicker('refresh');
-
-            batchLayout.showChildView('contextual', actionFormatType);
+            // let Element = window.application.accession.actions.getElement(format.type || 'creation');
+            // let actionFormatType = new Element.ActionStepFormatDetailsView({model: this.model});
+            // this.ui.format_type.prop('disabled', true).selectpicker('refresh');
+            //
+            // batchLayout.showChildView('contextual', actionFormatType);
 
             this.enableTabs();
         } else {
