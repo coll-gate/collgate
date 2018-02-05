@@ -30,7 +30,7 @@ let Controller = Marionette.Object.extend({
                 attributes: {
                     'id': 'dlg_create_actiontype'
                 },
-                template: require('../templates/actiontype/actiontypecreate.html'),
+                template: require('../templates/action/actiontypecreate.html'),
 
                 ui: {
                     validate: "button.continue",

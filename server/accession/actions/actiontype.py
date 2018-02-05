@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.views.decorators.cache import cache_page
 
+from accession.actions.actioncontroller import ActionController
 from accession.actions.actionstepformat import ActionStepFormatManager
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -290,6 +291,7 @@ def get_format_type_list(request):
 @RestActionTypeId.def_auth_request(Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
+            "name": ActionType.NAME_VALIDATOR_OPTIONAL,
             "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
             "format": {"type": "object", "required": False},
             "label": ActionType.LABEL_VALIDATOR_OPTIONAL
@@ -301,10 +303,13 @@ def get_format_type_list(request):
 def patch_action_type(request, act_id):
     action_type = get_object_or_404(ActionType, id=int(act_id))
 
+    name = request.data.get("name")
     entity_status = request.data.get("entity_status")
     description = request.data.get("description")
     label = request.data.get("label")
     format_data = request.data.get("format")
+
+    action_controller = ActionController(action_type)
 
     result = {
         'id': action_type.id
@@ -314,6 +319,11 @@ def patch_action_type(request, act_id):
         action_type.set_status(entity_status)
         result['entity_status'] = entity_status
         action_type.update_field('entity_status')
+
+    if name is not None:
+        action_type.name = name
+        result['name'] = name
+        action_type.update_field('name')
 
     if description is not None:
         action_type.description = description
@@ -327,14 +337,18 @@ def patch_action_type(request, act_id):
         action_type.update_field('label')
 
     if format_data is not None:
-        if action_type.format.get('type', 'undefined') != action_type.format['type']:
-            raise SuspiciousOperation(_("It is not possible to change the format type"))
+        if 'next_step' not in format_data or 'steps_data' not in format_data:
+            raise SuspiciousOperation(_("Invalid format"))
 
-        # format validation
-        ActionStepFormatManager.check(format_data)
+        action_type.format['next_step'] = action_type.format.get('next_step')
+        action_type.format['steps_data'] = []
 
-        action_type.format = format_data
-        result['format'] = format_data
+        for step in format_data['steps_data']:
+            # step format validation
+            ActionStepFormatManager.check(action_controller, step)
+            action_type.format['steps_data'].append(step)
+
+        result['format'] = action_type.format
         action_type.update_field('format')
 
     action_type.save()
@@ -387,17 +401,18 @@ def create_action_type(request):
     format_data = request.data.get("format", {'type': 'undefined'})
     lang = translation.get_language()
 
-    if format_data['type'] != 'undefined':
-        # format validation
-        ActionStepFormatManager.check(format_data)
-
     # create the action type
     action_type = ActionType()
-
     action_type.name = request.data['name']
     action_type.set_label(lang, label)
     action_type.description = description
     action_type.format = format_data
+
+    action_controller = ActionController(action_type, request.user)
+
+    if format_data['type'] != 'undefined':
+        # format validation
+        ActionStepFormatManager.check(action_controller, format_data)
 
     action_type.save()
 

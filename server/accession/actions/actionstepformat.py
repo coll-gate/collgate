@@ -187,9 +187,10 @@ class ActionStepFormatManager(object):
             raise ValueError(res)
 
     @classmethod
-    def check(cls, action_step_format):
+    def check(cls, action_controller, action_step_format):
         """
         Call the check of the correct descriptor format type.
+        :param action_controller: Current action controller instance
         :param action_step_format: Format of the type of descriptor as python object
         :return: True if check success.
         :except ValueError with descriptor of the problem
@@ -200,18 +201,13 @@ class ActionStepFormatManager(object):
         if act is None:
             raise ValueError("Unsupported format of action step %s" % step_format)
 
-        data = action_step_format.get('data')
-        if data is None:
-            raise ValueError("Missing action type data object")
-
         # according to its controller check the naming constants
-        if act.has_controller():
-            constants = data.get('naming_options')
-            if constants is None:
-                raise ValueError("Missing name builder constants array")
+        constants = action_step_format.get('naming_options')
+        if constants is None:
+            raise ValueError("Missing name builder constants array")
 
-            if len(constants) != act.controller().name_builder.num_constants:
-                raise ValueError("Number of name builder constants differs")
+        if len(constants) != action_controller.name_builder.num_constants:
+            raise ValueError("Number of name builder constants differs")
 
         res = act.check(action_step_format)
         if res is not None:

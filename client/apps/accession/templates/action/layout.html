@@ -1,5 +1,5 @@
 <!--
- - @file actiontype/layout.html
+ - @file action/layout.html
  - @brief
  - @author Frédéric SCHERMA (INRA UMR1095)
  - @date 2017-12-07
@@ -22,7 +22,7 @@
                 <div class="row">
                     <div class="action-type-format-type-group form-group">
                         <label><%- _t('Action type name') %></label>
-                        <input class="form-control" autocomplete="false" maxlength="128" value="<%- name %>">
+                        <input name="name" class="form-control" autocomplete="false" maxlength="128" value="<%- name %>">
                     </div>
                 </div>
                 <div class="row">
@@ -38,8 +38,7 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <label><%- _t('Step number') %></label>
-                        <select class="action-type-step-index form-control">
-                            <option value="0"><%- _t("Step 1") %></option>
+                        <select class="action-type-step-index form-control" title="<%- _t('Select or create a step') %>">
                             <option value="-1"><%- _t("Add new") %></option>
                         </select>
                     </div>
