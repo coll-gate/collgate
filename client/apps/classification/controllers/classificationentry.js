@@ -60,11 +60,11 @@ let Controller = Marionette.Object.extend({
                     CreateClassificationEntryDialog.__super__.initialize.apply(this, arguments);
 
                     // map descriptor meta models by theirs ids
-                    this.descriptorMetaModels = {};
+                    this.layouts = {};
 
                     for (let i = 0; i < data.length; ++i) {
                         let dmm = data[i];
-                        this.descriptorMetaModels[dmm.id] = dmm;
+                        this.layouts[dmm.id] = dmm;
                     }
                 },
 
@@ -96,9 +96,9 @@ let Controller = Marionette.Object.extend({
                 },
 
                 getDescriptorMetaModelClassifications: function () {
-                    let descriptorMetaModelId = parseInt(this.ui.layout.val());
+                    let layoutId = parseInt(this.ui.layout.val());
 
-                    let value = Object.resolve(descriptorMetaModelId + ".parameters.data.classification", this.descriptorMetaModels);
+                    let value = Object.resolve(layoutId + ".parameters.data.classification", this.layouts);
                     if (value) {
                         return [value];
                     }

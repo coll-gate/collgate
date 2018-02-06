@@ -131,17 +131,17 @@ let View = Dialog.extend({
 
         const view = this;
 
-        let descriptorMetaModels = [];
+        let layouts = [];
 
         if (metaModels) {
             for (let i = 0; i < metaModels.length; ++i) {
-                descriptorMetaModels.push(parseInt(metaModels[i]));
+                layouts.push(parseInt(metaModels[i]));
             }
         }
 
         application.main.cache.lookup({
             type: 'entity_columns',
-            format: {model: entityType, layouts: descriptorMetaModels, mode: 'search'}
+            format: {model: entityType, layouts: layouts, mode: 'search'}
 
         }).done(function (data) {
             $(selects).children('option').remove().end();

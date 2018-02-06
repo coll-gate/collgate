@@ -16,14 +16,6 @@
         </div>
         <div class="modal-body">
             <form>
-                <div class="form-group">
-                    <label class="control-label" for="layout"><%= _t("Template") %></label>
-                    <select id="layout" style="width:100%;" class="form-control">
-                        <% _.each(layouts, function(layout) { %>
-                            <option value="<%= layout.id %>"><%= layout.label %></option>
-                        <% }) %>
-                    </select>
-                </div>
                 <div class="row">
                     <div class="col-xs-8">
                         <div class="form-group">
@@ -37,6 +29,14 @@
                             <select class="form-control language" id="classification_entry_language" name="language"></select>
                         </div>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="layout"><%= _t("Layout") %></label>
+                    <select id="layout" style="width:100%;" class="form-control">
+                        <% _.each(layouts, function(layout) { %>
+                            <option value="<%= layout.id %>"><%= layout.label %></option>
+                        <% }) %>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label class="control-label" for="classification"><%= _t("Classification") %></label>
