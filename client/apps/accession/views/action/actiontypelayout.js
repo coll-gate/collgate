@@ -107,10 +107,20 @@ let Layout = LayoutView.extend({
             let stepData = this.model.get('format')['steps_data'][idx];
             this.ui.format_type.val(stepData.type).prop('disabled', false).selectpicker('refresh');
 
-            // @todo
-            // this.getChildView("namingOptions").setNamingOptions(stepData['naming_options']);
+            let Element = window.application.accession.actions.getElement(stepData.type);
+            let actionFormatType = new Element.ActionStepFormatDetailsView({model: this.model});
 
-            // @todo contextual data
+            this.showChildView('contextual', actionFormatType);
+
+            let NamingOptionsView = require('../namingoption');
+            let namingOptionsView = new NamingOptionsView({
+                namingFormat: this.namingFormat,
+                namingOptions: this.namingOptions
+            });
+
+            this.showChildView("namingOptions", namingOptionsView);
+            namingOptionsView.setNamingOptions(stepData.naming_options);
+
             this.currentStepIndex = idx;
         }
     },
@@ -139,7 +149,7 @@ let Layout = LayoutView.extend({
 
         let format = this.model.get('format');
         let idx = parseInt(this.ui.step_index.val());
-        let step_data = undefined;
+        let stepData = undefined;
 
         if (idx < 0) {
             // create a new one
@@ -147,7 +157,7 @@ let Layout = LayoutView.extend({
                 $.alert.warning(_t("Max number of step reached (10)"));
                 return;
             } else {
-                step_data = {
+                stepData = {
                     'type': 'accession_list',
                     'naming_options': {}
                 };
@@ -162,26 +172,28 @@ let Layout = LayoutView.extend({
                 this.ui.format_type.prop('disabled', false).selectpicker('refresh');
             }
         } else {
-            step_data = format.steps_data[idx];
+            stepData = format.steps_data[idx];
         }
 
         // set into the model
         this.storeCurrentStepData();
 
         // change current selection
-        this.ui.format_type.prop('disabled', false).val(step_data.type).selectpicker('refresh');
+        this.ui.format_type.prop('disabled', false).val(stepData.type).selectpicker('refresh');
 
-        let Element = window.application.accession.actions.getElement(step_data.type);
+        let Element = window.application.accession.actions.getElement(stepData.type);
         let actionFormatType = new Element.ActionStepFormatDetailsView({model: this.model});
 
         this.showChildView('contextual', actionFormatType);
 
         let NamingOptionsView = require('../namingoption');
+        let namingOptionsView = new NamingOptionsView({
+            namingFormat: this.namingFormat,
+            namingOptions: this.namingOptions
+        });
 
-        this.showChildView("namingOptions", new NamingOptionsView({
-            namingFormat: self.namingFormat,
-            namingOptions: self.namingOptions
-        }));
+        this.showChildView("namingOptions", namingOptionsView);
+        namingOptionsView.setNamingOptions(stepData.naming_options);
     },
 
     onRender: function () {
@@ -223,6 +235,7 @@ let Layout = LayoutView.extend({
         let name = this.ui.name.val().trim();
         let description = this.ui.description.val().trim();
 
+        // store possible last changes on current step
         this.storeCurrentStepData();
 
         let model = this.model;

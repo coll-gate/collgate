@@ -37,6 +37,16 @@ let View = Marionette.View.extend({
         this.ui.format.val(this.namingFormat);
     },
 
+    setNamingOptions: function(namingOptions) {
+        if (namingOptions.length !== this.ui.constants.length) {
+            return;
+        }
+
+         for (let i = 0; i < this.ui.constants.length; ++i) {
+            this.ui.constants.eq(i).val(namingOptions[i]);
+        }
+    },
+
     getNamingOptions: function () {
         let res = [];
 

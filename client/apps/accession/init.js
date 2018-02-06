@@ -55,8 +55,9 @@ AccessionModule.prototype = {
         let actions = [
             'accession_list',
             'accession_refinement',
+            'accessionconsumer_batchproducer',
             'batchconsumer_batchmodifier',
-            'batchconsumer_batchproducer',
+            'batchconsumer_batchproducer'
         ];
 
         for (let i = 0; i < actions.length; ++i) {
