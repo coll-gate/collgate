@@ -104,14 +104,14 @@ let Layout = LayoutView.extend({
         let idx = parseInt(this.ui.step_index.val());
 
         if (idx >= 0) {
-            let stepData = this.model.get('format')['steps_data'][this.currentStepIndex];
+            let stepData = this.model.get('format')['steps_data'][idx];
             this.ui.format_type.val(stepData.type).prop('disabled', false).selectpicker('refresh');
 
             // @todo
             // this.getChildView("namingOptions").setNamingOptions(stepData['naming_options']);
 
             // @todo contextual data
-
+            this.currentStepIndex = idx;
         }
     },
 
@@ -200,7 +200,15 @@ let Layout = LayoutView.extend({
         this.ui.format_type.prop('disabled', true).selectpicker('refresh');
 
         if (!this.model.isNew()) {
-            this.loadCurrentStepData();
+            if (format.steps_data.length) {
+                // select first step if exists
+                this.namingOptionsPromise.then(function () {
+                    batchLayout.ui.step_index.val(0).selectpicker('refresh');
+                    batchLayout.currentStepIndex = 0;
+                    batchLayout.loadCurrentStepData();
+                });
+            }
+
             this.enableTabs();
         } else {
         }
