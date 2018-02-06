@@ -16780,8 +16780,8 @@ let DescriptorsColumnsView = {
     _fetchStandardValue: function(modelList, columnName, options) {
         let parameters = {};
 
-        if (options.format.type === "descriptor_meta_model" && application.main.cache.hasFetcher('descriptor_meta_model')) {
-            parameters.type = 'descriptor_meta_model';
+        if (options.format.type === "layout" && application.main.cache.hasFetcher('layout')) {
+            parameters.type = 'layout';
             parameters.format = {
                 'model': options.format.model
             }
@@ -18239,7 +18239,7 @@ var ClassificationEntryModel = Backbone.Model.extend({
         parent_list: [],
         parent_details: [],
         synonyms: [],
-        descriptor_meta_model: null,
+        layout: null,
         descriptors: {}
     },
 
@@ -18326,7 +18326,7 @@ var Model = Backbone.Model.extend({
         code: '',
         name: '',
         primary_classification_entry: undefined,
-        descriptor_meta_model: undefined,
+        layout: undefined,
         descriptors: {},
         synonyms: []
     },
@@ -18373,8 +18373,8 @@ var View = ItemView.extend({
     template: __webpack_require__(284),
     templateContext: function () {
         return {
-            panels: this.descriptorMetaModelLayout.panels,
-            target: this.descriptorMetaModelLayout.target
+            panels: this.layoutData.panels,
+            target: this.layoutData.target
         };
     },
 
@@ -18392,7 +18392,7 @@ var View = ItemView.extend({
     initialize: function(options) {
         View.__super__.initialize.apply(this);
 
-        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
+        this.layoutData = options.layoutData;
 
         // no need to follow changes during edition
         // this.listenTo(this.model, 'change:descriptors', this.render, this);
@@ -18408,7 +18408,7 @@ var View = ItemView.extend({
 
             var pi = el.attr('panel-index');
             var i = el.attr('index');
-            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+            var descriptorModelType = view.layoutData.panels[pi].descriptor_model.descriptor_model_types[i];
             var descriptorType = descriptorModelType.descriptor_type;
             var format = descriptorType.format;
 
@@ -18450,9 +18450,9 @@ var View = ItemView.extend({
         var descriptors = {};
 
         // firstly make a list for each descriptor of which descriptors need them for a condition
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (var pi = 0; pi < this.layoutData.panels.length; ++pi) {
+            for (var i = 0; i < this.layoutData.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.layoutData.panels[pi].descriptor_model.descriptor_model_types[i];
                 var condition = descriptorModelType.condition;
 
                 // if given set initials values for the widget
@@ -18463,7 +18463,7 @@ var View = ItemView.extend({
                 if (condition.defined) {
                     /* @todo optimize with model not dom */
                     var target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+                    var targetDescriptorModelType = this.layoutData.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
 
                     if (targetDescriptorModelType.widget && descriptorModelType.widget) {
                         if (targetDescriptorModelType.id in descriptors) {
@@ -18498,9 +18498,9 @@ var View = ItemView.extend({
 
     onBeforeDetach: function() {
         // destroy any widgets
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (var pi = 0; pi < this.layoutData.panels.length; ++pi) {
+            for (var i = 0; i < this.layoutData.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.layoutData.panels[pi].descriptor_model.descriptor_model_types[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.destroy();
                 }
@@ -18511,10 +18511,10 @@ var View = ItemView.extend({
     findDescriptorModelTypeForConditionTarget: function(target) {
         var pi = target.attr('panel-index');
         var i = target.attr('index');
-        var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        var targetDescriptorModelType = this.layoutData.panels[pi].descriptor_model.descriptor_model_types[i];
 
         // find el from target
-        var descriptorModelTypes = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types;
+        var descriptorModelTypes = this.layoutData.panels[pi].descriptor_model.descriptor_model_types;
         for (var i = 0; i < descriptorModelTypes.length; ++i) {
             if (descriptorModelTypes[i].condition.target === targetDescriptorModelType.id) {
                 var descriptorModelType = descriptorModelTypes[i];
@@ -18533,9 +18533,9 @@ var View = ItemView.extend({
     prepareDescriptors: function () {
         var descriptors = {};
 
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (var pi = 0; pi < this.layoutData.panels.length; ++pi) {
+            for (var i = 0; i < this.layoutData.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.layoutData.panels[pi].descriptor_model.descriptor_model_types[i];
 
                 var mandatory = descriptorModelType.mandatory;
 
@@ -18572,9 +18572,9 @@ var View = ItemView.extend({
 
     cancel: function() {
         // destroy any widgets
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (var pi = 0; pi < this.layoutData.panels.length; ++pi) {
+            for (var i = 0; i < this.layoutData.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.layoutData.panels[pi].descriptor_model.descriptor_model_types[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.cancel();
                 }
@@ -18628,8 +18628,8 @@ var View = ItemView.extend({
     template: __webpack_require__(285),
     templateContext: function () {
         return {
-            panels: this.descriptorMetaModelLayout.panels,
-            target: this.descriptorMetaModelLayout.target
+            panels: this.layoutData.panels,
+            target: this.layoutData.target
         };
     },
 
@@ -18649,7 +18649,7 @@ var View = ItemView.extend({
     initialize: function(options) {
         View.__super__.initialize.apply(this);
 
-        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
+        this.layoutData = options.layoutData;
 
         this.listenTo(this.model, 'change:descriptors', this.render, this);
     },
@@ -18664,7 +18664,7 @@ var View = ItemView.extend({
 
             var pi = el.attr('panel-index');
             var i = el.attr('index');
-            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+            var descriptorModelType = view.layoutData.panels[pi].descriptor_model.descriptor_model_types[i];
             var descriptorType = descriptorModelType.descriptor_type;
             var format = descriptorType.format;
 
@@ -18682,15 +18682,15 @@ var View = ItemView.extend({
     },
 
     onDomRefresh: function() {
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (var pi = 0; pi < this.layoutData.panels.length; ++pi) {
+            for (var i = 0; i < this.layoutData.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.layoutData.panels[pi].descriptor_model.descriptor_model_types[i];
                 var condition = descriptorModelType.condition;
 
                 if (condition.defined) {
                     // search the target descriptor type for the condition
                     var target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+                    var targetDescriptorModelType = this.layoutData.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
 
                     // initial state of the condition
                     var display = true;
@@ -18712,9 +18712,9 @@ var View = ItemView.extend({
 
     onBeforeDetach: function() {
         // destroy any widgets
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+        for (var pi = 0; pi < this.layoutData.panels.length; ++pi) {
+            for (var i = 0; i < this.layoutData.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.layoutData.panels[pi].descriptor_model.descriptor_model_types[i];
                 if (descriptorModelType.widget) {
                     descriptorModelType.widget.destroy();
                 }
@@ -18797,7 +18797,7 @@ let Model = Backbone.Model.extend({
         name: "",
         type: "",
         grc: null,
-        descriptor_meta_model: null,
+        layout: null,
         descriptors: {}
     }
 });
@@ -18893,7 +18893,7 @@ var Model = Backbone.Model.extend({
         id: null,
         name: '',
         accession: undefined,
-        descriptor_meta_model: undefined,
+        layout: undefined,
         descriptors: {}
     },
 
@@ -19059,7 +19059,7 @@ var View = AdvancedTable.extend({
                 template: __webpack_require__(298),
                 templateContext: function () {
                     return {
-                        meta_models: data[0]
+                        layouts: data[0]
                     };
                 },
 
@@ -19067,7 +19067,7 @@ var View = AdvancedTable.extend({
                     validate: "button.continue",
                     code: "#accession_code",
                     name: "#batch_name",
-                    meta_model: "#meta_model"
+                    layout: "#layout"
                 },
 
                 events: {
@@ -19082,11 +19082,11 @@ var View = AdvancedTable.extend({
                     var batch = this.getOption('batch');
 
                     this.ui.code.val(accession.get('name') + ' (' + accession.get('code') + ')');
-                    this.ui.meta_model.selectpicker({});
+                    this.ui.layout.selectpicker({});
                 },
 
                 onBeforeDestroy: function () {
-                    this.ui.meta_model.selectpicker('destroy');
+                    this.ui.layout.selectpicker('destroy');
 
                     CreateBatchView.__super__.onBeforeDestroy.apply(this);
                 },
@@ -19153,13 +19153,13 @@ var View = AdvancedTable.extend({
 
                     if (this.validate()) {
                         var name = this.ui.name.val().trim();
-                        var metaModel = parseInt(this.ui.meta_model.val());
+                        var metaModel = parseInt(this.ui.layout.val());
 
                         // create a new local model and open an edit view with this model
                         var model = new BatchModel({
                             accession: view.getOption('accession').get('id'),
                             name: name,
-                            descriptor_meta_model: metaModel
+                            layout: metaModel
                         });
 
                         view.destroy();
@@ -20064,7 +20064,7 @@ let View = DescribableDetails.extend({
         // update the layout content
         let layout = application.main.viewContent().getChildView('content');
 
-        let view = new DescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+        let view = new DescriptorEditView({model: this.model, layoutData: this.layoutData});
         layout.showChildView('descriptors', view);
     }
 });
@@ -20446,7 +20446,7 @@ var View = DescribableDetails.extend({
         // update the layout content
         var accessionLayout = application.main.viewContent().getChildView('content');
 
-        var view = new AccessionDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+        var view = new AccessionDescriptorEditView({model: this.model, layoutData: this.layoutData});
         accessionLayout.showChildView('descriptors', view);
     }
 });
@@ -20604,7 +20604,7 @@ var Layout = LayoutView.extend({
     initialize: function(model, options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:layout', this.onDescriptorMetaModelChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onBatchCreate, this);
@@ -20650,7 +20650,7 @@ var Layout = LayoutView.extend({
                 var BatchDescriptorView = __webpack_require__(49);
                 var batchDescriptorView = new BatchDescriptorView({
                     model: model,
-                    descriptorMetaModelLayout: data
+                    layoutData: data
                 });
                 batchLayout.showChildView('descriptors', batchDescriptorView);
 
@@ -20738,7 +20738,7 @@ var Layout = LayoutView.extend({
             // descriptors edit tab
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
+                url: window.application.url(['descriptor', 'meta-model', this.model.get('layout'), 'layout']),
                 dataType: 'json'
             }).done(function(data) {
                 if (!batchLayout.isRendered()) {
@@ -20746,7 +20746,7 @@ var Layout = LayoutView.extend({
                 }
 
                 var batchDescriptorView = new BatchDescriptorEditView({
-                    model: batchLayout.model, descriptorMetaModelLayout: data});
+                    model: batchLayout.model, layoutData: data});
 
                 batchLayout.showChildView('descriptors', batchDescriptorView);
             });
@@ -20815,7 +20815,7 @@ var View = DescribableDetails.extend({
         // update the layout content
         var batchLayout = application.main.viewContent().getChildView('content');
 
-        var view = new BatchDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+        var view = new BatchDescriptorEditView({model: this.model, layoutData: this.layoutData});
         batchLayout.showChildView('descriptors', view);
     }
 });
@@ -20989,7 +20989,7 @@ var Model = Backbone.Model.extend({
         id: null,
         name: '',
         selection: {},
-        descriptor_meta_model: null,
+        layout: null,
         descriptors: {}
     },
 
@@ -21138,7 +21138,7 @@ var View = DescribableDetails.extend({
 
         var view = new AccessionPanelDescriptorEditView({
             model: this.model,
-            descriptorMetaModelLayout: this.descriptorMetaModelLayout
+            layoutData: this.layoutData
         });
         accessionPanelLayout.showChildView('descriptors', view);
     }
@@ -21180,7 +21180,7 @@ var View = DescribableDetails.extend({
 
         var actions = [];
 
-        if (!this.model.get('descriptor_meta_model')) {
+        if (!this.model.get('layout')) {
             actions.push('add');
         } else {
             actions.push('modify');
@@ -21214,7 +21214,7 @@ var View = DescribableDetails.extend({
         //
         //     confirmDialog.on('dialog:confirm', function() {
         //         // this will update the model and so on the view
-        //         view.model.save({descriptor_meta_model: null}, {patch: true, trigger: true});
+        //         view.model.save({layout: null}, {patch: true, trigger: true});
         //     });
         // });
     },
@@ -21230,7 +21230,7 @@ var View = DescribableDetails.extend({
         var classificationEntryLayout = application.main.viewContent().getChildView('content');
 
         var view = new ClassificationEntryDescriptorEditView({
-            model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+            model: this.model, layoutData: this.layoutData});
         classificationEntryLayout.showChildView('descriptors', view);
     }
 });
@@ -21719,7 +21719,7 @@ var View = DescribableEdit.extend({
         var DescriptorView = __webpack_require__(37);
         var descriptorView = new DescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+            layoutData: view.layoutData});
 
         layout.showChildView('descriptors', descriptorView);
     },
@@ -21743,7 +21743,7 @@ var View = DescribableEdit.extend({
             var DescriptorView = __webpack_require__(37);
             var descriptorView = new DescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+                layoutData: view.layoutData});
 
             layout.showChildView('descriptors', descriptorView);
         });
@@ -21814,7 +21814,7 @@ let Model = Backbone.Model.extend({
         id: null,
         name: "",
         organisation: null,
-        descriptor_meta_model: null,
+        layout: null,
         descriptors: {}
     }
 });
@@ -33338,7 +33338,7 @@ var Accession = DescriptorMetaModelType.extend({
 
     ui: {
         'primary_classification': 'select.primary-classification',
-        'batch_descriptor_meta_models_group': 'div.batch-descriptor-meta-models-group'
+        'batch_layouts_group': 'div.batch-descriptor-meta-models-group'
     },
 
     onRender: function() {
@@ -33360,12 +33360,12 @@ var Accession = DescriptorMetaModelType.extend({
         });
 
         // batches list
-        var batchesListValues = Object.resolve('data.batch_descriptor_meta_models', this.model.get('parameters')) || [];
+        var batchesListValues = Object.resolve('data.batch_layouts', this.model.get('parameters')) || [];
 
-        this.batchesWidget = application.descriptor.widgets.newElement('descriptor_meta_model');
+        this.batchesWidget = application.descriptor.widgets.newElement('layout');
         this.batchesWidget.create(
             {model: 'accession.batch'},
-            this.ui.batch_descriptor_meta_models_group,
+            this.ui.batch_layouts_group,
             false,
             0, 0, {multiple: true});
 
@@ -33377,7 +33377,7 @@ var Accession = DescriptorMetaModelType.extend({
     getData: function() {
         return {
             'primary_classification': parseInt(this.ui.primary_classification.val()),
-            'batch_descriptor_meta_models': this.batchesWidget.values() || []
+            'batch_layouts': this.batchesWidget.values() || []
         }
     },
 
@@ -33471,7 +33471,7 @@ let Layout = LayoutView.extend({
     initialize: function(options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:layout', this.onDescriptorMetaModelChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onAccessionCreate, this);
@@ -33528,7 +33528,7 @@ let Layout = LayoutView.extend({
                 let AccessionDescriptorView = __webpack_require__(45);
                 let accessionDescriptorView = new AccessionDescriptorView({
                     model: model,
-                    descriptorMetaModelLayout: data
+                    layoutData: data
                 });
                 accessionLayout.showChildView('descriptors', accessionDescriptorView);
             });
@@ -33640,7 +33640,7 @@ let Layout = LayoutView.extend({
                 accessionPanelListView.query();
             });
 
-            this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+            this.onDescriptorMetaModelChange(this.model, this.model.get('layout'));
             this.enableTabs();
         } else {
             // details
@@ -33657,7 +33657,7 @@ let Layout = LayoutView.extend({
             // descriptors edit tab
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
+                url: window.application.url(['descriptor', 'meta-model', this.model.get('layout'), 'layout']),
                 dataType: 'json'
             }).done(function(data) {
                 if (!accessionLayout.isRendered()) {
@@ -33665,7 +33665,7 @@ let Layout = LayoutView.extend({
                 }
 
                 let accessionDescriptorView = new AccessionDescriptorEditView({
-                    model: accessionLayout.model, descriptorMetaModelLayout: data});
+                    model: accessionLayout.model, layoutData: data});
 
                 accessionLayout.showChildView('descriptors', accessionDescriptorView);
             });
@@ -33748,7 +33748,7 @@ var View = DescribableEdit.extend({
         var AccessionDescriptorView = __webpack_require__(45);
         var accessionDescriptorView = new AccessionDescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+            layoutData: view.layoutData});
 
         accessionLayout.showChildView('descriptors', accessionDescriptorView);
     },
@@ -33770,7 +33770,7 @@ var View = DescribableEdit.extend({
             var AccessionDescriptorView = __webpack_require__(45);
             var accessionDescriptorView = new AccessionDescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+                layoutData: view.layoutData});
 
             accessionLayout.showChildView('descriptors', accessionDescriptorView);
         });
@@ -34001,7 +34001,7 @@ var View = DescribableEdit.extend({
         var BatchDescriptorView = __webpack_require__(49);
         var batchDescriptorView = new BatchDescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+            layoutData: view.layoutData});
 
         batchLayout.showChildView('descriptors', batchDescriptorView);
     },
@@ -34024,7 +34024,7 @@ var View = DescribableEdit.extend({
             var BatchDescriptorView = __webpack_require__(49);
             var batchDescriptorView = new BatchDescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+                layoutData: view.layoutData});
 
             batchLayout.showChildView('descriptors', batchDescriptorView);
         });
@@ -34183,14 +34183,14 @@ var View = Dialog.extend({
                 {id: 'accession.accession', label: _t('Accession')},
                 {id: 'accession.batch', label: _t('Batch')}
             ],
-            meta_models: []
+            layouts: []
         };
     },
 
     ui: {
         search: "button.search",
         save: "button.save",
-        meta_model: "#meta_model",
+        layout: "#layout",
         entity_type: "#entity_type",
         add: "span.action.add",
         error_msg: '#error-msg'
@@ -34199,7 +34199,7 @@ var View = Dialog.extend({
     events: {
         'click @ui.search': 'onSearch',
         'change @ui.entity_type': 'onChangeEntityType',
-        'change @ui.meta_model': 'onChangeMetaModel',
+        'change @ui.layout': 'onChangeMetaModel',
         'click @ui.add': 'onAddSearchRow',
         'click @ui.save': 'onSave'
     },
@@ -34216,7 +34216,7 @@ var View = Dialog.extend({
         View.__super__.onRender.apply(this);
 
         this.ui.entity_type.selectpicker({}).selectpicker('val', 'accession.accession');
-        this.ui.meta_model.selectpicker({});
+        this.ui.layout.selectpicker({});
 
         this.getRegion('conditions').show(new ConditionCollection({
             collection: application.accession.collections.conditionList,
@@ -34239,7 +34239,7 @@ var View = Dialog.extend({
 
     onChangeEntityType: function () {
         var entityType = this.ui.entity_type.selectpicker('val');
-        this.ui.meta_model.prop('disabled', false);
+        this.ui.layout.prop('disabled', false);
         var view = this;
 
         $.ajax({
@@ -34247,22 +34247,22 @@ var View = Dialog.extend({
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', entityType]),
             dataType: 'json'
         }).done(function (data) {
-            view.ui.meta_model.children('option').remove();
+            view.ui.layout.children('option').remove();
 
             for (var i = 0; i < data.length; ++i) {
                 var opt = $('<option></option>');
                 opt.attr('value', data[i].id);
                 opt.html(data[i].label);
 
-                view.ui.meta_model.append(opt);
+                view.ui.layout.append(opt);
             }
 
             if (data.length === 1) {
-                view.ui.meta_model.selectpicker('val', view.ui.meta_model.children("option:first").val());
-                view.ui.meta_model.prop('disabled', true)
+                view.ui.layout.selectpicker('val', view.ui.layout.children("option:first").val());
+                view.ui.layout.prop('disabled', true)
             }
 
-            view.ui.meta_model.selectpicker('refresh');
+            view.ui.layout.selectpicker('refresh');
 
             application.accession.collections.conditionList = new Backbone.Collection();
             view.getRegion('conditions').show(new ConditionCollection({
@@ -34284,7 +34284,7 @@ var View = Dialog.extend({
 
     refreshFieldList: function (childview) {
         var entityType = this.ui.entity_type.selectpicker('val');
-        const metaModels = this.ui.meta_model.selectpicker('val');
+        const metaModels = this.ui.layout.selectpicker('val');
         var selects = null;
 
         if (childview) {
@@ -34295,17 +34295,17 @@ var View = Dialog.extend({
 
         const view = this;
 
-        var descriptorMetaModels = [];
+        var layouts = [];
 
         if (metaModels) {
             for (var i = 0; i < metaModels.length; ++i) {
-                descriptorMetaModels.push(parseInt(metaModels[i]));
+                layouts.push(parseInt(metaModels[i]));
             }
         }
 
         application.main.cache.lookup({
             type: 'entity_columns',
-            format: {model: entityType, descriptor_meta_models: descriptorMetaModels}
+            format: {model: entityType, layouts: layouts}
 
         }).done(function (data) {
             $(selects).children('option').remove().end();
@@ -34439,7 +34439,7 @@ var View = Dialog.extend({
 
     onBeforeDestroy: function () {
         this.ui.entity_type.selectpicker('destroy');
-        this.ui.meta_model.selectpicker('destroy');
+        this.ui.layout.selectpicker('destroy');
 
         var rows = this.$el.find('div.search-condition');
         $.each(rows, function (i, el) {
@@ -34493,7 +34493,7 @@ var Layout = LayoutView.extend({
     initialize: function (options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:layout', this.onDescriptorMetaModelChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onPanelCreate, this);
@@ -34547,7 +34547,7 @@ var Layout = LayoutView.extend({
                 var PanelDescriptorView = __webpack_require__(53);
                 var panelDescriptorView = new PanelDescriptorView({
                     model: model,
-                    descriptorMetaModelLayout: data
+                    layoutData: data
                 });
                 panelLayout.showChildView('descriptors', panelDescriptorView);
 
@@ -34616,7 +34616,7 @@ var Layout = LayoutView.extend({
             }
         });
 
-        this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+        this.onDescriptorMetaModelChange(this.model, this.model.get('layout'));
         this.enableTabs();
     }
 });
@@ -34674,13 +34674,13 @@ var View = Marionette.View.extend({
                     template: __webpack_require__(319),
                     templateContext: function () {
                         return {
-                            meta_models: data
+                            layouts: data
                         };
                     },
 
                     ui: {
                         validate: "button.continue",
-                        meta_model: "#meta_model"
+                        layout: "#layout"
                     },
 
                     events: {
@@ -34690,11 +34690,11 @@ var View = Marionette.View.extend({
                     onRender: function () {
                         CreateDescriptorView.__super__.onRender.apply(this);
 
-                        this.ui.meta_model.selectpicker({});
+                        this.ui.layout.selectpicker({});
                     },
 
                     onBeforeDestroy: function () {
-                        this.ui.meta_model.selectpicker('destroy');
+                        this.ui.layout.selectpicker('destroy');
 
                         CreateDescriptorView.__super__.onBeforeDestroy.apply(this);
                     },
@@ -34703,8 +34703,8 @@ var View = Marionette.View.extend({
                         var view = this;
                         var model = this.getOption('model');
 
-                        if (this.ui.meta_model.val() != null) {
-                            var metaModel = parseInt(this.ui.meta_model.val());
+                        if (this.ui.layout.val() != null) {
+                            var metaModel = parseInt(this.ui.layout.val());
 
                             view.destroy();
 
@@ -34714,7 +34714,7 @@ var View = Marionette.View.extend({
                             // patch the accessionPanel descriptor meta model
                             model.save(
                                 {
-                                    descriptor_meta_model: metaModel
+                                    layout: metaModel
                                 },
 
                                 {
@@ -34730,7 +34730,7 @@ var View = Marionette.View.extend({
                             // }).done(function (data) {
                             //     var accessionPanelDescriptorView = new AccessionPanelDescriptorView({
                             //         model: model,
-                            //         descriptorMetaModelLayout: data
+                            //         layoutData: data
                             //     });
                             //     accessionPanelLayout.showChildView('descriptors', accessionPanelDescriptorView);
                             // });
@@ -35114,7 +35114,7 @@ var Layout = LayoutView.extend({
     initialize: function(options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:layout', this.onDescriptorMetaModelChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onClassificationEntryCreate, this);
@@ -35175,7 +35175,7 @@ var Layout = LayoutView.extend({
                 let ClassificationEntryDescriptorView = __webpack_require__(54);
                 let classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
                     model: model,
-                    descriptorMetaModelLayout: data
+                    layoutData: data
                 });
 
                 classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
@@ -35269,7 +35269,7 @@ var Layout = LayoutView.extend({
                     targetView: classificationEntryListView, collection: classificationEntryRelated}));
             });
 
-            this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+            this.onDescriptorMetaModelChange(this.model, this.model.get('layout'));
             this.enableTabs();
         } else {
             // details views
@@ -35278,7 +35278,7 @@ var Layout = LayoutView.extend({
             // descriptors edit tab
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
+                url: window.application.url(['descriptor', 'meta-model', this.model.get('layout'), 'layout']),
                 dataType: 'json'
             }).done(function(data) {
                 if (!classificationEntryLayout.isRendered()) {
@@ -35286,7 +35286,7 @@ var Layout = LayoutView.extend({
                 }
 
                 let classificationEntryDescriptorView = new ClassificationEntryDescriptorEditView({
-                    model: classificationEntryLayout.model, descriptorMetaModelLayout: data});
+                    model: classificationEntryLayout.model, layoutData: data});
 
                 classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
             });
@@ -35348,7 +35348,7 @@ var View = DescribableEdit.extend({
         var ClassificationEntryDescriptorView = __webpack_require__(54);
         var classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+            layoutData: view.layoutData});
 
         classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
     },
@@ -35370,7 +35370,7 @@ var View = DescribableEdit.extend({
             var ClassificationEntryDescriptorView = __webpack_require__(54);
             var classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+                layoutData: view.layoutData});
 
             classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
         });
@@ -36510,7 +36510,7 @@ var DescriptorFormatType = __webpack_require__(10);
 var DescriptorMetaModel = function () {
     DescriptorFormatType.call(this);
 
-    this.name = "descriptor_meta_model";
+    this.name = "layout";
     this.group = "reference";
 
     this.searchUrl = null;
@@ -41402,7 +41402,7 @@ let Layout = LayoutView.extend({
     initialize: function(options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:layout', this.onDescriptorMetaModelChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onOrganisationCreate, this);
@@ -41432,7 +41432,7 @@ let Layout = LayoutView.extend({
                 let DescriptorView = __webpack_require__(37);
                 let descriptorView = new DescriptorView({
                     model: model,
-                    descriptorMetaModelLayout: data
+                    layoutData: data
                 });
                 organisationLayout.showChildView('descriptors', descriptorView);
             });
@@ -41494,11 +41494,11 @@ let Layout = LayoutView.extend({
             // descriptors edit tab
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
+                url: window.application.url(['descriptor', 'meta-model', this.model.get('layout'), 'layout']),
                 dataType: 'json'
             }).done(function(data) {
                 let descriptorView = new DescriptorEditView({
-                    model: organisationLayout.model, descriptorMetaModelLayout: data});
+                    model: organisationLayout.model, layoutData: data});
 
                 organisationLayout.showChildView('descriptors', descriptorView);
             });
@@ -41600,7 +41600,7 @@ var Layout = LayoutView.extend({
     initialize: function(options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:layout', this.onDescriptorMetaModelChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onEstablishmentCreate, this);
@@ -41630,7 +41630,7 @@ var Layout = LayoutView.extend({
                 var DescriptorView = __webpack_require__(37);
                 var descriptorView = new DescriptorView({
                     model: model,
-                    descriptorMetaModelLayout: data
+                    layoutData: data
                 });
                 establishmentLayout.showChildView('descriptors', descriptorView);
             });
@@ -41699,11 +41699,11 @@ var Layout = LayoutView.extend({
             // descriptors edit tab
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
+                url: window.application.url(['descriptor', 'meta-model', this.model.get('layout'), 'layout']),
                 dataType: 'json'
             }).done(function(data) {
                 var descriptorView = new DescriptorEditView({
-                    model: establishmentLayout.model, descriptorMetaModelLayout: data});
+                    model: establishmentLayout.model, layoutData: data});
 
                 establishmentLayout.showChildView('descriptors', descriptorView);
             });
@@ -52639,7 +52639,7 @@ let Controller = Marionette.Object.extend({
                 template: __webpack_require__(312),
                 templateContext: function () {
                     return {
-                        meta_models: data
+                        layouts: data
                     };
                 },
 
@@ -52648,7 +52648,7 @@ let Controller = Marionette.Object.extend({
                     code: "#accession_code",
                     name: "#accession_name",
                     language: "#accession_language",
-                    descriptor_meta_model: "#meta_model",
+                    layout: "#layout",
                     primary_classification: "#primary_classification",
                     primary_classification_entry: "#primary_classification_entry"
                 },
@@ -52657,7 +52657,7 @@ let Controller = Marionette.Object.extend({
                     'click @ui.validate': 'onContinue',
                     'input @ui.code': 'onCodeInput',
                     'input @ui.name': 'onNameInput',
-                    'change @ui.descriptor_meta_model': 'onChangeDescriptorMetaModel',
+                    'change @ui.layout': 'onChangeDescriptorMetaModel',
                     'change @ui.primary_classification': 'onChangePrimaryClassification'
                 },
 
@@ -52665,11 +52665,11 @@ let Controller = Marionette.Object.extend({
                     CreateAccessionDialog.__super__.initialize.apply(this);
 
                     // map descriptor meta models by theirs ids
-                    this.descriptorMetaModels = {};
+                    this.layouts = {};
 
                     for (let i = 0; i < data.length; ++i) {
                         let dmm = data[i];
-                        this.descriptorMetaModels[dmm.id] = dmm;
+                        this.layouts[dmm.id] = dmm;
                     }
                 },
 
@@ -52677,7 +52677,7 @@ let Controller = Marionette.Object.extend({
                     CreateAccessionDialog.__super__.onRender.apply(this);
 
                     application.main.views.languages.drawSelect(this.ui.language);
-                    this.ui.descriptor_meta_model.selectpicker({});
+                    this.ui.layout.selectpicker({});
                     this.ui.primary_classification.selectpicker({});
 
                     // on default descriptor meta-model
@@ -52685,9 +52685,9 @@ let Controller = Marionette.Object.extend({
                 },
 
                 getDescriptorMetaModelClassifications: function () {
-                    let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    let descriptorMetaModelId = parseInt(this.ui.layout.val());
 
-                    let value = Object.resolve(descriptorMetaModelId + ".parameters.data.primary_classification", this.descriptorMetaModels);
+                    let value = Object.resolve(descriptorMetaModelId + ".parameters.data.primary_classification", this.layouts);
                     if (value) {
                         return [value];
                     }
@@ -52697,7 +52697,7 @@ let Controller = Marionette.Object.extend({
 
                 onBeforeDestroy: function() {
                     this.ui.language.selectpicker('destroy');
-                    this.ui.descriptor_meta_model.selectpicker('destroy');
+                    this.ui.layout.selectpicker('destroy');
                     this.ui.primary_classification.selectpicker('destroy');
 
                     if (this.ui.primary_classification_entry.data('select2')) {
@@ -52907,7 +52907,7 @@ let Controller = Marionette.Object.extend({
 
                 validate: function() {
                     let valid = this.validateName();
-                    let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    let descriptorMetaModelId = parseInt(this.ui.layout.val());
                     let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                     if (isNaN(descriptorMetaModelId)) {
@@ -52941,7 +52941,7 @@ let Controller = Marionette.Object.extend({
                         let code = this.ui.code.val().trim();
                         let name = this.ui.name.val().trim();
 
-                        let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                        let descriptorMetaModelId = parseInt(this.ui.layout.val());
                         let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                         // create a new local model and open an edit view with this model
@@ -52949,7 +52949,7 @@ let Controller = Marionette.Object.extend({
                             code: code,
                             name: name,
                             primary_classification_entry: primaryClassificationEntryId,
-                            descriptor_meta_model: descriptorMetaModelId,
+                            layout: descriptorMetaModelId,
                             language: this.ui.language.val()
                         });
 
@@ -54333,14 +54333,14 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
 ((__t = ( _t("Introduce a batch") )) == null ? '' : __t) +
-'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model">' +
+'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="layout">' +
 ((__t = ( _t("Template") )) == null ? '' : __t) +
-'</label><select id="meta_model" style="width:100%" class="form-control"> ';
- _.each(meta_models, function(meta_model) { ;
+'</label><select id="layout" style="width:100%" class="form-control"> ';
+ _.each(layouts, function(layout) { ;
 __p += ' <option value="' +
-((__t = ( meta_model.id )) == null ? '' : __t) +
+((__t = ( layout.id )) == null ? '' : __t) +
 '">' +
-((__t = ( meta_model.label )) == null ? '' : __t) +
+((__t = ( layout.label )) == null ? '' : __t) +
 '</option> ';
  }) ;
 __p += ' </select></div><div class="row"><div class="col-xs-12"><div class="form-group"><label class="control-label" for="accession_code">' +
@@ -54360,7 +54360,7 @@ return __p
 /*
 original source:
 
-<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Introduce a batch") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model"><%= _t("Template") %></label><select id="meta_model" style="width:100%" class="form-control"> <% _.each(meta_models, function(meta_model) { %> <option value="<%= meta_model.id %>"><%= meta_model.label %></option> <% }) %> </select></div><div class="row"><div class="col-xs-12"><div class="form-group"><label class="control-label" for="accession_code"><%= _t("Accession") %></label><input class="form-control name" id="accession_code" type="text" name="accession" value="" maxlength="128" readonly="" autocomplete="off" style="width:100%"></div></div></div><div class="row"><div class="col-xs-12"><div class="form-group"><label class="control-label" for="batch_name"><%= _t("Name of the batch") %></label><input class="form-control name" id="batch_name" type="text" name="accession" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></div></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button> <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button></div></div></div>
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Introduce a batch") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="layout"><%= _t("Template") %></label><select id="layout" style="width:100%" class="form-control"> <% _.each(layouts, function(layout) { %> <option value="<%= layout.id %>"><%= layout.label %></option> <% }) %> </select></div><div class="row"><div class="col-xs-12"><div class="form-group"><label class="control-label" for="accession_code"><%= _t("Accession") %></label><input class="form-control name" id="accession_code" type="text" name="accession" value="" maxlength="128" readonly="" autocomplete="off" style="width:100%"></div></div></div><div class="row"><div class="col-xs-12"><div class="form-group"><label class="control-label" for="batch_name"><%= _t("Name of the batch") %></label><input class="form-control name" id="batch_name" type="text" name="accession" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></div></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button> <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button></div></div></div>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
@@ -55392,14 +55392,14 @@ __p += ' <option value="' +
 ((__t = ( entity_type.label )) == null ? '' : __t) +
 '</option> ';
  }) ;
-__p += ' </select></div></div><div class="col-md-6"><div class="form-group"><label class="control-label" for="meta_model">' +
+__p += ' </select></div></div><div class="col-md-6"><div class="form-group"><label class="control-label" for="layout">' +
 ((__t = ( _t("Descriptors model") )) == null ? '' : __t) +
-'</label><select id="meta_model" class="form-control" multiple="multiple"> ';
- _.each(meta_models, function(meta_model) { ;
+'</label><select id="layout" class="form-control" multiple="multiple"> ';
+ _.each(layouts, function(layout) { ;
 __p += ' <option value="' +
-((__t = ( meta_model.id )) == null ? '' : __t) +
+((__t = ( layout.id )) == null ? '' : __t) +
 '">' +
-((__t = ( meta_model.label )) == null ? '' : __t) +
+((__t = ( layout.label )) == null ? '' : __t) +
 '</option> ';
  }) ;
 __p += ' </select></div></div></div><div class="panel panel-default"><div id="conditions_part" class="panel-body" style="overflow-y: scroll; max-height:500px; padding-left: 30px"></div><div class="panel-footer"><span class="action add fa fa-plus-circle fa-lg" title="' +
@@ -55421,7 +55421,7 @@ return __p
 original source:
 
 <div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><span class="fa fa-search fa-lg"></span> <%= _t("Advanced search")
-                %></h4></div><div class="modal-body"><form><div class="row"><div class="col-md-6"><div class="form-group"><label class="control-label" for="entity_type"><%= _t("Entity") %></label><select id="entity_type" class="form-control"> <% _.each(entity_types, function(entity_type) { %> <option value="<%= entity_type.id %>"><%= entity_type.label %></option> <% }) %> </select></div></div><div class="col-md-6"><div class="form-group"><label class="control-label" for="meta_model"><%= _t("Descriptors model") %></label><select id="meta_model" class="form-control" multiple="multiple"> <% _.each(meta_models, function(meta_model) { %> <option value="<%= meta_model.id %>"><%= meta_model.label %></option> <% }) %> </select></div></div></div><div class="panel panel-default"><div id="conditions_part" class="panel-body" style="overflow-y: scroll; max-height:500px; padding-left: 30px"></div><div class="panel-footer"><span class="action add fa fa-plus-circle fa-lg" title="<%= _t("Add a condition")
+                %></h4></div><div class="modal-body"><form><div class="row"><div class="col-md-6"><div class="form-group"><label class="control-label" for="entity_type"><%= _t("Entity") %></label><select id="entity_type" class="form-control"> <% _.each(entity_types, function(entity_type) { %> <option value="<%= entity_type.id %>"><%= entity_type.label %></option> <% }) %> </select></div></div><div class="col-md-6"><div class="form-group"><label class="control-label" for="layout"><%= _t("Descriptors model") %></label><select id="layout" class="form-control" multiple="multiple"> <% _.each(layouts, function(layout) { %> <option value="<%= layout.id %>"><%= layout.label %></option> <% }) %> </select></div></div></div><div class="panel panel-default"><div id="conditions_part" class="panel-body" style="overflow-y: scroll; max-height:500px; padding-left: 30px"></div><div class="panel-footer"><span class="action add fa fa-plus-circle fa-lg" title="<%= _t("Add a condition")
                         %>"></span></div></div><span id="error-msg" class="text-danger" hidden></span></form></div><div class="modal-footer"><button type="button" class="btn btn-default save pull-left"><%= _t("Save") %></button> <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %> </button> <button type="button" class="btn btn-success search"><%= _t("Search") %></button></div></div></div>
 */
 
@@ -55439,14 +55439,14 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
 ((__t = ( _t("Create an accession") )) == null ? '' : __t) +
-'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model">' +
+'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="layout">' +
 ((__t = ( _t("Template") )) == null ? '' : __t) +
-'</label><select id="meta_model" style="width:100%" class="form-control"> ';
- _.each(meta_models, function(meta_model) { ;
+'</label><select id="layout" style="width:100%" class="form-control"> ';
+ _.each(layouts, function(layout) { ;
 __p += ' <option value="' +
-((__t = ( meta_model.id )) == null ? '' : __t) +
+((__t = ( layout.id )) == null ? '' : __t) +
 '">' +
-((__t = ( meta_model.label )) == null ? '' : __t) +
+((__t = ( layout.label )) == null ? '' : __t) +
 '</option> ';
  }) ;
 __p += ' </select></div><div class="row"><div class="col-xs-12"><div class="form-group"><label class="control-label" for="accession_code">' +
@@ -55472,7 +55472,7 @@ return __p
 /*
 original source:
 
-<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Create an accession") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model"><%= _t("Template") %></label><select id="meta_model" style="width:100%" class="form-control"> <% _.each(meta_models, function(meta_model) { %> <option value="<%= meta_model.id %>"><%= meta_model.label %></option> <% }) %> </select></div><div class="row"><div class="col-xs-12"><div class="form-group"><label class="control-label" for="accession_code"><%= _t("Code of the accession (must be unique)") %></label><input class="form-control name" id="accession_code" type="text" name="accession" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-8"><div class="form-group"><label class="control-label" for="accession_name"><%= _t("Principal name of the accession") %></label><input class="form-control name" id="accession_name" type="text" name="accession" value="" maxlength="128" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="accession_language"><%= _t("Language") %></label><select class="form-control language" id="accession_language" name="language"></select></div></div></div><div class="form-group primary-classification-group"><label class="control-label" for="primary_classification"><%= _t("Primary classification") %></label><select id="primary_classification" style="width:100%" class="form-control"></select></div><div class="form-group primary-classification-entry-group"><label class="control-label" for="primary_classification_entry"><%= _t("Primary classification entry") %></label><select id="primary_classification_entry" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button> <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button></div></div></div>
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Create an accession") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="layout"><%= _t("Template") %></label><select id="layout" style="width:100%" class="form-control"> <% _.each(layouts, function(layout) { %> <option value="<%= layout.id %>"><%= layout.label %></option> <% }) %> </select></div><div class="row"><div class="col-xs-12"><div class="form-group"><label class="control-label" for="accession_code"><%= _t("Code of the accession (must be unique)") %></label><input class="form-control name" id="accession_code" type="text" name="accession" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-8"><div class="form-group"><label class="control-label" for="accession_name"><%= _t("Principal name of the accession") %></label><input class="form-control name" id="accession_name" type="text" name="accession" value="" maxlength="128" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="accession_language"><%= _t("Language") %></label><select class="form-control language" id="accession_language" name="language"></select></div></div></div><div class="form-group primary-classification-group"><label class="control-label" for="primary_classification"><%= _t("Primary classification") %></label><select id="primary_classification" style="width:100%" class="form-control"></select></div><div class="form-group primary-classification-entry-group"><label class="control-label" for="primary_classification_entry"><%= _t("Primary classification entry") %></label><select id="primary_classification_entry" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button> <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button></div></div></div>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
@@ -55516,14 +55516,14 @@ var Controller = Marionette.Object.extend({
                 template: __webpack_require__(314),
                 templateContext: function () {
                     return {
-                        meta_models: data
+                        layouts: data
                     };
                 },
 
                 ui: {
                     validate: "button.continue",
                     name: "#batch_name",
-                    meta_model: "#meta_model",
+                    layout: "#layout",
                     accession: "#accession"
                 },
 
@@ -55537,7 +55537,7 @@ var Controller = Marionette.Object.extend({
                     CreateBatchView.__super__.onRender.apply(this);
 
                     application.main.views.languages.drawSelect(this.ui.language);
-                    this.ui.meta_model.selectpicker({});
+                    this.ui.layout.selectpicker({});
 
                     $(this.ui.accession).select2({
                         dropdownParent: this.ui.accession.parent(),
@@ -55588,7 +55588,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onBeforeDestroy: function () {
-                    this.ui.meta_model.selectpicker('destroy');
+                    this.ui.layout.selectpicker('destroy');
                     this.ui.accession.select2('destroy');
 
                     CreateBatchView.__super__.onBeforeDestroy.apply(this);
@@ -55666,13 +55666,13 @@ var Controller = Marionette.Object.extend({
                     if (this.validate()) {
                         var name = this.ui.name.val().trim();
                         var accession = parseInt(this.ui.accession.val());
-                        var metaModel = parseInt(this.ui.meta_model.val());
+                        var metaModel = parseInt(this.ui.layout.val());
 
                         // create a new local model and open an edit view with this model
                         var model = new BatchModel({
                             name: name,
                             accession: accession,
-                            descriptor_meta_model: metaModel
+                            layout: metaModel
                         });
 
                         view.destroy();
@@ -55719,16 +55719,16 @@ __p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-h
 ((__t = ( _t("Introduce a batch") )) == null ? '' : __t) +
 '</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="batch_name">' +
 ((__t = ( _t("Name of the batch") )) == null ? '' : __t) +
-'</label><input class="form-control name" id="batch_name" type="text" name="accession" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="meta_model">' +
+'</label><input class="form-control name" id="batch_name" type="text" name="accession" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="layout">' +
 ((__t = ( _t("Accession") )) == null ? '' : __t) +
-'</label><select id="accession" style="width:100%" class="form-control"></select></div><div class="form-group"><label class="control-label" for="meta_model">' +
+'</label><select id="accession" style="width:100%" class="form-control"></select></div><div class="form-group"><label class="control-label" for="layout">' +
 ((__t = ( _t("Template") )) == null ? '' : __t) +
-'</label><select id="meta_model" style="width:100%" class="form-control"> ';
- _.each(meta_models, function(meta_model) { ;
+'</label><select id="layout" style="width:100%" class="form-control"> ';
+ _.each(layouts, function(layout) { ;
 __p += ' <option value="' +
-((__t = ( meta_model.id )) == null ? '' : __t) +
+((__t = ( layout.id )) == null ? '' : __t) +
 '">' +
-((__t = ( meta_model.label )) == null ? '' : __t) +
+((__t = ( layout.label )) == null ? '' : __t) +
 '</option> ';
  }) ;
 __p += ' </select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
@@ -55744,7 +55744,7 @@ return __p
 /*
 original source:
 
-<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Introduce a batch") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="batch_name"><%= _t("Name of the batch") %></label><input class="form-control name" id="batch_name" type="text" name="accession" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="meta_model"><%= _t("Accession") %></label><select id="accession" style="width:100%" class="form-control"></select></div><div class="form-group"><label class="control-label" for="meta_model"><%= _t("Template") %></label><select id="meta_model" style="width:100%" class="form-control"> <% _.each(meta_models, function(meta_model) { %> <option value="<%= meta_model.id %>"><%= meta_model.label %></option> <% }) %> </select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %> </button> <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button></div></div></div>
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Introduce a batch") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="batch_name"><%= _t("Name of the batch") %></label><input class="form-control name" id="batch_name" type="text" name="accession" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="layout"><%= _t("Accession") %></label><select id="accession" style="width:100%" class="form-control"></select></div><div class="form-group"><label class="control-label" for="layout"><%= _t("Template") %></label><select id="layout" style="width:100%" class="form-control"> <% _.each(layouts, function(layout) { %> <option value="<%= layout.id %>"><%= layout.label %></option> <% }) %> </select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %> </button> <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button></div></div></div>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
@@ -55820,7 +55820,7 @@ var Controller = Marionette.Object.extend({
             ui: {
                 validate: "button.create",
                 name: "#panel_name",
-                descriptor_meta_model: "#meta_model"
+                layout: "#layout"
             },
 
             events: {
@@ -55896,7 +55896,7 @@ var Controller = Marionette.Object.extend({
                             search: search
                         },
                         descriptors: {},
-                        descriptor_meta_model: null
+                        layout: null
                     });
 
                     view.destroy();
@@ -56090,14 +56090,14 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
 ((__t = ( _t("Defines a meta-model of descriptors") )) == null ? '' : __t) +
-'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model">' +
+'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="layout">' +
 ((__t = ( _t("Template") )) == null ? '' : __t) +
-'</label><select id="meta_model" style="width:100%" class="form-control"> ';
- _.each(meta_models, function(meta_model) { ;
+'</label><select id="layout" style="width:100%" class="form-control"> ';
+ _.each(layouts, function(layout) { ;
 __p += ' <option value="' +
-((__t = ( meta_model.id )) == null ? '' : __t) +
+((__t = ( layout.id )) == null ? '' : __t) +
 '">' +
-((__t = ( meta_model.label )) == null ? '' : __t) +
+((__t = ( layout.label )) == null ? '' : __t) +
 '</option> ';
  }) ;
 __p += ' </select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
@@ -56113,7 +56113,7 @@ return __p
 /*
 original source:
 
-<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Defines a meta-model of descriptors") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model"><%= _t("Template") %></label><select id="meta_model" style="width:100%" class="form-control"> <% _.each(meta_models, function(meta_model) { %> <option value="<%= meta_model.id %>"><%= meta_model.label %></option> <% }) %> </select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button> <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button></div></div></div>
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Defines a meta-model of descriptors") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="layout"><%= _t("Template") %></label><select id="layout" style="width:100%" class="form-control"> <% _.each(layouts, function(layout) { %> <option value="<%= layout.id %>"><%= layout.label %></option> <% }) %> </select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button> <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button></div></div></div>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
@@ -56187,7 +56187,7 @@ var View = DescribableEdit.extend({
         var AccessionPanelDescriptorView = __webpack_require__(53);
         var accessionPanelDescriptorView = new AccessionPanelDescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+            layoutData: view.layoutData});
 
         accessionPanelLayout.showChildView('descriptors', accessionPanelDescriptorView);
     },
@@ -56209,7 +56209,7 @@ var View = DescribableEdit.extend({
             var AccessionPanelDescriptorView = __webpack_require__(53);
             var accessionPanelDescriptorView = new AccessionPanelDescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+                layoutData: view.layoutData});
 
             accessionPanelLayout.showChildView('descriptors', accessionPanelDescriptorView);
         });
@@ -56283,7 +56283,7 @@ var View = AdvancedTable.extend({
         {name: 'code', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
         {name: 'primary_classification_entry', width: 'auto', sort_by: null},
-        {name: 'descriptor_meta_model', width: 'auto', sort_by: null},
+        {name: 'layout', width: 'auto', sort_by: null},
         {name: 'synonym', width: 'auto', sort_by: null}
     ],
 
@@ -56306,7 +56306,7 @@ var View = AdvancedTable.extend({
             custom: 'primaryClassificationEntryCell',
             field: 'name'
         },
-        'descriptor_meta_model': {label: _t('Model'), width: 'auto', minWidth: true},
+        'layout': {label: _t('Model'), width: 'auto', minWidth: true},
         'synonym': {
             label: _t('Synonym'),
             width: 'auto',
@@ -56833,7 +56833,7 @@ let View = AdvancedTable.extend({
         {name: 'code', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
         {name: 'primary_classification_entry', width: 'auto', sort_by: null},
-        {name: 'descriptor_meta_model', width: 'auto', sort_by: null},
+        {name: 'layout', width: 'auto', sort_by: null},
         {name: 'synonym', width: 'auto', sort_by: null}
     ],
 
@@ -56856,7 +56856,7 @@ let View = AdvancedTable.extend({
             custom: 'primaryClassificationEntryCell',
             field: 'name'
         },
-        'descriptor_meta_model': {label: _t('Model'), width: 'auto', minWidth: true},
+        'layout': {label: _t('Model'), width: 'auto', minWidth: true},
         'synonym': {
             label: _t('Synonym'),
             width: 'auto',
@@ -58483,14 +58483,14 @@ var Controller = Marionette.Object.extend({
                 template: __webpack_require__(369),
                 templateContext: function () {
                     return {
-                        meta_models: data
+                        layouts: data
                     };
                 },
 
                 ui: {
                     create: "button.create",
                     language: "#classification_entry_language",
-                    descriptor_meta_model: "#meta_model",
+                    layout: "#layout",
                     name: "#classification_entry_name",
                     classification: "#classification",
                     rank: "#classification_rank",
@@ -58501,7 +58501,7 @@ var Controller = Marionette.Object.extend({
                 events: {
                     'click @ui.create': 'onCreate',
                     'input @ui.name': 'onNameInput',
-                    'change @ui.descriptor_meta_model': 'onChangeDescriptorMetaModel',
+                    'change @ui.layout': 'onChangeDescriptorMetaModel',
                     'change @ui.classification': 'onChangeClassification',
                     'change @ui.rank': 'onChangeRank'
                 },
@@ -58510,11 +58510,11 @@ var Controller = Marionette.Object.extend({
                     CreateClassificationEntryDialog.__super__.initialize.apply(this, arguments);
 
                     // map descriptor meta models by theirs ids
-                    this.descriptorMetaModels = {};
+                    this.layouts = {};
 
                     for (var i = 0; i < data.length; ++i) {
                         var dmm = data[i];
-                        this.descriptorMetaModels[dmm.id] = dmm;
+                        this.layouts[dmm.id] = dmm;
                     }
                 },
 
@@ -58525,7 +58525,7 @@ var Controller = Marionette.Object.extend({
 
                     application.main.views.languages.drawSelect(this.ui.language);
 
-                    this.ui.descriptor_meta_model.selectpicker({});
+                    this.ui.layout.selectpicker({});
                     this.ui.classification.selectpicker({});
                     this.ui.rank.selectpicker({});
 
@@ -58534,7 +58534,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onBeforeDestroy: function () {
-                    this.ui.descriptor_meta_model.selectpicker('destroy');
+                    this.ui.layout.selectpicker('destroy');
                     this.ui.classification.selectpicker('destroy');
                     this.ui.rank.selectpicker('destroy');
 
@@ -58546,9 +58546,9 @@ var Controller = Marionette.Object.extend({
                 },
 
                 getDescriptorMetaModelClassifications: function () {
-                    var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    var descriptorMetaModelId = parseInt(this.ui.layout.val());
 
-                    var value = Object.resolve(descriptorMetaModelId + ".parameters.data.classification", this.descriptorMetaModels);
+                    var value = Object.resolve(descriptorMetaModelId + ".parameters.data.classification", this.layouts);
                     if (value) {
                         return [value];
                     }
@@ -58777,14 +58777,14 @@ var Controller = Marionette.Object.extend({
                     if (this.validate()) {
                         var name = this.ui.name.val().trim();
 
-                        var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                        var descriptorMetaModelId = parseInt(this.ui.layout.val());
                         var rankId = parseInt(this.ui.rank.val());
                         var parentId = parseInt(this.ui.parent.val()) || null;
 
                         // create a new local model and open an edit view with this model
                         var model = new ClassificationEntryModel({
                             name: name,
-                            descriptor_meta_model: descriptorMetaModelId,
+                            layout: descriptorMetaModelId,
                             parent: parentId,
                             rank: rankId,
                             language: this.ui.language.val()
@@ -59882,14 +59882,14 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
 ((__t = ( _t("Create a classification entry") )) == null ? '' : __t) +
-'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model">' +
+'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="layout">' +
 ((__t = ( _t("Template") )) == null ? '' : __t) +
-'</label><select id="meta_model" style="width:100%" class="form-control"> ';
- _.each(meta_models, function(meta_model) { ;
+'</label><select id="layout" style="width:100%" class="form-control"> ';
+ _.each(layouts, function(layout) { ;
 __p += ' <option value="' +
-((__t = ( meta_model.id )) == null ? '' : __t) +
+((__t = ( layout.id )) == null ? '' : __t) +
 '">' +
-((__t = ( meta_model.label )) == null ? '' : __t) +
+((__t = ( layout.label )) == null ? '' : __t) +
 '</option> ';
  }) ;
 __p += ' </select></div><div class="row"><div class="col-xs-8"><div class="form-group"><label class="control-label" for="classification_entry_name">' +
@@ -59915,7 +59915,7 @@ return __p
 /*
 original source:
 
-<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Create a classification entry") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model"><%= _t("Template") %></label><select id="meta_model" style="width:100%" class="form-control"> <% _.each(meta_models, function(meta_model) { %> <option value="<%= meta_model.id %>"><%= meta_model.label %></option> <% }) %> </select></div><div class="row"><div class="col-xs-8"><div class="form-group"><label class="control-label" for="classification_entry_name"><%= _t("Principal name of the classification entry") %></label><input class="form-control name" id="classification_entry_name" type="text" name="classification-entry" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="classification_entry_language"><%= _t("Language") %></label><select class="form-control language" id="classification_entry_language" name="language"></select></div></div></div><div class="form-group"><label class="control-label" for="classification"><%= _t("Classification") %></label><select class="form-control classifications" id="classification" name="classification"></select></div><div class="form-group"><label class="control-label" for="classification_rank"><%= _t("Classification rank") %></label><select class="form-control classification-ranks" id="classification_rank" name="classification-rank"></select></div><div class="form-group classification-entry-parent-group"><label class="control-label" for="classification_entry_parent"><%= _t("Direct parent") %></label><select id="classification_entry_parent" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button> <button type="button" class="btn btn-success create"><%= _t("Create") %></button></div></div></div>
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Create a classification entry") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="layout"><%= _t("Template") %></label><select id="layout" style="width:100%" class="form-control"> <% _.each(layouts, function(layout) { %> <option value="<%= layout.id %>"><%= layout.label %></option> <% }) %> </select></div><div class="row"><div class="col-xs-8"><div class="form-group"><label class="control-label" for="classification_entry_name"><%= _t("Principal name of the classification entry") %></label><input class="form-control name" id="classification_entry_name" type="text" name="classification-entry" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="classification_entry_language"><%= _t("Language") %></label><select class="form-control language" id="classification_entry_language" name="language"></select></div></div></div><div class="form-group"><label class="control-label" for="classification"><%= _t("Classification") %></label><select class="form-control classifications" id="classification" name="classification"></select></div><div class="form-group"><label class="control-label" for="classification_rank"><%= _t("Classification rank") %></label><select class="form-control classification-ranks" id="classification_rank" name="classification-rank"></select></div><div class="form-group classification-entry-parent-group"><label class="control-label" for="classification_entry_parent"><%= _t("Direct parent") %></label><select id="classification_entry_parent" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button> <button type="button" class="btn btn-success create"><%= _t("Create") %></button></div></div></div>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
@@ -61561,7 +61561,7 @@ DescriptorModule.prototype = {
             'enum_single',
             'enum_pair',
             'enum_ordinal',
-            'descriptor_meta_model'
+            'layout'
         ];
 
         for (let i = 0; i < widgets.length; ++i) {
@@ -61581,7 +61581,7 @@ DescriptorModule.prototype = {
         //
 
         app.main.cache.register('descriptors');
-        app.main.cache.register('descriptor_meta_model');
+        app.main.cache.register('layout');
         app.main.cache.register('entity_columns');
 
         let DescriptorMetaModelCacheFetcher = __webpack_require__(412);
@@ -62678,7 +62678,7 @@ var CacheFetcher = __webpack_require__(27);
 var DescriptorMetaModelCacheFetcher = function() {
     CacheFetcher.call(this);
 
-    this.type = "descriptor_meta_model";
+    this.type = "layout";
 };
 
 DescriptorMetaModelCacheFetcher.prototype = Object.create(CacheFetcher.prototype);
@@ -62692,7 +62692,7 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
     // make the list of values
     var keysToFetch = new Set();
 
-    var cache = cacheManager.get('descriptor_meta_model', options.format.model);
+    var cache = cacheManager.get('layout', options.format.model);
     var toFetch = false;
     var now = Date.now();
 
@@ -62767,7 +62767,7 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
 };
 
 DescriptorMetaModelCacheFetcher.prototype.get = function(cacheManager, options) {
-    return cacheManager.get('descriptor_meta_model', options.format.model);
+    return cacheManager.get('layout', options.format.model);
 };
 
 module.exports = DescriptorMetaModelCacheFetcher;
@@ -62922,8 +62922,8 @@ ColumnCacheFetcher.prototype.constructor = ColumnCacheFetcher;
  */
 ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     var name = options.format.model;
-    if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
-        name += ':' + options.format.descriptor_meta_models.sort().toString();
+    if (options.format.layouts && options.format.layouts.length > 0) {
+        name += ':' + options.format.layouts.sort().toString();
     }
 
     var cache = cacheManager.get('entity_columns', name);
@@ -62946,8 +62946,8 @@ ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
 
     var url = window.application.url(['descriptor', 'columns', options.format.model]);
 
-    if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
-        queryData.descriptor_meta_models = options.format.descriptor_meta_models.toString();
+    if (options.format.layouts && options.format.layouts.length > 0) {
+        queryData.layouts = options.format.layouts.toString();
     }
 
     if (doFetch) {
@@ -62984,8 +62984,8 @@ ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
 
 ColumnCacheFetcher.prototype.get = function(cacheManager, options) {
     var name = options.format.model;
-    if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
-        name += ':' + options.format.descriptor_meta_models.sort().toString();
+    if (options.format.layouts && options.format.layouts.length > 0) {
+        name += ':' + options.format.layouts.sort().toString();
     }
 
     return cacheManager.get('entity_columns', name);
@@ -67944,8 +67944,8 @@ var View = Marionette.View.extend({
 
             ui: {
                 label: "#label",
-                descriptor_meta_model_target: "#descriptor_meta_model_target",
-                description: "#descriptor_meta_model_description",
+                layout_target: "#layout_target",
+                description: "#layout_description",
             },
 
             events: {
@@ -67958,11 +67958,11 @@ var View = Marionette.View.extend({
 
             onRender: function() {
                 DescriptorModelCreate.__super__.onRender.apply(this);
-                application.descriptor.views.describables.drawSelect(this.ui.descriptor_meta_model_target);
+                application.descriptor.views.describables.drawSelect(this.ui.layout_target);
             },
 
             onBeforeDestroy: function() {
-                $(this.ui.descriptor_meta_model_target).selectpicker('destroy');
+                $(this.ui.layout_target).selectpicker('destroy');
 
                 DescriptorModelCreate.__super__.onBeforeDestroy.apply(this);
             },
@@ -67976,7 +67976,7 @@ var View = Marionette.View.extend({
                 var collection = this.getOption('collection');
                 var name = this.getOption('name');
                 var label = this.ui.label.val();
-                var target = this.ui.descriptor_meta_model_target.val();
+                var target = this.ui.layout_target.val();
                 var description = this.ui.description.val();
 
                 if (target != null) {
@@ -68108,13 +68108,13 @@ var __t, __p = '';
 with (obj) {
 __p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
 ((__t = ( _t("Create a meta-model of descriptor") )) == null ? '' : __t) +
-'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="descriptor_meta_model_target">' +
+'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="layout_target">' +
 ((__t = ( _t("Target entity") )) == null ? '' : __t) +
-'</label><select id="descriptor_meta_model_target" class="form-control" name="descriptor-meta-model-target"></select></div><div class="form-group"><label class="control-label" for="label">' +
+'</label><select id="layout_target" class="form-control" name="descriptor-meta-model-target"></select></div><div class="form-group"><label class="control-label" for="label">' +
 ((__t = ( _t("Label for the current language") )) == null ? '' : __t) +
-'</label><input class="form-control" id="label" name="label" maxlength="64" autofocus="" style="width:100%"></div><div class="form-group"><label class="control-label" for="descriptor_meta_model_description">' +
+'</label><input class="form-control" id="label" name="label" maxlength="64" autofocus="" style="width:100%"></div><div class="form-group"><label class="control-label" for="layout_description">' +
 ((__t = ( _t("Description") )) == null ? '' : __t) +
-'</label><textarea class="form-control" id="descriptor_meta_model_description" name="description" maxlength="1024" style="width:100%"></textarea></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+'</label><textarea class="form-control" id="layout_description" name="description" maxlength="1024" style="width:100%"></textarea></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
 ((__t = ( _t("Cancel") )) == null ? '' : __t) +
 '</button> <button type="button" class="btn btn-success apply">' +
 ((__t = ( _t("Apply") )) == null ? '' : __t) +
@@ -68127,7 +68127,7 @@ return __p
 /*
 original source:
 
-<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Create a meta-model of descriptor") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="descriptor_meta_model_target"><%= _t("Target entity") %></label><select id="descriptor_meta_model_target" class="form-control" name="descriptor-meta-model-target"></select></div><div class="form-group"><label class="control-label" for="label"><%= _t("Label for the current language") %></label><input class="form-control" id="label" name="label" maxlength="64" autofocus="" style="width:100%"></div><div class="form-group"><label class="control-label" for="descriptor_meta_model_description"><%= _t("Description") %></label><textarea class="form-control" id="descriptor_meta_model_description" name="description" maxlength="1024" style="width:100%"></textarea></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= _t("Apply") %></button></div></div></div>
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= _t("Create a meta-model of descriptor") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="layout_target"><%= _t("Target entity") %></label><select id="layout_target" class="form-control" name="descriptor-meta-model-target"></select></div><div class="form-group"><label class="control-label" for="label"><%= _t("Label for the current language") %></label><input class="form-control" id="label" name="label" maxlength="64" autofocus="" style="width:100%"></div><div class="form-group"><label class="control-label" for="layout_description"><%= _t("Description") %></label><textarea class="form-control" id="layout_description" name="description" maxlength="1024" style="width:100%"></textarea></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= _t("Apply") %></button></div></div></div>
 */
 
 
@@ -68156,8 +68156,8 @@ var View = Marionette.View.extend({
     },
 
     ui: {
-        name: '#descriptor_meta_model_name',
-        description: '#descriptor_meta_model_description',
+        name: '#layout_name',
+        description: '#layout_description',
         save: '#save'
     },
 
@@ -68228,13 +68228,13 @@ module.exports = function (obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div class="descriptor-meta-model-detail col-lg-offset-2 col-lg-8"><div class="descriptor-mata-model-name form-group"><label for="descriptor_meta_model_name">' +
+__p += '<div class="descriptor-meta-model-detail col-lg-offset-2 col-lg-8"><div class="descriptor-mata-model-name form-group"><label for="layout_name">' +
 __e( _t('Descriptor meta-model name') ) +
-'</label><input id="descriptor_meta_model_name" class="form-control" type="text" maxlength="255" value="' +
+'</label><input id="layout_name" class="form-control" type="text" maxlength="255" value="' +
 ((__t = ( name )) == null ? '' : __t) +
-'"></div><div class="contextual-region"></div><div class="descriptor-meta-model-description form-group"><label for="descriptor_meta_model_description">' +
+'"></div><div class="contextual-region"></div><div class="descriptor-meta-model-description form-group"><label for="layout_description">' +
 __e( _t('Description') ) +
-'</label><textarea id="descriptor_meta_model_description" class="form-control" maxlength="1024">' +
+'</label><textarea id="layout_description" class="form-control" maxlength="1024">' +
 ((__t = ( description )) == null ? '' : __t) +
 '</textarea></div><div class="descriptor-model-update form-group text-center"><button id="save" class="form-control btn btn-success">' +
 __e( _t('Update') ) +
@@ -68247,7 +68247,7 @@ return __p
 /*
 original source:
 
-<div class="descriptor-meta-model-detail col-lg-offset-2 col-lg-8"><div class="descriptor-mata-model-name form-group"><label for="descriptor_meta_model_name"><%- _t('Descriptor meta-model name') %></label><input id="descriptor_meta_model_name" class="form-control" type="text" maxlength="255" value="<%= name %>"></div><div class="contextual-region"></div><div class="descriptor-meta-model-description form-group"><label for="descriptor_meta_model_description"><%- _t('Description') %></label><textarea id="descriptor_meta_model_description" class="form-control" maxlength="1024"><%= description %></textarea></div><div class="descriptor-model-update form-group text-center"><button id="save" class="form-control btn btn-success"><%- _t('Update') %></button></div></div>
+<div class="descriptor-meta-model-detail col-lg-offset-2 col-lg-8"><div class="descriptor-mata-model-name form-group"><label for="layout_name"><%- _t('Descriptor meta-model name') %></label><input id="layout_name" class="form-control" type="text" maxlength="255" value="<%= name %>"></div><div class="contextual-region"></div><div class="descriptor-meta-model-description form-group"><label for="layout_description"><%- _t('Description') %></label><textarea id="layout_description" class="form-control" maxlength="1024"><%= description %></textarea></div><div class="descriptor-model-update form-group text-center"><button id="save" class="form-control btn btn-success"><%- _t('Update') %></button></div></div>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
@@ -76215,7 +76215,7 @@ let Controller = Marionette.Object.extend({
 
                     if (this.validate()) {
                         let model = new OrganisationModel({
-                            descriptor_meta_model: data[0].id,
+                            layout: data[0].id,
                             name: name,
                             type: this.ui.type.val(),
                             grc: to_grc
@@ -77006,7 +77006,7 @@ let Controller = Marionette.Object.extend({
 
                     if (this.validate()) {
                         let model = new EstablishmentModel({
-                            descriptor_meta_model: data[0].id,
+                            layout: data[0].id,
                             name: name,
                             organisation: this.getOption('organisation').get('id')
                         });
