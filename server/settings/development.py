@@ -26,7 +26,7 @@ DATABASES = {
         'HOST': 'localhost',  # '127.0.0.1',
         'PORT': '5432',  # '5432',
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'collgate_dev_new_model',
+        'NAME': 'collgate_dev',
         'USER': 'collgate_dev',
         'PASSWORD': 'collgate_dev',
         'CONN_MAX_AGE': 86400

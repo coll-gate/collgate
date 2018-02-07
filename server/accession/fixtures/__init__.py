@@ -12,7 +12,6 @@ ORDER = [
     'sequences',
     'entitysynonymtypes',
     'actiontypes',
-    'descriptorsgroups',
     'descriptorstypes',
     'mcpdtypes',
     # 'descriptorsmodels'

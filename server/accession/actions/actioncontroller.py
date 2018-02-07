@@ -10,7 +10,7 @@
 
 from django.db import transaction, IntegrityError
 
-from accession.models import DescriptorMetaModel as Layout, ActionType
+from accession.models import Layout, ActionType
 from accession.namebuilder import NameBuilderManager
 
 from accession.actions.actionstepformat import ActionStepFormatManager, ActionStepFormat, ActionError

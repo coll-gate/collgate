@@ -22,7 +22,7 @@ let View = DescribableEdit.extend({
         }
 
         // does not reload models, just redo the views
-        let view = this;
+        let self = this;
         let name = this.model.get('name');
 
         // update the layout content
@@ -31,8 +31,8 @@ let View = DescribableEdit.extend({
         let DescriptorView = require('../views/descriptor');
         let descriptorView = new DescriptorView({
             model: this.model,
-            layoutData: view.layoutData,
-            descriptorCollection: view.descriptorCollection
+            layoutData: self.layoutData,
+            descriptorCollection: self.descriptorCollection
         });
 
         layout.showChildView('descriptors', descriptorView);
@@ -40,7 +40,7 @@ let View = DescribableEdit.extend({
 
     onApply: function () {
         // does not reload models, save and redo the views
-        let view = this;
+        let self = this;
         let model = this.model;
 
         let descriptors = this.prepareDescriptors();
@@ -57,8 +57,8 @@ let View = DescribableEdit.extend({
             let DescriptorView = require('../views/descriptor');
             let descriptorView = new DescriptorView({
                 model: model,
-                layoutData: view.layoutData,
-                descriptorCollection: view.descriptorCollection
+                layoutData: self.layoutData,
+                descriptorCollection: self.descriptorCollection
             });
 
             layout.showChildView('descriptors', descriptorView);

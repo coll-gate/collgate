@@ -12,6 +12,7 @@ let LayoutView = require('../../main/views/layout');
 let EstablishmentDetailsView = require('../views/establishmentdetails');
 let DescriptorEditView = require('../views/descriptoredit');
 let OrganisationModel = require('../models/organisation');
+let DescriptorCollection = require('../../descriptor/collections/layoutdescriptor');
 
 let Layout = LayoutView.extend({
     template: require("../templates/establishmentlayout.html"),
@@ -58,12 +59,21 @@ let Layout = LayoutView.extend({
                 url: window.application.url(['descriptor', 'layout', value]),
                 dataType: 'json'
             }).done(function (data) {
-                let DescriptorView = require('../views/descriptor');
-                let descriptorView = new DescriptorView({
-                    model: model,
-                    layoutData: data
+
+                let descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
                 });
-                establishmentLayout.showChildView('descriptors', descriptorView);
+
+                descriptorCollection.fetch().then(function () {
+                    let DescriptorView = require('../views/descriptor');
+                    let descriptorView = new DescriptorView({
+                        model: model,
+                        layoutData: data,
+                        descriptorCollection: descriptorCollection
+                    });
+                    establishmentLayout.showChildView('descriptors', descriptorView);
+
+                });
             });
         }
     },
@@ -133,10 +143,19 @@ let Layout = LayoutView.extend({
                 url: window.application.url(['descriptor', 'layout', this.model.get('layout')]),
                 dataType: 'json'
             }).done(function(data) {
-                let descriptorView = new DescriptorEditView({
-                    model: establishmentLayout.model, layoutData: data});
 
-                establishmentLayout.showChildView('descriptors', descriptorView);
+                let descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
+                });
+
+                descriptorCollection.fetch().then(function () {
+                    let descriptorView = new DescriptorEditView({
+                        model: establishmentLayout.model,
+                        layoutData: data,
+                        descriptorCollection: descriptorCollection
+                    });
+                    establishmentLayout.showChildView('descriptors', descriptorView);
+                });
             });
 
             // not available tabs
