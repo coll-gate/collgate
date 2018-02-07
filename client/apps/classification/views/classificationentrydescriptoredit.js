@@ -30,7 +30,9 @@ let View = DescribableEdit.extend({
         let ClassificationEntryDescriptorView = require('./classificationentrydescriptor');
         let classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
             model: this.model,
-            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+            layoutData: view.layoutData,
+            descriptorCollection: this.descriptorCollection
+        });
 
         classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
     },
@@ -52,7 +54,9 @@ let View = DescribableEdit.extend({
             let ClassificationEntryDescriptorView = require('./classificationentrydescriptor');
             let classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
                 model: model,
-                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+                layoutData: view.layoutData,
+                descriptorCollection: this.descriptorCollection
+            });
 
             classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
         });

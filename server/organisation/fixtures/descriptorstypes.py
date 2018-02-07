@@ -13,7 +13,8 @@ DESCRIPTORS = {
         'id': None,
         'name': 'organisations_types',
         'code': 'ORG_TYPE',
-        'group': 'organisation',
+        'group_name': 'organisation',
+        'label': {'en': 'organisation type', 'fr': 'type d\'organisme'},
         'can_delete': False,
         'can_modify': True,
         'description': 'List of types of organisations for an organisation',
@@ -30,4 +31,4 @@ DESCRIPTORS = {
 
 
 def fixture(fixture_manager, factory_manager):
-    fixture_manager.create_or_update_types(DESCRIPTORS)
+    fixture_manager.create_or_update_descriptors(DESCRIPTORS)

@@ -5,7 +5,7 @@
  * @date 2017-03-07
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 let LayoutView = require('../../main/views/layout');
@@ -14,6 +14,7 @@ let ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlay
 let OrganisationDetailsView = require('../views/organisationdetails');
 let DescriptorEditView = require('../views/descriptoredit');
 let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
+let DescriptorCollection = require('../../descriptor/collections/layoutdescriptor');
 
 let Layout = LayoutView.extend({
     template: require("../templates/organisationlayout.html"),
@@ -28,42 +29,52 @@ let Layout = LayoutView.extend({
         'establishments': 'div.tab-pane[name=establishments]'
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:layout', this.onLayoutChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onOrganisationCreate, this);
         }
     },
 
-    onOrganisationCreate: function(model, value) {
+    onOrganisationCreate: function (model, value) {
         // re-render once created
         this.render();
 
         // and update history
-        Backbone.history.navigate('app/organisation/organisation/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
+        Backbone.history.navigate('app/organisation/organisation/' + this.model.get('id') + '/', {
+            /*trigger: true,*/
+            replace: false
+        });
     },
 
-    onDescriptorMetaModelChange: function(model, value) {
+    onLayoutChange: function (model, value) {
         if (value == null) {
             this.getRegion('descriptors').empty();
         } else {
             let organisationLayout = this;
 
-            // get the layout before creating the view
-            $.ajax({
-                method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', value, 'layout']),
-                dataType: 'json'
-            }).done(function (data) {
-                let DescriptorView = require('../views/descriptor');
-                let descriptorView = new DescriptorView({
-                    model: model,
-                    descriptorMetaModelLayout: data
+            let descriptorCollection = new DescriptorCollection([], {
+                model_id: value
+            });
+
+            descriptorCollection.fetch().then(function () {
+                // get the layout before creating the view
+                $.ajax({
+                    method: "GET",
+                    url: window.application.url(['descriptor', 'layout', value]),
+                    dataType: 'json'
+                }).done(function (data) {
+                    let DescriptorView = require('../views/descriptor');
+                    let descriptorView = new DescriptorView({
+                        model: model,
+                        layoutData: data,
+                        descriptorCollection: descriptorCollection
+                    });
+                    organisationLayout.showChildView('descriptors', descriptorView);
                 });
-                organisationLayout.showChildView('descriptors', descriptorView);
             });
         }
     },
@@ -72,7 +83,7 @@ let Layout = LayoutView.extend({
         this.ui.establishments_tab.parent().addClass('disabled');
     },
 
-    onRender: function() {
+    onRender: function () {
         let organisationLayout = this;
 
         // details view
@@ -120,20 +131,32 @@ let Layout = LayoutView.extend({
             // details
             organisationLayout.showChildView('details', new OrganisationDetailsView({model: this.model}));
 
-            // descriptors edit tab
-            $.ajax({
-                method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
-                dataType: 'json'
-            }).done(function(data) {
-                let descriptorView = new DescriptorEditView({
-                    model: organisationLayout.model, descriptorMetaModelLayout: data});
+            let view = this;
 
-                organisationLayout.showChildView('descriptors', descriptorView);
+            let descriptorCollection = new DescriptorCollection([], {
+                model_id: view.model.get('layout')
             });
 
-            // not available tabs
-            this.disableEstablishmentTab();
+            descriptorCollection.fetch().then(function () {
+                // descriptors edit tab
+                $.ajax({
+                    method: "GET",
+                    url: window.application.url(['descriptor', 'layout', view.model.get('layout')]),
+                    dataType: 'json'
+                }).done(function (data) {
+                    let descriptorView = new DescriptorEditView({
+                        model: organisationLayout.model,
+                        layoutData: data,
+                        descriptorCollection: descriptorCollection
+                    });
+
+                    organisationLayout.showChildView('descriptors', descriptorView);
+                });
+
+                // not available tabs
+                view.disableEstablishmentTab();
+            });
+
         }
     }
 });

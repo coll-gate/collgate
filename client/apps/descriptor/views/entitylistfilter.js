@@ -241,7 +241,7 @@ let View = Marionette.View.extend({
                 this.widget.create(column.format, this.ui.search_group, {
                     multiple: op === "in" || op === "notin",
                     readOnly: false,
-                    descriptorTypeId: column.type
+                    descriptorTypeId: column.id
                 });
 
                 this.widget.el.on('keydown', function(e) {

@@ -13,6 +13,7 @@ let AccessionModel = require('../../models/accession');
 let ScrollingMoreView = require('../../../main/views/scrollingmore');
 let ContentBottomFooterLayout = require('../../../main/views/contentbottomfooterlayout');
 let BatchDescriptorEditView = require('./batchdescriptoredit');
+let DescriptorCollection = require('../../../descriptor/collections/layoutdescriptor');
 let EntityListFilterView = require('../../../descriptor/views/entitylistfilter');
 
 let Layout = LayoutView.extend({
@@ -42,7 +43,7 @@ let Layout = LayoutView.extend({
     initialize: function (model, options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:layout', this.onLayoutChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onBatchCreate, this);
@@ -83,7 +84,7 @@ let Layout = LayoutView.extend({
         this.ui.panels_tab.parent().removeClass('disabled');
     },
 
-    onDescriptorMetaModelChange: function (model, value) {
+    onLayoutChange: function (model, value) {
         if (value == null) {
             this.getRegion('descriptors').empty();
         } else {
@@ -92,19 +93,28 @@ let Layout = LayoutView.extend({
             // get the layout before creating the view
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', value, 'layout']),
+                url: window.application.url(['descriptor', 'layout', value]),
                 dataType: 'json'
             }).done(function (data) {
-                if (!batchLayout.isRendered()) {
-                    return;
-                }
+                let view = this;
 
-                let BatchDescriptorView = require('./batchdescriptor');
-                let batchDescriptorView = new BatchDescriptorView({
-                    model: model,
-                    descriptorMetaModelLayout: data
+                this.descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
                 });
-                batchLayout.showChildView('descriptors', batchDescriptorView);
+                this.descriptorCollection.fetch().then(function () {
+                    if (!batchLayout.isRendered()) {
+                        return;
+                    }
+
+                    let BatchDescriptorView = require('./batchdescriptor');
+                    let batchDescriptorView = new BatchDescriptorView({
+                        model: batchLayout.model,
+                        layoutData: data,
+                        descriptorCollection: view.descriptorCollection
+
+                    });
+                    batchLayout.showChildView('descriptors', batchDescriptorView);
+                });
 
                 // // manually called
                 // if (batchLayout.activeTab === 'descriptors') {
@@ -277,24 +287,34 @@ let Layout = LayoutView.extend({
                 });
             });
 
-            this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+            this.onLayoutChange(this.model, this.model.get('layout'));
             this.enableTabs();
         } else {
             // descriptors edit tab
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
+                url: window.application.url(['descriptor', 'layout', this.model.get('layout')]),
                 dataType: 'json'
             }).done(function (data) {
-                if (!batchLayout.isRendered()) {
-                    return;
-                }
+                let view = this;
 
-                let batchDescriptorView = new BatchDescriptorEditView({
-                    model: batchLayout.model, descriptorMetaModelLayout: data
+                this.descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
                 });
+                this.descriptorCollection.fetch().then(function () {
+                    if (!batchLayout.isRendered()) {
+                        return;
+                    }
 
-                batchLayout.showChildView('descriptors', batchDescriptorView);
+                    // let AccessionDescriptorView = require('./accessiondescriptor');
+                    let batchDescriptorView = new BatchDescriptorEditView({
+                        model: batchLayout.model,
+                        layoutData: data,
+                        descriptorCollection: view.descriptorCollection
+
+                    });
+                    batchLayout.showChildView('descriptors', batchDescriptorView);
+                });
             });
 
             // not available tabs

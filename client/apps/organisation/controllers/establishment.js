@@ -23,7 +23,7 @@ let Controller = Marionette.Object.extend({
     create: function(organisation, collection) {
         $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'organisation.establishment']),
+            url: window.application.url(['descriptor', 'layout', 'for-describable', 'organisation.establishment']),
             dataType: 'json'
         }).done(function(data) {
             let CreateEstablishmentView = Dialog.extend({
@@ -122,7 +122,7 @@ let Controller = Marionette.Object.extend({
 
                     if (this.validate()) {
                         let model = new EstablishmentModel({
-                            descriptor_meta_model: data[0].id,
+                            layout: data[0].id,
                             name: name,
                             organisation: this.getOption('organisation').get('id')
                         });

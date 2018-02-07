@@ -26,7 +26,7 @@ ClassificationModule.prototype = {
             console.warn("No translation found for the current language. Fallback to english language");
         }
 
-        // register the meta-model type of descriptors
+        // register the layout type of descriptors
         let metaModelTypes = [
             'classification_entry'
         ];

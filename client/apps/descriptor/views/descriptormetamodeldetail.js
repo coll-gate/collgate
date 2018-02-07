@@ -1,6 +1,6 @@
 /**
  * @file descriptormetamodeldetail.js
- * @brief Detail for a meta-model of descriptor view
+ * @brief Detail for a layout of descriptor view
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD
@@ -19,8 +19,8 @@ let View = Marionette.View.extend({
     },
 
     ui: {
-        name: '#descriptor_meta_model_name',
-        description: '#descriptor_meta_model_description',
+        name: '#layout_name',
+        description: '#layout_description',
         save: '#save'
     },
 

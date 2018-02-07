@@ -35,7 +35,7 @@ let View = Marionette.View.extend({
 
         $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'classification.classificationentry']),
+            url: window.application.url(['descriptor', 'layout', 'for-describable', 'classification.classificationentry']),
             dataType: 'json',
         }).done(function(data) {
             let CreateDescriptorView = Dialog.extend({
@@ -45,13 +45,13 @@ let View = Marionette.View.extend({
                 template: require('../templates/classificationentrydescriptorcreatedialog.html'),
                 templateContext: function () {
                     return {
-                        meta_models: data,
+                        layouts: data,
                     };
                 },
 
                 ui: {
                     validate: "button.continue",
-                    meta_model: "#meta_model",
+                    layout: "#layout",
                 },
 
                 events: {
@@ -61,11 +61,11 @@ let View = Marionette.View.extend({
                 onRender: function () {
                     CreateDescriptorView.__super__.onRender.apply(this);
 
-                    this.ui.meta_model.selectpicker({});
+                    this.ui.layout.selectpicker({});
                 },
 
                 onBeforeDestroy: function() {
-                    this.ui.meta_model.selectpicker('destroy');
+                    this.ui.layout.selectpicker('destroy');
 
                     CreateDescriptorView.__super__.onBeforeDestroy.apply(this);
                 },
@@ -74,8 +74,8 @@ let View = Marionette.View.extend({
                     let view = this;
                     let model = this.getOption('model');
 
-                    if (this.ui.meta_model.val() != null) {
-                        let metaModel = parseInt(this.ui.meta_model.val());
+                    if (this.ui.layout.val() != null) {
+                        let metaModel = parseInt(this.ui.layout.val());
 
                         view.destroy();
 
@@ -83,16 +83,16 @@ let View = Marionette.View.extend({
                         let classificationEntryLayout = application.main.viewContent();
 
                         // patch the classificationEntry descriptor meta model
-                        model.save({descriptor_meta_model: metaModel}, {patch: true, wait: false});
+                        model.save({layout: metaModel}, {patch: true, wait: false});
 
                         $.ajax({
                             method: "GET",
-                            url: window.application.url(['descriptor', 'meta-model', metaModel, 'layout']),
+                            url: window.application.url(['descriptor', 'layout', metaModel]),
                             dataType: 'json',
                         }).done(function(data) {
                             let classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
                                 model: model,
-                                descriptorMetaModelLayout: data
+                                layoutData: data
                             });
                             classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
                         });

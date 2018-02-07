@@ -1,6 +1,6 @@
 /**
  * @file classification.js
- * @brief Classification specialization for descriptor meta-model type.
+ * @brief Classification specialization for descriptor layout type.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-09-13
  * @copyright Copyright (c) 2017 INRA/CIRAD

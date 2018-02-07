@@ -15,7 +15,7 @@
             <div class="panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>">
                 <% var collapsed = pi > 0 ? "collapsed" : ""; %>
                 <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= _t('Collapse/Expand') %>">
-                    <a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label %></a>
+                    <a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label[session.language] %></a>
                 </div>
                 <% var inout = pi == 0 ? "in" : ""; %>
                 <div id="collapse<%= pi %>" class="panel-collapse collapse <%= inout %>">
@@ -29,19 +29,20 @@
                             </thead>
                             <tbody>
                                 <% var i = 0; %>
-                                <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %>
-                                    <% var format = descriptor_model_type.descriptor_type.format; %>
-                                    <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %>
-                                    <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" code="<%= descriptor_model_type.descriptor_type.code %>">
+                                <% _.each(panel.descriptors, function(layoutdescriptor) { %>
+                                    <% var descriptor = descriptors_data[layoutdescriptor.name];%>
+                                    <% var format = descriptor.format; %>
+                                    <% var mandatory = descriptor.mandatory ? "mandatory-field" : ""; %>
+                                    <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor.id %>" code="<%= descriptor.code %>">
                                         <td class="descriptor-name <%= mandatory %>" style="padding-top: 15px;">
-                                            <%= descriptor_model_type.label %>
+                                            <%= descriptor.label %>
                                             <span class="descriptor-type-unit">
-                                            <% if (descriptor_model_type.descriptor_type.format.unit === "custom") { %>
-                                                <% if (descriptor_model_type.descriptor_type.format.custom_unit != undefined && descriptor_model_type.descriptor_type.format.custom_unit !== "") { %>
-                                                    (<%= descriptor_model_type.descriptor_type.format.custom_unit %>)
+                                            <% if (descriptor.format.unit === "custom") { %>
+                                                <% if (descriptor.format.custom_unit != undefined && descriptor.format.custom_unit !== "") { %>
+                                                    (<%= descriptor.format.custom_unit %>)
                                                 <% } %>
-                                            <% } else if (descriptor_model_type.descriptor_type.format.unit != undefined) { %>
-                                                (<%= application.descriptor.collections.formatUnits.findLabel(descriptor_model_type.descriptor_type.format.unit) %>)
+                                            <% } else if (descriptor.format.unit != undefined) { %>
+                                                (<%= application.descriptor.collections.formatUnits.findLabel(descriptor.format.unit) %>)
                                             <% } %>
                                             </span>
                                         </td>

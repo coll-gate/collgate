@@ -6,7 +6,7 @@
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details
 
 import json
 import sys
@@ -17,7 +17,7 @@ from .descriptorstypes import DESCRIPTORS
 
 
 def fixture(fixture_manager, factory_manager):
-    sys.stdout.write("   + Create descriptors models...\n")
+    sys.stdout.write("   + Create descriptors values for organisations_types...\n")
 
     # load JSON data
     handler = open(os.path.join('organisation', 'fixtures', 'organisationstypes.json'), 'rU')
@@ -27,7 +27,7 @@ def fixture(fixture_manager, factory_manager):
     descriptor = DESCRIPTORS.get('organisations_types')
 
     if descriptor is not None:
-        descriptor_type_id = fixture_manager.get_descriptor_type_id(descriptor['name'])
+        descriptor_type_id = fixture_manager.get_descriptor_id(descriptor['name'])
 
         # insert/update data
         for lang, values in data.items():

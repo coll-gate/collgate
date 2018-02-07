@@ -16,14 +16,14 @@ let View = AdvancedTable.extend({
     className: 'accession-list advanced-table-container',
     childView: AccessionView,
     userSettingName: 'accessions_list_columns',
-    userSettingVersion: '1.1',
+    userSettingVersion: '1.0',
 
     defaultColumns: [
         {name: 'select', width: 'auto', sort_by: null},
         {name: 'code', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
         {name: 'primary_classification_entry', width: 'auto', sort_by: null},
-        {name: 'descriptor_meta_model', width: 'auto', sort_by: null},
+        {name: 'layout', width: 'auto', sort_by: null},
         {name: 'synonym', width: 'auto', sort_by: null}
     ],
 
@@ -46,7 +46,7 @@ let View = AdvancedTable.extend({
             custom: 'primaryClassificationEntryCell',
             field: 'name'
         },
-        'descriptor_meta_model': {label: _t('Model'), width: 'auto', minWidth: true},
+        'layout': {label: _t('Layout'), width: 'auto', minWidth: true},
         'synonym': {
             label: _t('Synonym'),
             width: 'auto',

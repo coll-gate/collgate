@@ -33,7 +33,7 @@ class NullsLastSQLCompiler(SQLCompiler):
         result = super().get_order_by()
         if result and self.connection.vendor == 'postgresql':
             res = [(expr, (sql + ' NULLS LAST', params, is_ref))
-                    for (expr, (sql, params, is_ref)) in result]
+                   for (expr, (sql, params, is_ref)) in result]
             return res
         return result
 
@@ -55,78 +55,87 @@ class NullsLastQuerySet(models.QuerySet):
         self.query = query or NullsLastQuery(self.model)
 
 
-class DescriptorGroup(Entity):
-    """
-    Category of a type of descriptor.
-    """
-
-    server_cache_update = ("descriptor", "entity_columns")
-    client_cache_update = ("entity_columns",)
-
-    # unique group name
-    name = models.CharField(unique=True, max_length=255, db_index=True)
-
-    # Is this group of descriptors can be deleted when it is empty
-    can_delete = models.BooleanField(default=True)
-
-    # Is this group of descriptors can be modified (rename, add/remove descriptors)
-    # by an authorized staff people
-    can_modify = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = _("descriptor group")
-
-    def natural_name(self):
-        return self.name
-
-    @classmethod
-    def make_search_by_name(cls, term):
-        return Q(name__istartswith=term)
-
-    def audit_create(self, user):
-        return {
-            'name': self.name,
-            'can_delete': self.can_delete,
-            'can_modify': self.can_modify
-        }
-
-    def audit_update(self, user):
-        if hasattr(self, 'updated_fields'):
-            result = {'updated_fields': self.updated_fields}
-
-            if 'name' in self.updated_fields:
-                result['name'] = self.name
-
-            if 'can_delete' in self.updated_fields:
-                result['can_delete'] = self.can_delete
-
-            if 'can_modify' in self.updated_fields:
-                result['can_modify'] = self.can_modify
-
-            return result
-        else:
-            return {
-                'name': self.name,
-                'can_delete': self.can_delete,
-                'can_modify': self.can_modify
-            }
-
-    def audit_delete(self, user):
-        return {
-            'name': self.name
-        }
+class MultipleObjectsReturned(Exception):
+    """The query returned multiple objects when only one was expected."""
+    pass
 
 
-class DescriptorType(Entity):
+# class DescriptorGroup(Entity):
+#     """
+#     Category of a type of descriptor.
+#     """
+#
+#     server_cache_update = ("descriptor", "entity_columns")
+#     client_cache_update = ("entity_columns",)
+#
+#     # unique group name
+#     name = models.CharField(unique=True, max_length=255, db_index=True)
+#
+#     # Is this group of descriptors can be deleted when it is empty
+#     can_delete = models.BooleanField(default=True)
+#
+#     # Is this group of descriptors can be modified (rename, add/remove descriptors)
+#     # by an authorized staff people
+#     can_modify = models.BooleanField(default=True)
+#
+#     class Meta:
+#         verbose_name = _("descriptor group")
+#
+#     def natural_name(self):
+#         return self.name
+#
+#     @classmethod
+#     def make_search_by_name(cls, term):
+#         return Q(name__istartswith=term)
+#
+#     def audit_create(self, user):
+#         return {
+#             'name': self.name,
+#             'can_delete': self.can_delete,
+#             'can_modify': self.can_modify
+#         }
+#
+#     def audit_update(self, user):
+#         if hasattr(self, 'updated_fields'):
+#             result = {'updated_fields': self.updated_fields}
+#
+#             if 'name' in self.updated_fields:
+#                 result['name'] = self.name
+#
+#             if 'can_delete' in self.updated_fields:
+#                 result['can_delete'] = self.can_delete
+#
+#             if 'can_modify' in self.updated_fields:
+#                 result['can_modify'] = self.can_modify
+#
+#             return result
+#         else:
+#             return {
+#                 'name': self.name,
+#                 'can_delete': self.can_delete,
+#                 'can_modify': self.can_modify
+#             }
+#
+#     def audit_delete(self, user):
+#         return {
+#             'name': self.name
+#         }
+
+
+class Descriptor(Entity):
     """
     Type of descriptor for a model.
     """
 
     server_cache_update = ("descriptor", "entity_columns")
-    client_cache_update = ("entity_columns", "descriptors")
+    client_cache_update = ("entity_columns",)
 
     # unique name of type of descriptor
     name = models.CharField(unique=True, max_length=255, db_index=True)
+
+    # Label of the layout of descriptor.
+    # It is i18nized used JSON dict with language code as key and label as string value.
+    label = JSONField(default={})
 
     # code can be a Crop Ontology ('CO_XYZ') code (see http://www.cropontology.org/ontology)
     # and http://www.cropontology.org/get-ontology/CO_[0-9]{3,} to get a JSON version.
@@ -134,7 +143,8 @@ class DescriptorType(Entity):
     code = models.CharField(unique=True, max_length=64)
 
     # default should belong to the general group.
-    group = models.ForeignKey(DescriptorGroup, related_name='types_set', on_delete=models.PROTECT)
+    # group = models.ForeignKey(DescriptorGroup, related_name='types_set')
+    group_name = models.CharField(max_length=255, db_index=True, null=True, default=None)
 
     # informative description.
     description = models.TextField(blank=True, default="")
@@ -153,7 +163,57 @@ class DescriptorType(Entity):
     can_modify = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name = _("descriptor type")
+        verbose_name = _("descriptor")
+
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'code': {
+                'label': _('Code'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'name': {
+                'label': _('Name'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'label': {
+                'label': _('Label'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'group_name': {
+                'label': _('Group'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',  # todo: create a value set by a select distinct query
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'description': {
+                'label': _('Description'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            }
+        }
 
     def natural_name(self):
         return self.name
@@ -166,7 +226,7 @@ class DescriptorType(Entity):
         return {
             'name': self.name,
             'code': self.code,
-            'group': self.group_id,
+            'group': self.group_name,
             'description': self.description,
             'values': self.values,
             'format': self.format,
@@ -185,7 +245,7 @@ class DescriptorType(Entity):
                 result['code'] = self.code
 
             if 'group' in self.updated_fields:
-                result['group'] = self.group_id
+                result['group'] = self.group_name
 
             if 'description' in self.updated_fields:
                 result['description'] = self.description
@@ -207,7 +267,7 @@ class DescriptorType(Entity):
             return {
                 'name': self.name,
                 'code': self.code,
-                'group': self.group_id,
+                'group': self.group_name,
                 'description': self.description,
                 'values': self.values,
                 'format': self.format,
@@ -256,11 +316,27 @@ class DescriptorType(Entity):
         else:
             return self.values_set.all().exists()
 
-    def in_usage(self):
+    # def in_usage(self):
+    #     """
+    #     Check if the type of descriptor is used by some type of models of descriptors
+    #     """
+    #     return self.descriptor_model_types.all().exists()
+
+    def get_label(self):
         """
-        Check if the type of descriptor is used by some type of models of descriptors
+        Get the label for this layout in the current regional.
         """
-        return self.descriptor_model_types.all().exists()
+        lang = translation.get_language()
+        return self.label.get(lang, "")
+
+    def set_label(self, lang, label):
+        """
+        Set the label for a specific language.
+        :param str lang: language code string
+        :param str label: Localized label
+        :note Model instance save() is not called.
+        """
+        self.label[lang] = label
 
     def get_values(self, sort_by='id', reverse=False, cursor=None, limit=30):
         """
@@ -439,7 +515,7 @@ class DescriptorType(Entity):
                     ordinal = v['ordinal']
 
                     if ordinal:
-                        return (int(ordinal)+1) * int(v['id'].split(':')[1])
+                        return (int(ordinal) + 1) * int(v['id'].split(':')[1])
                     else:
                         return int(v['id'].split(':')[1])
 
@@ -617,13 +693,13 @@ class DescriptorType(Entity):
                 if reverse:
                     if cursor_value0:
                         qs = qs.filter(Q(value0__lt=cursor_value0) | (
-                                       Q(value0=cursor_value0) & Q(code__gt=cursor_code)))
+                                Q(value0=cursor_value0) & Q(code__gt=cursor_code)))
 
                     qs = qs.order_by('-value0', 'code')
                 else:
                     if cursor_value0:
                         qs = qs.filter(Q(value0__gt=cursor_value0) | (
-                                       Q(value0=cursor_value0) & Q(code__gt=cursor_code)))
+                                Q(value0=cursor_value0) & Q(code__gt=cursor_code)))
 
                     qs = qs.order_by('value0', 'code')
             elif sort_by == 'value1':
@@ -633,13 +709,13 @@ class DescriptorType(Entity):
                 if reverse:
                     if cursor_value1:
                         qs = qs.filter(Q(value1__lt=cursor_value1) | (
-                                       Q(value1=cursor_value1) & Q(code__gt=cursor_code)))
+                                Q(value1=cursor_value1) & Q(code__gt=cursor_code)))
 
                     qs = qs.order_by('-value1', 'code')
                 else:
                     if cursor_value1:
                         qs = qs.filter(Q(value1__gt=cursor_value1) | (
-                                       Q(value1=cursor_value1) & Q(code__gt=cursor_code)))
+                                Q(value1=cursor_value1) & Q(code__gt=cursor_code)))
 
                     qs = qs.order_by('value1', 'code')
 
@@ -790,7 +866,7 @@ class DescriptorType(Entity):
 
                 def sort_method(v):
                     if v[field_name]:
-                        return v[field_name]+v['id']
+                        return v[field_name] + v['id']
                     else:
                         return v['id']
 
@@ -812,14 +888,14 @@ class DescriptorType(Entity):
                 qs = qs.filter(value0__istartswith=field_value)
                 if cursor_value is not None:
                     qs = qs.filter(Q(value0__gt=cursor_value) | (
-                                   Q(value0=cursor_value) & Q(code__gt=cursor_code)))
+                            Q(value0=cursor_value) & Q(code__gt=cursor_code)))
 
                 qs = qs.order_by('value0', 'code')
             elif field_name == "value1":
                 qs = qs.filter(value1__istartswith=field_value)
                 if cursor_value is not None:
                     qs = qs.filter(Q(value1__gt=cursor_value) | (
-                                   Q(value1=cursor_value) & Q(code__gt=cursor_code)))
+                            Q(value1=cursor_value) & Q(code__gt=cursor_code)))
 
                 qs = qs.order_by('value1', 'code')
 
@@ -904,6 +980,28 @@ class DescriptorType(Entity):
 
         return values_list
 
+    @classmethod
+    def integrity_except(cls, model_class, exception):
+        """
+        Parse and interpret the integrity exception during describable save.
+        :param model_class: Model class of the describable
+        :param exception: IntegrityError exception instance
+        :raise SuspiciousOperation with a human readable error.
+        """
+        # logger.error(repr(exception))
+
+        # duplicate constraint
+        if exception.args[0].startswith('duplicate key value violates unique constraint'):
+            field = exception.args[0].split("'")[1]
+            try:
+                dmt = Descriptor.objects.get(name=field)
+            except Descriptor.DoesNotExist:
+                raise SuspiciousOperation(_("Unable to update the %s" % str(model_class._meta.verbose_name)))
+
+            raise SuspiciousOperation(_("The value of the descriptor %s must be unique." % dmt.get_label()))
+
+        raise SuspiciousOperation(_("Unable to save the %s" % str(model_class._meta.verbose_name)))
+
 
 class DescriptorValue(Entity):
     """
@@ -923,7 +1021,7 @@ class DescriptorValue(Entity):
     language = models.CharField(max_length=5, default="en")
 
     # Related type of descriptor.
-    descriptor = models.ForeignKey(DescriptorType, related_name='values_set', on_delete=models.CASCADE)
+    descriptor = models.ForeignKey(Descriptor, related_name='values_set')
 
     # Direct parent descriptor value, in case of one level hierarchy.
     parent = models.CharField(max_length=64, null=True)
@@ -951,8 +1049,8 @@ class DescriptorValue(Entity):
             ('code', 'language'),
             ('descriptor', 'language'),
             ('descriptor', 'language', 'ordinal'),  # index for ordinals
-            ('descriptor', 'language', 'value0'),   # index for value0
-            ('descriptor', 'language', 'value1'),   # index for value1
+            ('descriptor', 'language', 'value0'),  # index for value0
+            ('descriptor', 'language', 'value1'),  # index for value1
         )
 
     def natural_name(self):
@@ -1004,87 +1102,87 @@ class DescriptorValue(Entity):
         }
 
 
-class DescriptorPanel(Entity):
-    """
-    A panel is a displayable entity that is an association of values of descriptors
-    from a model of descriptor.
-    It is only defined for a specific model of descriptor (m2m through model).
-    A meta-model of descriptor can have many panels.
-    The textual resources of a panel are i18nable because they are displayed for users.
-    """
-
-    server_cache_update = ("descriptor", "entity_columns")
-    client_cache_update = ("entity_columns",)
-
-    # To which meta-models this panel is attached.
-    descriptor_meta_model = models.ForeignKey('DescriptorMetaModel', related_name='panels', on_delete=models.PROTECT)
-
-    # Related model of descriptor
-    descriptor_model = models.ForeignKey('DescriptorModel', related_name='panels', on_delete=models.PROTECT)
-
-    # Label of the panel (can be used for a tab, or any dialog title).
-    # It is i18nized used JSON dict with language code as key and label as string value.
-    label = JSONField(default={})
-
-    # Position priority into the display. Lesser is before. Negative value are possibles.
-    position = models.IntegerField(default=0)
-
-    class Meta:
-        verbose_name = _("descriptor panel")
-
-    def natural_name(self):
-        return self.get_label()
-
-    @classmethod
-    def make_search_by_name(cls, term):
-        lang = translation.get_language()
-        return Q(label__icontains='"%s": %s' % (lang, json.dumps(term).rstrip('"')))
-
-    def audit_create(self, user):
-        return {
-            'descriptor_meta_model': self.descriptor_meta_model_id,
-            'descriptor_model': self.descriptor_model_id,
-            'label': self.label,
-            'position': self.position
-        }
-
-    def audit_update(self, user):
-        if hasattr(self, 'updated_fields'):
-            result = {'updated_fields': self.updated_fields}
-
-            if 'label' in self.updated_fields:
-                result['label'] = self.label
-
-            if 'position' in self.updated_fields:
-                result['position'] = self.position
-
-            return result
-        else:
-            return {
-                'label': self.label,
-                'position': self.position
-            }
-
-    def audit_delete(self, user):
-        return {
-            'label': self.label
-        }
-
-    def get_label(self):
-        """
-        Get the label for this meta model in the current regional.
-        """
-        lang = translation.get_language()
-        return self.label.get(lang, "")
-
-    def set_label(self, lang, label):
-        """
-        Set the label for a specific language.
-        :param str lang: language code string
-        :param str label: Localized label
-        :note Model instance save() is not called.
-        """
-        self.label[lang] = label
+# class DescriptorPanel(Entity):
+#     """
+#     A panel is a displayable entity that is an association of values of descriptors
+#     from a model of descriptor.
+#     It is only defined for a specific model of descriptor (m2m through model).
+#     A layout of descriptor can have many panels.
+#     The textual resources of a panel are i18nable because they are displayed for users.
+#     """
+#
+#     server_cache_update = ("descriptor", "entity_columns")
+#     client_cache_update = ("entity_columns",)
+#
+#     # To which layouts this panel is attached.
+#     layout = models.ForeignKey('Layout', related_name='panels')
+#
+#     # Related model of descriptor
+#     descriptor_model = models.ForeignKey('DescriptorModel', related_name='panels')
+#
+#     # Label of the panel (can be used for a tab, or any dialog title).
+#     # It is i18nized used JSON dict with language code as key and label as string value.
+#     label = JSONField(default={})
+#
+#     # Position priority into the display. Lesser is before. Negative value are possibles.
+#     position = models.IntegerField(default=0)
+#
+#     class Meta:
+#         verbose_name = _("descriptor panel")
+#
+#     def natural_name(self):
+#         return self.get_label()
+#
+#     @classmethod
+#     def make_search_by_name(cls, term):
+#         lang = translation.get_language()
+#         return Q(label__icontains='"%s": %s' % (lang, json.dumps(term).rstrip('"')))
+#
+#     def audit_create(self, user):
+#         return {
+#             'layout': self.layout_id,
+#             'descriptor_model': self.descriptor_model_id,
+#             'label': self.label,
+#             'position': self.position
+#         }
+#
+#     def audit_update(self, user):
+#         if hasattr(self, 'updated_fields'):
+#             result = {'updated_fields': self.updated_fields}
+#
+#             if 'label' in self.updated_fields:
+#                 result['label'] = self.label
+#
+#             if 'position' in self.updated_fields:
+#                 result['position'] = self.position
+#
+#             return result
+#         else:
+#             return {
+#                 'label': self.label,
+#                 'position': self.position
+#             }
+#
+#     def audit_delete(self, user):
+#         return {
+#             'label': self.label
+#         }
+#
+#     def get_label(self):
+#         """
+#         Get the label for this layout in the current regional.
+#         """
+#         lang = translation.get_language()
+#         return self.label.get(lang, "")
+#
+#     def set_label(self, lang, label):
+#         """
+#         Set the label for a specific language.
+#         :param str lang: language code string
+#         :param str label: Localized label
+#         :note Model instance save() is not called.
+#         """
+#         self.label[lang] = label
 
 
 class JSONBFieldIndexType(ChoiceEnum):
@@ -1099,382 +1197,401 @@ class JSONBFieldIndexType(ChoiceEnum):
     GIST = IntegerChoice(4, 'GIST')
 
 
-class DescriptorModelType(Entity):
+# class DescriptorModelType(Entity):
+#     """
+#     This is a basic entity of the model of descriptor. It makes the relation between a panel and
+#     its descriptors. And it makes the relation between him and the model of descriptor.
+#     """
+#
+#     server_cache_update = ("descriptor", "entity_columns")
+#     client_cache_update = ("entity_columns",)
+#
+#     # default name validator optional
+#     NAME_VALIDATOR = {
+#         "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_\.]+$"}
+#
+#     # default name validator optional
+#     NAME_VALIDATOR_OPTIONAL = {
+#         "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_\.]+$", "required": False}
+#
+#     # unique name of type of model of descriptor used for descriptors identification
+#     name = models.CharField(unique=True, max_length=255, db_index=True)
+#
+#     # Label of the type of descriptor.
+#     # It is i18nized used JSON dict with language code as key and label as string value.
+#     label = JSONField(default={})
+#
+#     # Relate the descriptor model (one descriptor model can have many descriptor model types)
+#     descriptor_model = models.ForeignKey('DescriptorModel', related_name='descriptor_model_types')
+#
+#     # Related type of descriptor (relate on a specific one's)
+#     descriptor_type = models.ForeignKey(Descriptor, related_name='descriptor_model_types')
+#
+#     # Position priority into the display. Lesser is before. Negative value are possibles.
+#     position = models.IntegerField(default=0)
+#
+#     # True if this type of descriptor is mandatory (must be defined) (model)
+#     mandatory = models.BooleanField(default=False)
+#
+#     # Set once, read many means that the value of the descriptor can be set only at creation
+#     set_once = models.BooleanField(default=False)
+#
+#     # Set to type of index.
+#     index = models.IntegerField(default=JSONBFieldIndexType.NONE.value, choices=JSONBFieldIndexType.choices())
+#
+#     class Meta:
+#         verbose_name = _("descriptor model type")
+#
+#     def natural_name(self):
+#         return self.name
+#
+#     @classmethod
+#     def make_search_by_name(cls, term):
+#         return Q(name__istartswith=term)
+#
+#     def audit_create(self, user):
+#         return {
+#             'name': self.name,
+#             'label': self.label,
+#             'descriptor_model': self.descriptor_model_id,
+#             'descriptor_type': self.descriptor_type_id,
+#             'mandatory': self.mandatory,
+#             'set_once': self.set_once,
+#             'position': self.position
+#         }
+#
+#     def audit_update(self, user):
+#         if hasattr(self, 'updated_fields'):
+#             result = {'updated_fields': self.updated_fields}
+#
+#             if 'name' in self.updated_fields:
+#                 result['name'] = self.name
+#
+#             if 'label' in self.updated_fields:
+#                 result['label'] = self.label
+#
+#             if 'mandatory' in self.updated_fields:
+#                 result['mandatory'] = self.mandatory
+#
+#             if 'set_once' in self.updated_fields:
+#                 result['set_once'] = self.set_once
+#
+#             if 'position' in self.updated_fields:
+#                 result['position'] = self.position
+#
+#             return result
+#         else:
+#             return {
+#                 'name': self.name,
+#                 'label': self.label,
+#                 'mandatory': self.mandatory,
+#                 'set_once': self.set_once,
+#                 'position': self.position
+#             }
+#
+#     def audit_delete(self, user):
+#         return {
+#             'name': self.name
+#         }
+#
+#     def get_label(self):
+#         """
+#         Get the label for this layout in the current regional.
+#         """
+#         lang = translation.get_language()
+#         return self.label.get(lang, "")
+#
+#     def set_label(self, lang, label):
+#         """
+#         Set the label for a specific language.
+#         :param str lang: language code string
+#         :param str label: Localized label
+#         :note Model instance save() is not called.
+#         """
+#         self.label[lang] = label
+#
+#     def create_or_drop_index(self, describable, db='default'):
+#         """
+#         Create or drop the index on the describable table, according to the current value of index for the model.
+#         :param describable: Model instance
+#         :param db: DB name ('default')
+#         """
+#         # drop previous if exists
+#         if self.index != JSONBFieldIndexType.NONE.value:
+#             self.drop_index(describable, db=db)
+#
+#         if self.index == JSONBFieldIndexType.NONE.value:
+#             return self.drop_index(describable, db=db)
+#         elif self.index == JSONBFieldIndexType.UNIQUE_BTREE.value:
+#             return self.create_btree_index(describable, unique=True, db=db)
+#         elif self.index == JSONBFieldIndexType.BTREE.value:
+#             return self.create_btree_index(describable, unique=False, db=db)
+#         elif self.index == JSONBFieldIndexType.GIN.value:
+#             return self.create_gin_index(describable, db=db)
+#         elif self.index == JSONBFieldIndexType.GIST.value:
+#             return self.create_gist_index(describable, db=db)
+#
+#     def _make_index_name(self, table_name):
+#         to_hash = "%s_%s" % (table_name, self.name)
+#         index_name = codecs.encode(
+#             hashlib.sha1(to_hash.encode()).digest(), 'base64')[0:-2].decode('utf-8').replace('+', '$').replace('/', '_')
+#
+#         return "descriptor_%s_key" % index_name
+#
+#     def create_btree_index(self, describable, unique=False, db='default'):
+#         """
+#         Create a new btree index on a field of JSONB descriptors of the given describable model.
+#         :param describable: Model instance
+#         :param unique: True for unique
+#         :param db: DB name ('default')
+#         """
+#         table = describable._meta.db_table
+#         index_name = self._make_index_name(table)
+#
+#         if unique:
+#             sql = """CREATE UNIQUE INDEX %s ON %s ((descriptors->'%s'));""" % (index_name, table, self.name)
+#         else:
+#             sql = """CREATE INDEX %s ON %s ((descriptors->'%s'));""" % (index_name, table, self.name)
+#
+#         connection = connections[db]
+#         with connection.cursor() as cursor:
+#             cursor.execute(sql)
+#
+#         return True
+#
+#     def create_gin_index(self, describable, db='default'):
+#         """
+#         Create a new GIN (not unique) index on a field of JSONB descriptors of the given describable model.
+#         :param describable: Model instance
+#         :param db: DB name ('default')
+#         """
+#         table = describable._meta.db_table
+#         index_name = self._make_index_name(table)
+#
+#         sql = """CREATE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index_name, table, self.name)
+#
+#         connection = connections[db]
+#         with connection.cursor() as cursor:
+#             cursor.execute(sql)
+#
+#         return True
+#
+#     def create_gist_index(self, describable, db='default'):
+#         """
+#         Create a new GIST (not unique) index on a field of JSONB descriptors of the given describable model.
+#         :param describable: Model instance
+#         :param db: DB name ('default')
+#         """
+#         table = describable._meta.db_table
+#         index_name = self._make_index_name(table)
+#
+#         sql = """CREATE INDEX %s ON %s USING GIST ((descriptors->'%s'));""" % (index_name, table, self.name)
+#
+#         connection = connections[db]
+#         with connection.cursor() as cursor:
+#             cursor.execute(sql)
+#
+#         return True
+#
+#     def drop_index(self, describable, db='default'):
+#         """
+#         Drop an existing index of a field of JSONB descriptors of the given describable model.
+#         :param describable:
+#         :param db:
+#         """
+#         table = describable._meta.db_table
+#         index_name = self._make_index_name(table)
+#
+#         sql = """DROP INDEX IF EXISTS %s""" % index_name
+#
+#         connection = connections[db]
+#         with connection.cursor() as cursor:
+#             cursor.execute(sql)
+#
+#     def count_index_usage(self, content_type):
+#         """
+#         Check how many users need this index. The index can only be dropped when it reach 0.
+#         :return: Number of references
+#         """
+#         if self.index == JSONBFieldIndexType.NONE.value:
+#             return 0
+#
+#         count = self.descriptor_model.panels.filter(layout__target=content_type).count()
+#         return count
+#
+#     @classmethod
+#     def integrity_except(cls, model_class, exception):
+#         """
+#         Parse and interpret the integrity exception during describable save.
+#         :param model_class: Model class of the describable
+#         :param exception: IntegrityError exception instance
+#         :raise SuspiciousOperation with a human readable error.
+#         """
+#         # logger.error(repr(exception))
+#
+#         # duplicate constraint
+#         if exception.args[0].startswith('duplicate key value violates unique constraint'):
+#             field = exception.args[0].split("'")[1]
+#             try:
+#                 dmt = DescriptorModelType.objects.get(name=field)
+#             except DescriptorModelType.DoesNotExist:
+#                 raise SuspiciousOperation(_("Unable to update the %s" % str(model_class._meta.verbose_name)))
+#
+#             raise SuspiciousOperation(_("The value of the descriptor %s must be unique." % dmt.get_label()))
+#
+#         raise SuspiciousOperation(_("Unable to save the %s" % str(model_class._meta.verbose_name)))
+
+
+# class DescriptorModel(Entity):
+#     """
+#     A model of descriptor is like a template of descriptor that is related to panels.
+#     Many entities can share the same model of descriptors.
+#     """
+#
+#     server_cache_update = ("descriptor", "entity_columns")
+#     client_cache_update = ("entity_columns",)
+#
+#     # unique name of model of descriptor
+#     name = models.CharField(unique=True, max_length=255, db_index=True)
+#
+#     # Verbose name describing the model of descriptor. There is no translation for this
+#     # name because it is used internally by staff.
+#     verbose_name = models.CharField(max_length=255, default="")
+#
+#     # Textual description of the model of descriptor. There is no translation like the verbose name.
+#     description = models.TextField(blank=True, default="")
+#
+#     class Meta:
+#         verbose_name = _("descriptor model")
+#
+#     def natural_name(self):
+#         return self.name
+#
+#     @classmethod
+#     def make_search_by_name(cls, term):
+#         return Q(name__istartswith=term)
+#
+#     @classmethod
+#     def get_defaults_columns(cls):
+#         return {
+#             'name': {
+#                 'label': _('Name'),
+#                 'query': False,
+#                 'format': {
+#                     'type': 'string',
+#                     'model': 'descriptor.descriptormodel'
+#                 },
+#                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+#             },
+#             'verbose_name': {
+#                 'label': _('Verbose name'),
+#                 'query': False,
+#                 'format': {
+#                     'type': 'string'
+#                 },
+#                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+#             },
+#             'description': {
+#                 'label': _('Description'),
+#                 'query': False,
+#                 'format': {
+#                     'type': 'string'
+#                 },
+#                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+#             },
+#             'num_descriptor_model_types': {
+#                 'label': _('Types'),
+#                 'field': 'descriptor_model_types',
+#                 'query': False,
+#                 'format': {
+#                     'type': 'count',
+#                     'fields': ['descriptor_model_types']
+#                 }
+#             },
+#         }
+#
+#     def audit_create(self, user):
+#         return {
+#             'name': self.name,
+#             'verbose_name': self.verbose_name,
+#             'description': self.description
+#         }
+#
+#     def audit_update(self, user):
+#         if hasattr(self, 'updated_fields'):
+#             result = {'updated_fields': self.updated_fields}
+#
+#             if 'name' in self.updated_fields:
+#                 result['name'] = self.name
+#
+#             if 'verbose_name' in self.updated_fields:
+#                 result['verbose_name'] = self.verbose_name
+#
+#             if 'description' in self.updated_fields:
+#                 result['description'] = self.description
+#
+#             return result
+#         else:
+#             return {
+#                 'name': self.name,
+#                 'verbose_name': self.verbose_name,
+#                 'description': self.description
+#             }
+#
+#     def audit_delete(self, user):
+#         return {
+#             'name': self.name
+#         }
+#
+#     def in_usage(self):
+#         """
+#         Check if some entities uses of this model
+#         """
+#         if self.panels.exists():
+#             from django.apps import apps
+#             describable_entities = apps.get_app_config('descriptor').describable_entities
+#
+#             # @todo could be optimized ?
+#             for panel in self.panels.all():
+#                 layout = panel.layout
+#
+#                 for de in describable_entities:
+#                     field_name = de._meta.model_name + '_set'
+#
+#                     attr = getattr(layout, field_name)
+#                     if attr and attr.filter(layout=layout).exists():
+#                         return True
+#
+#             return False
+#
+#         return False
+
+
+class Layout(Entity):
     """
-    This is a basic entity of the model of descriptor. It makes the relation between a panel and
-    its descriptors. And it makes the relation between him and the model of descriptor.
-    """
-
-    server_cache_update = ("descriptor", "entity_columns")
-    client_cache_update = ("entity_columns",)
-
-    # default name validator optional
-    NAME_VALIDATOR = {
-        "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_\.]+$"}
-
-    # default name validator optional
-    NAME_VALIDATOR_OPTIONAL = {
-        "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_\.]+$", "required": False}
-
-    # unique name of type of model of descriptor used for descriptors identification
-    name = models.CharField(unique=True, max_length=255, db_index=True)
-
-    # Label of the type of descriptor.
-    # It is i18nized used JSON dict with language code as key and label as string value.
-    label = JSONField(default={})
-
-    # Relate the descriptor model (one descriptor model can have many descriptor model types)
-    descriptor_model = models.ForeignKey('DescriptorModel', related_name='descriptor_model_types', on_delete=models.PROTECT)
-
-    # Related type of descriptor (relate on a specific one's)
-    descriptor_type = models.ForeignKey(DescriptorType, related_name='descriptor_model_types', on_delete=models.PROTECT)
-
-    # Position priority into the display. Lesser is before. Negative value are possibles.
-    position = models.IntegerField(default=0)
-
-    # True if this type of descriptor is mandatory (must be defined) (model)
-    mandatory = models.BooleanField(default=False)
-
-    # Set once, read many means that the value of the descriptor can be set only at creation
-    set_once = models.BooleanField(default=False)
-
-    # Set to type of index.
-    index = models.IntegerField(default=JSONBFieldIndexType.NONE.value, choices=JSONBFieldIndexType.choices())
-
-    class Meta:
-        verbose_name = _("descriptor model type")
-
-    def natural_name(self):
-        return self.name
-
-    @classmethod
-    def make_search_by_name(cls, term):
-        return Q(name__istartswith=term)
-
-    def audit_create(self, user):
-        return {
-            'name': self.name,
-            'label': self.label,
-            'descriptor_model': self.descriptor_model_id,
-            'descriptor_type': self.descriptor_type_id,
-            'mandatory': self.mandatory,
-            'set_once': self.set_once,
-            'position': self.position
-        }
-
-    def audit_update(self, user):
-        if hasattr(self, 'updated_fields'):
-            result = {'updated_fields': self.updated_fields}
-
-            if 'name' in self.updated_fields:
-                result['name'] = self.name
-
-            if 'label' in self.updated_fields:
-                result['label'] = self.label
-
-            if 'mandatory' in self.updated_fields:
-                result['mandatory'] = self.mandatory
-
-            if 'set_once' in self.updated_fields:
-                result['set_once'] = self.set_once
-
-            if 'position' in self.updated_fields:
-                result['position'] = self.position
-
-            return result
-        else:
-            return {
-                'name': self.name,
-                'label': self.label,
-                'mandatory': self.mandatory,
-                'set_once': self.set_once,
-                'position': self.position
-            }
-
-    def audit_delete(self, user):
-        return {
-            'name': self.name
-        }
-
-    def get_label(self):
-        """
-        Get the label for this meta model in the current regional.
-        """
-        lang = translation.get_language()
-        return self.label.get(lang, "")
-
-    def set_label(self, lang, label):
-        """
-        Set the label for a specific language.
-        :param str lang: language code string
-        :param str label: Localized label
-        :note Model instance save() is not called.
-        """
-        self.label[lang] = label
-
-    def create_or_drop_index(self, describable, db='default'):
-        """
-        Create or drop the index on the describable table, according to the current value of index for the model.
-        :param describable: Model instance
-        :param db: DB name ('default')
-        """
-        # drop previous if exists
-        if self.index != JSONBFieldIndexType.NONE.value:
-            self.drop_index(describable, db=db)
-
-        if self.index == JSONBFieldIndexType.NONE.value:
-            return self.drop_index(describable, db=db)
-        elif self.index == JSONBFieldIndexType.UNIQUE_BTREE.value:
-            return self.create_btree_index(describable, unique=True, db=db)
-        elif self.index == JSONBFieldIndexType.BTREE.value:
-            return self.create_btree_index(describable, unique=False, db=db)
-        elif self.index == JSONBFieldIndexType.GIN.value:
-            return self.create_gin_index(describable, db=db)
-        elif self.index == JSONBFieldIndexType.GIST.value:
-            return self.create_gist_index(describable, db=db)
-
-    def _make_index_name(self, table_name):
-        to_hash = "%s_%s" % (table_name, self.name)
-        index_name = codecs.encode(
-            hashlib.sha1(to_hash.encode()).digest(), 'base64')[0:-2].decode('utf-8').replace('+', '$').replace('/', '_')
-
-        return "descriptor_%s_key" % index_name
-
-    def create_btree_index(self, describable, unique=False, db='default'):
-        """
-        Create a new btree index on a field of JSONB descriptors of the given describable model.
-        :param describable: Model instance
-        :param unique: True for unique
-        :param db: DB name ('default')
-        """
-        table = describable._meta.db_table
-        index_name = self._make_index_name(table)
-
-        if unique:
-            sql = """CREATE UNIQUE INDEX %s ON %s ((descriptors->'%s'));""" % (index_name, table, self.name)
-        else:
-            sql = """CREATE INDEX %s ON %s ((descriptors->'%s'));""" % (index_name, table, self.name)
-
-        connection = connections[db]
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-
-        return True
-
-    def create_gin_index(self, describable, db='default'):
-        """
-        Create a new GIN (not unique) index on a field of JSONB descriptors of the given describable model.
-        :param describable: Model instance
-        :param db: DB name ('default')
-        """
-        table = describable._meta.db_table
-        index_name = self._make_index_name(table)
-
-        sql = """CREATE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index_name, table, self.name)
-
-        connection = connections[db]
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-
-        return True
-
-    def create_gist_index(self, describable, db='default'):
-        """
-        Create a new GIST (not unique) index on a field of JSONB descriptors of the given describable model.
-        :param describable: Model instance
-        :param db: DB name ('default')
-        """
-        table = describable._meta.db_table
-        index_name = self._make_index_name(table)
-
-        sql = """CREATE INDEX %s ON %s USING GIST ((descriptors->'%s'));""" % (index_name, table, self.name)
-
-        connection = connections[db]
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-
-        return True
-
-    def drop_index(self, describable, db='default'):
-        """
-        Drop an existing index of a field of JSONB descriptors of the given describable model.
-        :param describable:
-        :param db:
-        """
-        table = describable._meta.db_table
-        index_name = self._make_index_name(table)
-
-        sql = """DROP INDEX IF EXISTS %s""" % index_name
-
-        connection = connections[db]
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-
-    def count_index_usage(self, content_type):
-        """
-        Check how many users need this index. The index can only be dropped when it reach 0.
-        :return: Number of references
-        """
-        if self.index == JSONBFieldIndexType.NONE.value:
-            return 0
-
-        count = self.descriptor_model.panels.filter(descriptor_meta_model__target=content_type).count()
-        return count
-
-    @classmethod
-    def integrity_except(cls, model_class, exception):
-        """
-        Parse and interpret the integrity exception during describable save.
-        :param model_class: Model class of the describable
-        :param exception: IntegrityError exception instance
-        :raise SuspiciousOperation with a human readable error.
-        """
-        # logger.error(repr(exception))
-
-        # duplicate constraint
-        if exception.args[0].startswith('duplicate key value violates unique constraint'):
-            field = exception.args[0].split("'")[1]
-            try:
-                dmt = DescriptorModelType.objects.get(name=field)
-            except DescriptorModelType.DoesNotExist:
-                raise SuspiciousOperation(_("Unable to update the %s" % str(model_class._meta.verbose_name)))
-
-            raise SuspiciousOperation(_("The value of the descriptor %s must be unique." % dmt.get_label()))
-
-        raise SuspiciousOperation(_("Unable to save the %s" % str(model_class._meta.verbose_name)))
-
-
-class DescriptorModel(Entity):
-    """
-    A model of descriptor is like a template of descriptor that is related to panels.
-    Many entities can share the same model of descriptors.
-    """
-
-    server_cache_update = ("descriptor", "entity_columns")
-    client_cache_update = ("entity_columns",)
-
-    # unique name of model of descriptor
-    name = models.CharField(unique=True, max_length=255, db_index=True)
-
-    # Verbose name describing the model of descriptor. There is no translation for this
-    # name because it is used internally by staff.
-    verbose_name = models.CharField(max_length=255, default="")
-
-    # Textual description of the model of descriptor. There is no translation like the verbose name.
-    description = models.TextField(blank=True, default="")
-
-    class Meta:
-        verbose_name = _("descriptor model")
-
-    def natural_name(self):
-        return self.name
-
-    @classmethod
-    def make_search_by_name(cls, term):
-        return Q(name__istartswith=term)
-
-    @classmethod
-    def get_defaults_columns(cls):
-        return {
-            'name': {
-                'label': _('Name'),
-                'query': False,
-                'format': {
-                    'type': 'string',
-                    'model': 'descriptor.descriptormodel'
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            },
-            'verbose_name': {
-                'label': _('Verbose name'),
-                'query': False,
-                'format': {
-                    'type': 'string'
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            },
-            'description': {
-                'label': _('Description'),
-                'query': False,
-                'format': {
-                   'type': 'string'
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            },
-            'num_descriptor_model_types': {
-                'label': _('Types'),
-                'field': 'descriptor_model_types',
-                'query': False,
-                'format': {
-                    'type': 'count',
-                    'fields': ['descriptor_model_types']
-                }
-            },
-        }
-
-    def audit_create(self, user):
-        return {
-            'name': self.name,
-            'verbose_name': self.verbose_name,
-            'description': self.description
-        }
-
-    def audit_update(self, user):
-        if hasattr(self, 'updated_fields'):
-            result = {'updated_fields': self.updated_fields}
-
-            if 'name' in self.updated_fields:
-                result['name'] = self.name
-
-            if 'verbose_name' in self.updated_fields:
-                result['verbose_name'] = self.verbose_name
-
-            if 'description' in self.updated_fields:
-                result['description'] = self.description
-
-            return result
-        else:
-            return {
-                'name': self.name,
-                'verbose_name': self.verbose_name,
-                'description': self.description
-            }
-
-    def audit_delete(self, user):
-        return {
-            'name': self.name
-        }
-
-    def in_usage(self):
-        """
-        Check if some entities uses of this model
-        """
-        if self.panels.exists():
-            from django.apps import apps
-            describable_entities = apps.get_app_config('descriptor').describable_entities
-
-            # @todo could be optimized ?
-            for panel in self.panels.all():
-                meta_model = panel.descriptor_meta_model
-
-                for de in describable_entities:
-                    field_name = de._meta.model_name + '_set'
-
-                    attr = getattr(meta_model, field_name)
-                    if attr and attr.filter(descriptor_meta_model=meta_model).exists():
-                        return True
-
-            return False
-
-        return False
-
-
-class DescriptorMetaModel(Entity):
-    """
-    A meta model regroup many models of descriptors and many panels of descriptors.
+    A layout regroup many models of descriptors and many panels of descriptors.
     Some entities inherit of one of this model, in way to defines what descriptors are used,
     and how they are displayed.
     """
+
+    # todo: precise validator schema (descriptor sections, conditions..)
+    STRUCTURE_VALIDATOR = {
+        "type": "object",
+        "properties": {
+            "panels": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string"},
+                            "descriptors": {"type": "array"}
+                        }
+                    }
+                ]
+            }
+        }
+    }
 
     server_cache_update = ("descriptor", "entity_columns")
 
@@ -1485,30 +1602,33 @@ class DescriptorMetaModel(Entity):
             'values': None
         }]
 
-    # unique name of meta-model of descriptor
+    # unique name of layout of descriptor
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
     # Target entity type (generally a describable entity).
-    target = models.ForeignKey(ContentType, editable=False, related_name='descriptor_meta_models', on_delete=models.PROTECT)
+    target = models.ForeignKey(ContentType, editable=False, related_name='layouts')
 
-    # Label of the meta model of descriptor.
+    # Label of the layout of descriptor.
     # It is i18nized used JSON dict with language code as key and label as string value.
     label = JSONField(default={})
 
     # Textual description of the model of descriptor. There is no translation. It is for staff usage.
     description = models.TextField(blank=True, default="")
 
-    # List of model of descriptor attached to this meta model through panel of descriptor for label and position.
-    descriptor_models = models.ManyToManyField(
-        DescriptorModel,
-        related_name='descriptor_meta_models',
-        through=DescriptorPanel)
+    # List of model of descriptor attached to this layout through panel of descriptor for label and position.
+    # descriptor_models = models.ManyToManyField(
+    #     DescriptorModel,
+    #     related_name='layouts',
+    #     through=DescriptorPanel)
 
-    # meta-model parameters
+    # Descriptors display and conditions
+    layout_content = JSONField(default={"type": "undefined"})
+
+    # layout parameters
     parameters = JSONField(default={"type": "undefined"})
 
     class Meta:
-        verbose_name = _("descriptor meta model")
+        verbose_name = _("layout")
 
     def natural_name(self):
         return self.name
@@ -1519,7 +1639,7 @@ class DescriptorMetaModel(Entity):
 
     def get_label(self):
         """
-        Get the label for this meta model in the current regional.
+        Get the label for this layout in the current regional.
         """
         lang = translation.get_language()
         return self.label.get(lang, "")
@@ -1535,21 +1655,18 @@ class DescriptorMetaModel(Entity):
 
     def in_usage(self):
         """
-        Check if some entities use of this meta-model
+        Check if some entities use of this layout
         """
         from django.apps import apps
         describable_entities = apps.get_app_config('descriptor').describable_entities
 
-        # @todo could be optimized ?
+        # @todo: could be optimized ? Specified kind of describable entity!
         for de in describable_entities:
             field_name = de._meta.model_name + '_set'
 
             attr = getattr(self, field_name)
-            if attr and attr.filter(descriptor_meta_model=self).exists():
+            if attr and attr.filter(layout=self).exists():
                 return True
-
-            return False
-
         return False
 
     def audit_create(self, user):
@@ -1602,29 +1719,29 @@ class DescriptorCondition(ChoiceEnum):
     NOT_EQUAL = IntegerChoice(3, _('Different from'))
 
 
-class DescriptorModelTypeCondition(Entity):
-    """
-    Condition for a type of model of descriptor.
-    """
-
-    server_cache_update = ("descriptor", "entity_columns")
-    client_cache_update = ("entity_columns",)
-
-    # related descriptor model type
-    descriptor_model_type = models.ForeignKey(DescriptorModelType, related_name='conditions', on_delete=models.CASCADE)
-
-    # type of the condition
-    condition = models.IntegerField(default=DescriptorCondition.UNDEFINED.value, choices=DescriptorCondition.choices())
-
-    # target descriptor model type (of the same descriptor model)
-    target = models.ForeignKey(DescriptorModelType, related_name='conditions_as_target', on_delete=models.CASCADE)
-
-    # JSON encoded values. It can be empty, # or a single value, or an array of values.
-    # The value can be true or false if the target is boolean, or can be a value code if the target is an enum
-    values = JSONField(default=None, null=True, blank=True)
-
-    class Meta:
-        verbose_name = _("descriptor model type condition")
+# class DescriptorModelTypeCondition(Entity):
+#     """
+#     Condition for a type of model of descriptor.
+#     """
+#
+#     server_cache_update = ("descriptor", "entity_columns")
+#     client_cache_update = ("entity_columns",)
+#
+#     # related descriptor model type
+#     descriptor_model_type = models.ForeignKey(DescriptorModelType, related_name='conditions')
+#
+#     # type of the condition
+#     condition = models.IntegerField(default=DescriptorCondition.UNDEFINED.value, choices=DescriptorCondition.choices())
+#
+#     # target descriptor model type (of the same descriptor model)
+#     target = models.ForeignKey(DescriptorModelType, related_name='conditions_as_target')
+#
+#     # JSON encoded values. It can be empty, # or a single value, or an array of values.
+#     # The value can be true or false if the target is boolean, or can be a value code if the target is an enum
+#     values = JSONField(default=None, null=True, blank=True)
+#
+#     class Meta:
+#         verbose_name = _("descriptor model type condition")
 
 
 class TransformMeta(type):
@@ -1660,14 +1777,14 @@ class JsonAsText(AsTransform):
 
 class DescribableEntity(Entity):
     """
-    Base entity than have descriptor values and uses of a meta-model of descriptor.
+    Base entity than have descriptor values and uses of a layout of descriptor.
     """
 
     # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
     descriptors = JSONField(default={})
 
-    # It refers to a set of models of type of descriptors through a meta-model of descriptor.
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, on_delete=models.PROTECT)
+    # It refers to a set of models of type of descriptors through a layout of descriptor.
+    layout = models.ForeignKey(Layout)
 
     class Meta:
         abstract = True

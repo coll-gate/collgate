@@ -25,7 +25,7 @@ let Controller = Marionette.Object.extend({
     create: function() {
         let description = $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.accession']),
+            url: window.application.url(['descriptor', 'layout', 'for-describable', 'accession.accession']),
             dataType: 'json'
         });
 
@@ -37,7 +37,7 @@ let Controller = Marionette.Object.extend({
                 template: require('../templates/accessioncreate.html'),
                 templateContext: function () {
                     return {
-                        meta_models: data
+                        layouts: data
                     };
                 },
 
@@ -45,7 +45,7 @@ let Controller = Marionette.Object.extend({
                     validate: "button.continue",
                     name: "#accession_name",
                     language: "#accession_language",
-                    descriptor_meta_model: "#meta_model",
+                    layout: "#layout",
                     primary_classification: "#primary_classification",
                     primary_classification_entry: "#primary_classification_entry"
                 },
@@ -53,7 +53,7 @@ let Controller = Marionette.Object.extend({
                 events: {
                     'click @ui.validate': 'onContinue',
                     'input @ui.name': 'onNameInput',
-                    'change @ui.descriptor_meta_model': 'onChangeDescriptorMetaModel',
+                    'change @ui.layout': 'onChangeDescriptorMetaModel',
                     'change @ui.primary_classification': 'onChangePrimaryClassification'
                 },
 
@@ -65,11 +65,11 @@ let Controller = Marionette.Object.extend({
                     CreateAccessionDialog.__super__.initialize.apply(this);
 
                     // map descriptor meta models by theirs ids
-                    this.descriptorMetaModels = {};
+                    this.layouts = {};
 
                     for (let i = 0; i < data.length; ++i) {
                         let dmm = data[i];
-                        this.descriptorMetaModels[dmm.id] = dmm;
+                        this.layouts[dmm.id] = dmm;
                     }
                 },
 
@@ -77,7 +77,7 @@ let Controller = Marionette.Object.extend({
                     CreateAccessionDialog.__super__.onRender.apply(this);
 
                     window.application.main.views.languages.drawSelect(this.ui.language);
-                    this.ui.descriptor_meta_model.selectpicker({});
+                    this.ui.layout.selectpicker({});
                     this.ui.primary_classification.selectpicker({});
 
                     // naming options
@@ -99,14 +99,14 @@ let Controller = Marionette.Object.extend({
                         }));
                     });
 
-                    // on default descriptor meta-model
+                    // on default descriptor layout
                     this.onChangeDescriptorMetaModel();
                 },
 
                 getDescriptorMetaModelClassifications: function () {
-                    let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    let descriptorMetaModelId = parseInt(this.ui.layout.val());
 
-                    let value = Object.resolve(descriptorMetaModelId + ".parameters.data.primary_classification", this.descriptorMetaModels);
+                    let value = Object.resolve(descriptorMetaModelId + ".parameters.data.primary_classification", this.layouts);
                     if (value) {
                         return [value];
                     }
@@ -116,7 +116,7 @@ let Controller = Marionette.Object.extend({
 
                 onBeforeDestroy: function() {
                     this.ui.language.selectpicker('destroy');
-                    this.ui.descriptor_meta_model.selectpicker('destroy');
+                    this.ui.layout.selectpicker('destroy');
                     this.ui.primary_classification.selectpicker('destroy');
 
                     if (this.ui.primary_classification_entry.data('select2')) {
@@ -293,11 +293,11 @@ let Controller = Marionette.Object.extend({
 
                 validate: function() {
                     let valid = this.validateName();
-                    let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    let descriptorMetaModelId = parseInt(this.ui.layout.val());
                     let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                     if (isNaN(descriptorMetaModelId)) {
-                        $.alert.error(_t("The meta-model of descriptors must be defined"));
+                        $.alert.error(_t("The layout of descriptors must be defined"));
                         valid = false;
                     }
 
@@ -321,7 +321,7 @@ let Controller = Marionette.Object.extend({
                         let name = this.ui.name.val().trim();
                         let namingOptions = this.getChildView('namingOptions').getNamingOptions();
 
-                        let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                        let layoutId = parseInt(this.ui.layout.val());
                         let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                         // create a new local model and open an edit view with this model
@@ -329,7 +329,7 @@ let Controller = Marionette.Object.extend({
                             name: name,
                             naming_options: namingOptions,
                             primary_classification_entry: primaryClassificationEntryId,
-                            descriptor_meta_model: descriptorMetaModelId,
+                            layout: layoutId,
                             language: this.ui.language.val()
                         });
 

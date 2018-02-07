@@ -34,7 +34,7 @@ let Layout = LayoutView.extend({
     initialize: function (options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:layout', this.onLayoutChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onPanelCreate, this);
@@ -66,7 +66,7 @@ let Layout = LayoutView.extend({
         this.ui.inputs_tab.parent().removeClass('disabled');
     },
 
-    onDescriptorMetaModelChange: function (model, value) {
+    onLayoutChange: function (model, value) {
         let panelLayout = this;
         if (value == null) {
             let AccessionPanelDescriptorCreateView = require('./paneldescriptorcreate');
@@ -78,22 +78,35 @@ let Layout = LayoutView.extend({
                 accessionPanelDescriptorCreateView.onShowTab();
             }
         } else {
+            let panelLayout = this;
+            let DescriptorCollection = require('../../../../descriptor/collections/layoutdescriptor');
+
             // get the layout before creating the view
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', value, 'layout']),
+                url: window.application.url(['descriptor', 'layout', value]),
                 dataType: 'json'
             }).done(function (data) {
-                let PanelDescriptorView = require('./paneldescriptor');
-                let panelDescriptorView = new PanelDescriptorView({
-                    model: model,
-                    descriptorMetaModelLayout: data
+                panelLayout.descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
                 });
-                panelLayout.showChildView('descriptors', panelDescriptorView);
+                panelLayout.descriptorCollection.fetch().then(function () {
+                    if (!panelLayout.isRendered()) {
+                        return;
+                    }
 
-                if (panelLayout.initialTab === 'descriptors') {
-                    panelDescriptorView.onShowTab();
-                }
+                    let PanelDescriptorView = require('./paneldescriptor');
+                    let panelDescriptorView = new PanelDescriptorView({
+                        model: model,
+                        layoutData: data,
+                        descriptorCollection: panelLayout.descriptorCollection
+                    });
+                    panelLayout.showChildView('descriptors', panelDescriptorView);
+
+                    if (panelLayout.initialTab === 'descriptors') {
+                        panelDescriptorView.onShowTab();
+                    }
+                });
             });
         }
     },
@@ -156,7 +169,7 @@ let Layout = LayoutView.extend({
             }
         });
 
-        this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+        this.onLayoutChange(this.model, this.model.get('layout'));
         this.enableTabs();
     }
 });

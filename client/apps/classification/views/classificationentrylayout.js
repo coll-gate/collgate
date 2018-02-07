@@ -5,7 +5,7 @@
  * @date 2016-12-27
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 let LayoutView = require('../../main/views/layout');
@@ -14,6 +14,7 @@ let ContentBottomLayout = require('../../main/views/contentbottomlayout');
 let ClassificationEntryDescriptorEditView = require('./classificationentrydescriptoredit');
 let ClassificationEntryDetailsView = require('./classificationentrydetails');
 let ClassificationEntryModel = require('../models/classificationentry');
+let DescriptorCollection = require('../../descriptor/collections/layoutdescriptor');
 
 let Layout = LayoutView.extend({
     template: require("../templates/classificationentrylayout.html"),
@@ -34,22 +35,25 @@ let Layout = LayoutView.extend({
         'related': 'div.tab-pane[name=related]'
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:layout', this.onLayoutChange, this);
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onClassificationEntryCreate, this);
         }
     },
 
-    onClassificationEntryCreate: function(model, value) {
+    onClassificationEntryCreate: function (model, value) {
         // re-render once created
         this.render();
 
         // and update history
-        Backbone.history.navigate('app/classification/classificationentry/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
+        Backbone.history.navigate('app/classification/classificationentry/' + this.model.get('id') + '/', {
+            /*trigger: true,*/
+            replace: false
+        });
     },
 
     disableSynonymsTab: function () {
@@ -68,14 +72,14 @@ let Layout = LayoutView.extend({
         this.ui.related_tab.parent().addClass('disabled');
     },
 
-    enableTabs: function() {
+    enableTabs: function () {
         this.ui.synonyms_tab.parent().removeClass('disabled');
         this.ui.children_tab.parent().removeClass('disabled');
         this.ui.entities_tab.parent().removeClass('disabled');
         this.ui.related_tab.parent().removeClass('disabled');
     },
 
-    onDescriptorMetaModelChange: function(model, value) {
+    onLayoutChange: function (model, value) {
         if (value === null) {
             this.getRegion('descriptors').empty();
             // let ClassificationEntryDescriptorCreateView = require('./classificationentrydescriptorcreate');
@@ -88,25 +92,32 @@ let Layout = LayoutView.extend({
             // get the layout before creating the view
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', value, 'layout']),
+                url: window.application.url(['descriptor', 'layout', value]),
                 dataType: 'json'
             }).done(function (data) {
                 if (!classificationEntryLayout.isRendered()) {
                     return;
                 }
 
-                let ClassificationEntryDescriptorView = require('./classificationentrydescriptor');
-                let classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
-                    model: model,
-                    descriptorMetaModelLayout: data
+                let descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
                 });
+                descriptorCollection.fetch().then(function () {
+                    let ClassificationEntryDescriptorView = require('./classificationentrydescriptor');
+                    let classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
+                        model: model,
+                        layoutData: data,
+                        descriptorCollection: descriptorCollection
+                    });
 
-                classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
+                    classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
+
+                });
             });
         }
     },
 
-    onRender: function() {
+    onRender: function () {
         let classificationEntryLayout = this;
 
         // details view
@@ -131,7 +142,7 @@ let Layout = LayoutView.extend({
                 format: {model: 'classification.classificationentry'}
             });
 
-            columns.then(function(data) {
+            columns.then(function (data) {
                 if (!classificationEntryLayout.isRendered()) {
                     return;
                 }
@@ -148,7 +159,8 @@ let Layout = LayoutView.extend({
 
                 contentBottomLayout.showChildView('content', classificationEntryChildrenView);
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({
-                    targetView: classificationEntryChildrenView, collection: classificationEntryChildren}));
+                    targetView: classificationEntryChildrenView, collection: classificationEntryChildren
+                }));
 
                 classificationEntryChildrenView.query();
             });
@@ -164,7 +176,8 @@ let Layout = LayoutView.extend({
 
                 let ClassificationEntryEntitiesView = require('./classificationentryentities');
                 let classificationEntryEntitiesView = new ClassificationEntryEntitiesView({
-                    collection: classificationEntryEntities, model: classificationEntryLayout.model});
+                    collection: classificationEntryEntities, model: classificationEntryLayout.model
+                });
 
                 let contentBottomLayout = new ContentBottomLayout();
                 classificationEntryLayout.showChildView('entities', contentBottomLayout);
@@ -178,7 +191,7 @@ let Layout = LayoutView.extend({
             let ClassificationEntryCollection = require('../collections/classificationentry');
             let classificationEntryRelated = new ClassificationEntryCollection([], {classification_entry_id: this.model.id});
 
-            $.when(columns, classificationEntryRelated.fetch()).then(function(data) {
+            $.when(columns, classificationEntryRelated.fetch()).then(function (data) {
                 if (!classificationEntryLayout.isRendered()) {
                     return;
                 }
@@ -195,10 +208,11 @@ let Layout = LayoutView.extend({
 
                 contentBottomLayout.showChildView('content', classificationEntryListView);
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({
-                    targetView: classificationEntryListView, collection: classificationEntryRelated}));
+                    targetView: classificationEntryListView, collection: classificationEntryRelated
+                }));
             });
 
-            this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+            this.onLayoutChange(this.model, this.model.get('layout'));
             this.enableTabs();
         } else {
             // details views
@@ -207,7 +221,7 @@ let Layout = LayoutView.extend({
                 let parentClassificationEntry = new ClassificationEntryModel({id: this.model.get('parent')});
                 parentClassificationEntry.fetch().then(function () {
                     if (!classificationEntryLayout.isRendered()) {
-                       return;
+                        return;
                     }
 
                     let parentDetails = [];
@@ -223,7 +237,8 @@ let Layout = LayoutView.extend({
                     classificationEntryLayout.model.set('parent_details', parentDetails);
 
                     classificationEntryLayout.showChildView('details', new ClassificationEntryDetailsView({
-                        model: classificationEntryLayout.model, noLink: true}));
+                        model: classificationEntryLayout.model, noLink: true
+                    }));
                 });
             } else {
                 // parent details provided
@@ -233,17 +248,26 @@ let Layout = LayoutView.extend({
             // descriptors edit tab
             $.ajax({
                 method: "GET",
-                url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
+                url: window.application.url(['descriptor', 'layout', this.model.get('layout')]),
                 dataType: 'json'
-            }).done(function(data) {
+            }).done(function (data) {
                 if (!classificationEntryLayout.isRendered()) {
                     return;
                 }
 
-                let classificationEntryDescriptorView = new ClassificationEntryDescriptorEditView({
-                    model: classificationEntryLayout.model, descriptorMetaModelLayout: data});
+                let descriptorCollection = new DescriptorCollection([], {
+                    model_id: data.id
+                });
+                descriptorCollection.fetch().then(function () {
+                    let classificationEntryDescriptorView = new ClassificationEntryDescriptorEditView({
+                        model: classificationEntryLayout.model,
+                        layoutData: data,
+                        descriptorCollection: descriptorCollection
+                    });
 
-                classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
+                    classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
+
+                });
             });
 
             this.setActiveTab("descriptors");

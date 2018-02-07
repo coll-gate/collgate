@@ -13,9 +13,9 @@ let Backbone = require('backbone');
 let Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return window.application.url(['descriptor', 'group', this.group_id, 'type', this.type_id, 'value']);
+            return window.application.url(['descriptor', 'descriptor', this.type_id, 'value']);
         else
-            return window.application.url(['descriptor', 'group', this.group_id, 'type', this.type_id, 'value', this.id]);
+            return window.application.url(['descriptor', 'descriptor', this.type_id, 'value', this.id]);
     },
 
     defaults: {
@@ -30,12 +30,10 @@ let Model = Backbone.Model.extend({
         Model.__super__.initialize.apply(this, arguments);
 
         options || (options = {});
-        this.group_id = options.group_id;
         this.type_id = options.type_id;
 
         if (options.collection) {
             this.type_id = options.collection.type_id;
-            this.group_id = options.collection.group_id;
         }
     },
 

@@ -73,6 +73,12 @@ DescriptorModule.prototype = {
         // descriptor format types
         //
 
+        this.format_with_value_list = [
+            'enum_single',
+            'enum_pair',
+            'enum_ordinal'
+        ];
+
         let DescriptorFormatTypeManager = require('./widgets/descriptorformattypemanager');
         this.widgets = new DescriptorFormatTypeManager();
 
@@ -91,7 +97,7 @@ DescriptorModule.prototype = {
             'enum_single',
             'enum_pair',
             'enum_ordinal',
-            'descriptor_meta_model'
+            'layout'
         ];
 
         for (let i = 0; i < widgets.length; ++i) {
@@ -100,7 +106,7 @@ DescriptorModule.prototype = {
         }
 
         //
-        // descriptor meta-model types
+        // descriptor layout types
         //
 
         let DescriptorMetaModelTypeManager = require('./descriptormetamodeltypes/descriptormetamodeltypemanager');
@@ -111,7 +117,7 @@ DescriptorModule.prototype = {
         //
 
         app.main.cache.register('descriptors');
-        app.main.cache.register('descriptor_meta_model');
+        app.main.cache.register('layout');
         app.main.cache.register('entity_columns');
 
         let DescriptorMetaModelCacheFetcher = require('./utils/descriptormetamodelcachefetcher');
@@ -130,14 +136,22 @@ DescriptorModule.prototype = {
         let DescriptorRouter = require('./routers/descriptor');
         this.routers.descriptor = new DescriptorRouter();
 
-        let DescriptorModelRouter = require('./routers/descriptormodel');
-        this.routers.descriptorModel = new DescriptorModelRouter();
+        let LayoutRouter = require('./routers/layout');
+        this.routers.descriptorMetaModel = new LayoutRouter();
 
-        let DescriptorMetaModelRouter = require('./routers/descriptormetamodel');
-        this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
+        // let DescriptorGroupCollection = require('./collections/descriptorgroup');
+        // this.collections.descriptorGroup = new DescriptorGroupCollection();
 
-        let DescriptorGroupCollection = require('./collections/descriptorgroup');
+        let DescriptorGroupCollection = require('./collections/descriptor');
         this.collections.descriptorGroup = new DescriptorGroupCollection();
+
+        //
+        // controllers
+        //
+
+        let DescriptorController = require('./controllers/descriptor');
+        this.controllers.descriptor = new DescriptorController();
+
     },
 
     start: function(app, options) {

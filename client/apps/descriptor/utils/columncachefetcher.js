@@ -26,9 +26,9 @@ ColumnCacheFetcher.prototype.constructor = ColumnCacheFetcher;
 ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     let name = options.format.model;
     let queryData = {};
-    if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
-        name += ':' + options.format.descriptor_meta_models.sort().toString();
-        queryData.descriptor_meta_models = options.format.descriptor_meta_models.toString();
+    if (options.format.layouts && options.format.layouts.length > 0) {
+        name += ':' + options.format.layouts.sort().toString();
+        queryData.layouts = options.format.layouts.toString();
     }
 
     if (options.format.mode === 'search') {
@@ -89,8 +89,8 @@ ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
 
 ColumnCacheFetcher.prototype.get = function(cacheManager, options) {
     let name = options.format.model;
-    if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
-        name += ':' + options.format.descriptor_meta_models.sort().toString();
+    if (options.format.layouts && options.format.layouts.length > 0) {
+        name += ':' + options.format.layouts.sort().toString();
     }
     if (options.format.mode === 'search') {
         name += ':' + options.format.mode;

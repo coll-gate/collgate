@@ -31,7 +31,7 @@ AccessionModule.prototype = {
         }
 
         //
-        // register the meta-model type of descriptors
+        // register the layout type of descriptors
         //
 
         let metaModelTypes = [

@@ -1,6 +1,6 @@
 /**
  * @file descriptormetamodeladd.js
- * @brief Add a meta-model of descriptor
+ * @brief Add a layout of descriptor
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-26
  * @copyright Copyright (c) 2016 INRA/CIRAD
@@ -41,8 +41,8 @@ let View = Marionette.View.extend({
 
             ui: {
                 label: "#label",
-                descriptor_meta_model_target: "#descriptor_meta_model_target",
-                description: "#descriptor_meta_model_description",
+                layout_target: "#layout_target",
+                description: "#layout_description",
             },
 
             events: {
@@ -55,11 +55,11 @@ let View = Marionette.View.extend({
 
             onRender: function() {
                 DescriptorModelCreate.__super__.onRender.apply(this);
-                application.descriptor.views.describables.drawSelect(this.ui.descriptor_meta_model_target);
+                application.descriptor.views.describables.drawSelect(this.ui.layout_target);
             },
 
             onBeforeDestroy: function() {
-                $(this.ui.descriptor_meta_model_target).selectpicker('destroy');
+                $(this.ui.layout_target).selectpicker('destroy');
 
                 DescriptorModelCreate.__super__.onBeforeDestroy.apply(this);
             },
@@ -73,7 +73,7 @@ let View = Marionette.View.extend({
                 let collection = this.getOption('collection');
                 let name = this.getOption('name');
                 let label = this.ui.label.val();
-                let target = this.ui.descriptor_meta_model_target.val();
+                let target = this.ui.layout_target.val();
                 let description = this.ui.description.val();
 
                 if (target != null) {
@@ -88,7 +88,7 @@ let View = Marionette.View.extend({
                             view.destroy();
                         },
                         error: function () {
-                            $.alert.error(_t("Unable to create the meta-model of descriptor !"));
+                            $.alert.error(_t("Unable to create the layout of descriptor !"));
                         }
                     });
                 }
@@ -142,7 +142,7 @@ let View = Marionette.View.extend({
         if (this.validateName()) {
             $.ajax({
                 type: "GET",
-                url: window.application.url(['descriptor', 'meta-model', 'search']),
+                url: window.application.url(['descriptor', 'layout', 'search']),
                 dataType: 'json',
                 data: {filters: JSON.stringify({
                     method: 'ieq',
@@ -156,7 +156,7 @@ let View = Marionette.View.extend({
                             let t = data.items[i];
 
                             if (t.name.toUpperCase() === this.el.val().toUpperCase()) {
-                                $(this.el).validateField('failed', _t('Descriptor meta-model name already in usage'));
+                                $(this.el).validateField('failed', _t('Descriptor layout name already in usage'));
                                 break;
                             }
                         }

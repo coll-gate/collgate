@@ -13,7 +13,8 @@ DESCRIPTORS = {
         'id': None,
         'name': 'country',
         'code': 'GE_002',
-        'group': 'common',
+        'group_name': 'common',
+        'label': {'en': 'country', 'fr': 'pays'},
         'can_delete': False,
         'can_modify': False,
         'description': 'Defines a country location.',
@@ -25,7 +26,8 @@ DESCRIPTORS = {
         'id': None,
         'name': 'city',
         'code': 'GE_003',
-        'group': 'common',
+        'group_name': 'common',
+        'label': {'en': 'city', 'fr': 'ville'},
         'can_delete': False,
         'can_modify': False,
         'description': 'Defines a city location.',
@@ -37,4 +39,4 @@ DESCRIPTORS = {
 
 
 def fixture(fixture_manager, factory_manager):
-    fixture_manager.create_or_update_types(DESCRIPTORS)
+    fixture_manager.create_or_update_descriptors(DESCRIPTORS)

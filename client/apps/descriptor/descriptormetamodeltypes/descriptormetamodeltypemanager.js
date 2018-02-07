@@ -1,6 +1,6 @@
 /**
  * @file descriptormetamodeltypemanager.js
- * @brief Base class for any descriptor meta-model type views.
+ * @brief Base class for any descriptor layout type views.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-09-13
  * @copyright Copyright (c) 2017 INRA/CIRAD

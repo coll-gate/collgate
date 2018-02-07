@@ -20,7 +20,8 @@ from django.utils.translation import ugettext_lazy as _
 from classification import localsettings
 from classification.classification import RestClassificationClassificationId
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel, DescriptorModelType
+# from descriptor.models import Layout, DescriptorModelType
+from descriptor.models import Layout
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cursor import CursorQuery
@@ -92,7 +93,7 @@ def get_classification_entry_related(request, cls_id):
             'name': classification.name,
             'parent': classification.parent_id,
             'rank': classification.rank_id,
-            'descriptor_meta_model': classification.descriptor_meta_model_id,
+            'layout': classification.layout_id,
             'descriptors': classification.descriptors,
             'parent_list': classification.parent_list,
             # 'parent_details': None,

@@ -13,7 +13,7 @@ let CacheFetcher = require('../../main/utils/cachefetcher');
 let DescriptorMetaModelCacheFetcher = function() {
     CacheFetcher.call(this);
 
-    this.type = "descriptor_meta_model";
+    this.type = "layout";
 };
 
 DescriptorMetaModelCacheFetcher.prototype = Object.create(CacheFetcher.prototype);
@@ -27,7 +27,7 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
     // make the list of values
     let keysToFetch = new Set();
 
-    let cache = cacheManager.get('descriptor_meta_model', options.format.model);
+    let cache = cacheManager.get('layout', options.format.model);
     let toFetch = false;
     let now = Date.now();
 
@@ -61,7 +61,7 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
         keysToFetch = new Set(keys);
     }
 
-    let url = window.application.url(['descriptor', 'meta-model', 'values']);
+    let url = window.application.url(['descriptor', 'layout', 'values']);
     let queryData = {
         values: JSON.stringify(Array.from(keysToFetch))
     };
@@ -102,7 +102,7 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
 };
 
 DescriptorMetaModelCacheFetcher.prototype.get = function(cacheManager, options) {
-    return cacheManager.get('descriptor_meta_model', options.format.model);
+    return cacheManager.get('layout', options.format.model);
 };
 
 module.exports = DescriptorMetaModelCacheFetcher;

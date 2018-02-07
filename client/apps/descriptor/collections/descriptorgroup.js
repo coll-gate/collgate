@@ -12,15 +12,15 @@ let CountableCollection = require('../../main/collections/countable');
 let DescriptorGroupModel = require('../models/descriptorgroup');
 
 let Collection = CountableCollection.extend({
-    url: window.application.url(['descriptor', 'group']),
+    url: window.application.url(['descriptor', 'descriptor', 'group']),
     model: DescriptorGroupModel,
 
-    comparator: function (item1, item2) {
-        let item1Name = item1.get('name');
-        let item2Name = item2.get('name');
-
-        return item1Name.localeCompare(item2Name /*, locale*/);
-    }
+    // comparator: function (item1, item2) {
+    //     let item1Name = item1.get('name');
+    //     let item2Name = item2.get('name');
+    //
+    //     return item1Name.localeCompare(item2Name /*, locale*/);
+    // }
 });
 
 module.exports = Collection;

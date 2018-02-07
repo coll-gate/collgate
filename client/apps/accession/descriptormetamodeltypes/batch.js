@@ -1,6 +1,6 @@
 /**
  * @file batch.js
- * @brief Batch specialization for descriptor meta-model type.
+ * @brief Batch specialization for descriptor layout type.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-09-13
  * @copyright Copyright (c) 2017 INRA/CIRAD

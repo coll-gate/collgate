@@ -93,7 +93,7 @@ class Language(models.Model):
 
     def get_label(self):
         """
-        Get the label for this meta model in the current regional.
+        Get the label for this layout in the current regional.
         """
         lang = translation.get_language()
         return self.label.get(lang, "")
@@ -401,7 +401,7 @@ class EntitySynonymType(models.Model):
 
     def get_label(self):
         """
-        Get the label for this meta model in the current regional.
+        Get the label for this layout in the current regional.
         """
         lang = translation.get_language()
         return self.label.get(lang, "")

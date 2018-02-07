@@ -5,14 +5,14 @@
  * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
-let DescriptorPanelModel = require('../models/descriptorpanel');
+let DescriptorPanelModel = require('../models/panel');
 
 let Collection = Backbone.Collection.extend({
     url: function() {
-        return window.application.url(['descriptor', 'meta-model', this.model_id, 'panel']);
+        return window.application.url(['descriptor', 'layout', this.model_id, 'panel']);
     },
 
     model: DescriptorPanelModel,

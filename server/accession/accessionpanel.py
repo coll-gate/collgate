@@ -10,7 +10,8 @@
 
 from descriptor.describable import DescriptorsBuilder
 from django.contrib.contenttypes.models import ContentType
-from descriptor.models import DescriptorMetaModel, DescriptorModelType
+# from descriptor.models import Layout, DescriptorModelType
+from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from django.db.models import Q, Prefetch
 from igdectk.rest.response import HttpResponseRest
@@ -95,7 +96,7 @@ def get_accession_panels(request, acc_id):
         a = {
             'id': panel.pk,
             'name': panel.name,
-            'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
+            'layout': panel.layout.pk if panel.layout else None,
             'descriptors': panel.descriptors,
             'accessions_amount': panel.accessions.count()
         }
@@ -178,18 +179,18 @@ def create_panel(request):
     related_entity = request.data['selection']['from']
     search = request.data['selection']['search']
     filters = request.data['selection']['filters']
-    dmm_id = request.data['descriptor_meta_model']
+    layout_id = request.data['layout']
     descriptors = request.data['descriptors']
 
-    dmm = None
+    layout = None
 
     # check uniqueness of the name
     if AccessionPanel.objects.filter(name=name).exists():
         raise SuspiciousOperation(_("The name of the panel is already used"))
 
-    if dmm_id is not None:
+    if layout_id is not None:
         content_type = get_object_or_404(ContentType, app_label="accession", model="accessionpanel")
-        dmm = get_object_or_404(DescriptorMetaModel, id=int_arg(dmm_id), target=content_type)
+        layout = get_object_or_404(Layout, id=int_arg(layout_id), target=content_type)
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
@@ -208,43 +209,44 @@ def create_panel(request):
 
     try:
         with transaction.atomic():
-            panel = AccessionPanel(name=name)
-            panel.descriptor_meta_model = dmm
-            panel.count = 0
+            acc_panel = AccessionPanel(name=name)
+            acc_panel.layout = layout
+            acc_panel.count = 0
 
             # descriptors
-            descriptors_builder = DescriptorsBuilder(panel)
+            descriptors_builder = DescriptorsBuilder(acc_panel)
 
-            descriptors_builder.check_and_update(dmm, descriptors)
-            panel.descriptors = descriptors_builder.descriptors
+            if layout:
+                descriptors_builder.check_and_update(layout, descriptors)
+                acc_panel.descriptors = descriptors_builder.descriptors
 
-            panel.save()
+            acc_panel.save()
 
             # update owner on external descriptors
             descriptors_builder.update_associations()
 
             if isinstance(selection, bool):
                 if selection is True:
-                    panel.accessions.add(*cq)
-                    panel.count = cq.count()
+                    acc_panel.accessions.add(*cq)
+                    acc_panel.count = cq.count()
 
             elif selection['op'] == 'in':
-                panel.accessions.add(*cq.filter(id__in=selection['value']))
-                panel.count = cq.filter(id__in=selection['value']).count()
+                acc_panel.accessions.add(*cq.filter(id__in=selection['value']))
+                acc_panel.count = cq.filter(id__in=selection['value']).count()
 
             elif selection['op'] == 'notin':
-                panel.accessions.add(*cq.filter(id__notin=selection['value']))
-                panel.count = cq.filter(id__notin=selection['value']).count()
+                acc_panel.accessions.add(*cq.filter(id__notin=selection['value']))
+                acc_panel.count = cq.filter(id__notin=selection['value']).count()
 
     except IntegrityError as e:
-        DescriptorModelType.integrity_except(AccessionPanel, e)
+        Descriptor.integrity_except(AccessionPanel, e)
 
     response = {
-        'id': panel.pk,
-        'name': panel.name,
-        'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
-        'descriptors': panel.descriptors,
-        'accessions_amount': panel.count
+        'id': acc_panel.pk,
+        'name': acc_panel.name,
+        'layout': acc_panel.layout.pk if acc_panel.layout else None,
+        'descriptors': acc_panel.descriptors,
+        'accessions_amount': acc_panel.count
     }
 
     return HttpResponseRest(request, response)
@@ -257,7 +259,7 @@ def get_panel(request, panel_id):
     results = {
         'id': panel.pk,
         'name': panel.name,
-        'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
+        'layout': panel.layout.pk if panel.layout else None,
         'descriptors': panel.descriptors,
         'accessions_amount': AccessionPanel.objects.get(id=int_arg(panel_id)).accessions.count()
     }
@@ -315,7 +317,7 @@ def get_panel_list(request):
         a = {
             'id': panel.pk,
             'name': panel.name,
-            'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
+            'layout': panel.layout.pk if panel.layout else None,
             'descriptors': panel.descriptors,
             'accessions_amount': panel.accessions.count()
         }
@@ -350,7 +352,7 @@ def delete_panel(request, panel_id):
                                            "type": "object",
                                            "properties": {
                                                # "entity_status": AccessionPanel.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-                                               "descriptor_meta_model": {"type": ["integer", "null"],
+                                               "layout": {"type": ["integer", "null"],
                                                                          'required': False},
                                                "descriptors": {"type": "object", "required": False},
                                            },
@@ -359,12 +361,12 @@ def delete_panel(request, panel_id):
                                            }
                                        })
 def modify_panel(request, panel_id):
-    panel = get_object_or_404(AccessionPanel, id=int(panel_id))
+    acc_panel = get_object_or_404(AccessionPanel, id=int(panel_id))
     # entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
 
     result = {
-        'id': panel.id
+        'id': acc_panel.id
     }
 
     try:
@@ -379,69 +381,69 @@ def modify_panel(request, panel_id):
                 if AccessionPanel.objects.filter(name=name).exists():
                     raise SuspiciousOperation(_("The name of the panel is already used"))
 
-                panel.name = name
+                acc_panel.name = name
                 result['name'] = name
 
-            if 'descriptor_meta_model' in request.data:
-                dmm_id = request.data["descriptor_meta_model"]
+            if 'layout' in request.data:
+                layout_id = request.data["layout"]
 
-                # changing of meta model erase all previous descriptors values
-                if dmm_id is None and panel.descriptor_meta_model is not None:
+                # changing of layout erase all previous descriptors values
+                if layout_id is None and acc_panel.layout is not None:
                     # clean previous descriptors and owns
-                    descriptors_builder = DescriptorsBuilder(panel)
+                    descriptors_builder = DescriptorsBuilder(acc_panel)
 
-                    descriptors_builder.clear(panel.descriptor_meta_model)
+                    descriptors_builder.clear(acc_panel.layout)
 
-                    panel.descriptor_meta_model = None
-                    panel.descriptors = {}
+                    acc_panel.layout = None
+                    acc_panel.descriptors = {}
 
                     descriptors_builder.update_associations()
 
-                    result['descriptor_meta_model'] = None
+                    result['layout'] = None
                     result['descriptors'] = {}
 
-                elif dmm_id is not None:
-                    # existing descriptors and new meta-model is different : first clean previous descriptors
-                    if panel.descriptor_meta_model is not None and panel.descriptor_meta_model.pk != dmm_id:
+                elif layout_id is not None:
+                    # existing descriptors and new layout is different : first clean previous descriptors
+                    if acc_panel.layout is not None and acc_panel.layout.pk != layout_id:
                         # clean previous descriptors and owns
-                        descriptors_builder = DescriptorsBuilder(panel)
+                        descriptors_builder = DescriptorsBuilder(acc_panel)
 
-                        descriptors_builder.clear(panel.descriptor_meta_model)
+                        descriptors_builder.clear(acc_panel.layout)
 
-                        panel.descriptor_meta_model = None
-                        panel.descriptors = {}
+                        acc_panel.layout = None
+                        acc_panel.descriptors = {}
 
                         descriptors_builder.update_associations()
 
                     # and set the new one
                     content_type = get_object_or_404(ContentType, app_label="accession", model="accessionpanel")
-                    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+                    layout = get_object_or_404(Layout, id=layout_id, target=content_type)
 
-                    panel.descriptor_meta_model = dmm
-                    panel.descriptors = {}
+                    acc_panel.layout = layout
+                    acc_panel.descriptors = {}
 
-                    result['descriptor_meta_model'] = dmm.id
+                    result['layout'] = layout.id
                     result['descriptors'] = {}
 
-                    panel.update_field(['descriptor_meta_model', 'descriptors'])
+                    acc_panel.update_field(['layout', 'descriptors'])
 
             if descriptors is not None:
                 # update descriptors
-                descriptors_builder = DescriptorsBuilder(panel)
+                descriptors_builder = DescriptorsBuilder(acc_panel)
 
-                descriptors_builder.check_and_update(panel.descriptor_meta_model, descriptors)
+                descriptors_builder.check_and_update(acc_panel.layout, descriptors)
 
-                panel.descriptors = descriptors_builder.descriptors
-                result['descriptors'] = panel.descriptors
+                acc_panel.descriptors = descriptors_builder.descriptors
+                result['descriptors'] = acc_panel.descriptors
 
                 descriptors_builder.update_associations()
 
-                panel.update_descriptors(descriptors_builder.changed_descriptors())
-                panel.update_field('descriptors')
+                acc_panel.update_descriptors(descriptors_builder.changed_descriptors())
+                acc_panel.update_field('descriptors')
 
-            panel.save()
+            acc_panel.save()
     except IntegrityError as e:
-        DescriptorModelType.integrity_except(Accession, e)
+        Descriptor.integrity_except(Accession, e)
 
     return HttpResponseRest(request, result)
 
@@ -519,7 +521,7 @@ def get_panel_accession_list(request, panel_id):
             'name': accession.name,
             'code': accession.code,
             'primary_classification_entry': accession.primary_classification_entry_id,
-            'descriptor_meta_model': accession.descriptor_meta_model_id,
+            'layout': accession.layout_id,
             'descriptors': accession.descriptors,
             'synonyms': [],
             'primary_classification_entry_details': {
@@ -594,7 +596,7 @@ def get_panel_accession_list(request, panel_id):
 def modify_panel_accessions(request, panel_id):
     action = request.data['action']
     selection = request.data['selection']['select']
-    panel = AccessionPanel.objects.get(id=int_arg(panel_id))
+    acc_panel = AccessionPanel.objects.get(id=int_arg(panel_id))
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
@@ -617,36 +619,36 @@ def modify_panel_accessions(request, panel_id):
             with transaction.atomic():
                 if isinstance(selection, bool):
                     if selection is True:
-                        panel.accessions.remove(*cq)
+                        acc_panel.accessions.remove(*cq)
 
                 elif selection['op'] == 'in':
-                    panel.accessions.remove(*cq.filter(id__in=selection['value']))
+                    acc_panel.accessions.remove(*cq.filter(id__in=selection['value']))
 
                 elif selection['op'] == 'notin':
-                    panel.accessions.remove(*cq.filter(id__notin=selection['value']))
+                    acc_panel.accessions.remove(*cq.filter(id__notin=selection['value']))
 
-                panel.save()
+                acc_panel.save()
 
         except IntegrityError as e:
-            DescriptorModelType.integrity_except(AccessionPanel, e)
+            Descriptor.integrity_except(AccessionPanel, e)
 
     elif action == 'add':
         try:
             with transaction.atomic():
                 if isinstance(selection, bool):
                     if selection is True:
-                        panel.accessions.add(*cq)
+                        acc_panel.accessions.add(*cq)
 
                 elif selection['op'] == 'in':
-                    panel.accessions.add(*cq.filter(id__in=selection['value']))
+                    acc_panel.accessions.add(*cq.filter(id__in=selection['value']))
 
                 elif selection['op'] == 'notin':
-                    panel.accessions.add(*cq.filter(id__notin=selection['value']))
+                    acc_panel.accessions.add(*cq.filter(id__notin=selection['value']))
 
-                panel.save()
+                acc_panel.save()
 
         except IntegrityError as e:
-            DescriptorModelType.integrity_except(AccessionPanel, e)
+            Descriptor.integrity_except(AccessionPanel, e)
     else:
         raise SuspiciousOperation('Invalid action')
 
@@ -671,15 +673,15 @@ def search_accession_panel(request):
         qs = AccessionPanel.objects.all()
 
     name_method = filters.get('method', 'ieq')
-    if 'meta_model' in filters['fields']:
-        meta_model = int_arg(filters['meta_model'])
+    if 'layout' in filters['fields']:
+        layout = int_arg(filters['layout'])
 
         if name_method == 'ieq':
             qs = qs.filter(Q(name__iexact=filters['name']))
         elif name_method == 'icontains':
             qs = qs.filter(Q(name__icontains=filters['name']))
 
-        qs = qs.filter(Q(descriptor_meta_model_id=meta_model))
+        qs = qs.filter(Q(layout_id=layout))
     elif 'name' in filters['fields']:
         if name_method == 'ieq':
             qs = qs.filter(name__iexact=filters['name'])
@@ -695,7 +697,7 @@ def search_accession_panel(request):
             'id': panel.pk,
             'name': panel.name,
             'label': panel.name,
-            'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
+            'layout': panel.layout.pk if panel.layout else None,
             'descriptors': panel.descriptors,
         }
 

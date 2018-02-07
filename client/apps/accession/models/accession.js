@@ -24,7 +24,7 @@ let Model = Backbone.Model.extend({
         code: '',
         name: '',
         primary_classification_entry: undefined,
-        descriptor_meta_model: undefined,
+        layout: undefined,
         descriptors: {},
         synonyms: []
     },

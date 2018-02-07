@@ -1,6 +1,6 @@
 /**
  * @file descriptorpanellist.js
- * @brief List of panel of model of descriptors for a meta-model of descriptor view
+ * @brief List of panel of model of descriptors for a layout of descriptor view
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD

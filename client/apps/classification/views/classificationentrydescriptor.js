@@ -5,14 +5,14 @@
  * @date 2016-12-29
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 let DescribableDetails = require('../../descriptor/views/describabledetails');
 let ClassificationEntryDescriptorEditView = require('./classificationentrydescriptoredit');
 
 let View = DescribableDetails.extend({
-    onShowTab: function() {
+    onShowTab: function () {
         let view = this;
 
         let contextLayout = application.getView().getChildView('right');
@@ -27,7 +27,7 @@ let View = DescribableDetails.extend({
 
         let actions = [];
 
-        if (!this.model.get('descriptor_meta_model')) {
+        if (!this.model.get('layout')) {
             actions.push('add');
         } else {
             actions.push('modify');
@@ -61,23 +61,27 @@ let View = DescribableDetails.extend({
         //
         //     confirmDialog.on('dialog:confirm', function() {
         //         // this will update the model and so on the view
-        //         view.model.save({descriptor_meta_model: null}, {patch: true, trigger: true});
+        //         view.model.save({layout: null}, {patch: true, trigger: true});
         //     });
         // });
     },
 
-    onHideTab: function() {
+    onHideTab: function () {
         application.main.defaultRightView();
     },
 
-    onModify: function() {
+    onModify: function () {
         // does not reload models, just redo the views
 
         // update the descriptor part of the classificationEntry layout
         let classificationEntryLayout = application.main.viewContent().getChildView('content');
 
         let view = new ClassificationEntryDescriptorEditView({
-            model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+            model: this.model,
+            layoutData: this.layoutData,
+            descriptorCollection: this.descriptorCollection
+        });
+
         classificationEntryLayout.showChildView('descriptors', view);
     }
 });

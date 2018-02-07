@@ -13,7 +13,8 @@ DESCRIPTORS = {
         'id': None,
         'name': 'acronym_1',
         'code': 'DE_001',
-        'group': 'common',
+        'group_name': 'common',
+        'label': {'en': 'acronym', 'fr': 'acronyme'},
         'can_delete': False,
         'can_modify': False,
         'description': 'Defines a simple acronym string with a maximum of 32 characters.',
@@ -26,7 +27,8 @@ DESCRIPTORS = {
         'id': None,
         'name': 'code_16',
         'code': 'DE_002',
-        'group': 'common',
+        'group_name': 'common',
+        'label': {'en': 'code', 'fr': 'code'},
         'can_delete': False,
         'can_modify': False,
         'description': 'Defines a simple code string with a maximum of 16 characters.',
@@ -39,7 +41,8 @@ DESCRIPTORS = {
         'id': None,
         'name': 'address',
         'code': 'DE_003',
-        'group': 'common',
+        'group_name': 'common',
+        'label': {'en': 'address', 'fr': 'adresse'},
         'can_delete': False,
         'can_modify': False,
         'description': 'Defines an address string with a maximum of 512 characters.',
@@ -52,7 +55,8 @@ DESCRIPTORS = {
         'id': None,
         'name': 'zipcode',
         'code': 'DE_004',
-        'group': 'common',
+        'group_name': 'common',
+        'label': {'en': 'zip code', 'fr': 'code postal'},
         'can_delete': False,
         'can_modify': False,
         'description': 'Defines a ZIP code string with a maximum of 16 characters.',
@@ -65,4 +69,4 @@ DESCRIPTORS = {
 
 
 def fixture(fixture_manager, factory_manager):
-    fixture_manager.create_or_update_types(DESCRIPTORS)
+    fixture_manager.create_or_update_descriptors(DESCRIPTORS)

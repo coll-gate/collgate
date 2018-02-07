@@ -65,7 +65,7 @@ let Controller = Marionette.Object.extend({
             ui: {
                 validate: "button.create",
                 name: "#panel_name",
-                descriptor_meta_model: "#meta_model"
+                layout: "#layout"
             },
 
             events: {
@@ -141,7 +141,7 @@ let Controller = Marionette.Object.extend({
                             search: search
                         },
                         descriptors: {},
-                        descriptor_meta_model: null
+                        layout: null
                     });
 
                     view.destroy();

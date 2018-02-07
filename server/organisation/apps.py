@@ -97,27 +97,27 @@ class CollGateOrganisation(ApplicationMain):
             else:
                 configuration.validate("organisation", "GRC instance", "GRC instance detected.")
 
-        from descriptor.models import DescriptorMetaModel
-        if self.is_table_exists(DescriptorMetaModel):
-            # keep descriptor meta-model for organisation and establishment.
-            if not DescriptorMetaModel.objects.filter(name="organisation").exists():
+        from descriptor.models import Layout
+        if self.is_table_exists(Layout):
+            # keep descriptor layout for organisation and establishment.
+            if not Layout.objects.filter(name="organisation").exists():
                 configuration.wrong(
                     "organisation",
-                    "Organisation descriptor meta-model",
-                    "Missing organisation descriptor meta-model. Be sure to have installed fixtures.")
+                    "Organisation descriptor layout",
+                    "Missing organisation descriptor layout. Be sure to have installed fixtures.")
             else:
                 configuration.validate(
                     "organisation",
-                    "Organisation descriptor meta-model",
-                    "Organisation descriptor meta-model detected.")
+                    "Organisation descriptor layout",
+                    "Organisation descriptor layout detected.")
 
-            if not DescriptorMetaModel.objects.filter(name="establishment").exists():
+            if not Layout.objects.filter(name="establishment").exists():
                 configuration.wrong(
                     "organisation",
-                    "Establishment descriptor meta-model",
-                    "Missing establishment descriptor meta-model. Be sure to have installed fixtures.")
+                    "Establishment descriptor layout",
+                    "Missing establishment descriptor layout. Be sure to have installed fixtures.")
             else:
                 configuration.validate(
                     "organisation",
-                    "Establishment descriptor meta-model",
-                    "Establishment descriptor meta-model detected.")
+                    "Establishment descriptor layout",
+                    "Establishment descriptor layout detected.")

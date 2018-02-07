@@ -45,7 +45,7 @@ class ClassificationEntryManager(object):
 
     @classmethod
     @transaction.atomic
-    def create_classification_entry(cls, name, rank_id, parent, language, descriptor_meta_model=None, descriptors=None):
+    def create_classification_entry(cls, name, rank_id, parent, language, layout=None, descriptors=None):
         """
         Create a new classification entry with a unique name. The level must be
         greater than its parent level.
@@ -53,8 +53,8 @@ class ClassificationEntryManager(object):
         :param rank_id: Classification rank with a greater level than its parent rank.
         :param parent: None or valid Classification entry instance.
         :param language: Language code of the primary synonym created with name.
-        :param descriptor_meta_model: Descriptor meta model instance or None.
-        :param descriptors: Descriptors values or None if no descriptor meta model.
+        :param layout: Layout instance or None.
+        :param descriptors: Descriptors values or None if no layout.
         :return: None or new Classification entry instance.
         """
         if ClassificationEntry.objects.filter(name=name).exists():
@@ -78,7 +78,7 @@ class ClassificationEntryManager(object):
         classification_entry.rank = classification_rank
         classification_entry.parent = parent
         classification_entry.parent_list = []
-        classification_entry.descriptor_meta_model = descriptor_meta_model
+        classification_entry.layout = layout
 
         if parent:
             try:
@@ -87,10 +87,10 @@ class ClassificationEntryManager(object):
                 return None
 
         # descriptors
-        if descriptor_meta_model is not None:
+        if layout is not None:
             descriptors_builder = DescriptorsBuilder(classification_entry)
 
-            descriptors_builder.check_and_update(descriptor_meta_model, descriptors)
+            descriptors_builder.check_and_update(layout, descriptors)
             classification_entry.descriptors = descriptors_builder.descriptors
 
         classification_entry.save()

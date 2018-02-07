@@ -16,10 +16,11 @@ from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.descriptorformattype import DescriptorFormatTypeManager
-from descriptor.models import DescriptorPanel, DescriptorModelTypeCondition
+# from descriptor.models import DescriptorPanel, DescriptorModelTypeCondition
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
+from descriptor.models import Layout, Descriptor
 from .descriptor import RestDescriptor
 
 
@@ -66,7 +67,7 @@ class DescriptorsBuilder(object):
         """
         return self._descriptors
 
-    def clear(self, descriptor_meta_model):
+    def clear(self, layout):
         """
         Clear (unset) any values of descriptors. It does not take care of mandatory or set_once attributes.
         The descriptors dict of the builder returns an empty dict. It does not also take care of the conditions because
@@ -75,34 +76,27 @@ class DescriptorsBuilder(object):
 
         Very important, any previously owned entities must be released by a call to update_associations.
 
-        :param descriptor_meta_model:
+        :param layout:
         """
-        dps = DescriptorPanel.objects.filter(descriptor_meta_model=descriptor_meta_model).order_by('position')
-        dps.select_related('descriptor_model')
+        panels = layout.layout_content.get('panels')
 
-        for panel in dps:
-            descriptor_model = panel.descriptor_model
-
-            for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related(
-                    'descriptor_type'):
-                descriptor_type = dmt.descriptor_type
+        for panel in panels:
+            for layout_descriptor in panel.get('descriptors'):
+                descriptor = get_object_or_404(Descriptor, name=layout_descriptor.get('name'))
 
                 # values are loaded on demand (displaying the panel or opening the dropdown)
-                dt_format = descriptor_type.format
 
-                src_name = str(dmt.name)
+                acc_value = self.entity.descriptors.get(descriptor.name)
 
-                acc_value = self.entity.descriptors.get(src_name)
-
-                if DescriptorFormatTypeManager.has_external(dt_format):
-                    self.own_list.append((dt_format, acc_value, None))
+                if DescriptorFormatTypeManager.has_external(descriptor.format):
+                    self.own_list.append((descriptor.format, acc_value, None))
 
         # no more values
         self._descriptors = {}
 
-    def check_and_update(self, descriptor_meta_model, descriptors):
+    def check_and_update(self, layout, descriptors):
         """
-        For any descriptors (model-type) of the meta-model, check the new values given by the descriptors parameter,
+        For any descriptors (model-type) of the layout, check the new values given by the descriptors parameter,
         check the mandatory, the set_once and the condition. It also make the list of descriptors to be updated by
         a next call of update_associations.
 
@@ -111,46 +105,44 @@ class DescriptorsBuilder(object):
         Very important, it is necessary to make a call to update_associations in way to release any previously used
         externals entities, and to own the newly associated.
 
-        :param descriptor_meta_model: Descriptor meta model
+        :param layout: Layout
         :param descriptors: New descriptors values
         """
-        dps = DescriptorPanel.objects.filter(descriptor_meta_model=descriptor_meta_model).order_by('position')
-        dps.select_related('descriptor_model')
 
-        for panel in dps:
-            descriptor_model = panel.descriptor_model
+        panels = layout.layout_content.get('panels')
 
-            for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related('descriptor_type'):
-                descriptor_type = dmt.descriptor_type
+        for panel in panels:
+            for layout_descriptor in panel.get('descriptors'):
+
+                descriptor = get_object_or_404(Descriptor, name=layout_descriptor.get('name'))
 
                 # values are loaded on demand (displaying the panel or opening the dropdown)
-                dt_format = descriptor_type.format
+                dt_format = descriptor.format
 
-                conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
-                src_name = dmt.name
+                conditions = layout_descriptor.get('conditions')
 
-                src_defined = src_name in descriptors
+                src_defined = descriptor.name in descriptors
 
-                acc_value = self.entity.descriptors.get(src_name)
-                src_value = descriptors.get(src_name)
+                acc_value = self.entity.descriptors.get(descriptor.name)
+                src_value = descriptors.get(descriptor.name)
 
                 merged_value = src_value if src_defined else acc_value
 
                 # valid the new value
                 if src_defined and src_value is not None:
-                    DescriptorFormatTypeManager.validate(dt_format, src_value, dmt)
+                    DescriptorFormatTypeManager.validate(dt_format, src_value, descriptor)
 
                 # mandatory descriptor
-                if dmt.mandatory:
+                if layout_descriptor.get('mandatory') is True:
                     if src_value is None and acc_value is None:
-                        raise ValueError(_("Missing mandatory descriptor %s") % (dmt.get_label(),))
+                        raise ValueError(_("Missing mandatory descriptor %s") % (descriptor.get_label(),))
 
                 # set once descriptor
-                if dmt.set_once:
+                if layout_descriptor.get('set_once') is True:
                     if src_value is not None and acc_value is not None:
-                        raise ValueError(_("Already defined set once descriptor %s") % (dmt.get_label(),))
+                        raise ValueError(_("Already defined set once descriptor %s") % (descriptor.get_label(),))
 
-                if conditions.exists():
+                if conditions:
                     # check condition
                     dmtc = conditions[0]
                     target_name = dmtc.target.name
@@ -167,13 +159,13 @@ class DescriptorsBuilder(object):
                         # the src_value can be defined if the target_value is not defined
                         if merged_target_value is not None and merged_value is not None:
                             raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                             " (%s)" % dmt.get_label())
+                                             " (%s)" % descriptor.get_label())
 
                     elif dmtc.condition == 1:
                         # the src_value can be defined if the target_value is defined
                         if merged_target_value is None and merged_value is not None:
                             raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                             " (%s)" % dmt.get_label())
+                                             " (%s)" % descriptor.get_label())
 
                     elif dmtc.condition == 2:
                         # the src_value can defined if the target_value is defined and is equal to the value defined by
@@ -182,12 +174,12 @@ class DescriptorsBuilder(object):
                         # first the target_value must be defined
                         if merged_target_value is None and merged_value is not None:
                             raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                             " (%s)" % dmt.get_label())
+                                             " (%s)" % descriptor.get_label())
 
                         # and be equal to
                         if merged_value is not None and merged_target_value is not None and merged_target_value != dmtc.values:
                             raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                             " (%s)" % dmt.get_label())
+                                             " (%s)" % descriptor.get_label())
 
                     elif dmtc.condition == 3:
                         # the src_value can defined if the target_value is defined and is different from the value
@@ -197,20 +189,20 @@ class DescriptorsBuilder(object):
                         if merged_target_value is None and merged_value is not None:
                             raise ValueError(
                                 _("A conditional descriptor is defined but the condition is not true") +
-                                " (%s)" % dmt.get_label())
+                                " (%s)" % descriptor.get_label())
 
                         # and be different from
                         if merged_value is not None and merged_target_value is not None and merged_target_value == dmtc.values:
                             raise ValueError(
                                 _("A conditional descriptor is defined but the condition is not true") +
-                                " (%s)" % dmt.get_label())
+                                " (%s)" % descriptor.get_label())
 
                 # use new value if defined, else reuse current
-                self._descriptors[dmt.name] = src_value if src_defined else acc_value
+                self._descriptors[descriptor.code] = src_value if src_defined else acc_value
 
                 # keep trace of changed descriptors
                 if src_defined and src_value != acc_value:
-                    self._changed_descriptors[dmt.name] = src_value
+                    self._changed_descriptors[descriptor.code] = src_value
 
                 # make the list of descriptors that need to perform a call to own
                 if DescriptorFormatTypeManager.has_external(dt_format):

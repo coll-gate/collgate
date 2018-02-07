@@ -13,13 +13,13 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
-from descriptor.models import DescribableEntity, DescriptorType
+from descriptor.models import DescribableEntity, Descriptor
 
 
 class Organisation(DescribableEntity):
     """
     Organisation entity for management level.
-    The descriptor meta-model is defined to the unique name "organisation".
+    The descriptor layout is defined to the unique name "organisation".
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
@@ -56,12 +56,12 @@ class Organisation(DescribableEntity):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
-            'descriptor_meta_model': {
-                'label': _('Model'),
+            'layout': {
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'organisation.organisation'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
@@ -114,7 +114,7 @@ class Organisation(DescribableEntity):
         return {
             'name': self.name,
             'type': self.type,
-            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'layout': self.layout_id,
             'descriptors': self.descriptors
         }
 
@@ -152,7 +152,7 @@ class Organisation(DescribableEntity):
 
     @classmethod
     def is_type(cls, organisation_type):
-        descriptor_type = DescriptorType.objects.get(code=cls.TYPE_CODE)
+        descriptor_type = Descriptor.objects.get(code=cls.TYPE_CODE)
 
         try:
             descriptor_type.get_value(organisation_type)
@@ -165,7 +165,7 @@ class Organisation(DescribableEntity):
 class Establishment(DescribableEntity):
     """
     Location for an organisation.
-    The descriptor meta-model is defined to the unique name "establishment".
+    The descriptor layout is defined to the unique name "establishment".
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
@@ -199,12 +199,12 @@ class Establishment(DescribableEntity):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
-            'descriptor_meta_model': {
-                'label': _('Model'),
+            'layout': {
+                'label': _('Layout'),
                 'field': 'name',
                 'query': True,
                 'format': {
-                    'type': 'descriptor_meta_model',
+                    'type': 'layout',
                     'model': 'organisation.establishment'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
@@ -214,7 +214,7 @@ class Establishment(DescribableEntity):
     def audit_create(self, user):
         return {
             'name': self.name,
-            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'layout': self.layout_id,
             'descriptors': self.descriptors
         }
 

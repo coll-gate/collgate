@@ -81,7 +81,7 @@ def get_accession_id_classification_entry_list(request, acc_id):
             'name': classification_entry.name,
             'parent': classification_entry.parent_id,
             'rank': classification_entry.rank_id,
-            'descriptor_meta_model': classification_entry.descriptor_meta_model_id,
+            'layout': classification_entry.layout_id,
             'descriptors': classification_entry.descriptors,
             'parent_list': classification_entry.parent_list,
             'synonyms': []

@@ -24,7 +24,7 @@ class CollGateDescriptor(ApplicationMain):
     def __init__(self, app_name, app_module):
         super(CollGateDescriptor, self).__init__(app_name, app_module)
 
-        # defines the list of entities models that uses of a meta-model of descriptor
+        # defines the list of entities models that uses of a layout of descriptor
         self.describable_entities = []
 
         # different types of format for type of descriptors for this module
@@ -33,8 +33,8 @@ class CollGateDescriptor(ApplicationMain):
         # different units of format for type of descriptors
         self.format_units = []
 
-        # different types of meta-model of descriptors for this module
-        self.meta_model_types = []
+        # different types of layout of descriptors for this module
+        self.layout_types = []
 
     def ready(self):
         super().ready()
@@ -61,10 +61,10 @@ class CollGateDescriptor(ApplicationMain):
             'condition',
             'describable',
             'descriptor',
-            'descriptormodel',
-            'descriptormetamodel',
+            # 'descriptormodel',
+            'layout',
             'descriptorcolumns',
-            'descriptormetamodelparameters'
+            # 'layoutparameters'
             )
         )
 
@@ -101,16 +101,16 @@ class CollGateDescriptor(ApplicationMain):
         # and register them
         descriptorformatunit.DescriptorFormatUnitManager.register(self.format_units)
 
-        # registers standard types of descriptors meta-models
-        from . import descriptormetamodeltype
+        # registers standard types of descriptors layouts
+        from . import layouttype
 
-        for element in dir(descriptormetamodeltype):
-            attr = getattr(descriptormetamodeltype, element)
-            if type(attr) is type and descriptormetamodeltype.DescriptorMetaModelType in attr.__bases__:
-                self.meta_model_types.append(attr())
+        for element in dir(layouttype):
+            attr = getattr(layouttype, element)
+            if type(attr) is type and layouttype.LayoutType in attr.__bases__:
+                self.layout_types.append(attr())
 
         # and register them
-        descriptormetamodeltype.DescriptorMetaModelTypeManager.register(self.meta_model_types)
+        layouttype.LayoutTypeManager.register(self.layout_types)
 
         # descriptor administration menu
         menu_descriptor = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
@@ -118,13 +118,13 @@ class CollGateDescriptor(ApplicationMain):
         # descriptor related menus
         menu_descriptor.add_entry(MenuSeparator(300))
         menu_descriptor.add_entry(
-            MenuEntry('list-descriptor-group', _('List groups of descriptors'), "#descriptor/group/",
+            MenuEntry('list-descriptor', _('Descriptor management'), "#descriptor/descriptor/",
                       icon=FaGlyph('th-list'), order=301, auth=AUTH_STAFF))
+        # menu_descriptor.add_entry(
+        #     MenuEntry('list-descriptor-model', _('List models of descriptor'), "#descriptor/model/",
+        #               icon=FaGlyph('th'), order=302, auth=AUTH_STAFF))
         menu_descriptor.add_entry(
-            MenuEntry('list-descriptor-model', _('List models of descriptor'), "#descriptor/model/",
-                      icon=FaGlyph('th'), order=302, auth=AUTH_STAFF))
-        menu_descriptor.add_entry(
-            MenuEntry('list-descriptor-meta-model', _('List meta-models of descriptor'), "#descriptor/meta-model/",
+            MenuEntry('list-layout', _('Layout management'), "#descriptor/layout/",
                       icon=FaGlyph('th-large'), order=303, auth=AUTH_STAFF))
         descriptor_module.add_menu(menu_descriptor)
 
