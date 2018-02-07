@@ -94,7 +94,11 @@ let Layout = LayoutView.extend({
         // update the contextual region according to the format
         let Element = window.application.accession.actions.getElement(formatType);
         if (Element && Element.ActionStepFormatDetailsView) {
-            this.showChildView('contextual', new Element.ActionStepFormatDetailsView({model: this.model}));
+            this.showChildView('contextual', new Element.ActionStepFormatDetailsView({
+                model: this.model,
+                namingOptions: this.namingOptions,
+                namingFormat: this.namingFormat
+            }));
         } else {
             this.getRegion('contextual').empty();
         }
@@ -108,18 +112,14 @@ let Layout = LayoutView.extend({
             this.ui.format_type.val(stepData.type).prop('disabled', false).selectpicker('refresh');
 
             let Element = window.application.accession.actions.getElement(stepData.type);
-            let actionFormatType = new Element.ActionStepFormatDetailsView({model: this.model});
-
-            this.showChildView('contextual', actionFormatType);
-
-            let NamingOptionsView = require('../namingoption');
-            let namingOptionsView = new NamingOptionsView({
+            let actionFormatType = new Element.ActionStepFormatDetailsView({
+                model: this.model,
+                namingOptions: this.namingOptions,
                 namingFormat: this.namingFormat,
-                namingOptions: this.namingOptions
+                stepIndex: idx
             });
 
-            this.showChildView("namingOptions", namingOptionsView);
-            namingOptionsView.setNamingOptions(stepData.naming_options);
+            this.showChildView('contextual', actionFormatType);
 
             this.currentStepIndex = idx;
         }
@@ -129,14 +129,8 @@ let Layout = LayoutView.extend({
         let idx = parseInt(this.ui.step_index.val());
 
         if (this.currentStepIndex !== null) {
-            let namingOptions = this.getChildView("namingOptions").getNamingOptions();
-
-            let savedStepData = {
-                'type': this.ui.format_type.val(),
-                'naming_options': namingOptions,
-                'inputs': [],   // @todo
-                'outputs': []   // @todo
-            };
+            let savedStepData = this.getChildView('contextual').getFormat();
+            savedStepData.type = this.ui.format_type.val();
 
             this.model.get('format')['steps_data'][this.currentStepIndex] = savedStepData;
         }
@@ -145,8 +139,6 @@ let Layout = LayoutView.extend({
     },
 
     changeStep: function () {
-        let self = this;
-
         let format = this.model.get('format');
         let idx = parseInt(this.ui.step_index.val());
         let stepData = undefined;
@@ -157,12 +149,12 @@ let Layout = LayoutView.extend({
                 $.alert.warning(_t("Max number of step reached (10)"));
                 return;
             } else {
-                stepData = {
-                    'type': 'accession_list',
-                    'naming_options': {}
-                };
+                stepData = {'type': 'accession_list'};
 
                 let nextIdx = format.steps_data.length;
+
+                // initial step data
+                this.model.get('format')['steps_data'] = stepData;
 
                 this.ui.step_index
                     .append('<option value="' + nextIdx + '">' + _t("Step") + " " + nextIdx + '</option>')
@@ -182,18 +174,14 @@ let Layout = LayoutView.extend({
         this.ui.format_type.prop('disabled', false).val(stepData.type).selectpicker('refresh');
 
         let Element = window.application.accession.actions.getElement(stepData.type);
-        let actionFormatType = new Element.ActionStepFormatDetailsView({model: this.model});
-
-        this.showChildView('contextual', actionFormatType);
-
-        let NamingOptionsView = require('../namingoption');
-        let namingOptionsView = new NamingOptionsView({
+        let actionFormatType = new Element.ActionStepFormatDetailsView({
+            model: this.model,
+            namingOptions: this.namingOptions,
             namingFormat: this.namingFormat,
-            namingOptions: this.namingOptions
+            stepIndex: idx
         });
 
-        this.showChildView("namingOptions", namingOptionsView);
-        namingOptionsView.setNamingOptions(stepData.naming_options);
+        this.showChildView('contextual', actionFormatType);
     },
 
     onRender: function () {

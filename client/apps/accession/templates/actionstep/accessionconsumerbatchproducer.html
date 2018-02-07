@@ -8,4 +8,13 @@
  - @details
 -->
 
-<div class="row"></div>
+<div class="row">
+    <div class="col-lg-6" style="margin-bottom: 10px;">
+        <label><%- _t('Producer number') %></label>
+        <select name="producer_index" class="form-control" title="<%- _t('Select or create a producer') %>">
+            <option value="-1"><%- _t("Add new") %></option>
+        </select>
+    </div>
+    <div class="col-lg-12" name="options"></div>
+    <div class="col-lg-12" name="producer"></div>
+</div>
