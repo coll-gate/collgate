@@ -21,7 +21,8 @@ let ScrollingMoreView = require('../../main/views/scrollingmore');
 let Router = Marionette.AppRouter.extend({
     routes: {
         "app/descriptor/layout/": "getLayoutList",
-        "app/descriptor/layout/:id/": "getLayout"
+        "app/descriptor/layout/:id/": "getLayout",
+        "app/descriptor/layout/:id/panel": "getLayoutPanelList"
     },
 
     getLayoutList: function () {
@@ -45,6 +46,33 @@ let Router = Marionette.AppRouter.extend({
     },
 
     getLayout: function (id) {
+        // Layout details
+        // let panelCollection = new DescriptorPanelCollection([], {model_id: id});
+        let layout = new LayoutModel({id: id});
+
+        let defaultLayout = new DefaultLayout({});
+        window.application.main.showContent(defaultLayout);
+
+        layout.fetch().then(function () {
+            defaultLayout.showChildView('title', new TitleView({
+                title: _t("Layout details"),
+                model: layout
+            }));
+        });
+
+        let LayoutDetailsView = require('../views/descriptormetamodeldetail');
+        let layoutDetailView = new LayoutDetailsView({
+            model: layout,
+        });
+        defaultLayout.showChildView('content', layoutDetailView);
+
+        // panelCollection.fetch().then(function () {
+        //     let layoutEditor = new LayoutEditor({collection: panelCollection});
+        //     defaultLayout.showChildView('content', layoutEditor);
+        // });
+    },
+
+    getLayoutPanelList: function (id) {
         // Layout editor
         let panelCollection = new DescriptorPanelCollection([], {model_id: id});
         let layout = new LayoutModel({id: id});

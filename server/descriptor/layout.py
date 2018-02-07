@@ -350,7 +350,7 @@ def modify_layout(request, layout_id):
         'description': layout.description,
         'target': '.'.join(layout.target.natural_key()),
         'parameters': layout.parameters,
-        'num_descriptor_models': layout.descriptor_models.all().count()
+        # 'num_descriptor_models': layout.descriptor_models.all().count()
     }
 
     return HttpResponseRest(request, result)

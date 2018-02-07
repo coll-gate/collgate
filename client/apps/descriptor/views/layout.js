@@ -20,28 +20,28 @@ let View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
-                edit: {title: _t("Layout editor"), event: 'viewLayoutEditor'},
+                edit: {title: _t("Layout editor"), event: 'viewLayoutDetails'},
                 // edit2: {display: true, title: _t("Layout editor"), event: 'viewLayoutEditor'},
                 tag: {display: true, event: 'editLabel'},
-                // manage: {display: true, event: 'viewLayoutEditor'},
+                manage: {display: true, event: 'viewLayoutEditor'},
                 remove: {display: true, event: 'deleteLayout'}
             }
         }
     },
 
-    ui: {
-        edit_btn: '.action.edit',
-        tag_btn: '.action.tag',
-        // manage_btn: '.action.manage',
-        delete_btn: 'button.action.delete'
-    },
-
-    events: {
-        // 'click @ui.edit_btn': 'viewLayoutDetails',
-        'click @ui.tag_btn': 'editLabel',
-        // 'click @ui.manage_btn': 'viewDescriptorPanels',
-        'click @ui.delete_btn': 'deleteLayout'
-    },
+    // ui: {
+    //     edit_btn: '.action.edit',
+    //     tag_btn: '.action.tag',
+    //     manage_btn: '.action.manage',
+    //     delete_btn: 'button.action.delete'
+    // },
+    //
+    // events: {
+    //     // 'click @ui.edit_btn': 'viewLayoutDetails',
+    //     'click @ui.tag_btn': 'editLabel',
+    //     'click @ui.manage_btn': 'viewDescriptorPanels',
+    //     'click @ui.delete_btn': 'deleteLayout'
+    // },
 
     initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
@@ -71,12 +71,12 @@ let View = Marionette.View.extend({
         application.main.views.contentTypes.htmlFromValue(this.el);
     },
 
-    // viewLayoutDetails: function () {
-    //     Backbone.history.navigate("app/descriptor/layout/" + this.model.id + "/", {trigger: true});
-    // },
+    viewLayoutDetails: function () {
+        Backbone.history.navigate("app/descriptor/layout/" + this.model.id + "/", {trigger: true});
+    },
 
     viewLayoutEditor: function () {
-        Backbone.history.navigate("app/descriptor/layout/" + this.model.id + "/", {trigger: true});
+        Backbone.history.navigate("app/descriptor/layout/" + this.model.id + "/panel", {trigger: true});
     },
 
     deleteLayout: function () {
