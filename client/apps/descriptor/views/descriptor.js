@@ -37,7 +37,7 @@ let View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
-                tag: {display: false},
+                tag: {display: true, event: 'changeLabel'},
                 edit: {display: true, event: 'viewDescriptor'},
                 manage: {display: true, event: 'viewDescriptorValue'},
                 remove: {display: true, event: 'deleteDescriptor'}
@@ -92,22 +92,22 @@ let View = Marionette.View.extend({
         }
     },
 
-    // rename: function () {
-    //     if (!session.user.isSuperUser || !session.user.isStaff) {
-    //         return;
-    //     }
-    //
-    //     let ChangeName = require('../../main/views/entityrename');
-    //     let changeName = new ChangeName({
-    //         model: this.model,
-    //         title: _t("Rename the type of model of descriptors")
-    //     });
-    //
-    //     changeName.render();
-    //     changeName.ui.name.val(this.model.get('name'));
-    //
-    //     return false;
-    // },
+    changeLabel: function () {
+        if (!(window.application.permission.manager.isStaff() && this.model.get('can_modify'))) {
+            return;
+        }
+
+        let ChangeLabel = require('../../main/views/entitychangelabel');
+        let changeLabel = new ChangeLabel({
+            model: this.model,
+            title: _t("Change the descriptor labels")
+        });
+
+        changeLabel.render();
+        // changeLabel.ui.name.val(this.model.get('name'));
+
+        return false;
+    },
 
     deleteDescriptor: function () {
         // todo: Alert user only if the descriptor is used

@@ -24,6 +24,7 @@ from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 from igdectk.rest.handler import RestHandler
 
+from igdectk.common.cache import invalidate_cache
 from main.cursor import CursorQuery
 from main.models import InterfaceLanguages
 from .models import Descriptor, DescriptorValue
@@ -64,6 +65,11 @@ class RestDescriptorDescriptorIdValue(RestDescriptorDescriptorId):
     suffix = 'value'
 
 
+class RestDescriptorDescriptorIdLabel(RestDescriptorDescriptorId):
+    regex = r'^label/$'
+    suffix = 'label'
+
+
 class RestDescriptorDescriptorIdValueDisplay(RestDescriptorDescriptorIdValue):
     regex = r'^display/$'
     suffix = 'display'
@@ -77,6 +83,7 @@ class RestDescriptorDescriptorIdValueId(RestDescriptorDescriptorIdValue):
 class RestDescriptorNameOrCodeValuesList(RestDescriptor):
     regex = r'^descriptor-values-list/(?P<descriptor_name_or_code>[a-zA-Z0-9\-\_\.]+)/$'
     suffix = 'descriptor'
+
 
 # class RestDescriptorType(RestDescriptor):
 #     regex = r'^type/$'
@@ -538,6 +545,8 @@ def delete_descriptor_type_for_group(request, typ_id):
     descriptor.delete()
 
     return HttpResponseRest(request, {})
+
+
 # @RestDescriptorGroupId.def_auth_request(Method.GET, Format.JSON)
 # def get_descriptor_groups(request, grp_id):
 #     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
@@ -677,6 +686,7 @@ def delete_descriptor_type_for_group(request, typ_id):
         "type": "object",
         "properties": {
             "name": Descriptor.NAME_VALIDATOR,
+            "label": Descriptor.LABEL_VALIDATOR,
             # "group_name": Descriptor.NAME_VALIDATOR,
             # "code": {"type": "string", 'minLength': 3, 'maxLength': 32},
             "description": {"type": "string", 'maxLength': 1024, 'blank': True},
@@ -706,10 +716,17 @@ def create_descriptor(request):
 
     code = 'ID_%03i' % suffix
 
+    # format validation
+    DescriptorFormatTypeManager.check(descriptor_params['format'])
+
+    lang = translation.get_language()
+
     descriptor = Descriptor.objects.create(
         name=descriptor_params['name'],
         code=code,
+        label={lang: descriptor_params['label']},
         group_name=descriptor_params['group_name'],
+        format=descriptor_params['format'],
         can_delete=True,
         can_modify=True
     )
@@ -717,8 +734,10 @@ def create_descriptor(request):
     response = {
         'id': descriptor.id,
         'name': descriptor.name,
+        'label': descriptor.get_label(),
         'code': descriptor.code,
         'description': descriptor.description,
+        'format': descriptor.format,
         'group_name': descriptor.group_name,
         'num_descriptor_values': 0,
         'can_delete': descriptor.can_delete,
@@ -1356,6 +1375,8 @@ def get_value_for_descriptor(request, typ_id, val_id):
     }
 
     return HttpResponseRest(request, result)
+
+
 #
 #
 # @RestDescriptorTypeIdValueId.def_auth_request(Method.GET, Format.JSON)
@@ -1770,6 +1791,8 @@ def get_all_display_values_for_descriptor_type(request, typ_id):
             })
 
     return HttpResponseRest(request, values)
+
+
 #
 #
 # @RestDescriptorDescriptorSearch.def_auth_request(Method.GET, Format.JSON, parameters=('value',))
@@ -1938,3 +1961,53 @@ def get_some_display_values_for_descriptor_model_type(request, descriptor_name_o
     results = DescriptorFormatTypeManager.get_display_values_for(format_type, descriptor, values, limit)
 
     return HttpResponseRest(request, results)
+
+
+@RestDescriptorDescriptorIdLabel.def_auth_request(Method.GET, Format.JSON)
+def get_all_labels_of_descriptor(request, typ_id):
+    """
+    Returns labels for each language related to the user interface.
+    """
+    descriptor = get_object_or_404(Descriptor, id=int(typ_id))
+
+    label_dict = descriptor.label
+
+    # complete with missing languages
+    for lang, lang_label in InterfaceLanguages.choices():
+        if lang not in label_dict:
+            label_dict[lang] = ""
+
+    results = label_dict
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorDescriptorIdLabel.def_admin_request(Method.PUT, Format.JSON, content={
+    "type": "object",
+    "additionalProperties": Descriptor.LABEL_VALIDATOR
+},
+                                                   perms={
+                                                       'main.change_descriptor': _(
+                                                           "You are not allowed to modify descriptor"),
+                                                   },
+                                                   staff=True)
+def change_language_labels(request, typ_id):
+    descriptor = get_object_or_404(Descriptor, id=int(typ_id))
+
+    labels = request.data
+    languages_values = [lang[0] for lang in InterfaceLanguages.choices()]
+
+    for lang, label in labels.items():
+        if lang not in languages_values:
+            raise SuspiciousOperation(_("Unsupported language identifier"))
+
+        descriptor.label = labels
+    descriptor.save()
+
+    result = {
+        'label': descriptor.get_label()
+    }
+
+    invalidate_cache('get_descriptors')
+
+    return HttpResponseRest(request, result)
