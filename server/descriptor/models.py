@@ -316,11 +316,12 @@ class Descriptor(Entity):
         else:
             return self.values_set.all().exists()
 
-    # def in_usage(self):
-    #     """
-    #     Check if the type of descriptor is used by some type of models of descriptors
-    #     """
-    #     return self.descriptor_model_types.all().exists()
+    def in_usage(self):
+        """
+        Check if the type of descriptor is used by some type of models of descriptors
+        """
+        # @todo check into all layouts...
+        return True  # self.layout.all().exists()
 
     def get_label(self):
         """
@@ -1614,12 +1615,6 @@ class Layout(Entity):
 
     # Textual description of the model of descriptor. There is no translation. It is for staff usage.
     description = models.TextField(blank=True, default="")
-
-    # List of model of descriptor attached to this layout through panel of descriptor for label and position.
-    # descriptor_models = models.ManyToManyField(
-    #     DescriptorModel,
-    #     related_name='layouts',
-    #     through=DescriptorPanel)
 
     # Descriptors display and conditions
     layout_content = JSONField(default={"type": "undefined"})
