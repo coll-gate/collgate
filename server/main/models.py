@@ -36,7 +36,7 @@ class Profile(models.Model):
     """
 
     # related user model
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # newly created profile are in pending state
     pending = models.BooleanField(default=True)

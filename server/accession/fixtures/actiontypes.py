@@ -16,7 +16,7 @@ ACTION_TYPES = {
             'en': 'Introduction',
             'fr': 'Introduction'
         },
-        'format': {'type': 'creation'}
+        'format': {'steps': []}
     },
     'multiplication': {
         'id': None,
@@ -25,7 +25,7 @@ ACTION_TYPES = {
             'en': 'Multiplication',
             'fr': 'Multiplication'
         },
-        'format': {'type': 'multiplication'}
+        'format': {'steps': []}
     },
     'regeneration': {
         'id': None,
@@ -34,7 +34,7 @@ ACTION_TYPES = {
             'en': 'Regeneration',
             'fr': 'Regeneration'
         },
-        'format': {'type': 'regeneration'}
+        'format': {'steps': []}
     },
     'test': {
         'id': None,
@@ -43,7 +43,7 @@ ACTION_TYPES = {
             'en': 'Conformity test',
             'fr': 'Test de conformité'
         },
-        'format': {'type': 'conformity_test'}
+        'format': {'steps': []}
     },
     'cleanup': {
         'id': None,
@@ -52,7 +52,7 @@ ACTION_TYPES = {
             'en': 'Nettoyage',
             'fr': 'Clean-up'
         },
-        'format': {'type': 'sanitation'}
+        'format': {'steps': []}
     },
     'sample': {
         'id': None,
@@ -61,7 +61,7 @@ ACTION_TYPES = {
             'en': 'Sample',
             'fr': 'Echantillon'
         },
-        'format': {'type': 'sample'}
+        'format': {'steps': []}
     },
     'dispatch': {
         'id': None,
@@ -70,7 +70,7 @@ ACTION_TYPES = {
             'en': 'Dispatch',
             'fr': 'Dispatch'
         },
-        'format': {'type': 'dispatch'}
+        'format': {'steps': []}
     },
     'elimination': {
         'id': None,
@@ -79,7 +79,7 @@ ACTION_TYPES = {
             'en': 'Elimination',
             'fr': 'Elimination'
         },
-        'format': {'type': 'elimination'}
+        'format': {'steps': []}
     },
     'complement': {
         'id': None,
@@ -88,7 +88,7 @@ ACTION_TYPES = {
             'en': 'Complement',
             'fr': 'Complément'
         },
-        'format': {'type': 'complement'}
+        'format': {'steps': []}
     },
     'characterization': {
         'id': None,
@@ -97,7 +97,7 @@ ACTION_TYPES = {
             'en': 'Characterization',
             'fr': 'Caractérisation'
         },
-        'format': {'type': 'characterization'}
+        'format': {'steps': []}
     },
 }
 

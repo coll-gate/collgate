@@ -101,16 +101,21 @@ class Command(BaseCommand):
         from descriptor.fixtures import manager
         fixture_manager = manager.FixtureManager()
 
+        from main.api.factorymanager import FactoryManager
+        factory_manager = FactoryManager.instance()
+
+        lib = None
+
         try:
             lib = importlib.import_module(options.get('migration'), 'DataMigration')
         except TypeError or ImportError:
             sys.stdout.write(colorama.Fore.RED + "+ Error during importation of data migration script..." + colorama.Style.RESET_ALL + '\n')
             error = True
 
-        dataMigration = lib.DataMigration(fixture_manager)
+        data_migration = lib.DataMigration(fixture_manager, factory_manager)
 
         try:
-            dataMigration.migrate()
+            data_migration.migrate()
         except Exception as e:
             import traceback
             trace = traceback.print_exc()

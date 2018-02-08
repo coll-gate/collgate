@@ -45,13 +45,13 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
         this.namingFormat = options.namingFormat || "";
         this.stepIndex = options.stepIndex || 0;
 
-        if (!this.model.get('format')['steps_data'][this.stepIndex]) {
-            this.model.get('format')['steps_data'][this.stepIndex] = this.defaultFormat();
+        if (!this.model.get('format')['steps'][this.stepIndex]) {
+            this.model.get('format')['steps'][this.stepIndex] = this.defaultFormat();
         }
     },
 
     onRender: function() {
-        let format = this.model.get('format')['steps_data'][this.stepIndex];
+        let format = this.model.get('format')['steps'][this.stepIndex];
 
         for (let i = 0; i < format.producers.length; ++i) {
             this.ui.producerIndex.append('<option value="' + i + '">' + _t("Producer") + " " + i + '</option>');
@@ -109,12 +109,12 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
     },
 
     numProducers: function() {
-        let format = this.model.get('format').steps_data[this.stepIndex];
+        let format = this.model.get('format')['steps'][this.stepIndex];
         return format['producers'].length;
     },
 
     onChangeProducer: function() {
-        let format = this.model.get('format')['steps_data'][this.stepIndex];
+        let format = this.model.get('format')['steps'][this.stepIndex];
         let idx = parseInt(this.ui.producerIndex.val());
         let producers =  format.producers;
         let producer = undefined;

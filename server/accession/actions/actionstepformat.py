@@ -105,14 +105,11 @@ class ActionStepFormat(object):
         :return: Array of input corresponding to the previous step output or to the default input array
         when there is no previous step.
         """
-        steps_data = action.data.get('steps_data', [])
-        current_step_index = action.data.get('next_step', 0)
+        steps_data = action.data.get('steps', [])
+        current_step_index = len(steps_data)
 
         if current_step_index == 0:
             return default_inputs_array
-
-        if current_step_index >= len(steps_data):
-            raise ActionError("Missing action step data")
 
         step_data = steps_data[current_step_index]
 
@@ -347,8 +344,7 @@ class ActionStepAccessionRefinement(ActionStepFormat):
         """
         Store the input array as output array of this step to be used as input of the next one.
         """
-        steps_data = action.data.get('steps_data', [])
-        current_step = action.data.get('next_step', 0)
+        steps_data = action.data.get('steps', [])
 
         inputs = self.inputs(action, input_array)
         # @todo
@@ -450,8 +446,7 @@ class ActionStepBatchConsumerBatchModifier(ActionStepFormat):
         """
         Store the input array as output array of this step to be used as input of the next one.
         """
-        steps_data = action.data.get('steps_data', [])
-        current_step = action.data.get('next_step', 0)
+        steps_data = action.data.get('steps', [])
 
         inputs = self.inputs(action, input_array)
         # @todo

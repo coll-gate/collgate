@@ -66,6 +66,7 @@ let View = AdvancedTable.extend({
     sortColumn: function (e) {
         let column = $(e.target).attr('column-name') || "id";
         let order = $(e.target).attr('sort-direction') || "none";
+        let sort_by = "";
 
         if (order === "asc") {
             sort_by = "-" + column;

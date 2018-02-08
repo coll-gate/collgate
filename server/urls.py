@@ -8,10 +8,6 @@
 # @license MIT (see LICENSE file)
 # @details
 
-"""
-coll-gate main url registration.
-"""
-
 from django.conf.urls import include, url
 from django.conf import settings
 
@@ -43,16 +39,11 @@ if 'django.contrib.admin' in settings.INSTALLED_APPS:
     admin.autodiscover()
 
     urlpatterns += [
-        url(r'^coll-gate/admin/',
-            include(admin.site.urls)),
-
-        # url(r'^coll-gate/admin/doc/',
-        #     include('django.contrib.admindocs.urls')),
-
+        url(r'^coll-gate/admin/', admin.site.urls),
+        # url(r'^coll-gate/admin/doc/', include('django.contrib.admindocs.urls')),
         # url(r'^coll-gate/admin/password_reset/$',
         #     'django.contrib.auth.views.password_reset',
         #     name='admin_password_reset'),
 
-        # url(r'^coll-gate/admin/password_reset/done/$',
-        #     'django.contrib.auth.views.password_reset_done'),
+        # url(r'^coll-gate/admin/password_reset/done/$', 'django.contrib.auth.views.password_reset_done'),
     ]

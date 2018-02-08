@@ -108,7 +108,7 @@ let Layout = LayoutView.extend({
         let idx = parseInt(this.ui.step_index.val());
 
         if (idx >= 0) {
-            let stepData = this.model.get('format')['steps_data'][idx];
+            let stepData = this.model.get('format')['steps'][idx];
             this.ui.format_type.val(stepData.type).prop('disabled', false).selectpicker('refresh');
 
             let Element = window.application.accession.actions.getElement(stepData.type);
@@ -132,7 +132,7 @@ let Layout = LayoutView.extend({
             let savedStepData = this.getChildView('contextual').getFormat();
             savedStepData.type = this.ui.format_type.val();
 
-            this.model.get('format')['steps_data'][this.currentStepIndex] = savedStepData;
+            this.model.get('format')['steps'][this.currentStepIndex] = savedStepData;
         }
 
         this.currentStepIndex = idx;
@@ -151,10 +151,10 @@ let Layout = LayoutView.extend({
             } else {
                 stepData = {'type': 'accession_list'};
 
-                let nextIdx = format.steps_data.length;
+                let nextIdx = format.steps.length;
 
                 // initial step data
-                this.model.get('format')['steps_data'] = stepData;
+                this.model.get('format')['steps'] = stepData;
 
                 this.ui.step_index
                     .append('<option value="' + nextIdx + '">' + _t("Step") + " " + nextIdx + '</option>')
@@ -164,7 +164,7 @@ let Layout = LayoutView.extend({
                 this.ui.format_type.prop('disabled', false).selectpicker('refresh');
             }
         } else {
-            stepData = format.steps_data[idx];
+            stepData = format.steps[idx];
         }
 
         // set into the model
@@ -188,7 +188,7 @@ let Layout = LayoutView.extend({
         let format = this.model.get('format');
         let batchLayout = this;
 
-        for (let i = 0; i < format.steps_data.length; ++i) {
+        for (let i = 0; i < format.steps.length; ++i) {
             this.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
         }
 
@@ -200,7 +200,7 @@ let Layout = LayoutView.extend({
         this.ui.format_type.prop('disabled', true).selectpicker('refresh');
 
         if (!this.model.isNew()) {
-            if (format.steps_data.length) {
+            if (format.steps.length) {
                 // select first step if exists
                 this.namingOptionsPromise.then(function () {
                     batchLayout.ui.step_index.val(0).selectpicker('refresh');

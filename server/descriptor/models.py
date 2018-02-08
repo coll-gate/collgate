@@ -1021,7 +1021,7 @@ class DescriptorValue(Entity):
     language = models.CharField(max_length=5, default="en")
 
     # Related type of descriptor.
-    descriptor = models.ForeignKey(Descriptor, related_name='values_set')
+    descriptor = models.ForeignKey(Descriptor, related_name='values_set', on_delete=models.CASCADE)
 
     # Direct parent descriptor value, in case of one level hierarchy.
     parent = models.CharField(max_length=64, null=True)
@@ -1606,7 +1606,7 @@ class Layout(Entity):
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
     # Target entity type (generally a describable entity).
-    target = models.ForeignKey(ContentType, editable=False, related_name='layouts')
+    target = models.ForeignKey(ContentType, editable=False, related_name='layouts', on_delete=models.CASCADE)
 
     # Label of the layout of descriptor.
     # It is i18nized used JSON dict with language code as key and label as string value.
@@ -1784,7 +1784,7 @@ class DescribableEntity(Entity):
     descriptors = JSONField(default={})
 
     # It refers to a set of models of type of descriptors through a layout of descriptor.
-    layout = models.ForeignKey(Layout)
+    layout = models.ForeignKey(Layout, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True

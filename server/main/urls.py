@@ -12,8 +12,5 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     # i18n
-    url(r'^i18n/',
-        include('django.conf.urls.i18n',
-                namespace='i18n',
-                app_name='i18n')),
+    url(r'^i18n/', include(('django.conf.urls.i18n', 'i18n'), namespace='i18n')),
 ]

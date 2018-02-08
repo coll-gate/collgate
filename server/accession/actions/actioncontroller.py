@@ -38,12 +38,12 @@ class ActionController(object):
             inputs = []
 
         step_data = {
-            'index': len(self.action.data['steps_data']),
+            'index': len(self.action.data['steps']),
             'inputs': inputs,
             'outputs': []
         }
 
-        self.action.data['steps_data'].append(step_data)
+        self.action.data['steps'].append(step_data)
 
         return step_data
 
@@ -73,10 +73,7 @@ class ActionController(object):
         action.type = self.action_type
 
         # initial data structure
-        data = {
-            'next_step': 0,
-            'steps_data': []
-        }
+        data = {'steps': []}
 
         action.data = data
         action.save()

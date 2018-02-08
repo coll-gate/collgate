@@ -337,16 +337,15 @@ def patch_action_type(request, act_id):
         action_type.update_field('label')
 
     if format_data is not None:
-        if 'next_step' not in format_data or 'steps_data' not in format_data:
+        if 'steps' not in format_data:
             raise SuspiciousOperation(_("Invalid format"))
 
-        action_type.format['next_step'] = action_type.format.get('next_step')
-        action_type.format['steps_data'] = []
+        action_type.format['steps'] = []
 
-        for step in format_data['steps_data']:
+        for step in format_data['steps']:
             # step format validation
             ActionStepFormatManager.check(action_controller, step)
-            action_type.format['steps_data'].append(step)
+            action_type.format['steps'].append(step)
 
         result['format'] = action_type.format
         action_type.update_field('format')

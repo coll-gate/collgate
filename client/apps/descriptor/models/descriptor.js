@@ -16,8 +16,7 @@ let Model = Backbone.Model.extend({
             return window.application.url(['descriptor', 'descriptor']);
         } else {
             return window.application.url(['descriptor', 'descriptor', this.get('id')]);
-        }
-        // else {
+        } // else {
         //     return window.application.url(['descriptor', 'descriptor', this.get('name')]);
         // }
     },

@@ -36,13 +36,13 @@ let View = Marionette.View.extend({
     },
 
     onShowTab: function () {
-        let view = this;
+        let self = this;
 
-        let contextLayout = application.getView().getChildView('right');
+        let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().showChildView('right', contextLayout);
+            window.application.getView().showChildView('right', contextLayout);
         }
 
         let TitleView = require('../../main/views/titleview');
@@ -53,9 +53,8 @@ let View = Marionette.View.extend({
 
         let actions = [];
 
-        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && this.model.get('can_modify')) {
-
-            if (view.model.isNew()) {
+        if (window.application.permission.manager.isStaff() && this.model.get('can_modify')) {
+            if (self.model.isNew()) {
                 actions.push('cancel-descriptor');
                 actions.push('apply-descriptor');
             } else {
@@ -69,17 +68,17 @@ let View = Marionette.View.extend({
             contextLayout.showChildView('content', contextView);
 
             contextView.on("descriptor:update", function () {
-                view.saveDescriptor();
+                self.saveDescriptor();
             });
             contextView.on("descriptor:apply", function () {
-                view.saveDescriptor();
+                self.saveDescriptor();
             });
             contextView.on("descriptor:cancel", function () {
-                view.cancelDescriptor();
+                self.cancelDescriptor();
             });
 
         } else {
-            application.main.defaultRightView();
+            window.application.main.defaultRightView();
         }
     },
 
@@ -101,8 +100,8 @@ let View = Marionette.View.extend({
         let format = this.model.get('format');
         let content_el = null;
 
-        application.descriptor.views.formatTypes.drawSelect(this.ui.format_type, true, false, format.type);
-        let Element = application.descriptor.widgets.getElement(format.type);
+        window.application.descriptor.views.formatTypes.drawSelect(this.ui.format_type, true, false, format.type);
+        let Element = window.application.descriptor.widgets.getElement(format.type);
 
         // update the contextual region according to the format
         if (Element && Element.DescriptorTypeDetailsView) {
@@ -130,14 +129,14 @@ let View = Marionette.View.extend({
 
     onBeforeDetach: function () {
         this.ui.format_type.selectpicker('destroy');
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },
 
     changeFormatType: function () {
         let type = this.ui.format_type.val();
 
         // update the contextual region according to the format
-        let Element = application.descriptor.widgets.getElement(type);
+        let Element = window.application.descriptor.widgets.getElement(type);
         if (Element && Element.DescriptorTypeDetailsView) {
             this.showChildView('content', new Element.DescriptorTypeDetailsView({model: this.model}));
         } else {
