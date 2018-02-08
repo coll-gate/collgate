@@ -39,7 +39,7 @@ let View = DescribableEdit.extend({
 
     onApply: function () {
         // does not reload models, save and redo the views
-        let view = this;
+        let self = this;
         let model = this.model;
 
         let descriptors = this.prepareDescriptors();
@@ -54,8 +54,8 @@ let View = DescribableEdit.extend({
             let ClassificationEntryDescriptorView = require('./classificationentrydescriptor');
             let classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
                 model: model,
-                layoutData: view.layoutData,
-                descriptorCollection: this.descriptorCollection
+                layoutData: self.layoutData,
+                descriptorCollection: self.descriptorCollection
             });
 
             classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
