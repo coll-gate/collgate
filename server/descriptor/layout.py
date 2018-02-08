@@ -562,27 +562,28 @@ def list_descriptor(request, layout_id):
     items_list = []
 
     i = 0
-    for panel in layout.layout_content.get('panels'):
-        j = 0
-        for panel_descriptor in panel.get('descriptors'):
-            mdl_descriptor = get_object_or_404(Descriptor, name=panel_descriptor.get('name'))
+    if layout.layout_content.get('panels'):
+        for panel in layout.layout_content.get('panels'):
+            j = 0
+            for panel_descriptor in panel.get('descriptors'):
+                mdl_descriptor = get_object_or_404(Descriptor, name=panel_descriptor.get('name'))
 
-            if (panel_index is not None and i == int(panel_index)) or (not panel_index):
-                items_list.append({
-                    'id': mdl_descriptor.id,
-                    'code': mdl_descriptor.code,
-                    'name': mdl_descriptor.name,
-                    'label': mdl_descriptor.get_label(),
-                    'group_name': mdl_descriptor.group_name,
-                    'position': j,
-                    'panel_index': i,
-                    'mandatory': panel_descriptor.get('mandatory', False),
-                    'set_once': panel_descriptor.get('set_once', False),
-                    'index': panel_descriptor.get('index', None),
-                    'format': mdl_descriptor.format
-                })
-            j += 1
-        i += 1
+                if (panel_index is not None and i == int(panel_index)) or (not panel_index):
+                    items_list.append({
+                        'id': mdl_descriptor.id,
+                        'code': mdl_descriptor.code,
+                        'name': mdl_descriptor.name,
+                        'label': mdl_descriptor.get_label(),
+                        'group_name': mdl_descriptor.group_name,
+                        'position': j,
+                        'panel_index': i,
+                        'mandatory': panel_descriptor.get('mandatory', False),
+                        'set_once': panel_descriptor.get('set_once', False),
+                        'index': panel_descriptor.get('index', None),
+                        'format': mdl_descriptor.format
+                    })
+                j += 1
+            i += 1
 
     results = {
         'perms': [],
