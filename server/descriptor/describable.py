@@ -29,7 +29,7 @@ class RestDescribable(RestDescriptor):
     name = 'describable'
 
 
-@cache_page(60*60*24)
+@cache_page(60 * 60 * 24)
 @RestDescribable.def_request(Method.GET, Format.JSON)
 def get_describable_list(request):
     """
@@ -144,8 +144,8 @@ class DescriptorsBuilder(object):
 
                 if conditions:
                     # check condition
-                    dmtc = conditions[0]
-                    target_name = dmtc.target.name
+                    dmtc = conditions
+                    target_name = dmtc.get('target_name')
 
                     # according to the condition if the current value is defined (src) or was defined (acc)
                     # the condition must be respected otherwise it raises an exception if a new value is defined (src)
@@ -155,19 +155,19 @@ class DescriptorsBuilder(object):
                     src_target_value = descriptors.get(target_name)
                     merged_target_value = src_target_value if src_target_defined else acc_target_value
 
-                    if dmtc.condition == 0:
+                    if dmtc.get('condition') == 0:
                         # the src_value can be defined if the target_value is not defined
                         if merged_target_value is not None and merged_value is not None:
                             raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
                                              " (%s)" % descriptor.get_label())
 
-                    elif dmtc.condition == 1:
+                    elif dmtc.get('condition') == 1:
                         # the src_value can be defined if the target_value is defined
                         if merged_target_value is None and merged_value is not None:
                             raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
                                              " (%s)" % descriptor.get_label())
 
-                    elif dmtc.condition == 2:
+                    elif dmtc.get('condition') == 2:
                         # the src_value can defined if the target_value is defined and is equal to the value defined by
                         # the condition
 
@@ -177,11 +177,12 @@ class DescriptorsBuilder(object):
                                              " (%s)" % descriptor.get_label())
 
                         # and be equal to
-                        if merged_value is not None and merged_target_value is not None and merged_target_value != dmtc.values:
+                        if merged_value is not None and merged_target_value is not None and merged_target_value != dmtc.get(
+                                'values'):
                             raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
                                              " (%s)" % descriptor.get_label())
 
-                    elif dmtc.condition == 3:
+                    elif dmtc.get('condition') == 3:
                         # the src_value can defined if the target_value is defined and is different from the value
                         # defined by the condition
 
@@ -192,7 +193,8 @@ class DescriptorsBuilder(object):
                                 " (%s)" % descriptor.get_label())
 
                         # and be different from
-                        if merged_value is not None and merged_target_value is not None and merged_target_value == dmtc.values:
+                        if merged_value is not None and merged_target_value is not None and merged_target_value == dmtc.get(
+                                'values'):
                             raise ValueError(
                                 _("A conditional descriptor is defined but the condition is not true") +
                                 " (%s)" % descriptor.get_label())

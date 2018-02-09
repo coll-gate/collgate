@@ -104,8 +104,6 @@ let View = Marionette.View.extend({
         });
 
         changeLabel.render();
-        // changeLabel.ui.name.val(this.model.get('name'));
-
         return false;
     },
 

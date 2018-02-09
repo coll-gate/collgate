@@ -22,7 +22,7 @@ let Router = Marionette.AppRouter.extend({
     routes: {
         "app/descriptor/layout/": "getLayoutList",
         "app/descriptor/layout/:id/": "getLayout",
-        "app/descriptor/layout/:id/panel": "getLayoutPanelList"
+        "app/descriptor/layout/:id/panel/": "getLayoutPanelList"
     },
 
     getLayoutList: function () {

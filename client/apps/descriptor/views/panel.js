@@ -62,11 +62,11 @@ let View = Marionette.CompositeView.extend({
             this.collection.fetch();
         },
 
-    onRender: function () {
-        if (!window.application.permission.manager.isStaff()) {
-            $(this.ui.delete_descriptor_panel).hide();
-        }
-    },
+        onRender: function () {
+            if (!window.application.permission.manager.isStaff()) {
+                $(this.ui.delete_descriptor_panel).hide();
+            }
+        },
 
         dragStart: function (e) {
             if (e.target.className === 'panel-heading descriptor-panel') {
@@ -187,6 +187,8 @@ let View = Marionette.CompositeView.extend({
                     let modelId = this.model.collection.model_id;
                     let collection = this.model.collection;
 
+                    let self = this;
+
                     $.ajax({
                         type: "PUT",
                         url: window.application.url(['descriptor', 'layout', modelId, 'panel', 'order']),
@@ -199,7 +201,6 @@ let View = Marionette.CompositeView.extend({
                     }).done(function () {
                         // server will shift position of any model upward/downward this model
                         // do it locally to be consistent
-                        // so that we don't need to collection.fetch({update: true, remove: true});
                         if (newPosition < position) {
                             let to_rshift = [];
 
@@ -242,8 +243,10 @@ let View = Marionette.CompositeView.extend({
                             }
                         }
 
+
                         // need to sort
                         collection.sort();
+                        collection.fetch();
                     }).fail(function () {
                         $.alert.error(_t('Unable to reorder the panels of descriptor'));
                     })
