@@ -19,7 +19,9 @@ let AccessionList = function() {
 };
 
 _.extend(AccessionList.prototype, ActionStepFormat.prototype, {
-
+    defaultFormat: function() {
+        return {};
+    }
 });
 
 AccessionList.ActionStepFormatDetailsView = Marionette.View.extend({
@@ -34,7 +36,7 @@ AccessionList.ActionStepFormatDetailsView = Marionette.View.extend({
         let format = this.model.get('format');
     },
 
-    getFormat: function() {
+    storeData: function() {
         return {
         }
     }

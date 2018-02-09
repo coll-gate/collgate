@@ -73,7 +73,7 @@ let View = Marionette.View.extend({
         Backbone.history.navigate('app/accession/action/' + this.model.get('id') + '/', {trigger: true});
     },
 
-    onDeleteBatchAction: function () {
+    onDeleteAction: function () {
         alert("@todo");
     }
 });

@@ -198,14 +198,6 @@ class ActionStepFormatManager(object):
         if act is None:
             raise ValueError("Unsupported format of action step %s" % step_format)
 
-        # according to its controller check the naming constants
-        constants = action_step_format.get('naming_options')
-        if constants is None:
-            raise ValueError("Missing name builder constants array")
-
-        if len(constants) != action_controller.name_builder.num_constants:
-            raise ValueError("Number of name builder constants differs")
-
         res = act.check(action_step_format)
         if res is not None:
             raise ValueError(str(res))
@@ -246,10 +238,18 @@ class ActionStepAccessionConsumerBatchProducer(ActionStepFormat):
 
     def check(self, action_type_format):
         """
-        Check the format of a descriptor type, if it is valid for a specific type of format.
+        Check the format of a step of an action.
         :param action_type_format: Format of type of the related action type to check
         :return: None if the check is done, else a string with the error detail
         """
+        # # according to its controller check the naming constants
+        # constants = action_step_format.get('naming_options')
+        # if constants is None:
+        #     raise ValueError("Missing name builder constants array")
+        #
+        # if len(constants) != action_controller.name_builder.num_constants:
+        #     raise ValueError("Number of name builder constants differs")
+
         return None
 
     def process(self, action, input_array, step_data):
@@ -286,11 +286,7 @@ class ActionStepAccessionList(ActionStepFormat):
         return None
 
     def check(self, action_type_format):
-        """
-        Check the format of a descriptor type, if it is valid for a specific type of format.
-        :param action_type_format: Format of type of the related action type to check
-        :return: None if the check is done, else a string with the error detail
-        """
+        # nothing to check
         return None
 
     def process(self, action, input_array, step_data):

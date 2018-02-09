@@ -55,7 +55,7 @@ let Layout = LayoutView.extend({
 
         this.namingOptions = null;
         this.namingFormat = null;
-        this.currentStepIndex = null;
+        this.currentStepIndex = -1;
 
         self.namingOptionsPromise = $.ajax({
             type: "GET",
@@ -94,10 +94,18 @@ let Layout = LayoutView.extend({
         // update the contextual region according to the format
         let Element = window.application.accession.actions.getElement(formatType);
         if (Element && Element.ActionStepFormatDetailsView) {
+            let stepData = new Element().defaultFormat();
+            stepData.index = this.currentStepIndex;
+            stepData.type = formatType;
+
+            // overwrite previous data
+            this.model.get('format')['steps'][this.currentStepIndex] = stepData;
+
             this.showChildView('contextual', new Element.ActionStepFormatDetailsView({
                 model: this.model,
                 namingOptions: this.namingOptions,
-                namingFormat: this.namingFormat
+                namingFormat: this.namingFormat,
+                stepIndex: this.currentStepIndex
             }));
         } else {
             this.getRegion('contextual').empty();
@@ -105,10 +113,8 @@ let Layout = LayoutView.extend({
     },
 
     loadCurrentStepData: function() {
-        let idx = parseInt(this.ui.step_index.val());
-
-        if (idx >= 0) {
-            let stepData = this.model.get('format')['steps'][idx];
+        if (this.currentStepIndex >= 0) {
+            let stepData = this.model.get('format')['steps'][this.currentStepIndex];
             this.ui.format_type.val(stepData.type).prop('disabled', false).selectpicker('refresh');
 
             let Element = window.application.accession.actions.getElement(stepData.type);
@@ -116,45 +122,48 @@ let Layout = LayoutView.extend({
                 model: this.model,
                 namingOptions: this.namingOptions,
                 namingFormat: this.namingFormat,
-                stepIndex: idx
+                stepIndex: this.currentStepIndex
             });
 
             this.showChildView('contextual', actionFormatType);
-
-            this.currentStepIndex = idx;
         }
     },
 
     storeCurrentStepData: function() {
-        let idx = parseInt(this.ui.step_index.val());
-
-        if (this.currentStepIndex !== null) {
-            let savedStepData = this.getChildView('contextual').getFormat();
-            savedStepData.type = this.ui.format_type.val();
-
-            this.model.get('format')['steps'][this.currentStepIndex] = savedStepData;
+        // store current step before changes to new current one
+        if (this.currentStepIndex >= 0) {
+            this.getChildView('contextual').storeData();
         }
-
-        this.currentStepIndex = idx;
     },
 
     changeStep: function () {
         let format = this.model.get('format');
         let idx = parseInt(this.ui.step_index.val());
-        let stepData = undefined;
 
         if (idx < 0) {
             // create a new one
-            if (format['next_step'] >= 10) {
+            if (format['steps'].length >= 10) {
                 $.alert.warning(_t("Max number of step reached (10)"));
                 return;
             } else {
-                stepData = {'type': 'accession_list'};
-
                 let nextIdx = format.steps.length;
+                let formatType = this.ui.format_type.val();
+
+                let stepData = {
+                   'index': nextIdx,
+                   'type': 'accession_list'
+                };
+
+                let element = window.application.accession.actions.newElement(formatType);
+                if (element) {
+                    stepData = element.defaultFormat();
+                }
+
+                stepData.index = nextIdx;
+                stepData.type = formatType;
 
                 // initial step data
-                this.model.get('format')['steps'] = stepData;
+                this.model.get('format')['steps'].push(stepData);
 
                 this.ui.step_index
                     .append('<option value="' + nextIdx + '">' + _t("Step") + " " + nextIdx + '</option>')
@@ -162,26 +171,15 @@ let Layout = LayoutView.extend({
                     .selectpicker('refresh');
 
                 this.ui.format_type.prop('disabled', false).selectpicker('refresh');
+                idx = nextIdx;
             }
-        } else {
-            stepData = format.steps[idx];
         }
 
         // set into the model
         this.storeCurrentStepData();
 
-        // change current selection
-        this.ui.format_type.prop('disabled', false).val(stepData.type).selectpicker('refresh');
-
-        let Element = window.application.accession.actions.getElement(stepData.type);
-        let actionFormatType = new Element.ActionStepFormatDetailsView({
-            model: this.model,
-            namingOptions: this.namingOptions,
-            namingFormat: this.namingFormat,
-            stepIndex: idx
-        });
-
-        this.showChildView('contextual', actionFormatType);
+        this.currentStepIndex = idx;
+        this.loadCurrentStepData();
     },
 
     onRender: function () {

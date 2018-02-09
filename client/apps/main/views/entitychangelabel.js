@@ -50,7 +50,7 @@ let View = Dialog.extend({
                 self.ui.label.filter('[language=' + lang_id + ']').attr('value', data[lang_id]);
             }
         }).fail(function () {
-            this.destroy();
+            self.destroy();
         });
     },
 

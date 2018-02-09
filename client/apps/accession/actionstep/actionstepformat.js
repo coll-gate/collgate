@@ -16,6 +16,9 @@ let ActionStepFormat = function() {
 };
 
 ActionStepFormat.prototype = {
+    defaultFormat: function() {
+        return {};
+    }
 };
 
 ActionStepFormat.ActionStepFormatDetailsView = Marionette.View.extend({
@@ -29,9 +32,7 @@ ActionStepFormat.ActionStepFormatDetailsView = Marionette.View.extend({
     onRender: function() {
     },
 
-    getFormat: function() {
-        return {
-        }
+    storeData: function() {
     }
 });
 

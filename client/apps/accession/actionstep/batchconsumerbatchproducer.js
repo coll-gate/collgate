@@ -19,7 +19,9 @@ let Format = function() {
 };
 
 _.extend(Format.prototype, ActionStepFormat.prototype, {
-
+    defaultFormat: function() {
+        return {};
+    }
 });
 
 Format.ActionStepFormatDetailsView = Marionette.View.extend({
@@ -34,7 +36,7 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
         let format = this.model.get('format');
     },
 
-    getFormat: function() {
+    storeData: function() {
         return {
         }
     }

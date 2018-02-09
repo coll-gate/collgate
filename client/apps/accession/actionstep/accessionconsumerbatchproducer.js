@@ -19,7 +19,12 @@ let Format = function() {
 };
 
 _.extend(Format.prototype, ActionStepFormat.prototype, {
-
+    defaultFormat: function() {
+       return {
+            'options': {},
+            'producers': []
+        };
+    }
 });
 
 Format.ActionStepFormatDetailsView = Marionette.View.extend({
@@ -43,11 +48,9 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
 
         this.namingOptions = options.namingOptions || [];
         this.namingFormat = options.namingFormat || "";
-        this.stepIndex = options.stepIndex || 0;
 
-        if (!this.model.get('format')['steps'][this.stepIndex]) {
-            this.model.get('format')['steps'][this.stepIndex] = this.defaultFormat();
-        }
+        this.stepIndex = options.stepIndex || 0;
+        this.currentProducerIndex= -1;
     },
 
     onRender: function() {
@@ -59,20 +62,14 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
 
         this.ui.producerIndex.selectpicker({}).on('change', $.proxy(this.onChangeProducer, this));
 
-        for (let i = 0; i < format.producers.length; ++i) {
-            this.setupProducer(i, format.producers[i]);
+        if (format.producers.length) {
+            this.currentProducerIndex = 0;
+            this.loadCurrentProducer();
         }
     },
 
     onBeforeDetach: function () {
         this.ui.producerIndex.selectpicker('destroy');
-    },
-
-    defaultFormat: function() {
-        return {
-            'options': {},
-            'producers': []
-        };
     },
 
     defaultProducer: function() {
@@ -83,34 +80,36 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
         };
     },
 
-    getFormat: function() {
-        let options = {};
-        let producers = [];   // @todo
-
-        return {
-            'options': options,
-            'producers': producers
-        }
-    },
-
-    setupProducer: function(index, producer) {
-        // options
-        // nothing for the moment
-
-        // naming option
-        let NamingOptionsView = require('../views/namingoption');
-        let namingOptionsView = new NamingOptionsView({
-            namingFormat: this.namingFormat,
-            namingOptions: this.namingOptions
-        });
-
-        this.showChildView('producer', namingOptionsView);
-        namingOptionsView.setNamingOptions(producer.naming_options);
+    storeData: function() {
+        this.storeCurrentProducer();
     },
 
     numProducers: function() {
         let format = this.model.get('format')['steps'][this.stepIndex];
         return format['producers'].length;
+    },
+
+    loadCurrentProducer: function() {
+        if (this.currentProducerIndex >= 0) {
+            let producer = this.model.get('format')['steps'][this.stepIndex]['producers'][this.currentProducerIndex];
+
+            // naming option
+            let NamingOptionsView = require('../views/namingoption');
+            let namingOptionsView = new NamingOptionsView({
+                namingFormat: this.namingFormat,
+                namingOptions: this.namingOptions
+            });
+
+            this.showChildView('producer', namingOptionsView);
+            namingOptionsView.setNamingOptions(producer.naming_options);
+        }
+    },
+
+    storeCurrentProducer: function() {
+        if (this.currentProducerIndex >= 0) {
+            let producer = this.model.get('format')['steps'][this.stepIndex]['producers'][this.currentProducerIndex];
+            producer.naming_options = this.getChildView('producer').getNamingOptions();
+        }
     },
 
     onChangeProducer: function() {
@@ -137,11 +136,13 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
                     .val(nextIdx)
                     .selectpicker('refresh');
 
-                this.setupProducer(nextIdx, producer);
+                idx = nextIdx;
             }
-        } else {
-
         }
+
+        this.storeCurrentProducer();
+        this.currentProducerIndex = idx;
+        this.loadCurrentProducer();
     },
 
     onRemoveProducer: function(idx) {
