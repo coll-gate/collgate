@@ -76,7 +76,7 @@ let View = Marionette.View.extend({
     },
 
     viewLayoutEditor: function () {
-        Backbone.history.navigate("app/descriptor/layout/" + this.model.id + "/panel", {trigger: true});
+        Backbone.history.navigate("app/descriptor/layout/" + this.model.id + "/panel/", {trigger: true});
     },
 
     deleteLayout: function () {
