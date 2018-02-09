@@ -43,7 +43,9 @@ let View = Marionette.View.extend({
     //     'click @ui.delete_btn': 'deleteLayout'
     // },
 
-    initialize: function () {
+    initialize: function (options) {
+        View.__super__.initialize.apply(this, arguments);
+
         this.listenTo(this.model, 'change', this.render, this);
     },
 
@@ -66,7 +68,7 @@ let View = Marionette.View.extend({
 
     onRender: function () {
         // localize content-type
-        application.main.views.contentTypes.htmlFromValue(this.el);
+        window.application.main.views.contentTypes.htmlFromValue(this.el);
     },
 
     viewLayoutDetails: function () {

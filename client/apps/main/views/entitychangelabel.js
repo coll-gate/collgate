@@ -116,7 +116,7 @@ let View = Dialog.extend({
                 data: JSON.stringify(labels)
             }).done(function () {
                 // manually update the current context label
-                model.set('label', labels[session.language]);
+                model.set('label', labels[window.session.language]);
                 $.alert.success(_t("Successfully labeled !"));
             }).always(function () {
                 view.destroy();

@@ -139,9 +139,6 @@ DescriptorModule.prototype = {
         let LayoutRouter = require('./routers/layout');
         this.routers.descriptorMetaModel = new LayoutRouter();
 
-        // let DescriptorGroupCollection = require('./collections/descriptorgroup');
-        // this.collections.descriptorGroup = new DescriptorGroupCollection();
-
         let DescriptorGroupCollection = require('./collections/descriptor');
         this.collections.descriptorGroup = new DescriptorGroupCollection();
 
