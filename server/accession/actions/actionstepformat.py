@@ -71,9 +71,10 @@ class ActionStepFormat(object):
         """
         return None
 
-    def check(self, action_type_format):
+    def check(self, action_controller, action_type_format):
         """
         Check the format of a descriptor type, if it is valid for a specific type of format.
+        :param action_controller: Current action controller instance
         :param action_type_format: Format of type of the related action type to check
         :return: None if the check is done, else a string with the error detail
         """
@@ -198,7 +199,7 @@ class ActionStepFormatManager(object):
         if act is None:
             raise ValueError("Unsupported format of action step %s" % step_format)
 
-        res = act.check(action_step_format)
+        res = act.check(action_controller, action_step_format)
         if res is not None:
             raise ValueError(str(res))
 
@@ -228,34 +229,32 @@ class ActionStepAccessionConsumerBatchProducer(ActionStepFormat):
         self.format_fields = ["type"]
 
     def validate(self, action_type_format, value):
-        """
-        Validate the value according the format.
-        :param action_type_format: Format of the related action type
-        :param value: Value to validate
-        :return: None if the validation is done, else a string with the error detail
-        """
         return None
 
-    def check(self, action_type_format):
-        """
-        Check the format of a step of an action.
-        :param action_type_format: Format of type of the related action type to check
-        :return: None if the check is done, else a string with the error detail
-        """
-        # # according to its controller check the naming constants
-        # constants = action_step_format.get('naming_options')
-        # if constants is None:
-        #     raise ValueError("Missing name builder constants array")
-        #
-        # if len(constants) != action_controller.name_builder.num_constants:
-        #     raise ValueError("Number of name builder constants differs")
+    def check(self, action_controller, action_type_format):
+        if "producers" not in action_type_format:
+            raise ValueError("Missing field producers")
+
+        if "options" not in action_type_format:
+            raise ValueError("Missing field options")
+
+        if type(action_type_format["producers"]) is not list:
+            raise ValueError("The field producers must be an array")
+
+        for producer in action_type_format["producers"]:
+            # no options
+
+            # check the naming constants
+            constants = producer.get('naming_options')
+            if constants is None:
+                raise ValueError("Missing name builder constants array")
+
+            if len(constants) != action_controller.name_builder.num_constants:
+                raise ValueError("Number of name builder constants differs")
 
         return None
 
     def process(self, action, input_array, step_data):
-        """
-        Store the input array as output array of this step to be used as input of the next one.
-        """
         # @todo
         pass
 
@@ -285,7 +284,7 @@ class ActionStepAccessionList(ActionStepFormat):
         """
         return None
 
-    def check(self, action_type_format):
+    def check(self, action_controller, action_type_format):
         # nothing to check
         return None
 
@@ -320,26 +319,12 @@ class ActionStepAccessionRefinement(ActionStepFormat):
         self.verbose_name = _("Refine a list of accessions")
 
     def validate(self, action_type_format, value):
-        """
-        Validate the value according the format.
-        :param action_type_format: Format of the related action type
-        :param value: Value to validate
-        :return: None if the validation is done, else a string with the error detail
-        """
         return None
 
-    def check(self, action_type_format):
-        """
-        Check the format of a descriptor type, if it is valid for a specific type of format.
-        :param action_type_format: Format of type of the related action type to check
-        :return: None if the check is done, else a string with the error detail
-        """
+    def check(self, action_controller, action_type_format):
         return None
 
     def process(self, action, input_array, step_data):
-        """
-        Store the input array as output array of this step to be used as input of the next one.
-        """
         steps_data = action.data.get('steps', [])
 
         inputs = self.inputs(action, input_array)
@@ -361,26 +346,12 @@ class ActionStepBatchConsumerBatchProducer(ActionStepFormat):
         self.verbose_name = _("Batch consumer - Batch producer")
 
     def validate(self, action_type_format, value):
-        """
-        Validate the value according the format.
-        :param action_type_format: Format of the related action type
-        :param value: Value to validate
-        :return: None if the validation is done, else a string with the error detail
-        """
         return None
 
-    def check(self, action_type_format):
-        """
-        Check the format of a descriptor type, if it is valid for a specific type of format.
-        :param action_type_format: Format of type of the related action type to check
-        :return: None if the check is done, else a string with the error detail
-        """
+    def check(self, action_controller, action_type_format):
         return None
 
     def process(self, action, input_array, step_data):
-        """
-        Store the input array as output array of this step to be used as input of the next one.
-        """
         # @todo
         # name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
         # naming_constants = self.naming_constants(
@@ -422,26 +393,12 @@ class ActionStepBatchConsumerBatchModifier(ActionStepFormat):
         self.verbose_name = _("Batch consumer - Batch modifier")
 
     def validate(self, action_type_format, value):
-        """
-        Validate the value according the format.
-        :param action_type_format: Format of the related action type
-        :param value: Value to validate
-        :return: None if the validation is done, else a string with the error detail
-        """
         return None
 
-    def check(self, action_type_format):
-        """
-        Check the format of a descriptor type, if it is valid for a specific type of format.
-        :param action_type_format: Format of type of the related action type to check
-        :return: None if the check is done, else a string with the error detail
-        """
+    def check(self, action_controller, action_type_format):
         return None
 
     def process(self, action, input_array, step_data):
-        """
-        Store the input array as output array of this step to be used as input of the next one.
-        """
         steps_data = action.data.get('steps', [])
 
         inputs = self.inputs(action, input_array)

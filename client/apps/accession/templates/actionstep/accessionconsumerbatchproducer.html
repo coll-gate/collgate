@@ -9,12 +9,22 @@
 -->
 
 <div class="row">
-    <div class="col-lg-6" style="margin-bottom: 10px;">
+    <div class="col-lg-4" style="margin-bottom: 10px;">
         <label><%- _t('Producer number') %></label>
         <select name="producer_index" class="form-control" title="<%- _t('Select or create a producer') %>">
             <option value="-1"><%- _t("Add new") %></option>
         </select>
     </div>
+    <div class="col-lg-1">
+        <label>&nbsp;</label>
+        <span class="btn btn-default form-control">
+            <span class="fa fa-lg fa-remove" name="delete-producer" title="<%= _t('Delete producer') %>" style="color: #760004; cursor: pointer;"></span>
+        </span>
+    </div>
+</div>
+<div class="row">
     <div class="col-lg-12" name="options"></div>
+</div>
+<div class="row">
     <div class="col-lg-12" name="producer"></div>
 </div>

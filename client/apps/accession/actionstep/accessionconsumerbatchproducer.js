@@ -40,7 +40,13 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
         producerIndex: 'select[name=producer_index]',
         options: 'div[name=options]',
         producer: 'div[name=producer]',
+        delete_producer: 'span[name=delete-producer]'
     },
+
+    events: {
+        'click @ui.delete_producer': 'onDeleteCurrentProducer'
+    },
+
 
     initialize: function(options) {
         Format.ActionStepFormatDetailsView.__super__.initialize.apply(this, arguments);
@@ -64,6 +70,7 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
 
         if (format.producers.length) {
             this.currentProducerIndex = 0;
+            this.ui.producerIndex.val(0).selectpicker('refresh');
             this.loadCurrentProducer();
         }
     },
@@ -150,6 +157,34 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
 
         if (idx >= 0 && idx < count) {
             // @todo
+        }
+    },
+
+    onDeleteCurrentProducer: function () {
+        if (this.currentProducerIndex >= 0) {
+            let stepData = this.model.get('format').steps[this.stepIndex];
+            stepData.producers.splice(this.currentProducerIndex, 1);
+
+            this.getRegion('producer').empty();
+
+            this.ui.producerIndex.find('option:not([value=-1])').remove();
+
+            for (let i = 0; i < stepData.producers.length; ++i) {
+               this.ui.producerIndex.append('<option value="' + i + '">' + _t("Producer") + " " + i + '</option>');
+            }
+
+            if (this.currentProducerIndex > 1) {
+                --this.currentProducerIndex;
+                this.loadCurrentProducer();
+                this.ui.producerIndex.val(this.currentProducerIndex).selectpicker('refresh');
+            } else if (this.currentProducerIndex === 0 && stepData.producers.length > 0) {
+                this.loadCurrentProducer();
+                this.ui.producerIndex.val(this.currentProducerIndex).selectpicker('refresh');
+            } else {
+                this.currentProducerIndex = -1;
+            }
+
+            this.ui.producerIndex.val(this.currentProducerIndex).selectpicker('refresh');
         }
     }
 });

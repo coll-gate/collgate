@@ -36,17 +36,23 @@
         <div role="tabpanel" class="tab-pane" name="steps" style="height: 100%; overflow-y: auto;">
             <div class="tab-frame">
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-4">
                         <label><%- _t('Step number') %></label>
                         <select class="action-type-step-index form-control" title="<%- _t('Select or create a step') %>">
                             <option value="-1"><%- _t("Add new") %></option>
                         </select>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-7">
                         <div class="action-type-format-type-group form-group">
                             <label><%- _t('Type of format') %></label>
                             <select class="action-type-format-type form-control"></select>
                         </div>
+                    </div>
+                    <div class="col-lg-1">
+                        <label>&nbsp;</label>
+                        <span class="btn btn-default form-control">
+                            <span class="fa fa-lg fa-remove" name="delete-step" title="<%= _t('Delete step') %>" style="color: #760004; cursor: pointer;"></span>
+                        </span>
                     </div>
                 </div>
                 <div class="contextual-region"></div>

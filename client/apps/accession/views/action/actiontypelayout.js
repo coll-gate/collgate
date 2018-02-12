@@ -27,7 +27,8 @@ let Layout = LayoutView.extend({
         description: 'textarea[name=description]',
         config_save: 'button[name=save]',
         step_index: 'select.action-type-step-index',
-        name: 'input[name=name]'
+        name: 'input[name=name]',
+        delete_step: 'span[name=delete-step]'
     },
 
     regions: {
@@ -39,7 +40,8 @@ let Layout = LayoutView.extend({
 
     events: {
         'change @ui.format_type': 'changeFormatType',
-        'click @ui.config_save': 'onUpdateConfig'
+        'click @ui.config_save': 'onUpdateConfig',
+        'click @ui.delete_step': 'onDeleteCurrentStep'
     },
 
     initialize: function (model, options) {
@@ -237,6 +239,32 @@ let Layout = LayoutView.extend({
                 $.alert.success(_t("Successfully changed !"));
                 Backbone.history.navigate('app/accession/actiontype/' + model.get('id') + '/', {trigger: true, replace: true});
             });
+        }
+    },
+
+    onDeleteCurrentStep: function () {
+        if (this.currentStepIndex >= 0) {
+            let format = this.model.get('format');
+            format.steps.splice(this.currentStepIndex, 1);
+
+            this.getRegion('contextual').empty();
+
+            this.ui.step_index.find('option:not([value=-1])').remove();
+
+            for (let i = 0; i < format.steps.length; ++i) {
+               this.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
+            }
+
+            if (this.currentStepIndex > 1) {
+                --this.currentStepIndex;
+                this.loadCurrentStepData();
+            } else if (this.currentStepIndex === 0 && format['steps'].length > 0) {
+                this.loadCurrentStepData();
+            } else {
+                this.currentStepIndex = -1;
+            }
+
+            this.ui.step_index.val(this.currentStepIndex).selectpicker('refresh');
         }
     }
 });
