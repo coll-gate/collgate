@@ -168,7 +168,7 @@ let View = Marionette.View.extend({
                     type: "PUT",
                     url: window.window.application.url(['descriptor', 'layout', this.model.collection.model_id, 'descriptor', 'order']),
                     dataType: 'json',
-                    contentType: "window.application/json; charset=utf-8",
+                    contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({
                         current_position: current_position,
                         new_position: new_position,
@@ -444,7 +444,7 @@ let View = Marionette.View.extend({
         //             $.ajax({
         //                 type: "DELETE",
         //                 url: model.url() + "condition/",
-        //                 contentType: "window.application/json; charset=utf-8"
+        //                 contentType: "application/json; charset=utf-8"
         //             }).done(function () {
         //                 $.alert.success(_t("Successfully removed !"));
         //             }).always(function () {
@@ -481,7 +481,7 @@ let View = Marionette.View.extend({
         //                     type: "PUT",
         //                     url: model.url() + "condition/",
         //                     dataType: 'json',
-        //                     contentType: "window.application/json; charset=utf-8",
+        //                     contentType: "application/json; charset=utf-8",
         //                     data: JSON.stringify(data)
         //                 }).done(function () {
         //                     $.alert.success(_t("Successfully defined !"));
@@ -493,7 +493,7 @@ let View = Marionette.View.extend({
         //                     type: "POST",
         //                     url: model.url() + "condition/",
         //                     dataType: 'json',
-        //                     contentType: "window.application/json; charset=utf-8",
+        //                     contentType: "application/json; charset=utf-8",
         //                     data: JSON.stringify(data)
         //                 }).done(function () {
         //                     $.alert.success(_t("Successfully defined !"));
