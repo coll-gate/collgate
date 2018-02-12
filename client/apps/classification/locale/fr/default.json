@@ -1,6 +1,5 @@
 {
   "A parent must be specified": "Un parent doit être spécifié",
-  "Accession actions": "",
   "Apply": "Appliquer",
   "Are you sure you want to delete any descriptors for this classification entry ?": "Etes-vous sûr de vouloir supprimer tout les descripteurs pour cette entrée de classification ?",
   "Cancel": "Annuler",
@@ -9,7 +8,6 @@
   "Change the labels for the classification rank": "Changer les étiquettes pour les rangs de classification",
   "Change the name for a synonym of classification entry": "Changer le nom pour un synonyme d'entrée de classification",
   "Classification": "Classification",
-  "Classification actions": "",
   "Classification actionstep": "",
   "Classification entry": "Entrée de classification",
   "Classification entry details": "Détails de l'entrée de classification",
@@ -44,7 +42,6 @@
   "Layout": "",
   "Level": "Niveau",
   "List of classifications": "Liste des classifications",
-  "List of classifications entries": "",
   "Manage ranks": "Gérer les rangs",
   "Modify": "Modifier",
   "Name": "Nom",
