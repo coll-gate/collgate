@@ -62,16 +62,16 @@ let View = ItemView.extend({
 
             let pi = el.attr('panel-index');
             let i = el.attr('index');
-            let descriptorModelType = view.layoutData.layout_content.panels[pi].descriptors[i];
-            let descriptorType = view.descriptorCollection.findWhere({name: descriptorModelType.name});
-            let format = descriptorType.get('format');
+            let layoutDescriptorModel = view.layoutData.layout_content.panels[pi].descriptors[i];
+            let descriptorModel = view.descriptorCollection.findWhere({name: layoutDescriptorModel.name});
+            let format = descriptorModel.get('format');
 
             let definesValues = false;
             let defaultValues = null;
 
             // default value or current descriptor value
             if (exists) {
-                defaultValues = model.get('descriptors')[descriptorType.get('code')];
+                defaultValues = model.get('descriptors')[descriptorModel.get('code')];
                 definesValues = defaultValues != null && defaultValues != undefined;
             } else {
                 // @todo default value from descriptor type
@@ -90,21 +90,21 @@ let View = ItemView.extend({
                 widget.create(format, el.children('td.descriptor-value'), {
                     readOnly: false,
                     history: true,
-                    descriptorTypeId: descriptorType.get('id')
+                    descriptorTypeId: descriptorModel.get('id')
                 });
 
                 widget.set(format, definesValues, defaultValues, {
-                    descriptorTypeId: descriptorType.get('id'),
-                    descriptorModelType: descriptorModelType
+                    descriptorTypeId: descriptorModel.get('id'),
+                    descriptorModelType: layoutDescriptorModel
                 });
 
-                if (descriptorModelType.set_once && exists) {
+                if (layoutDescriptorModel.set_once && exists) {
                     widget.disable();
                 }
             }
 
             // save the descriptor format type widget instance
-            descriptorModelType.widget = widget;
+            descriptorModel.widget = widget;
         });
     },
 
@@ -114,37 +114,38 @@ let View = ItemView.extend({
         // firstly make a list for each descriptor of which descriptors need them for a condition
         for (let pi = 0; pi < this.layoutData.layout_content.panels.length; ++pi) {
             for (let i = 0; i < this.layoutData.layout_content.panels[pi].descriptors.length; ++i) {
-                let descriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
-                let condition = descriptorModelType.condition;
+                let layoutDescriptorModel = this.layoutData.layout_content.panels[pi].descriptors[i];
+                let conditions = layoutDescriptorModel.conditions;
 
                 // if given set initials values for the widget
                 if (this.model.isNew()) {
                     // @todo
                 }
 
-                if (condition && condition.defined) {
-                    /* @todo optimize with model not dom */
-                    let target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    let targetDescriptorModelType = this.layoutData.layout_content.panels[target.attr('panel-index')].descriptors[target.attr('index')];
+                if (conditions) {
+                    // let target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
+                    // let targetDescriptorModelType = this.layoutData.layout_content.panels[target.attr('panel-index')].descriptors[target.attr('index')];
+                    let targetDescriptorModel = this.descriptorCollection.findWhere({'name': conditions.target_name});
+                    let descriptorModel = this.descriptorCollection.findWhere({'name': layoutDescriptorModel.name});
 
-                    if (targetDescriptorModelType.widget && descriptorModelType.widget) {
-                        if (targetDescriptorModelType.id in descriptors) {
-                            descriptors[targetDescriptorModelType.id].listeners.push(descriptorModelType.widget);
+                    if (targetDescriptorModel.widget && descriptorModel.widget) {
+                        if (targetDescriptorModel.id in descriptors) {
+                            descriptors[targetDescriptorModel.id].listeners.push(descriptorModel.widget);
                         } else {
-                            descriptors[targetDescriptorModelType.id] = {
-                                widget: targetDescriptorModelType.widget,
-                                conditionType: condition.condition,
-                                conditionValue: condition.values,
-                                listeners: [descriptorModelType.widget]
+                            descriptors[targetDescriptorModel.id] = {
+                                widget: targetDescriptorModel.widget,
+                                conditionType: conditions.condition,
+                                conditionValue: conditions.values,
+                                listeners: [descriptorModel.widget]
                             };
                         }
 
                         // initial state of the condition
-                        let display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
+                        let display = targetDescriptorModel.widget.checkCondition(conditions.condition, conditions.values);
 
                         if (!display) {
                             // hide at tr level
-                            descriptorModelType.widget.parent.parent().hide(false);
+                            descriptorModel.widget.parent.parent().hide(false);
                         }
                     }
                 }
@@ -162,33 +163,36 @@ let View = ItemView.extend({
         // destroy any widgets
         for (let pi = 0; pi < this.layoutData.layout_content.panels.length; ++pi) {
             for (let i = 0; i < this.layoutData.layout_content.panels[pi].descriptors.length; ++i) {
-                let descriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
-                if (descriptorModelType.widget) {
-                    descriptorModelType.widget.destroy();
-                    descriptorModelType.widget = null;
+                let layoutDescriptorModel = this.layoutData.layout_content.panels[pi].descriptors[i];
+                let descriptorModel = this.descriptorCollection.findWhere({'name': layoutDescriptorModel.name});
+                if (descriptorModel.widget) {
+                    descriptorModel.widget.destroy();
+                    descriptorModel.widget = null;
                 }
             }
         }
     },
 
     findDescriptorModelTypeForConditionTarget: function(target) {
-        let pi = target.attr('panel-index');
-        let i = target.attr('index');
-        let targetDescriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
-
-        // find el from target
-        let descriptorModelTypes = this.layoutData.layout_content.panels[pi].descriptors;
-        for (let i = 0; i < descriptorModelTypes.length; ++i) {
-            if (descriptorModelTypes[i].condition.target === targetDescriptorModelType.id) {
-                let descriptorModelType = descriptorModelTypes[i];
-
-                return {
-                    targetDescriptorModelType: targetDescriptorModelType,
-                    descriptorModelType: descriptorModelType,
-                    el: this.$el.find("tr.descriptor[descriptor-model-type=" + descriptorModelType.id + "]")
-                }
-            }
-        }
+        alert("BROKEN CODE!");
+        // let pi = target.attr('panel-index');
+        // let i = target.attr('index');
+        // let targetLayoutDescriptorModel = this.layoutData.layout_content.panels[pi].descriptors[i];
+        // let targetDescriptorModel = this.descriptorCollection.findWhere({'name': targetLayoutDescriptorModel.name});
+        //
+        // // find el from target
+        // let descriptorModelTypes = this.layoutData.layout_content.panels[pi].descriptors;
+        // for (let i = 0; i < descriptorModelTypes.length; ++i) {
+        //     if (descriptorModelTypes[i].condition.target_name === targetDescriptorModel.id) {
+        //         let descriptorModelType = descriptorModelTypes[i];
+        //
+        //         return {
+        //             targetDescriptorModel: targetDescriptorModel,
+        //             descriptorModel: descriptorModelType,
+        //             el: this.$el.find("tr.descriptor[descriptor-model-type=" + descriptorModelType.id + "]")
+        //         }
+        //     }
+        // }
 
         return null;
     },
@@ -198,34 +202,35 @@ let View = ItemView.extend({
 
         for (let pi = 0; pi < this.layoutData.layout_content.panels.length; ++pi) {
             for (let i = 0; i < this.layoutData.layout_content.panels[pi].descriptors.length; ++i) {
-                let descriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
+                let layoutDescriptor = this.layoutData.layout_content.panels[pi].descriptors[i];
+                let descriptorModel = this.descriptorCollection.findWhere({'name': layoutDescriptor.name});
 
-                let mandatory = descriptorModelType.mandatory;
+                let mandatory = layoutDescriptor.mandatory;
 
-                let currValue = this.model.get('descriptors')[descriptorModelType.name];
+                let currValue = this.model.get('descriptors')[descriptorModel.get('name')];
                 let values = null;
 
                 // display of the tr
-                if (descriptorModelType.widget && descriptorModelType.widget.parent.parent().css('display') !== "none") {
-                    values = descriptorModelType.widget.values();
+                if (descriptorModel.widget && descriptorModel.widget.parent.parent().css('display') !== "none") {
+                    values = descriptorModel.widget.values();
                 }
 
                 if (mandatory && values === null) {
-                    $.alert.error(_t("Field " + descriptorModelType.label + " is required"));
+                    $.alert.error(_t("Field " + descriptorModel.get('label') + " is required"));
                     return null;
                 }
 
                 let write = true;
-                if (descriptorModelType.set_once && currValue !== null) {
+                if (layoutDescriptor.set_once && currValue !== null) {
                     write = false;
                 }
 
-                if (descriptorModelType.widget && descriptorModelType.widget.compare(values, currValue)) {
+                if (descriptorModel.widget && descriptorModel.widget.compare(values, currValue)) {
                     write = false;
                 }
 
                 if (write) {
-                    descriptors[descriptorModelType.name] = values;
+                    descriptors[descriptorModel.get('name')] = values;
                 }
             }
         }
@@ -237,9 +242,10 @@ let View = ItemView.extend({
         // destroy any widgets
         for (let pi = 0; pi < this.layoutData.layout_content.panels.length; ++pi) {
             for (let i = 0; i < this.layoutData.layout_content.panels[pi].descriptors.length; ++i) {
-                let descriptorModelType = this.layoutData.layout_content.panels[pi].descriptors[i];
-                if (descriptorModelType.widget) {
-                    descriptorModelType.widget.cancel();
+                let layoutDescriptor = this.layoutData.layout_content.panels[pi].descriptors[i];
+                let descriptorModel = this.descriptorCollection.findWhere({'name': layoutDescriptor.name});
+                if (descriptorModel.widget) {
+                    descriptorModel.widget.cancel();
                 }
             }
         }
@@ -271,18 +277,20 @@ let View = ItemView.extend({
         let panelIndex = tr.attr("panel-index");
         let index = tr.attr("index");
 
-        let dmt = this.layoutData.layout_content.panels[panelIndex].descriptors[index];
-        if (dmt && dmt.widget) {
+        let layoutDescriptor = this.layoutData.layout_content.panels[panelIndex].descriptors[index];
+        let descriptorModel = this.descriptorCollection.findWhere({'name': layoutDescriptor.name});
+
+        if (descriptorModel && descriptorModel.widget) {
             let tokens = this.model.url().split('/');
 
             let appLabel = tokens[tokens.length-4];
             let modelName = tokens[tokens.length-3];
             let objectId = tokens[tokens.length-2];
-            let valueName = '#' + dmt.name;
+            let valueName = '#' + descriptorModel.get('name');
 
             let options = {};
 
-            dmt.widget.showHistory(appLabel, modelName, objectId, valueName, dmt, options);
+            descriptorModel.widget.showHistory(appLabel, modelName, objectId, valueName, descriptorModel, options);
         }
     }
 });
