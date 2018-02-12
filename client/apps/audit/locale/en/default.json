@@ -19,7 +19,7 @@
   "Select a username": "Saisissez un nom d'utilisateur",
   "Select an entity UUID or name": "Sélectionnez une entité par son UUID ou son nom",
   "Type": "Type",
-  "Unkown": "Inconnu",
+  "Unknown": "Inconnu",
   "User": "Utilisateur",
   "Username": "Nom d'utilisateur"
 }
