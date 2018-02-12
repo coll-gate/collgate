@@ -62,14 +62,14 @@ let View = Marionette.View.extend({
             e.originalEvent.dataTransfer.setData('text/plain', null);
 
             this.$el.css('opacity', '0.4');
-            application.main.dnd.set(this, 'descriptor-type');
+            window.application.main.dnd.set(this, 'descriptor-type');
             this.triggerMethod('hide:addButton', this);
         }
     },
 
     dragEnd: function (e) {
         this.$el.css('opacity', '1.0');
-        application.main.dnd.unset();
+        window.application.main.dnd.unset();
         this.triggerMethod('show:addButton', this);
     },
 
@@ -78,7 +78,7 @@ let View = Marionette.View.extend({
             e.originalEvent.preventDefault();
         }
 
-        if (application.main.dnd.hasView('descriptor-type')) {
+        if (window.application.main.dnd.hasView('descriptor-type')) {
             //e.originalEvent.dataTransfer.dropEffect = 'move';
             return false;
         }
@@ -89,18 +89,20 @@ let View = Marionette.View.extend({
             e.originalEvent.preventDefault();
         }
 
-        if (application.main.dnd.hasView('descriptor-type')) {
+        if (window.application.main.dnd.hasView('descriptor-type')) {
 
             this.dragEnterCount || (this.dragEnterCount = 0);
             ++this.dragEnterCount;
 
             if (this.dragEnterCount === 1) {
 
-                if (application.main.dnd.get().$el.hasClass('descriptor-view')) {
-                    if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
+                if (window.application.main.dnd.get().$el.hasClass('descriptor-view')) {
+                    if (this.model.get('position') < window.application.main.dnd.get().model.get('position')) {
                         this.ui.top_placeholder.css('display', 'block');
-                    } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
+                    } else if (this.model.get('position') > window.application.main.dnd.get().model.get('position')) {
                         this.ui.bottom_placeholder.css('display', 'block');
+                    } else if (this.model.get('panel_index') !== window.application.main.dnd.get().model.get('panel_index')) {
+                        this.ui.top_placeholder.css('display', 'block');
                     }
                 }
 
@@ -115,17 +117,19 @@ let View = Marionette.View.extend({
             e.originalEvent.preventDefault();
         }
 
-        if (application.main.dnd.hasView('descriptor-type')) {
+        if (window.application.main.dnd.hasView('descriptor-type')) {
 
             this.dragEnterCount || (this.dragEnterCount = 1);
             --this.dragEnterCount;
 
             if (this.dragEnterCount === 0) {
-                if (application.main.dnd.get().$el.hasClass('descriptor-view')) {
-                    if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
+                if (window.application.main.dnd.get().$el.hasClass('descriptor-view')) {
+                    if (this.model.get('position') < window.application.main.dnd.get().model.get('position')) {
                         this.ui.top_placeholder.css('display', 'none');
-                    } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
+                    } else if (this.model.get('position') > window.application.main.dnd.get().model.get('position')) {
                         this.ui.bottom_placeholder.css('display', 'none');
+                    } else if (this.model.get('panel_index') !== window.application.main.dnd.get().model.get('panel_index')) {
+                        this.ui.top_placeholder.css('display', 'none');
                     }
                 }
                 return false;
@@ -134,14 +138,14 @@ let View = Marionette.View.extend({
     },
 
     drop: function (e) {
-        if (application.main.dnd.hasView('descriptor-type')) {
+        if (window.application.main.dnd.hasView('descriptor-type')) {
             if (e.originalEvent.stopPropagation) {
                 e.originalEvent.stopPropagation();
             }
 
             this.dragEnterCount = 0;
 
-            let elt = application.main.dnd.get();
+            let elt = window.application.main.dnd.get();
             if (elt.$el.hasClass('descriptor-view')) {
                 // useless drop on himself
                 if (this === elt) {
@@ -153,71 +157,27 @@ let View = Marionette.View.extend({
                 this.ui.bottom_placeholder.css('display', 'none');
 
                 // ajax call
-                let position = elt.model.get('position');
-                let newPosition = this.model.get('position');
-                let modelId = this.model.collection.panel_index;
                 let collection = this.model.collection;
+                let current_position = elt.model.get('position');
+                let current_panel = elt.model.collection.panel_index;
+                let new_position = this.model.get('position');
+                let new_panel = this.model.collection.panel_index;
+
 
                 $.ajax({
                     type: "PUT",
-                    url: window.application.url(['descriptor', 'layout', this.model.collection.model_id, 'descriptor', 'order']),
+                    url: window.window.application.url(['descriptor', 'layout', this.model.collection.model_id, 'descriptor', 'order']),
                     dataType: 'json',
-                    contentType: "application/json; charset=utf-8",
+                    contentType: "window.application/json; charset=utf-8",
                     data: JSON.stringify({
-                        current_position: elt.model.get('position'),
-                        new_position: newPosition,
-                        current_panel: elt.model.collection.panel_index,
-                        new_panel: modelId
+                        current_position: current_position,
+                        new_position: new_position,
+                        current_panel: current_panel,
+                        new_panel: new_panel
                     })
                 }).done(function () {
-                    // server will shift position of any model upward/downward this model
-                    // do it locally to be consistent
-                    // so that we don't need to collection.fetch({update: true, remove: true});
-                    if (newPosition < position) {
-                        let to_rshift = [];
-
-                        for (let model in collection.models) {
-                            let dmt = collection.models[model];
-                            if (dmt.get('id') !== elt.model.get('id')) {
-                                if (dmt.get('position') >= newPosition) {
-                                    to_rshift.push(dmt);
-                                }
-                            }
-                        }
-
-                        elt.model.set('position', newPosition);
-
-                        let nextPosition = newPosition + 1;
-
-                        for (let i = 0; i < to_rshift.length; ++i) {
-                            to_rshift[i].set('position', nextPosition);
-                            ++nextPosition;
-                        }
-                    } else {
-                        let to_lshift = [];
-
-                        for (let model in collection.models) {
-                            let dmt = collection.models[model];
-                            if (dmt.get('id') !== elt.model.get('id')) {
-                                if (dmt.get('position') <= newPosition) {
-                                    to_lshift.push(dmt);
-                                }
-                            }
-                        }
-
-                        elt.model.set('position', newPosition);
-
-                        let nextPosition = 0;
-
-                        for (let i = 0; i < to_lshift.length; ++i) {
-                            to_lshift[i].set('position', nextPosition);
-                            ++nextPosition;
-                        }
-                    }
-
-                    // need to sort
-                    // collection.sort();
                     collection.fetch();
+                    elt.model.collection.fetch();
                 }).fail(function () {
                     $.alert.error(_t('Unable to reorder the types of model of descriptor'));
                 })
@@ -370,7 +330,7 @@ let View = Marionette.View.extend({
         //
         //         onRender: function () {
         //             ChangeCondition.__super__.onRender.apply(this);
-        //             application.descriptor.views.conditions.drawSelect(this.ui.condition);
+        //             window.application.descriptor.views.conditions.drawSelect(this.ui.condition);
         //
         //             $(this.ui.target).selectpicker({container: 'body', style: 'btn-default'});
         //
@@ -447,7 +407,7 @@ let View = Marionette.View.extend({
         //                         view.ui.condition_values.append(label);
         //                     }
         //
-        //                     let widget = application.descriptor.widgets.newElement(format.type);
+        //                     let widget = window.application.descriptor.widgets.newElement(format.type);
         //                     widget.create(format, view.ui.condition_values, {
         //                         readOnly: false,
         //                         descriptorTypeId: view.descriptorType.id
@@ -484,7 +444,7 @@ let View = Marionette.View.extend({
         //             $.ajax({
         //                 type: "DELETE",
         //                 url: model.url() + "condition/",
-        //                 contentType: "application/json; charset=utf-8"
+        //                 contentType: "window.application/json; charset=utf-8"
         //             }).done(function () {
         //                 $.alert.success(_t("Successfully removed !"));
         //             }).always(function () {
@@ -521,7 +481,7 @@ let View = Marionette.View.extend({
         //                     type: "PUT",
         //                     url: model.url() + "condition/",
         //                     dataType: 'json',
-        //                     contentType: "application/json; charset=utf-8",
+        //                     contentType: "window.application/json; charset=utf-8",
         //                     data: JSON.stringify(data)
         //                 }).done(function () {
         //                     $.alert.success(_t("Successfully defined !"));
@@ -533,7 +493,7 @@ let View = Marionette.View.extend({
         //                     type: "POST",
         //                     url: model.url() + "condition/",
         //                     dataType: 'json',
-        //                     contentType: "application/json; charset=utf-8",
+        //                     contentType: "window.application/json; charset=utf-8",
         //                     data: JSON.stringify(data)
         //                 }).done(function () {
         //                     $.alert.success(_t("Successfully defined !"));

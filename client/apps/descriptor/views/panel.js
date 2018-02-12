@@ -75,14 +75,14 @@ let View = Marionette.CompositeView.extend({
                 e.originalEvent.dataTransfer.setData('text/plain', null);
 
                 this.$el.css('opacity', '0.4');
-                application.main.dnd.set(this, 'descriptor-panel');
+                window.application.main.dnd.set(this, 'descriptor-panel');
                 this.triggerMethod('hide:addPanelButton', this);
             }
         },
 
         dragEnd: function (e) {
             this.$el.css('opacity', '1.0');
-            application.main.dnd.unset();
+            window.application.main.dnd.unset();
             this.triggerMethod('show:addPanelButton', this);
         },
 
@@ -91,16 +91,16 @@ let View = Marionette.CompositeView.extend({
                 e.originalEvent.preventDefault();
             }
 
-            if (application.main.dnd.hasView('descriptor-panel')) {
+            if (window.application.main.dnd.hasView('descriptor-panel')) {
 
                 this.dragEnterCount || (this.dragEnterCount = 0);
                 ++this.dragEnterCount;
 
                 if (this.dragEnterCount === 1) {
-                    if (application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
-                        if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
+                    if (window.application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
+                        if (this.model.get('position') < window.application.main.dnd.get().model.get('position')) {
                             this.ui.top_placeholder.css('display', 'block');
-                        } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
+                        } else if (this.model.get('position') > window.application.main.dnd.get().model.get('position')) {
                             this.ui.bottom_placeholder.css('display', 'block');
                         }
                     }
@@ -115,17 +115,17 @@ let View = Marionette.CompositeView.extend({
                 e.originalEvent.preventDefault();
             }
 
-            if (application.main.dnd.hasView('descriptor-panel')) {
+            if (window.application.main.dnd.hasView('descriptor-panel')) {
 
                 this.dragEnterCount || (this.dragEnterCount = 1);
                 --this.dragEnterCount;
 
                 if (this.dragEnterCount === 0) {
 
-                    if (application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
-                        if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
+                    if (window.application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
+                        if (this.model.get('position') < window.application.main.dnd.get().model.get('position')) {
                             this.ui.top_placeholder.css('display', 'none');
-                        } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
+                        } else if (this.model.get('position') > window.application.main.dnd.get().model.get('position')) {
                             this.ui.bottom_placeholder.css('display', 'none');
                         }
                     }
@@ -141,15 +141,15 @@ let View = Marionette.CompositeView.extend({
                 e.originalEvent.preventDefault();
             }
 
-            if (application.main.dnd.hasView('descriptor-panel')) {
+            if (window.application.main.dnd.hasView('descriptor-panel')) {
 
                 this.dragEnterCount || (this.dragEnterCount = 1);
 
                 if (this.dragEnterCount === 1) {
-                    if (application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
-                        if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
+                    if (window.application.main.dnd.get().$el.hasClass('descriptor-panel-view')) {
+                        if (this.model.get('position') < window.application.main.dnd.get().model.get('position')) {
                             this.ui.top_placeholder.css('display', 'block');
-                        } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
+                        } else if (this.model.get('position') > window.application.main.dnd.get().model.get('position')) {
                             this.ui.bottom_placeholder.css('display', 'block');
                         }
                     }
@@ -166,11 +166,11 @@ let View = Marionette.CompositeView.extend({
                 e.originalEvent.stopPropagation();
             }
 
-            if (application.main.dnd.hasView('descriptor-panel')) {
+            if (window.application.main.dnd.hasView('descriptor-panel')) {
 
                 this.dragEnterCount = 0;
 
-                let elt = application.main.dnd.get();
+                let elt = window.application.main.dnd.get();
                 if (elt.$el.hasClass('descriptor-panel-view')) {
                     // useless drop on himself
                     if (this === elt) {
@@ -253,7 +253,6 @@ let View = Marionette.CompositeView.extend({
                 }
 
                 return false;
-
             }
         },
 
