@@ -1648,6 +1648,28 @@ class Layout(Entity):
         """
         self.label[lang] = label
 
+    def get_position_by_name(self, name):
+        """
+        Return panel index and descriptor index of descriptor from descriptor name.
+        Return None in case of descriptor doesn't exist.
+        :param name: name of searched descriptor
+        :return: dict with descriptor position
+        """
+
+        i = 0
+        for panel in self.layout_content.get('panels'):
+            j = 0
+            for descriptor in panel.get('descriptors'):
+                if name == descriptor.get('name'):
+                    return {
+                        'panel': i,
+                        'position': j
+                    }
+                j += 1
+            i += 1
+
+        return None
+
     def in_usage(self):
         """
         Check if some entities use of this layout

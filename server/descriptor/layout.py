@@ -17,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
+from descriptor.descriptorformattype import DescriptorFormatTypeManager
 from descriptor.layouttype import LayoutTypeManager
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
@@ -24,11 +25,7 @@ from igdectk.rest.response import HttpResponseRest
 
 from main.models import InterfaceLanguages
 from .descriptor import RestDescriptor
-from .models import Layout, Descriptor
-
-
-# from .models import DescriptorModel, DescriptorPanel, Layout, DescriptorModelTypeCondition, \
-#     DescriptorModelType
+from .models import Layout, Descriptor, DescriptorCondition
 
 
 class RestLayout(RestDescriptor):
@@ -66,9 +63,6 @@ class RestLayoutIdDescriptor(RestLayoutId):
     suffix = 'descriptor'
 
 
-# /////////////////////////////////////////
-
-
 class RestLayoutIdPanelOrder(RestLayoutIdPanel):
     regex = r'^order/$'
     suffix = 'order'
@@ -78,8 +72,6 @@ class RestLayoutIdDescriptorOrder(RestLayoutIdDescriptor):
     regex = r'^order/$'
     suffix = 'order'
 
-
-# /////////////////////////////////////////
 
 class RestLayoutValues(RestLayout):
     regex = r'^values/$'
@@ -109,6 +101,11 @@ class RestLayoutIdPanelIdDescriptor(RestLayoutIdPanelId):
 class RestLayoutIdPanelIdDescriptorId(RestLayoutIdPanelIdDescriptor):
     regex = r'^(?P<desc_id>[0-9]+)/$'
     suffix = 'id'
+
+
+class RestLayoutIdPanelIdDescriptorIdCondition(RestLayoutIdPanelIdDescriptorId):
+    regex = r'^condition/$'
+    suffix = 'condition'
 
 
 @RestLayout.def_auth_request(Method.GET, Format.JSON)
@@ -580,6 +577,7 @@ def list_descriptor(request, layout_id):
                         'mandatory': panel_descriptor.get('mandatory', False),
                         'set_once': panel_descriptor.get('set_once', False),
                         'index': panel_descriptor.get('index', None),
+                        'condition': panel_descriptor.get('conditions', None),
                         'format': mdl_descriptor.format
                     })
                 j += 1
@@ -790,8 +788,14 @@ def modify_descriptor_panel_for_layout(request, layout_id, pan_id, desc_id):
 
     descriptor['label'] = label
 
-    if mandatory is True or mandatory is False:
-        descriptor['mandatory'] = mandatory
+    if mandatory is False:
+        descriptor['mandatory'] = False
+    elif mandatory is True:
+        if descriptor.get('conditions'):
+            raise SuspiciousOperation(_(
+                "Cyclic condition detected. You cannot define this condition or you must remove the condition on the target"))
+        else:
+            descriptor['mandatory'] = True
 
     if set_once is True or set_once is False:
         descriptor['set_once'] = set_once
@@ -975,3 +979,176 @@ def change_all_labels_of_layout(request, layout_id, pan_id):
         }
 
     return HttpResponseRest(request, result)
+
+
+@RestLayoutIdPanelIdDescriptorIdCondition.def_auth_request(Method.GET, Format.JSON)
+def get_condition(request, layout_id, pan_id, desc_id):
+    layout = get_object_or_404(Layout, id=int(layout_id))
+
+    try:
+        panel = layout.layout_content.get('panels')[int(pan_id)]
+        descriptor = panel.get('descriptors')[int(desc_id)]
+        condition = descriptor.get('conditions')
+
+        result = {
+            'condition': condition.get('condition'),
+            'target_name': condition.get('target_name'),
+            'values': condition.get('values')
+        }
+
+    except AttributeError:
+        result = None
+
+    return HttpResponseRest(request, result)
+
+
+@RestLayoutIdPanelIdDescriptorIdCondition.def_auth_request(
+    Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "target": {"type": "integer"},
+            "condition": {"type": "integer", "minValue": 0, "maxValue": 3},
+            "values": {"type": "any", "required": False}
+        }
+    }, perms={
+        'descriptor.change_layout': _(
+            'You are not allowed to modify a layout of descriptor'),
+    },
+    staff=True)
+def create_condition(request, layout_id, pan_id, desc_id):
+    """
+    Create the unique condition (for now) of the descriptor.
+    """
+    target_id = int(request.data['target'])
+
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    target = get_object_or_404(Descriptor, id=target_id)
+
+    panel = layout.layout_content.get('panels')[int(pan_id)]
+    descriptor = panel.get('descriptors')[int(desc_id)]
+
+    if descriptor.get('mandatory'):
+        raise SuspiciousOperation(_(
+            "It is not possible to define a condition on a required type of model of descriptor"))
+
+    # check if there is a cyclic condition
+    target_position = layout.get_position_by_name(target.name)
+
+    if layout.layout_content.get('panels')[target_position['panel']].get('descriptors')[
+        target_position['position']].get('conditions') and \
+            layout.layout_content.get('panels')[target_position['panel']].get('descriptors')[
+                target_position['position']].get('conditions').get('target_name') == descriptor.get('name'):
+        raise SuspiciousOperation(_(
+            "Cyclic condition detected. You cannot define this condition or you must remove the condition on the target"))
+
+    condition = DescriptorCondition(request.data['condition'])
+
+    descriptor['conditions'] = {
+        'condition': condition.value,
+        'target_name': target.name,
+    }
+
+    values = request.data['values']
+
+    if values:
+        descriptor.get('conditions')['values'] = values
+
+    # validate the values[0]
+    if condition == DescriptorCondition.EQUAL or condition == DescriptorCondition.NOT_EQUAL:
+        DescriptorFormatTypeManager.validate(target.format, values, target)
+
+    layout.save()
+
+    result = {
+        'condition': descriptor['conditions'].get('condition'),
+        'target': descriptor['conditions'].get('target_name'),
+        'values': values
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestLayoutIdPanelIdDescriptorIdCondition.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "target": {"type": "integer"},
+            "condition": {"type": "integer", "minValue": 0, "maxValue": 3},
+            "values": {"type": "any", "required": False}
+        }
+    }, perms={
+        'descriptor.change_layout': _(
+            'You are not allowed to modify a layout of descriptor'),
+    },
+    staff=True)
+def modify_condition(request, layout_id, pan_id, desc_id):
+    """
+    Modify the unique condition (for now) of the descriptor.
+    """
+    target_id = int(request.data['target'])
+
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    target = get_object_or_404(Descriptor, id=target_id)
+
+    panel = layout.layout_content.get('panels')[int(pan_id)]
+    descriptor = panel.get('descriptors')[int(desc_id)]
+
+    # check if condition exist
+    if not descriptor.get('conditions'):
+        raise AttributeError
+
+    # check if there is a cyclic condition
+    target_position = layout.get_position_by_name(target.name)
+
+    if layout.layout_content.get('panels')[target_position.get('panel')].get('descriptors')[
+        target_position.get('position')].get('conditions') and \
+            layout.layout_content.get('panels')[target_position.panel].get('descriptors')[target_position.position].get(
+                'conditions').get('target_name') == descriptor.get('name'):
+        raise SuspiciousOperation(_(
+            "Cyclic condition detected. You cannot define this condition or you must remove the condition on the target"))
+
+    condition = DescriptorCondition(request.data['condition'])
+
+    descriptor.get('conditions')['condition'] = condition.value
+    descriptor.get('conditions')['target_name'] = target.name
+
+    values = request.data['values']
+
+    if values:
+        descriptor.get('conditions')['values'] = values
+
+    # validate the values[0]
+    if condition == DescriptorCondition.EQUAL or condition == DescriptorCondition.NOT_EQUAL:
+        DescriptorFormatTypeManager.validate(target.format, values, target)
+
+    layout.save()
+
+    result = {
+        'condition': descriptor['conditions'].get('condition'),
+        'target': descriptor['conditions'].get('target_name'),
+        'values': values
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestLayoutIdPanelIdDescriptorIdCondition.def_auth_request(
+    Method.DELETE, Format.JSON,
+    perms={
+        'descriptor.change_layout': _(
+            'You are not allowed to modify a layout of descriptor'),
+    },
+    staff=True)
+def delete_condition(request, layout_id, pan_id, desc_id):
+    """
+    Delete the unique condition (for now) of the descriptor.
+    """
+    layout = get_object_or_404(Layout, id=int(layout_id))
+    panel = layout.layout_content.get('panels')[int(pan_id)]
+    descriptor = panel.get('descriptors')[int(desc_id)]
+
+    if descriptor.get('conditions'):
+        del descriptor['conditions']
+        layout.save()
+
+    return HttpResponseRest(request, {})

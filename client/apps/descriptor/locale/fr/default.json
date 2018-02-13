@@ -52,6 +52,7 @@
   "Description": "Description",
   "Descriptor": "Descripteur",
   "Descriptor can not contain a list of values": "Le descripteur ne peut pas contenir une liste de valeurs",
+  "Descriptor condition": "Condition de descripteur",
   "Descriptor layout name already in usage": "",
   "Descriptor meta-model name": "Nom de méta-modèle de descripteur",
   "Descriptor model name": "Nom de modèle de descripteur",

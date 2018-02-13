@@ -454,7 +454,7 @@ let View = Marionette.View.extend({
             let condition = data;
 
             let ChangeCondition = Dialog.extend({
-                template: require('../templates/descriptormodeltypecondition.html'),
+                template: require('../templates/descriptorcondition.html'),
                 templateContext: function () {
                     return {
                         targets: model.collection.models,

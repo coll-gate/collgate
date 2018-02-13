@@ -32,7 +32,12 @@
         <span name="set_once" style="color: #0000001a" class="action fa fa-ban"></span>
         <% } %>
 
+        <% if (condition) { %>
         <span name="condition" class="action fa fa-wrench"></span>
+        <% } else { %>
+        <span name="condition" style="color: #0000001a" class="action fa fa-wrench"></span>
+        <% } %>
+
     </div>
 </li>
 
