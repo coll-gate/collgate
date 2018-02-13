@@ -34,8 +34,8 @@ class RestActionType(RestAccession):
 
 
 class RestActionTypeCount(RestActionType):
-        regex = r'^count/$'
-        name = 'count'
+    regex = r'^count/$'
+    name = 'count'
 
 
 class RestActionTypeSearch(RestActionType):
@@ -56,37 +56,6 @@ class RestActionTypeFormat(RestActionType):
 class RestActionTypeIdLabel(RestActionTypeId):
     regex = r'^label/$'
     suffix = 'label'
-
-
-# @cache_page(60*60*24)   # @todo named cache mechanism
-# @RestActionType.def_request(Method.GET, Format.JSON)
-# def get_action_type_list(request):
-#     """
-#     Get the list of type of action in JSON
-#     @todo invalid cache on action_type model changes
-#     @todo filter using cursor
-#     """
-#     cache_name = 'action_types'
-#     action_types = cache_manager.get('accession', cache_name)
-#
-#     if action_types:
-#         return HttpResponseRest(request, action_types)
-#
-#     action_types = []
-#
-#     for action_type in ActionType.objects.all():
-#         action_types.append({
-#             'id': action_types.id,
-#             'name': action_types.name,
-#             # 'value': action_types.name,
-#             'label': action_types.get_label(),
-#             'format': action_types.format
-#         })
-#
-#     # cache for 24h
-#     cache_manager.set('accession', cache_name, action_types, 60*60*24)
-#
-#     return HttpResponseRest(request, action_types)
 
 
 @RestActionTypeCount.def_auth_request(Method.GET, Format.JSON)
@@ -296,8 +265,7 @@ def get_format_type_list(request):
             "format": {"type": "object", "required": False},
             "label": ActionType.LABEL_VALIDATOR_OPTIONAL
         },
-    },
-                                   perms={
+    }, perms={
       'accession.change_actiontype': _("You are not allowed to modify an action type"),
     })
 def patch_action_type(request, act_id):
@@ -449,11 +417,9 @@ def get_all_labels_of_action_type(request, act_id):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "additionalProperties": ActionType.LABEL_VALIDATOR
-    },
-    perms={
+    }, perms={
         'accession.change_actiontype': _('You are not allowed to modify an action type'),
-    },
-    staff=True)
+    }, staff=True)
 def change_all_labels_of_action_type(request, act_id):
     """
     Changes all the label, for each language related to the user interface.
