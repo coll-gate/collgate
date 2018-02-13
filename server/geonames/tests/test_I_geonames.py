@@ -13,7 +13,9 @@ from geonames.geonames import Geonames
 from geonames.appsettings import DATA_DIR
 from geonames.models import State
 from django.utils import timezone
-from django.test import mock
+# from django.test import mock
+from unittest import mock
+
 import os
 
 

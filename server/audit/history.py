@@ -61,10 +61,10 @@ def search_audit_value_history_for_entity(request):
         is_descriptor = False
 
     content_type = ContentType.objects.get_by_natural_key(app_label, model)
-
-    validictory.validate(value_name, content_type.NAME_VALIDATOR)
-
     entity = content_type.get_object_for_this_type(id=object_id)
+
+    validictory.validate(value_name, entity.NAME_VALIDATOR)
+
     # @todo check permissions
 
     cursor = request.GET.get('cursor')
