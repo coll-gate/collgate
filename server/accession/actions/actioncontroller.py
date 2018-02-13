@@ -47,16 +47,12 @@ class ActionController(object):
 
         return step_data
 
-    def create(self, name, input_array=None):
+    def create(self, name):
         """
-        Create a new action using a name and process the first step using the input array.
+        Create a new action using a name.
         :param name: Informative name
-        :param input_array: Empty or batch or accession array
         :return: A newly created action instance
         """
-        if input_array is None:
-            input_array = []
-
         if self.action is not None:
             raise ActionError("Action already exists")
 
@@ -77,26 +73,22 @@ class ActionController(object):
 
         action.data = data
 
-        # process creation and initial step in the same transaction
-        with transaction.atomic():
-            action.save()
-
-            self.action = action
-
-            # and process the first step
-            self.process_step(input_array)
-
+        action.save()
         return action
 
-    def process_step(self, input_array=None):
+    def process_step(self, step_index, input_array=None):
         if input_array is None:
             input_array = []
 
         # step format
-        action_step_format = ActionStepFormatManager.get(self.action_type)
+        action_type_steps = self.action_type['steps']
+        if step_index >= len(action_type_steps):
+            raise ActionError("Action type step index out of range")
+
+        step_format = action_type_steps[step_index]
+        action_step_format = ActionStepFormatManager.get(step_format)
 
         step_data = self.add_step_data(input_array)
-
         action_step_format.process(self.action, input_array, step_data)
 
         # finally save
@@ -117,8 +109,7 @@ class ActionController(object):
         if not data:
             return None
 
-        # @todo merge 'batch_layout'
-        batch_layouts = data.get('batch_descriptor_meta_models')
+        batch_layouts = data.get('batch_layout')
 
         if not batch_layouts:
             return None
