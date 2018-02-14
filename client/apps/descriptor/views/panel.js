@@ -391,21 +391,31 @@ let View = Marionette.CompositeView.extend({
                         if (i < selected_values.length) {
                             let data = selected_values[i];
                             let option_values = JSON.parse(data);
-                            let layoutDescriptor = new LayoutDescriptorModel({
-                                name: option_values[0],
-                                label: option_values[0]
-                            }, {
-                                collection: view.collection
+
+                            let DescriptorModel = require('../../descriptor/models/descriptor');
+
+                            let descriptorModel = new DescriptorModel({
+                                id: option_values[1]
                             });
 
-                            view.collection.create(layoutDescriptor, {
-                                success: function () {
-                                    i++;
-                                    saveLayoutDescriptors(i)
-                                }
-                            })
-                        } else {
-                            console.log('END!');
+                            descriptorModel.fetch().then(function () {
+                                let layoutDescriptor = new LayoutDescriptorModel({
+                                    name: descriptorModel.get('name'),
+                                    label: descriptorModel.get('label'),
+                                    condition: null,
+                                    position: view.collection.length
+                                }, {
+                                    collection: view.collection
+                                });
+
+                                view.collection.create(layoutDescriptor, {
+                                    success: function () {
+                                        i++;
+                                        saveLayoutDescriptors(i)
+                                    }
+                                })
+                            });
+
                         }
                     };
 

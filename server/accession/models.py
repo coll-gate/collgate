@@ -706,7 +706,8 @@ class AccessionView(models.Model):
     def natural_name(self):
         return self.name
 
-    def details(self):
+    @staticmethod
+    def details():
         """
         Return the details field for the specialized entity. By default return an empty dict.
         :return: A dict of details
@@ -848,7 +849,8 @@ class BatchView(models.Model):
     def natural_name(self):
         return self.name
 
-    def details(self):
+    @staticmethod
+    def details():
         """
         Return the details field for the specialized entity. By default return an empty dict.
         :return: A dict of details

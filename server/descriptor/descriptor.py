@@ -208,7 +208,7 @@ def get_descriptor(request, des_id):
         'id': descriptor.id,
         'name': descriptor.name,
         'code': descriptor.code,
-        'label': descriptor.label,
+        'label': descriptor.get_label(),
         'description': descriptor.description,
         'group_name': descriptor.group_name,
         'num_descriptor_values': count,
