@@ -61,15 +61,18 @@ def create_action(request):
     name = request.data.get('name')
     user = request.user
 
-    action_type = get_object_or_404(ActionType, pk=action_type_id)
+    action_type = get_object_or_404(Action, pk=action_type_id)
 
     action_controller = ActionController(action_type, user)
     action = action_controller.create(name)
 
     results = {
         'id': action.id,
+        'name': action.name,
+        'description': action.description,
+        'completed': action.completed,
         'user': user.username,
-        'type': action.type_id,
+        'action_type': action.action_type_id,
         'data': action.data
     }
 
@@ -140,7 +143,7 @@ def update_action(request, act_id):
 
 # @RestBatchIdAction.def_auth_request(Method.GET, Format.JSON, perms={
 #     'accession.get_action': _("You are not allowed to get an action"),
-#     'accession.list_action': _("You are not allowed to list actionstep")
+#     'accession.list_action': _("You are not allowed to list actions")
 # })
 # def get_batch_id_action_list(request, bat_id):
 #     results_per_page = int_arg(request.GET.get('more', 30))
@@ -148,7 +151,7 @@ def update_action(request, act_id):
 #     limit = results_per_page
 #     sort_by = json.loads(request.GET.get('sort_by', '[]'))
 #
-#     # @todo how to manage permission to list only auth actionstep
+#     # @todo how to manage permission to list only auth actions
 #
 #     if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
 #         order_by = sort_by + ['id']
@@ -198,7 +201,7 @@ def update_action(request, act_id):
 #
 #
 # @RestBatchIdActionCount.def_auth_request(Method.GET, Format.JSON, perms={
-#     'accession.list_action': _("You are not allowed to list the actionstep")
+#     'accession.list_action': _("You are not allowed to list the actions")
 # })
 # def get_batch_id_action_list_count(request, bat_id):
 #     from main.cursor import CursorQuery

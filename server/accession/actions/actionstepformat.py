@@ -30,7 +30,7 @@ class ActionStepFormatGroup(object):
 
 class ActionInput(object):
     """
-    Retrieves inputs for an actionstep.
+    Retrieves inputs for an action step.
     """
 
     def __init__(self, action):

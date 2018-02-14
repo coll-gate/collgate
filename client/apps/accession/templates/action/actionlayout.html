@@ -1,0 +1,57 @@
+<!--
+ - @file actionlayout.html
+ - @brief
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2018-02-13
+ - @copyright Copyright (c) 2018 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div name="details" style="height: 1px"></div>
+<div class="column" style="margin-top: 10px; height: calc(100% - 1px);">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="div.tab-pane[name=general]" aria-controls="general" role="tab" data-toggle="tab"><%= _t("General") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=steps]" aria-controls="steps" role="tab" data-toggle="tab"><%= _t("Steps") %></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content col-lg-offset-2 col-lg-8" style="height: calc(100% - 42px - 10px - 34px - 5px);">
+        <div role="tabpanel" class="tab-pane active" name="general" style="height: 100%; overflow-y: auto;">
+            <div class="tab-frame">
+                <div class="row">
+                    <div class="action-type-format-type-group form-group">
+                        <label><%- _t('Action name') %></label>
+                        <input name="name" class="form-control" autocomplete="false" maxlength="128" value="<%- name %>">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label><%- _t('Description') %></label>
+                        <textarea maxlength="1024" class="form-control" name="description" style="min-width: 100%; max-width: 100%; min-height: 3em; max-height: 10em;"><%= description %></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" name="steps" style="height: 100%; overflow-y: auto;">
+            <div class="tab-frame">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label><%- _t('Step number') %></label>
+                        <input name="current-step" class="form-control" autocomplete="false" maxlength="128" value="<%- name %>">
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="action-type-format-type-group form-group">
+                            <label><%- _t('Type of format') %></label>
+                            <input name="action-type" class="form-control" autocomplete="false" maxlength="128" value="<%- name %>">
+                        </div>
+                    </div>
+                </div>
+                <div class="contextual-region"></div>
+            </div>
+        </div>
+    </div>
+    <div class="action-type-update form-group text-center" style="margin-left: 45%; margin-right: 45%;">
+        <button name="save" class="btn btn-success btn-block"><%- _t('Update') %></button>
+    </div>
+</div>

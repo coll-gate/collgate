@@ -458,34 +458,27 @@ class ActionType(Entity):
 
 class Action(Entity):
     """
-    An action defines a process of creation or update of one or more output and a list of input batch or accessions
-    altered or not modified, plus the relating accession.
-    @todo update to support accessions
+    An action defines a process of creation or update of one or more entities like accessions or batches.
+    And considers a suit of steps, as a sequential pipeline.
     """
 
     # actor of the action
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     # action type
-    type = models.ForeignKey(to=ActionType, on_delete=models.PROTECT)
+    action_type = models.ForeignKey(to=ActionType, on_delete=models.PROTECT)
 
-    # related parent accession
-    accession = models.ForeignKey(Accession, db_index=True, on_delete=models.PROTECT)
+    # associated steps data
+    data = JSONField(default={"steps": []})
 
-    # list of initials batches used as parent for the creation of target batches
-    input_batches = models.ManyToManyField(Batch, related_name='+')
+    # is the action completed
+    completed = models.BooleanField(default=False, null=False, blank=False)
 
-    # list of created or updated batches
-    output_batches = models.ManyToManyField(Batch, related_name='+')
-
-    # associated data (advancement, status...)
-    data = JSONField(default={"status": "created"})
+    # informative description.
+    description = models.TextField(blank=True, default="")
 
     class Meta:
         verbose_name = _("action")
-
-        index_together = (("accession", "type"),)
-
         default_permissions = list()
 
     @classmethod
@@ -518,8 +511,30 @@ class Action(Entity):
                     'model': 'accession.accession'
                 },
                 'available_operators': ['eq', 'neq', 'in', 'notin']
+            },
+            'completed': {
+                'label': _('Completed'),
+                'query': False,
+                'format': {
+                    'type': 'boolean'
+                },
+                'available_operators': ['eq']
             }
         }
+
+
+class ActionToEntity(models.Model):
+    """
+    List of managed entities per action.
+    """
+
+    action = models.ForeignKey(Action, on_delete=models.CASCADE)
+
+    entity_type = models.ForeignKey(ContentType, on_delete=models.DO_NOTHING)
+    entity_id = models.IntegerField(null=False, blank=False)
+
+    class Meta:
+        index_together = (("entity_type", "entity_id"),)
 
 
 class Panel(Entity):

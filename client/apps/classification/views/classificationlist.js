@@ -35,7 +35,7 @@ let View = AdvancedTable.extend({
         }
 
         let TitleView = require('../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: _t("Classification actionstep"), glyphicon: 'fa-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Classification actions"), glyphicon: 'fa-wrench'}));
 
         let actions = [
             'add'

@@ -82,7 +82,7 @@ let View = AdvancedTable.extend({
 
         let TitleView = require('../../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({
-            title: _t("Panel actionstep"),
+            title: _t("Panel actions"),
             glyphicon: 'fa-wrench'
         }));
 

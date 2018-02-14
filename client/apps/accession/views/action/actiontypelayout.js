@@ -14,7 +14,7 @@ let ScrollingMoreView = require('../../../main/views/scrollingmore');
 let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
 
 let Layout = LayoutView.extend({
-    template: require("../../templates/action/layout.html"),
+    template: require("../../templates/action/actiontypelayout.html"),
 
     attributes: {
         style: "height: 100%;"
@@ -32,10 +32,9 @@ let Layout = LayoutView.extend({
     },
 
     regions: {
-        'contextual': "div.contextual-region",
-        'namingOptions': "div.naming-options",
         'general': "div.tab-pane[name=general]",
-        'steps': "div.tab-pane[name=steps]"
+        'steps': "div.tab-pane[name=steps]",
+        'contextual': "div.contextual-region"
     },
 
     events: {
@@ -48,7 +47,7 @@ let Layout = LayoutView.extend({
         Layout.__super__.initialize.apply(this, arguments);
 
         if (this.model.isNew()) {
-            this.listenTo(this.model, 'change:id', this.onBatchActionTypeCreate, this);
+            this.listenTo(this.model, 'change:id', this.onActionTypeCreate, this);
         }
 
         // naming options
@@ -75,7 +74,7 @@ let Layout = LayoutView.extend({
         });
     },
 
-    onBatchActionTypeCreate: function () {
+    onActionTypeCreate: function () {
         // re-render once created
         this.render();
 
@@ -186,14 +185,14 @@ let Layout = LayoutView.extend({
 
     onRender: function () {
         let format = this.model.get('format');
-        let batchLayout = this;
+        let actionTypeLayout = this;
 
         for (let i = 0; i < format.steps.length; ++i) {
             this.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
         }
 
         this.namingOptionsPromise.then(function() {
-            batchLayout.ui.step_index.selectpicker({}).on('change', $.proxy(batchLayout.changeStep, batchLayout));
+            actionTypeLayout.ui.step_index.selectpicker({}).on('change', $.proxy(actionTypeLayout.changeStep, actionTypeLayout));
         });
 
         window.application.accession.views.actionTypeFormats.drawSelect(this.ui.format_type, true, false);
@@ -203,9 +202,9 @@ let Layout = LayoutView.extend({
             if (format.steps.length) {
                 // select first step if exists
                 this.namingOptionsPromise.then(function () {
-                    batchLayout.ui.step_index.val(0).selectpicker('refresh');
-                    batchLayout.currentStepIndex = 0;
-                    batchLayout.loadCurrentStepData();
+                    actionTypeLayout.ui.step_index.val(0).selectpicker('refresh');
+                    actionTypeLayout.currentStepIndex = 0;
+                    actionTypeLayout.loadCurrentStepData();
                 });
             }
 

@@ -27,7 +27,7 @@ let Layout = LayoutView.extend({
         descriptors_tab: 'a[aria-controls=descriptors]',
         parents_tab: 'a[aria-controls=parents]',
         batches_tab: 'a[aria-controls=batches]',
-        actions_tab: 'a[aria-controls=actionstep]',
+        actions_tab: 'a[aria-controls=actions]',
         panels_tab: 'a[aria-controls=panels]'
     },
 
@@ -36,7 +36,7 @@ let Layout = LayoutView.extend({
         'descriptors': "div.tab-pane[name=descriptors]",
         'parents': "div.tab-pane[name=parents]",
         'batches': "div.tab-pane[name=batches]",
-        'actions': "div.tab-pane[name=actionstep]",
+        'actions': "div.tab-pane[name=actions]",
         'panels': "div.tab-pane[name=panels]"
     },
 
@@ -249,7 +249,7 @@ let Layout = LayoutView.extend({
 
                 batchLayout.showChildView('details', batchPath);
 
-                // actionstep list tab
+                // actions list tab
                 let ActionCollection = require('../../collections/action');
                 let actions = new ActionCollection({batch_id: batchLayout.model.get('id')});
 

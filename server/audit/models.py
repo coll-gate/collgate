@@ -153,7 +153,7 @@ class AuditType(ChoiceEnum):
 
 class Audit(models.Model):
     """
-    Trace some actionstep (CRUD on models, and actionstep for process).
+    Trace some actions (CRUD on models, and actions for process).
     To trace on a process you must use the main.models.Action model
     as content type, and to register the action into the DB.
     """

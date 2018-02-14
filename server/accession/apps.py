@@ -155,8 +155,13 @@ class CollGateAccession(ApplicationMain):
         menu_action = ModuleMenu('action', _('Action'), auth=AUTH_USER)
 
         menu_action.add_entry(
-            MenuEntry('introduction', _('Introduction'), "~accession/action/introduction",
-                      icon=FaGlyph('file-text-o'), order=1))
+            MenuEntry('create-action', _('Create action'), "~accession/action/create",
+                      icon=FaGlyph('plus'), order=1))
+
+        menu_action.add_entry(MenuSeparator(100))
+        menu_action.add_entry(
+            MenuEntry('list-actions', _('List actions'), "#accession/action/",
+                      icon=FaGlyph('list-alt'), order=101))
 
         accession_module.add_menu(menu_action)
 

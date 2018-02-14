@@ -13,11 +13,7 @@ let CountableCollection = require('../../main/collections/countable');
 
 let Collection = CountableCollection.extend({
     url: function () {
-        if (this.batch_id) {
-            return window.application.url(['accession', 'batch', this.batch_id, 'action'])
-        } else {
-            return window.application.url(['accession', 'action'])
-        }
+        return window.application.url(['accession', 'action'])
     },
     model: ActionModel,
 
@@ -26,7 +22,8 @@ let Collection = CountableCollection.extend({
 
         Collection.__super__.initialize.apply(this, arguments);
 
-        this.batch_id = options.batch_id;
+        // this.entityId = options.entityId;
+        // this.entityType = options.entityType;
     }
 });
 

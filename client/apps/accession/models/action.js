@@ -21,10 +21,11 @@ let Model = Backbone.Model.extend({
     defaults: {
         id: 0,
         name: '',
-        input_batches: [],
-        output_batches: [],
-        accession: null,
-        type: null
+        action_type: null,
+        completed: false,
+        data: {},
+        user: '',
+        description: ''
     },
 
     parse: function(data) {

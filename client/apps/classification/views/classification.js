@@ -12,7 +12,7 @@ let Marionette = require('backbone.marionette');
 
 let View = Marionette.View.extend({
     tagName: 'tr',
-    className: 'element object classification actionstep',
+    className: 'element object classification actions',
     template: require('../templates/classification.html'),
 
     behaviors: {

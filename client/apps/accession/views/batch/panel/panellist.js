@@ -93,7 +93,7 @@ let View = AdvancedTable.extend({
         let contextView = new PanelListContextView({actions: actions});
 
         let TitleView = require('../../../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: _t("Panel actionstep"), glyphicon: 'fa-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Panel actions"), glyphicon: 'fa-wrench'}));
         contextLayout.showChildView('content', contextView);
 
         contextView.on("panel:create", function () {
