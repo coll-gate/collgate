@@ -49,8 +49,8 @@ class RestActionTypeId(RestActionType):
 
 
 class RestActionTypeFormat(RestActionType):
-    regex = r'^format/$'
-    suffix = 'format'
+    regex = r'^stepformat/$'
+    suffix = 'stepformat'
 
 
 class RestActionTypeIdLabel(RestActionTypeId):

@@ -21,7 +21,7 @@ let View = Marionette.View.extend({
         name: '#descriptor_type_name',
         code: '#descriptor_type_code',
         description: '#descriptor_type_description',
-        format_type: '#format_type',
+        format_type: '#step_format',
         save: '#save',
         apply: '#apply',
         cancel: '#cancel'
@@ -100,7 +100,7 @@ let View = Marionette.View.extend({
         let format = this.model.get('format');
         let content_el = null;
 
-        window.application.descriptor.views.formatTypes.drawSelect(this.ui.format_type, true, false, format.type);
+        window.application.descriptor.views.formatTypes.drawSelect(this.ui.step_format, true, false, format.type);
         let Element = window.application.descriptor.widgets.getElement(format.type);
 
         // update the contextual region according to the format
@@ -128,12 +128,12 @@ let View = Marionette.View.extend({
     },
 
     onBeforeDetach: function () {
-        this.ui.format_type.selectpicker('destroy');
+        this.ui.step_format.selectpicker('destroy');
         window.application.main.defaultRightView();
     },
 
     changeFormatType: function () {
-        let type = this.ui.format_type.val();
+        let type = this.ui.step_format.val();
 
         // update the contextual region according to the format
         let Element = window.application.descriptor.widgets.getElement(type);
@@ -172,7 +172,7 @@ let View = Marionette.View.extend({
         }
 
         // merge the format type
-        format.type = this.ui.format_type.val();
+        format.type = this.ui.step_format.val();
 
         this.model.save({
             name: name,

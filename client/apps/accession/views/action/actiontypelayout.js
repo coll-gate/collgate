@@ -23,7 +23,7 @@ let Layout = LayoutView.extend({
     ui: {
         general_tab: 'a[aria-controls=general]',
         steps_tab: 'a[aria-controls=steps]',
-        format_type: 'select.action-type-format-type',
+        step_format: 'select.action-step-format',
         description: 'textarea[name=description]',
         config_save: 'button[name=save]',
         step_index: 'select.action-type-step-index',
@@ -38,7 +38,7 @@ let Layout = LayoutView.extend({
     },
 
     events: {
-        'change @ui.format_type': 'changeFormatType',
+        'change @ui.step_format': 'changeFormatType',
         'click @ui.config_save': 'onUpdateConfig',
         'click @ui.delete_step': 'onDeleteCurrentStep'
     },
@@ -90,7 +90,7 @@ let Layout = LayoutView.extend({
     },
 
     changeFormatType: function () {
-        let formatType = this.ui.format_type.val();
+        let formatType = this.ui.step_format.val();
 
         // update the contextual region according to the format
         let Element = window.application.accession.actions.getElement(formatType);
@@ -116,7 +116,7 @@ let Layout = LayoutView.extend({
     loadCurrentStepData: function() {
         if (this.currentStepIndex >= 0) {
             let stepData = this.model.get('format')['steps'][this.currentStepIndex];
-            this.ui.format_type.val(stepData.type).prop('disabled', false).selectpicker('refresh');
+            this.ui.step_format.val(stepData.type).prop('disabled', false).selectpicker('refresh');
 
             let Element = window.application.accession.actions.getElement(stepData.type);
             let actionFormatType = new Element.ActionStepFormatDetailsView({
@@ -148,7 +148,7 @@ let Layout = LayoutView.extend({
                 return;
             } else {
                 let nextIdx = format.steps.length;
-                let formatType = this.ui.format_type.val();
+                let formatType = this.ui.step_format.val();
 
                 let stepData = {
                    'index': nextIdx,
@@ -171,7 +171,7 @@ let Layout = LayoutView.extend({
                     .val(nextIdx)
                     .selectpicker('refresh');
 
-                this.ui.format_type.prop('disabled', false).selectpicker('refresh');
+                this.ui.step_format.prop('disabled', false).selectpicker('refresh');
                 idx = nextIdx;
             }
         }
@@ -195,8 +195,8 @@ let Layout = LayoutView.extend({
             actionTypeLayout.ui.step_index.selectpicker({}).on('change', $.proxy(actionTypeLayout.changeStep, actionTypeLayout));
         });
 
-        window.application.accession.views.actionTypeFormats.drawSelect(this.ui.format_type, true, false);
-        this.ui.format_type.prop('disabled', true).selectpicker('refresh');
+        window.application.accession.views.actionStepFormats.drawSelect(this.ui.step_format, true, false);
+        this.ui.step_format.prop('disabled', true).selectpicker('refresh');
 
         if (!this.model.isNew()) {
             if (format.steps.length) {
@@ -215,7 +215,7 @@ let Layout = LayoutView.extend({
 
     onBeforeDetach: function () {
         this.ui.step_index.selectpicker('destroy');
-        this.$el.find("select.action-type-format-type").selectpicker("destroy");
+        this.$el.find("select.action-step-format").selectpicker("destroy");
     },
 
     onUpdateConfig: function() {

@@ -30,41 +30,57 @@ class RestAction(RestAccession):
     name = 'action'
 
 
-class RestActionId(RestAccession):
-    regex = r'^(?P<bat_id>[0-9]+)/$'
-    suffix = 'id'
-
-
-class RestBatchIdAction(RestBatchId):
-    regex = r'^action/$'
-    suffix = 'action'
-
-
-class RestBatchIdActionCount(RestBatchIdAction):
+class RestActionCount(RestAction):
     regex = r'^count/$'
     suffix = 'count'
 
 
-# @todo how to precise which collection when boolean ? temporary panel ?
+class RestActionId(RestAction):
+    regex = r'^(?P<act_id>[0-9]+)/$'
+    suffix = 'id'
+
+
+class RestActionIdProcessStep(RestActionId):
+    regex = r'^processstep/$'
+    suffix = 'processtep'
+
+
+class RestActionEntity(RestAction):
+    regex = r'^entity/$'
+    suffix = 'entity'
+
+
+class RestActionEntityId(RestActionEntity):
+    regex = r'^(?P<ent_id>[0-9]+)/$'
+    suffix = 'id'
+
+
+class RestActionEntityIdCount(RestActionEntityId):
+    regex = r'^count/$'
+    suffix = 'count'
+
+
 @RestAction.def_auth_request(
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
             "name": Action.NAME_VALIDATOR,
-            "type": {"type": "number"}
+            "description": {"type": "string", "minLength": 0, "maxLength": 1024},
+            "action_type": {"type": "number"}
         },
     }, perms={
         'accession.add_action': _("You are not allowed to create an action")
     })
 def create_action(request):
-    action_type_id = int_arg(request.data.get('type'))
+    action_type_id = int_arg(request.data.get('action_type'))
     name = request.data.get('name')
     user = request.user
 
-    action_type = get_object_or_404(Action, pk=action_type_id)
+    action_type = get_object_or_404(ActionType, pk=action_type_id)
 
     action_controller = ActionController(action_type, user)
     action = action_controller.create(name)
+    action.description = request.data.get('description', '')
 
     results = {
         'id': action.id,
@@ -79,12 +95,47 @@ def create_action(request):
     return HttpResponseRest(request, results)
 
 
-# @todo how to precise which collection when boolean ? temporary panel ?
 @RestActionId.def_auth_request(
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
+            "name": Action.NAME_VALIDATOR_OPTIONAL,
+            "description": {"type": "string", "minLength": 0, "maxLength": 1024, "required": False},
+        },
+    }, perms={
+        'accession.change_action': _("You are not allowed to modify an action")
+    })
+def update_action(request, act_id):
+    action = get_object_or_404(Action, pk=int(act_id))
+
+    name = request.data.get('name')
+    description = request.data.get('description')
+
+    result = {'id': action.id}
+
+    if name is not None:
+        action.name = name
+
+        result['name'] = name
+        action.update_field('name')
+
+    if description is not None:
+        action.description = description
+
+        result['description'] = description
+        action.update_field('description')
+
+    action.save()
+
+    return HttpResponseRest(request, result)
+
+
+@RestActionIdProcessStep.def_auth_request(
+    Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
             "inputs": {
+                # @todo different input modes
                 "type": [{
                     "type": "object",
                     "properties": {
@@ -94,13 +145,14 @@ def create_action(request):
                     },
                 }, {
                     "type": "boolean"
-                }]
+                }],
+                "required": False
             }
         },
     }, perms={
         'accession.change_action': _("You are not allowed to modify an action")
     })
-def update_action(request, act_id):
+def action_process_step(request, act_id):
     inputs = request.data.get('inputs')
     user = request.user
 
@@ -126,26 +178,122 @@ def update_action(request, act_id):
     if step_index >= len(format_steps):
         raise SuspiciousOperation("Trying to process more steps than allowed")
 
+    result = {'id': action.id}
+
     action_controller = ActionController(action)
     action_controller.process_step(step_index, inputs_entities)
 
+    result['data'] = action.data
+    result['completed'] = action.completed
+
+    return HttpResponseRest(request, result)
+
+
+@RestAction.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_action': _("You are not allowed to get an action"),
+    'accession.list_action': _("You are not allowed to list actions")
+})
+def get_action_list(request):
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = json.loads(request.GET.get('cursor', 'null'))
+    limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
+    # @todo how to manage permission to list only auth actions
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Action)
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+
+    action_list = []
+
+    for action in cq:
+        a = {
+            'id': action.id,
+            'name': action.name,
+            'action_type': action.action_type_id,
+            'data': action.data,
+            'user': action.user.username,
+            'completed': action.completed,
+            'created_date': action.created_date.strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        action_list.append(a)
+
+    results = {
+        'perms': [],
+        'items': action_list,
+        'prev': cq.prev_cursor,
+        'cursor': cursor,
+        'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestActionCount.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.list_action': _("You are not allowed to list the actions")
+})
+def get_batch_id_action_list_count(request):
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Action)
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    count = cq.count()
+
+    results = {
+        'count': count
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestActionId.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_action': _("You are not allowed to get an action")
+})
+def get_action_details(request, act_id):
+    action = get_object_or_404(Action, pk=int(act_id))
+
     result = {
         'id': action.id,
-        'user': action.user,
+        'name': action.name,
+        'description': action.description,
+        'user': action.user.username,
         'data': action.data,
-        'type': action.type_id
+        'action_type': action.action_type_id,
+        'completed': action.completed
     }
 
     return HttpResponseRest(request, result)
 
 
-# @todo how to list action for accession or a batch ? (input, outputs...)
-
-# @RestBatchIdAction.def_auth_request(Method.GET, Format.JSON, perms={
+# @RestActionEntityId.def_auth_request(Method.GET, Format.JSON, perms={
 #     'accession.get_action': _("You are not allowed to get an action"),
 #     'accession.list_action': _("You are not allowed to list actions")
 # })
-# def get_batch_id_action_list(request, bat_id):
+# def get_action_list_for_entity_id(request, bat_id):
 #     results_per_page = int_arg(request.GET.get('more', 30))
 #     cursor = json.loads(request.GET.get('cursor', 'null'))
 #     limit = results_per_page
@@ -200,10 +348,10 @@ def update_action(request, act_id):
 #     return HttpResponseRest(request, results)
 #
 #
-# @RestBatchIdActionCount.def_auth_request(Method.GET, Format.JSON, perms={
+# @RestActionEntityIdCount.def_auth_request(Method.GET, Format.JSON, perms={
 #     'accession.list_action': _("You are not allowed to list the actions")
 # })
-# def get_batch_id_action_list_count(request, bat_id):
+# def get_action_list_for_entity_id_count(request, bat_id):
 #     from main.cursor import CursorQuery
 #     cq = CursorQuery(Action)
 #

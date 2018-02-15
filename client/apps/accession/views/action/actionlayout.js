@@ -26,7 +26,8 @@ let Layout = LayoutView.extend({
         entities: 'a[aria-controls=entities]',
         description: 'textarea[name=description]',
         name: 'input[name=name]',
-        update: 'button[name=update]',
+        username: 'input[name=username]',
+        save: 'button[name=save]',
         step_index: 'select.action-type-step-index',
         process_step: 'button[name=process-step]'
     },
@@ -38,7 +39,7 @@ let Layout = LayoutView.extend({
     },
 
     events: {
-        'click @ui.update': 'onUpdateAction',
+        'click @ui.save': 'onSaveAction',
         'click @ui.process_step': 'onProcessStep'
     },
 
@@ -91,7 +92,7 @@ let Layout = LayoutView.extend({
     loadCurrentStepData: function() {
         // if (this.currentStepIndex >= 0) {
         //     let stepData = this.model.get('format')['steps'][this.currentStepIndex];
-        //     this.ui.format_type.val(stepData.type).prop('disabled', false).selectpicker('refresh');
+        //     this.ui.step_format.val(stepData.type).prop('disabled', false).selectpicker('refresh');
         //
         //     let Element = window.application.accession.actions.getElement(stepData.type);
         //     let actionFormatType = new Element.ActionStepFormatDetailsView({
@@ -123,7 +124,7 @@ let Layout = LayoutView.extend({
                 return;
             } else {
                 let nextIdx = format.steps.length;
-                let formatType = this.ui.format_type.val();
+                let formatType = this.ui.step_format.val();
 
                 let stepData = {
                    'index': nextIdx,
@@ -146,7 +147,7 @@ let Layout = LayoutView.extend({
                     .val(nextIdx)
                     .selectpicker('refresh');
 
-                this.ui.format_type.prop('disabled', false).selectpicker('refresh');
+                this.ui.step_format.prop('disabled', false).selectpicker('refresh');
                 idx = nextIdx;
             }
         }
@@ -158,62 +159,69 @@ let Layout = LayoutView.extend({
         this.loadCurrentStepData();
     },
 
+    disableStepsTab: function () {
+        this.ui.steps_tab.parent().addClass('disabled');
+    },
+
     onRender: function () {
         let format = this.model.get('format');
         let actionLayout = this;
 
-        // for (let i = 0; i < format.steps.length; ++i) {
-        //     this.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
-        // }
-        //
-        // this.namingOptionsPromise.then(function() {
-        //     batchLayout.ui.step_index.selectpicker({}).on('change', $.proxy(batchLayout.changeStep, batchLayout));
-        // });
-        //
-        // window.application.accession.views.actionTypeFormats.drawSelect(this.ui.format_type, true, false);
-        // this.ui.format_type.prop('disabled', true).selectpicker('refresh');
-        //
-        // if (!this.model.isNew()) {
-        //     if (format.steps.length) {
-        //         // select first step if exists
-        //         this.namingOptionsPromise.then(function () {
-        //             batchLayout.ui.step_index.val(0).selectpicker('refresh');
-        //             batchLayout.currentStepIndex = 0;
-        //             batchLayout.loadCurrentStepData();
-        //         });
-        //     }
-        //
-        //     this.enableTabs();
-        // } else {
-        // }
+        // creator user name
+        let username = this.model.get('user');
+
+        if (!this.model.isNew()) {
+            let currentStepIndex = this.model.get('data').steps.length;
+
+            let previousStep = currentStepIndex > 1 ? this.model.get('data').steps[currentStepIndex-1] : null;
+            let currentStep = currentStepIndex > 0 ? this.model.get('data').steps[currentStepIndex] : null;
+
+            if (currentStep) {
+                // @todo
+            }
+
+            this.enableTabs();
+        } else {
+            if (!username) {
+                username = window.session.user.username;
+            }
+
+            // not available tabs
+            this.disableStepsTab();
+        }
+
+        $.ajax({
+            type: "GET",
+            url: window.application.url(['permission', 'user', 'username', username]),
+            dataType: 'json'
+        }).done(function (data) {
+            let name = [data.first_name, data.last_name, '(' + data.username + ')'];
+            actionLayout.ui.username.val(name.join(' '));
+        });
     },
 
     onBeforeDetach: function () {
-        this.ui.step_index.selectpicker('destroy');
-        this.$el.find("select.action-type-format-type").selectpicker("destroy");
     },
 
-    onUpdateAction: function() {
+    onSaveAction: function() {
         let name = this.ui.name.val().trim();
         let description = this.ui.description.val().trim();
+        let actionType = parseInt(this.model.get('action_type'));
 
-        // // store possible last changes on current step
-        // this.storeCurrentStepData();
-        //
-        // let model = this.model;
-        // let format = model.get('format');
-        //
-        // if (model.isNew()) {
-        //     model.save({name: name, description: description, format: format}, {wait: true}).then(function () {
-        //         $.alert.success(_t("Successfully changed !"));
-        //         Backbone.history.navigate('app/accession/actiontype/' + model.get('id') + '/', {trigger: true, replace: true});
-        //     });
-        // } else {
-        //     model.save({name: name, description: description, format: format}, {wait: true, patch: true}).then(function () {
-        //         $.alert.success(_t("Successfully changed !"));
-        //         Backbone.history.navigate('app/accession/actiontype/' + model.get('id') + '/', {trigger: true, replace: true});
-        //     });
-        // }
+        // update action info data
+        let model = this.model;
+
+        if (model.isNew()) {
+            model.save({name: name, description: description, action_type: actionType}, {wait: true}).then(function () {
+                $.alert.success(_t("Successfully created !"));
+                Backbone.history.navigate('app/accession/action/' + model.get('id') + '/', {trigger: true, replace: true});
+            });
+        } else {
+            model.save({name: name, description: description}, {wait: true, patch: true}).then(function () {
+                $.alert.success(_t("Successfully changed !"));
+                Backbone.history.navigate('app/accession/action/' + model.get('id') + '/', {trigger: true, replace: true});
+            });
+        }
     }
 });
 

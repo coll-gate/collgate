@@ -98,13 +98,13 @@ AccessionModule.prototype = {
 
         this.collections.conditionList = new Backbone.Collection();
 
-        let ActionTypeFormatCollection = require('./collections/actiontypeformat');
-        this.collections.actionTypeFormats = new ActionTypeFormatCollection();
+        let ActionStepFormatCollection = require('./collections/actionstepformat');
+        this.collections.actionStepFormats = new ActionStepFormatCollection();
 
-        this.views.actionTypeFormats = new SelectOption({
+        this.views.actionStepFormats = new SelectOption({
             // sync: true,
-            className: 'action-type-format',
-            collection: this.collections.actionTypeFormats,
+            className: 'action-step-format',
+            collection: this.collections.actionStepFormats,
         });
 
         //
@@ -138,8 +138,11 @@ AccessionModule.prototype = {
         let AccessionPanelRouter = require('./routers/accessionpanel');
         this.routers.accessionpanel = new AccessionPanelRouter();
 
-        let BatchActionTypeRouter = require('./routers/actiontype');
-        this.routers.actiontype = new BatchActionTypeRouter();
+        let ActionTypeRouter = require('./routers/actiontype');
+        this.routers.actiontype = new ActionTypeRouter();
+
+        let ActionRouter = require('./routers/action');
+        this.routers.action = new ActionRouter();
 
         let BatchPanelRouter = require('./routers/batchpanel');
         this.routers.batchpanel = new BatchPanelRouter();

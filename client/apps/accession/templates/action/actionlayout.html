@@ -20,9 +20,15 @@
         <div role="tabpanel" class="tab-pane active" name="general" style="height: 100%; overflow-y: auto;">
             <div class="tab-frame">
                 <div class="row">
-                    <div class="action-type-format-type-group form-group">
+                    <div class="action-name-group form-group">
                         <label><%- _t('Action name') %></label>
                         <input name="name" class="form-control" autocomplete="false" maxlength="128" value="<%- name %>">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label><%- _t('Action user') %></label>
+                        <input name="username" class="form-control" autocomplete="false" maxlength="128" value="<%- user %>" readonly="">
                     </div>
                 </div>
                 <div class="row">
@@ -32,26 +38,26 @@
                     </div>
                 </div>
             </div>
+            <div class="action-type-update form-group text-center" style="margin-left: 45%; margin-right: 45%;">
+                <button name="save" class="btn btn-success btn-block"><%- _t('Save') %></button>
+            </div>
         </div>
         <div role="tabpanel" class="tab-pane" name="steps" style="height: 100%; overflow-y: auto;">
             <div class="tab-frame">
                 <div class="row">
                     <div class="col-lg-4">
                         <label><%- _t('Step number') %></label>
-                        <input name="current-step" class="form-control" autocomplete="false" maxlength="128" value="<%- name %>">
+                        <input name="current-step" class="form-control" autocomplete="false" maxlength="128" value="1" readonly="">
                     </div>
                     <div class="col-lg-7">
-                        <div class="action-type-format-type-group form-group">
-                            <label><%- _t('Type of format') %></label>
-                            <input name="action-type" class="form-control" autocomplete="false" maxlength="128" value="<%- name %>">
+                        <div class="action-step-format-group form-group">
+                            <label><%- _t('Format of the step') %></label>
+                            <input name="action-type" class="form-control" autocomplete="false" maxlength="128" value="" readonly="">
                         </div>
                     </div>
                 </div>
                 <div class="contextual-region"></div>
             </div>
         </div>
-    </div>
-    <div class="action-type-update form-group text-center" style="margin-left: 45%; margin-right: 45%;">
-        <button name="save" class="btn btn-success btn-block"><%- _t('Update') %></button>
     </div>
 </div>

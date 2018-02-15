@@ -462,6 +462,9 @@ class Action(Entity):
     And considers a suit of steps, as a sequential pipeline.
     """
 
+    # display name
+    name = models.CharField(max_length=128, db_index=True)
+
     # actor of the action
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
@@ -484,31 +487,30 @@ class Action(Entity):
     @classmethod
     def get_defaults_columns(cls):
         return {
+            'name': {
+                'label': _('Name'),
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.action'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
             'created_date': {
-                'label': _('Date'),
+                'label': _('Creation'),
                 'query': False,
                 'format': {
                     'type': 'datetime',
                 },
                 'available_operators': ['lte', 'gte', 'eq', 'neq']
             },
-            'type': {
+            'action_type': {
                 'label': _('Type'),
                 'field': 'name',
                 'query': True,
                 'format': {
                     'type': 'entity',
                     'model': 'accession.actiontype'
-                },
-                'available_operators': ['eq', 'neq', 'in', 'notin']
-            },
-            'accession': {
-                'label': _('Accession'),
-                'field': 'name',
-                'query': True,
-                'format': {
-                    'type': 'entity',
-                    'model': 'accession.accession'
                 },
                 'available_operators': ['eq', 'neq', 'in', 'notin']
             },
@@ -519,7 +521,15 @@ class Action(Entity):
                     'type': 'boolean'
                 },
                 'available_operators': ['eq']
-            }
+            },
+            'user': {
+                'label': _('Author'),
+                'query': False,
+                'format': {
+                    'type': 'user',
+                },
+                'available_operators': ['lte', 'gte', 'eq', 'neq']
+            },
         }
 
 

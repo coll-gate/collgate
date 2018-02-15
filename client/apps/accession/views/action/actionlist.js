@@ -14,8 +14,7 @@ let Dialog = require('../../../main/views/dialog');
 let DefaultLayout = require('../../../main/views/defaultlayout');
 let TitleView = require('../../../main/views/titleview');
 let DescriptorsColumnsView = require('../../../descriptor/mixins/descriptorscolumns');
-let BatchModel = require('../../models/batch');
-let BatchActionModel = require('../../models/action');
+let ActionModel = require('../../models/action');
 
 let View = AdvancedTable.extend({
     template: require("../../../descriptor/templates/entitylist.html"),
@@ -29,31 +28,31 @@ let View = AdvancedTable.extend({
     },
 
     defaultColumns: [
-        {name: 'select', width: 'auto', sort_by: null},
-        {name: 'type', width: 'auto', sort_by: '+0'},
-        {name: 'accession', width: 'auto', sort_by: '+0'},
+        {name: 'name', width: 'auto', sort_by: '+2'},
+        {name: 'action_type', width: 'auto', sort_by: '+1'},
+        {name: 'completed', width: 'auto', sort_by: '+0'},
+        {name: 'created_date', width: 'auto', sort_by: null},
+        {name: 'user', width: 'auto', sort_by: null},
     ],
 
     columnsOptions: {
-        'select': {
-            label: '',
-            width: 'auto',
-            type: 'checkbox',
-            glyphicon: ['fa-square-o', 'fa-square-o'],
-            event: 'selectBatchAction',
-            fixed: true
-        },
-        'type': {
+        'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-action-details'},
+        'action_type': {
             label: _t('Type'),
             width: 'auto',
             minWidth: true,
             field: 'name'
         },
-        'accession': {
-            label: _t('Accession'),
+        'completed': {label: _t('Completed'), width: 'auto', minWidth: true},
+        'created_date': {
+            label: _t('Creation'),
             width: 'auto',
-            minWidth: true,
-            field: 'name'
+            minWidth: true
+        },
+        'user': {
+            label: _t('Author'),
+            width: 'auto',
+            minWidth: true
         }
     },
 
@@ -90,14 +89,14 @@ let View = AdvancedTable.extend({
         }
 
         let TitleView = require('../../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: _t("Batches actions")}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Actions")}));
 
         let actions = [
         ];
 
         // @todo what needed
-        // let AccessionBatchesContextView = require('./batchactionlistcontext');
-        // let contextView = new AccessionBatchesContextView({actions: actions});
+        // let ActionContextView = require('./actionlistcontext');
+        // let contextView = new ActionContextView({actions: actions});
         // contextLayout.showChildView('content', contextView);
     },
 

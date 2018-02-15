@@ -111,12 +111,12 @@ let Controller = Marionette.Object.extend({
 
                 if (this.validate()) {
                     let name = this.ui.name.val().trim();
-                    let type = this.ui.type.val();
+                    let actionType = this.ui.type.val();
 
                     // create a new local model and open an edit view with this model
                     let model = new ActionModel({
                         name: name,
-                        type: type
+                        action_type: actionType
                     });
 
                     view.destroy();

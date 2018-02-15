@@ -36,4 +36,24 @@ ActionStepFormat.ActionStepFormatDetailsView = Marionette.View.extend({
     }
 });
 
+ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
+    className: 'action-step-process',
+    template: "<div></div>",
+
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
+    },
+
+    exportInput: function() {
+
+    },
+
+    importData: function() {
+
+    }
+});
+
 module.exports = ActionStepFormat;

@@ -22,7 +22,7 @@ let Layout = LayoutView.extend({
     ui: {
         configuration_tab: 'a[aria-controls=configuration]',
         values_tab: 'a[aria-controls=values]',
-        format_type: 'select.batch-action-type-format-type',
+        step_format: 'select.batch-action-format-step',
         description: 'textarea[name=description]',
         config_save: 'button[name=save]'
     },
@@ -66,7 +66,7 @@ let Layout = LayoutView.extend({
     },
 
     changeFormatType: function () {
-        let formatType = this.ui.format_type.val();
+        let formatType = this.ui.step_format.val();
 
         // update the contextual region according to the format
         let Element = window.application.accession.actions.getElement(formatType);
@@ -155,7 +155,7 @@ let Layout = LayoutView.extend({
 
     onUpdateConfig: function () {
         let childView = this.getChildView('contextual');
-        let formatType = this.ui.format_type.val();
+        let formatType = this.ui.step_format.val();
 
         if (childView) {
             let format = childView.getFormat();
