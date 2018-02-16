@@ -97,7 +97,8 @@ DescriptorModule.prototype = {
             'enum_single',
             'enum_pair',
             'enum_ordinal',
-            'layout'
+            'layout',
+            'user'
         ];
 
         for (let i = 0; i < widgets.length; ++i) {

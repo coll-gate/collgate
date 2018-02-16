@@ -43,7 +43,11 @@ let View = AdvancedTable.extend({
             minWidth: true,
             field: 'name'
         },
-        'completed': {label: _t('Completed'), width: 'auto', minWidth: true},
+        'completed': {
+            label: _t('Completed'),
+            width: 'auto',
+            minWidth: true,
+        },
         'created_date': {
             label: _t('Creation'),
             width: 'auto',

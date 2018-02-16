@@ -403,16 +403,7 @@ class ActionType(Entity):
                     'model': 'accession.action'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            },
-            # '$format': {
-            #     'label': _('Type'),
-            #     'field': 'type->name',
-            #     'query': False,
-            #     'format': {
-            #         'type': 'string',
-            #         'model': 'accession.batchactionformattype'
-            #     }
-            # }
+            }
         }
 
     def set_label(self, lang, label):

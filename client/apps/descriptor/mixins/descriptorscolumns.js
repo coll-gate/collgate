@@ -83,6 +83,23 @@ let DescriptorsColumnsView = {
                         }
 
                         done = true;
+                    } else {
+                        // support of format for non descriptor fields
+                        for (let j = 0; j < modelList.length; ++j) {
+                            let model = modelList[j];
+                            let childView = this.children.findByModel(model);
+                            let value = model.get(columnName);
+                            let cell = childView.$el.find('td[name="' + columnName + '"]');
+
+                            // simply replace the value
+                            cell.html(dft.format(value));
+
+                            if (cellClassName) {
+                                cell.addClass(cellClassName)
+                            }
+                        }
+
+                        done = true;
                     }
                 }
             }
