@@ -1,0 +1,45 @@
+<!--
+ - @file indexcreate.html
+ - @brief 
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2018-02-20
+ - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details 
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= _t("Create an index for a descriptor") %></h4>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="descriptor form-group">
+                    <label class="control-label" for="descriptor"><%= _t("Descriptor") %></label>
+                    <select class="form-control model" id="descriptor" name="descriptor" data-live-search="true">
+                    </select>
+                </div>
+                <div class="target form-group">
+                    <label class="control-label" for="target"><%= _t("Target") %></label>
+                    <select class="form-control model" id="target" name="target">
+                    </select>
+                </div>
+                <div class="type form-group">
+                    <label class="control-label" for="type"><%= _t("Type") %></label>
+                    <select class="form-control model" id="type" name="type">
+                        <option value="1">Unique-BTree</option>
+                        <option value="2">BTree</option>
+                        <option value="3">GIN</option>
+                        <option value="4">GIST</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
+            <button type="button" class="btn btn-success create"><%= _t("Create") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

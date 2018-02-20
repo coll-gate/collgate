@@ -20,11 +20,11 @@ let DescriptorModel = require('../models/descriptor');
 
 let Router = Marionette.AppRouter.extend({
     routes: {
-        "app/descriptor/descriptor/": "getDescriptorList",
+        "app/descriptor/descriptor/": "getIndexList",
         "app/descriptor/descriptor/:id/*tab": "getDescriptor",
     },
 
-    getDescriptorList: function (options) {
+    getIndexList: function (options) {
         options || (options = {});
 
         let collection = new DescriptorCollection([], {
@@ -33,7 +33,7 @@ let Router = Marionette.AppRouter.extend({
         });
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
         defaultLayout.showChildView('title', new TitleView({title: _t("List of descriptors")}));
 
         // get available columns
@@ -63,7 +63,7 @@ let Router = Marionette.AppRouter.extend({
         tab || (tab = "");
 
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         let model = new DescriptorModel({id: tid});
 

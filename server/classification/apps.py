@@ -84,7 +84,7 @@ class CollGateClassification(ApplicationMain):
         # administration related menus
         menu_administration.add_entry(
             MenuEntry('classification-list', _('List of classifications'), "#classification/classification/",
-                      icon=FaGlyph('tags'), order=401, auth=AUTH_SUPER_USER))
+                      icon=FaGlyph('sitemap'), order=401, auth=AUTH_SUPER_USER))
 
         classification_module.add_menu(menu_administration)
 

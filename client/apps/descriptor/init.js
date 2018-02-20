@@ -51,6 +51,9 @@ DescriptorModule.prototype = {
             collection: this.collections.conditions,
         });
 
+        let DescriptorCollection = require('./collections/descriptor');
+        this.collections.descriptors = new DescriptorCollection();
+
         let FormatTypeCollection = require('./collections/formattype');
         this.collections.formatTypes = new FormatTypeCollection();
 
@@ -117,7 +120,8 @@ DescriptorModule.prototype = {
         //
 
         app.main.cache.register('descriptors');
-        app.main.cache.register('layout');
+        app.main.cache.register('layouts');
+        app.main.cache.register('indexes');
         app.main.cache.register('entity_columns');
 
         let DescriptorMetaModelCacheFetcher = require('./utils/descriptormetamodelcachefetcher');
@@ -139,8 +143,8 @@ DescriptorModule.prototype = {
         let LayoutRouter = require('./routers/layout');
         this.routers.descriptorMetaModel = new LayoutRouter();
 
-        let DescriptorGroupCollection = require('./collections/descriptor');
-        this.collections.descriptorGroup = new DescriptorGroupCollection();
+        let IndexationRouter = require('./routers/indexation');
+        this.routers.indexation = new IndexationRouter();
 
         //
         // controllers
@@ -148,6 +152,9 @@ DescriptorModule.prototype = {
 
         let DescriptorController = require('./controllers/descriptor');
         this.controllers.descriptor = new DescriptorController();
+
+        let IndexController = require('./controllers/index');
+        this.controllers.index = new IndexController();
 
     },
 

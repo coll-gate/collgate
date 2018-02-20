@@ -115,6 +115,11 @@ class CollGateDescriptor(ApplicationMain):
         # descriptor administration menu
         menu_descriptor = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
 
+        # index menu
+        menu_descriptor.add_entry(
+            MenuEntry('list-index', _('Descriptor indexation'), "#descriptor/index/",
+                      icon=FaGlyph('list-ol'), order=-196, auth=AUTH_STAFF))
+
         # descriptor related menus
         menu_descriptor.add_entry(MenuSeparator(300))
         menu_descriptor.add_entry(

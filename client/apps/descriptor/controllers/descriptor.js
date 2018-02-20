@@ -20,7 +20,7 @@ let DescriptorLayout = require('../views/descriptorlayout');
 
 let Controller = Marionette.Object.extend({
 
-    delete: function (model) {
+    deleteModel: function (model) {
         let DeletePanelDialog = Dialog.extend({
             template: require('../../main/templates/confirm.html'),
             templateContext: function () {

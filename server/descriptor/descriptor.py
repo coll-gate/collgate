@@ -11,6 +11,7 @@
 
 import json
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q, Count
 from django.db.models.functions import Length
@@ -27,8 +28,8 @@ from igdectk.rest.handler import RestHandler
 
 from igdectk.common.cache import invalidate_cache
 from main.cursor import CursorQuery
-from main.models import InterfaceLanguages
-from .models import Descriptor, DescriptorValue
+from main.models import InterfaceLanguages, Entity
+from .models import Descriptor, DescriptorValue, DescriptorIndex, JSONBFieldIndexType
 
 
 class RestDescriptor(RestHandler):
@@ -44,6 +45,21 @@ class RestDescriptorDescriptor(RestDescriptor):
 class RestDescriptorDescriptorGroup(RestDescriptorDescriptor):
     regex = r'^group/$'
     suffix = 'group'
+
+
+class RestDescriptorDescriptorIndex(RestDescriptor):
+    regex = r'^index/$'
+    suffix = 'index'
+
+
+class RestDescriptorDescriptorIndexId(RestDescriptorDescriptorIndex):
+    regex = r'^(?P<index_id>[0-9]+)/$'
+    suffix = 'id'
+
+
+class RestDescriptorDescriptorIndexCount(RestDescriptorDescriptorIndex):
+    regex = r'^count/$'
+    suffix = 'count'
 
 
 class RestDescriptorDescriptorCount(RestDescriptorDescriptor):
@@ -176,6 +192,144 @@ def get_descriptor_list(request):
     return HttpResponseRest(request, results)
 
 
+@RestDescriptorDescriptorIndex.def_auth_request(Method.GET, Format.JSON)
+def get_index_list(request):
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = json.loads(request.GET.get('cursor', 'null'))
+    limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
+    cq = CursorQuery(DescriptorIndex)
+
+    if request.GET.get('filters'):
+        cq.filter(json.loads(request.GET['filters']))
+
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
+
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+
+    items = []
+
+    for index in cq:
+        d = {
+            'id': index.id,
+            'descriptor': index.descriptor.name,
+            'target': index.target.name.capitalize(),
+            'type': JSONBFieldIndexType(index.type).name
+        }
+
+        items.append(d)
+
+    results = {
+        'perms': [],
+        'items': items,
+        'prev': cq.prev_cursor,
+        'cursor': cursor,
+        'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorDescriptorIndexCount.def_auth_request(Method.GET, Format.JSON)
+def get_descriptor_list_count(request):
+    """
+    Get the count of number of descriptor indexes.
+    """
+
+    cq = CursorQuery(DescriptorIndex)
+
+    if request.GET.get('filters'):
+        cq.filter(json.loads(request.GET['filters']))
+
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
+
+    results = {
+        'perms': [],
+        'count': cq.count()
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorDescriptorIndexId.def_auth_request(Method.GET, Format.JSON)
+def get_index(request, index_id):
+    index = get_object_or_404(DescriptorIndex, id=int(index_id))
+
+    response = {
+        'id': index.id,
+        'descriptor': index.descriptor,
+        'target': index.target,
+        'type': index.type,
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestDescriptorDescriptorIndex.def_auth_request(
+    Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "descriptor": {"type": "integer"},
+            "target": Entity.CONTENT_TYPE_VALIDATOR,
+            "type": {"type": "integer", "minimum": 0, "maximum": 4, "required": False}
+        },
+    },
+    perms={
+        'descriptor.add_descriptorindex': _('You are not allowed to create a descriptor index')
+    },
+    staff=True
+)
+def get_index(request):
+    descriptor_id = int(request.data.get('descriptor'))
+    target = request.data.get('target')
+    index_type = JSONBFieldIndexType(request.data.get('type', 0))
+
+    descriptor = Descriptor.objects.get(id=descriptor_id)
+
+    app_label, model = target.split('.')
+    target = ContentType.objects.get_by_natural_key(app_label, model)
+
+    index = DescriptorIndex.objects.create(
+        descriptor=descriptor,
+        target=target,
+        type=index_type.value
+    )
+
+    index.save()
+    index.create_or_drop_index(index.target)
+
+    response = {
+        'id': index.id,
+        'descriptor': index.descriptor.name,
+        'target': index.target.model,
+        'type': index.type,
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestDescriptorDescriptorIndexId.def_auth_request(Method.DELETE, Format.JSON)
+def delete_index(request, index_id):
+    index = get_object_or_404(DescriptorIndex, id=int(index_id))
+
+    if index.count_index_usage() == 0:
+        index.delete()
+    else:
+        from django.core import exceptions
+        raise exceptions.SuspiciousOperation(_("This index refer to a descriptor used in a layout"))
+
+    return HttpResponseRest(request, {})
+
+
 @RestDescriptorDescriptorCount.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_list_count(request):
     """
@@ -214,7 +368,7 @@ def get_descriptor(request, des_id):
         'num_descriptor_values': count,
         'format': descriptor.format,
         'can_delete': descriptor.can_delete,
-        'can_modify': descriptor.can_modify
+        'can_modify': descriptor.can_modify,
     }
 
     return HttpResponseRest(request, response)
@@ -251,8 +405,7 @@ def search_descriptor(request):
                 'description': descriptor.description,
                 'can_delete': descriptor.can_delete,
                 'can_modify': descriptor.can_modify,
-                'format': descriptor.format,
-                'index': None  # todo: add index field to the descriptor model
+                'format': descriptor.format
             })
 
     response = {
@@ -281,6 +434,22 @@ def delete_descriptor(request, des_id):
     #     raise SuspiciousOperation(_("Only unused types of descriptor can be deleted"))
 
     descriptor.delete()
+
+    # INDEXATION TEST --
+    # from accession.models import Accession
+    # descriptor.index = 1
+    # descriptor.save()
+    # descriptor.create_or_drop_index(Accession)
+    # result = Accession.
+    # sql = """select * from pg_indexes where tablename not like 'pg%';"""
+    #
+    # from django.db import connections
+    # connection = connections['default']
+    # with connection.cursor() as cursor:
+    #     cursor.execute(sql)
+    #     result = cursor.fetchall()
+
+    # from django.db import models
 
     return HttpResponseRest(request, {})
 
@@ -780,7 +949,7 @@ def get_display_value_for_descriptor(request, des_id, val_id):
 
 
 @RestDescriptorDescriptorIdValueIdField.def_auth_request(
-     Method.GET, Format.JSON)
+    Method.GET, Format.JSON)
 def get_labels_for_descriptor_and_field(request, des_id, val_id, field):
     """
     Get all translations for a specific field of a value of descriptor.
@@ -1070,8 +1239,8 @@ def get_all_labels_of_descriptor(request, des_id):
     "type": "object",
     "additionalProperties": Descriptor.LABEL_VALIDATOR
 }, perms={
-        'main.change_descriptor': _("You are not allowed to modify descriptor"),
-   }, staff=True)
+    'main.change_descriptor': _("You are not allowed to modify descriptor"),
+}, staff=True)
 def change_language_labels(request, des_id):
     descriptor = get_object_or_404(Descriptor, id=int(des_id))
 

@@ -27,7 +27,8 @@ from . import localsettings
 
 class AuditManager(models.Manager):
 
-    def for_user(self, user):
+    @staticmethod
+    def for_user(user):
         """
         Lookup any audits for a specific user.
 
@@ -39,7 +40,8 @@ class AuditManager(models.Manager):
         else:
             return Audit.objects.none()
 
-    def for_object(self, content_type, object_id):
+    @staticmethod
+    def for_object(content_type, object_id):
         """
         Lookup any audits for a specific object.
 
@@ -59,7 +61,8 @@ class AuditManager(models.Manager):
 
         return Audit.objects.filter(content_type=content_type, object_id=object_id)
 
-    def for_user_and_object(self, user, content_type, object_id):
+    @staticmethod
+    def for_user_and_object(user, content_type, object_id):
         """
         Lookup any audit for a specific user and object.
 
@@ -83,7 +86,8 @@ class AuditManager(models.Manager):
 
         return Audit.objects.filter(user=user, content_type=content_type, object_id=object_id)
 
-    def create_audit(self, user, content_type, object_id, audit_type, fields={}):
+    @staticmethod
+    def create_audit(user, content_type, object_id, audit_type, fields={}):
         """
         Create a new audit entry for a user and an object.
 
@@ -116,7 +120,8 @@ class AuditManager(models.Manager):
 
         audit.save()
 
-    def purge_audit(self, datetime):
+    @staticmethod
+    def purge_audit(datetime):
         """
         Purge any audit entry that have a date-time greater or equal to datetime.
 

@@ -60,71 +60,21 @@ class MultipleObjectsReturned(Exception):
     pass
 
 
-# class DescriptorGroup(Entity):
-#     """
-#     Category of a type of descriptor.
-#     """
-#
-#     server_cache_update = ("descriptor", "entity_columns")
-#     client_cache_update = ("entity_columns",)
-#
-#     # unique group name
-#     name = models.CharField(unique=True, max_length=255, db_index=True)
-#
-#     # Is this group of descriptors can be deleted when it is empty
-#     can_delete = models.BooleanField(default=True)
-#
-#     # Is this group of descriptors can be modified (rename, add/remove descriptors)
-#     # by an authorized staff people
-#     can_modify = models.BooleanField(default=True)
-#
-#     class Meta:
-#         verbose_name = _("descriptor group")
-#
-#     def natural_name(self):
-#         return self.name
-#
-#     @classmethod
-#     def make_search_by_name(cls, term):
-#         return Q(name__istartswith=term)
-#
-#     def audit_create(self, user):
-#         return {
-#             'name': self.name,
-#             'can_delete': self.can_delete,
-#             'can_modify': self.can_modify
-#         }
-#
-#     def audit_update(self, user):
-#         if hasattr(self, 'updated_fields'):
-#             result = {'updated_fields': self.updated_fields}
-#
-#             if 'name' in self.updated_fields:
-#                 result['name'] = self.name
-#
-#             if 'can_delete' in self.updated_fields:
-#                 result['can_delete'] = self.can_delete
-#
-#             if 'can_modify' in self.updated_fields:
-#                 result['can_modify'] = self.can_modify
-#
-#             return result
-#         else:
-#             return {
-#                 'name': self.name,
-#                 'can_delete': self.can_delete,
-#                 'can_modify': self.can_modify
-#             }
-#
-#     def audit_delete(self, user):
-#         return {
-#             'name': self.name
-#         }
+class JSONBFieldIndexType(ChoiceEnum):
+    """
+    Type of the index for a JSONB field.
+    """
+
+    NONE = IntegerChoice(0, 'None')
+    UNIQUE_BTREE = IntegerChoice(1, 'Unique-BTree')
+    BTREE = IntegerChoice(2, 'BTree')
+    GIN = IntegerChoice(3, 'GIN')
+    GIST = IntegerChoice(4, 'GIST')
 
 
 class Descriptor(Entity):
     """
-    Type of descriptor for a model.
+    Type of descriptor
     """
 
     server_cache_update = ("descriptor", "entity_columns")
@@ -318,10 +268,18 @@ class Descriptor(Entity):
 
     def in_usage(self):
         """
-        Check if the type of descriptor is used by some type of models of descriptors
+        Check if the type of descriptor is used by some layouts of descriptors
         """
-        # @todo check into all layouts...
-        return True  # self.layout.all().exists()
+        # @todo how to optimize it?
+
+        layouts = Layout.objects.all()
+
+        for layout in layouts:
+            for panel in layout.layout_content.get('panels'):
+                for descriptor in panel.get('descriptors'):
+                    if descriptor.get('name') == self.name:
+                        return True
+        return False
 
     def get_label(self):
         """
@@ -1004,6 +962,169 @@ class Descriptor(Entity):
         raise SuspiciousOperation(_("Unable to save the %s" % str(model_class._meta.verbose_name)))
 
 
+class DescriptorIndex(models.Model):
+    """
+    Index for a descriptor and an entity
+    """
+
+    # Related type of descriptor.
+    descriptor = models.ForeignKey(Descriptor, on_delete=models.CASCADE)
+
+    # Related type of entity.
+    target = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+
+    # Set to type of index.
+    type = models.IntegerField(default=JSONBFieldIndexType.NONE.value, choices=JSONBFieldIndexType.choices())
+
+    class Meta:
+        verbose_name = _("descriptor index")
+
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'descriptor': {
+                'label': _('Descriptor'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'descriptor.descriptor'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'target': {
+                'label': _('Target'),
+                # 'query': False,  # done by a prefetch related
+                # 'format': {
+                #     'type': 'string',
+                #     'model': 'descriptor.descriptor'
+                # },
+                # 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'type': {
+                'label': _('Type'),
+                # 'query': False,  # done by a prefetch related
+                # 'format': {
+                #     'type': 'string',
+                #     'model': 'descriptor.descriptor'
+                # },
+                # 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+        }
+
+    def create_or_drop_index(self, db='default'):
+        """
+        Create or drop the index on the describable table, according to the current value of index.
+        :param db: DB name ('default')
+        """
+        # drop previous if exists
+        if self.type != JSONBFieldIndexType.NONE.value:
+            self.drop_index(db=db)
+
+        if self.type == JSONBFieldIndexType.NONE.value:
+            return self.drop_index(db=db)
+        elif self.type == JSONBFieldIndexType.UNIQUE_BTREE.value:
+            return self.create_btree_index(unique=True, db=db)
+        elif self.type == JSONBFieldIndexType.BTREE.value:
+            return self.create_btree_index(unique=False, db=db)
+        elif self.type == JSONBFieldIndexType.GIN.value:
+            return self.create_gin_index(db=db)
+        elif self.type == JSONBFieldIndexType.GIST.value:
+            return self.create_gist_index(db=db)
+
+    def _make_index_name(self, table_name):
+        to_hash = "%s_%s" % (table_name, self.descriptor.name)
+        index_name = codecs.encode(
+            hashlib.sha1(to_hash.encode()).digest(), 'base64')[0:-2].decode('utf-8').replace('+', '$').replace('/', '_')
+
+        return "descriptor_%s_key" % index_name
+
+    def create_btree_index(self, unique=False, db='default'):
+        """
+        Create a new btree index on a field of JSONB descriptors of the given describable model.
+        :param unique: True for unique
+        :param db: DB name ('default')
+        """
+        table = self.target.model_class()._meta.db_table
+        index_name = self._make_index_name(table)
+
+        if unique:
+            sql = """CREATE UNIQUE INDEX %s ON %s ((descriptors->'%s'));""" % (index_name, table, self.descriptor.name)
+        else:
+            sql = """CREATE INDEX %s ON %s ((descriptors->'%s'));""" % (index_name, table, self.descriptor.name)
+
+        connection = connections[db]
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+
+        return True
+
+    def create_gin_index(self, db='default'):
+        """
+        Create a new GIN (not unique) index on a field of JSONB descriptors of the given describable model.
+        :param db: DB name ('default')
+        """
+        table = self.target.model_class()._meta.db_table
+        index_name = self._make_index_name(table)
+
+        sql = """CREATE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index_name, table, self.descriptor.name)
+
+        connection = connections[db]
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+
+        return True
+
+    def create_gist_index(self, db='default'):
+        """
+        Create a new GIST (not unique) index on a field of JSONB descriptors of the given describable model.
+        :param db: DB name ('default')
+        """
+        table = self.target.model_class()._meta.db_table
+        index_name = self._make_index_name(table)
+
+        sql = """CREATE INDEX %s ON %s USING GIST ((descriptors->'%s'));""" % (index_name, table, self.descriptor.name)
+
+        connection = connections[db]
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+
+        return True
+
+    def drop_index(self, db='default'):
+        """
+        Drop an existing index of a field of JSONB descriptors of the given describable model.
+        :param db:
+        """
+        table = self.target.model_class()._meta.db_table
+        index_name = self._make_index_name(table)
+
+        sql = """DROP INDEX IF EXISTS %s""" % index_name
+
+        connection = connections[db]
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+
+    def count_index_usage(self):
+        """
+        Returns the number of times the descriptor is linked to a layout with a target entity.
+        The index can only be dropped when it reach 0.
+        :return: Number of references
+        """
+        if self.type == JSONBFieldIndexType.NONE.value:
+            return 0
+
+        layouts = Layout.objects.filter(target=self.target)
+        count = 0
+
+        for layout in layouts:
+            for panel in layout.layout_content.get('panels'):
+                for descriptor in panel.get('descriptors'):
+                    if descriptor.get('name') == self.descriptor.name:
+                        count += 1
+
+        return count
+
+
 class DescriptorValue(Entity):
     """
     For some descriptors value are in a specific table.
@@ -1101,101 +1222,6 @@ class DescriptorValue(Entity):
         return {
             'code': self.code
         }
-
-
-# class DescriptorPanel(Entity):
-#     """
-#     A panel is a displayable entity that is an association of values of descriptors
-#     from a model of descriptor.
-#     It is only defined for a specific model of descriptor (m2m through model).
-#     A layout of descriptor can have many panels.
-#     The textual resources of a panel are i18nable because they are displayed for users.
-#     """
-#
-#     server_cache_update = ("descriptor", "entity_columns")
-#     client_cache_update = ("entity_columns",)
-#
-#     # To which layouts this panel is attached.
-#     layout = models.ForeignKey('Layout', related_name='panels')
-#
-#     # Related model of descriptor
-#     descriptor_model = models.ForeignKey('DescriptorModel', related_name='panels')
-#
-#     # Label of the panel (can be used for a tab, or any dialog title).
-#     # It is i18nized used JSON dict with language code as key and label as string value.
-#     label = JSONField(default={})
-#
-#     # Position priority into the display. Lesser is before. Negative value are possibles.
-#     position = models.IntegerField(default=0)
-#
-#     class Meta:
-#         verbose_name = _("descriptor panel")
-#
-#     def natural_name(self):
-#         return self.get_label()
-#
-#     @classmethod
-#     def make_search_by_name(cls, term):
-#         lang = translation.get_language()
-#         return Q(label__icontains='"%s": %s' % (lang, json.dumps(term).rstrip('"')))
-#
-#     def audit_create(self, user):
-#         return {
-#             'layout': self.layout_id,
-#             'descriptor_model': self.descriptor_model_id,
-#             'label': self.label,
-#             'position': self.position
-#         }
-#
-#     def audit_update(self, user):
-#         if hasattr(self, 'updated_fields'):
-#             result = {'updated_fields': self.updated_fields}
-#
-#             if 'label' in self.updated_fields:
-#                 result['label'] = self.label
-#
-#             if 'position' in self.updated_fields:
-#                 result['position'] = self.position
-#
-#             return result
-#         else:
-#             return {
-#                 'label': self.label,
-#                 'position': self.position
-#             }
-#
-#     def audit_delete(self, user):
-#         return {
-#             'label': self.label
-#         }
-#
-#     def get_label(self):
-#         """
-#         Get the label for this layout in the current regional.
-#         """
-#         lang = translation.get_language()
-#         return self.label.get(lang, "")
-#
-#     def set_label(self, lang, label):
-#         """
-#         Set the label for a specific language.
-#         :param str lang: language code string
-#         :param str label: Localized label
-#         :note Model instance save() is not called.
-#         """
-#         self.label[lang] = label
-
-
-class JSONBFieldIndexType(ChoiceEnum):
-    """
-    Type of the index for a JSONB field.
-    """
-
-    NONE = IntegerChoice(0, 'None')
-    UNIQUE_BTREE = IntegerChoice(1, 'Unique-BTree')
-    BTREE = IntegerChoice(2, 'BTree')
-    GIN = IntegerChoice(3, 'GIN')
-    GIST = IntegerChoice(4, 'GIST')
 
 
 # class DescriptorModelType(Entity):

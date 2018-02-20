@@ -117,7 +117,7 @@ let View = Marionette.View.extend({
         //     $.alert.error(_t("Some values exists for this type of descriptor"));
         // }
 
-        application.descriptor.controllers.descriptor.delete(this.model);
+        application.descriptor.controllers.descriptor.deleteModel(this.model);
     }
 });
 

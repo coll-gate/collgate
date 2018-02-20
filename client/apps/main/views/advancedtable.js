@@ -1884,7 +1884,7 @@ let View = Marionette.CompositeView.extend({
                 }
 
                 if (columns[columnName].autoSelect) {
-                    columns[columnName].selection.list.delete(id);
+                    columns[columnName].selection.list.deleteModel(id);
                 } else {
                     columns[columnName].selection.list.add(id);
                 }
@@ -1906,7 +1906,7 @@ let View = Marionette.CompositeView.extend({
                 if (columns[columnName].autoSelect) {
                     columns[columnName].selection.list.add(id);
                 } else {
-                    columns[columnName].selection.list.delete(id);
+                    columns[columnName].selection.list.deleteModel(id);
                 }
 
                 if (columns[columnName].selection.list.size === 0) {

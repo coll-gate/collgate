@@ -332,11 +332,12 @@ let View = Marionette.CompositeView.extend({
 
                                 fetching = view.descriptorTypeCollection.fetch({
                                     data: {
+                                        more: 0,
                                         search: '[{"type":"term","field": "id", "value": [' + panel_descriptors_ids.join(',') + '], "op":"notin"}]'
                                     }
                                 });
                             } else {
-                                fetching = view.descriptorTypeCollection.fetch();
+                                fetching = view.descriptorTypeCollection.fetch({data: {more: 0}});
                             }
 
                             fetching.then(function () {
@@ -344,13 +345,24 @@ let View = Marionette.CompositeView.extend({
                                 let i;
                                 let opt_group_list = [];
                                 for (i = 0; i < view.descriptorGroupCollection.length; i++) {
-                                    let opt_group = $('<optgroup></optgroup>');
                                     let group_name = view.descriptorGroupCollection.models[i].attributes.group_name[0];
-                                    opt_group.attr('label', group_name);
-                                    opt_group_list.push({
-                                        name: group_name,
-                                        el: opt_group
+
+                                    if (group_name === null) {
+                                        group_name = _t('Unclassified');
+                                    }
+
+                                    let found = opt_group_list.find(function (element) {
+                                        return element.name === group_name;
                                     });
+
+                                    if (!found) {
+                                        let opt_group = $('<optgroup></optgroup>');
+                                        opt_group.attr('label', group_name);
+                                        opt_group_list.push({
+                                            name: group_name,
+                                            el: opt_group
+                                        });
+                                    }
                                 }
 
                                 // Create descriptor options
@@ -363,7 +375,7 @@ let View = Marionette.CompositeView.extend({
                                     ]));
                                     opt.attr('data-tokens', view.descriptorTypeCollection.models[j].attributes.label + ',' + view.descriptorTypeCollection.models[j].attributes.name + ',' + view.descriptorTypeCollection.models[j].attributes.group_name);
                                     opt.html('<strong>' + view.descriptorTypeCollection.models[j].attributes.label + '</strong> <span class="text-muted">' + view.descriptorTypeCollection.models[j].attributes.name + '</span>');
-                                    let opt_group = _.findWhere(opt_group_list, {name: view.descriptorTypeCollection.models[j].attributes.group_name});
+                                    let opt_group = _.findWhere(opt_group_list, {name: view.descriptorTypeCollection.models[j].attributes.group_name || _t('Unclassified')});
                                     opt.appendTo(opt_group.el)
                                 }
 
