@@ -27,7 +27,7 @@ _.extend(AccessionList.prototype, ActionStepFormat.prototype, {
 
 AccessionList.ActionStepProcessView = Marionette.View.extend({
     className: 'action-step-process',
-    template: "<div></div>",
+    template: require('../templates/actionstep/accessionlistprocess.html'),
 
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);

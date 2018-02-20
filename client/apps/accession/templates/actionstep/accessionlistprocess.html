@@ -1,0 +1,36 @@
+<!--
+ - @file accessionlistprocess.html
+ - @brief Wait for a simple list of accession action step processing
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2018-02-20
+ - @copyright Copyright (c) 2018 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div class="well well-sm">
+    <div class="row">
+        <div class="col-lg-6 form-group">
+            <label><%- _t('Accessions list') %></label>
+            <select name="accession-list-type" class="form-control">
+                <option value="panel"><%= _t("From a panel") %></option>
+                <option value="upload"><%= _t("From a CSV or XLSX") %></option>
+                <option value="manual"><%= _t("Manual selection") %></option>
+            </select>
+        </div>
+        <div class="col-lg-6 form-group">
+            <label><%- _t('Panel') %></label>
+            <select name="accession-panel" class="form-control"></select>
+        </div>
+        <div class="col-lg-6 form-group">
+            <label><%- _t('Upload') %></label>
+            <input name="accession-upload" type="file" class="form-control" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 form-group">
+            <label><%- _t('Selection of accessions') %></label>
+            <select name="accession-list" class="form-control" multiple="true"></select>
+        </div>
+    </div>
+</div>
