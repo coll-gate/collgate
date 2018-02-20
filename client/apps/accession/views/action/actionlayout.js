@@ -10,6 +10,7 @@
 
 let LayoutView = require('../../../main/views/layout');
 let ActionModel = require('../../models/action');
+let ActionTypeModel = require('../../models/actiontype');
 let ScrollingMoreView = require('../../../main/views/scrollingmore');
 let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
 
@@ -25,11 +26,14 @@ let Layout = LayoutView.extend({
         steps_tab: 'a[aria-controls=steps]',
         entities: 'a[aria-controls=entities]',
         description: 'textarea[name=description]',
+        action_type: 'input[name=action-type]',
         name: 'input[name=name]',
         username: 'input[name=username]',
         save: 'button[name=save]',
-        step_index: 'select.action-type-step-index',
-        process_step: 'button[name=process-step]'
+        step_index: 'select[name=step-index]',
+        step_format: 'input[name=step-format]',
+        step_continue: 'button[name=step-continue]',
+        step_description: 'p[name=step-description]'
     },
 
     regions: {
@@ -40,7 +44,7 @@ let Layout = LayoutView.extend({
 
     events: {
         'click @ui.save': 'onSaveAction',
-        'click @ui.process_step': 'onProcessStep'
+        'click @ui.step_continue': 'onProcessStep'
     },
 
     initialize: function (model, options) {
@@ -53,6 +57,9 @@ let Layout = LayoutView.extend({
         // naming options
         let self = this;
         let namingOptions = Object.resolve('data.naming_options', this.model.get('format')) || [];
+
+        this.actionType = new ActionTypeModel({id: this.model.get('action_type')});
+        this.actionTypePromise = this.actionType.fetch();
 
         this.namingOptions = null;
         this.namingFormat = null;
@@ -89,74 +96,31 @@ let Layout = LayoutView.extend({
         this.ui.steps_tab.parent().removeClass('disabled');
     },
 
-    loadCurrentStepData: function() {
-        // if (this.currentStepIndex >= 0) {
-        //     let stepData = this.model.get('format')['steps'][this.currentStepIndex];
-        //     this.ui.step_format.val(stepData.type).prop('disabled', false).selectpicker('refresh');
-        //
-        //     let Element = window.application.accession.actions.getElement(stepData.type);
-        //     let actionFormatType = new Element.ActionStepFormatDetailsView({
-        //         model: this.model,
-        //         namingOptions: this.namingOptions,
-        //         namingFormat: this.namingFormat,
-        //         stepIndex: this.currentStepIndex
-        //     });
-        //
-        //     this.showChildView('contextual', actionFormatType);
-        // }
+    displayStepData: function(stepIndex, stepFormat) {
+        if (stepFormat === null) {
+            return;
+        }
+
+        let Element = window.application.accession.actions.getElement(stepFormat.id);
+        if (Element && Element.ActionStepProcessView) {
+            this.ui.step_format.val(stepFormat.get('label'));
+            this.ui.step_description.text(new Element().description);
+
+            this.showChildView('contextual', new Element.ActionStepProcessView({
+                model: this.model,
+                namingOptions: this.namingOptions,
+                namingFormat: this.namingFormat,
+                stepIndex: this.currentStepIndex
+            }));
+        }
     },
 
     onProcessStep: function() {
         // store current step before changes to new current one
         if (this.currentStepIndex >= 0) {
-            // this.getChildView('contextual').storeData();
+            // @todo
+            // this.getChildView('contextual').processStep();
         }
-    },
-
-    changeStep: function () {
-        let format = this.model.get('format');
-        let idx = parseInt(this.ui.step_index.val());
-
-        if (idx < 0) {
-            // create a new one
-            if (format['steps'].length >= 10) {
-                $.alert.warning(_t("Max number of step reached (10)"));
-                return;
-            } else {
-                let nextIdx = format.steps.length;
-                let formatType = this.ui.step_format.val();
-
-                let stepData = {
-                   'index': nextIdx,
-                   'type': 'accession_list'
-                };
-
-                let element = window.application.accession.actions.newElement(formatType);
-                if (element) {
-                    stepData = element.defaultFormat();
-                }
-
-                stepData.index = nextIdx;
-                stepData.type = formatType;
-
-                // initial step data
-                this.model.get('format')['steps'].push(stepData);
-
-                this.ui.step_index
-                    .append('<option value="' + nextIdx + '">' + _t("Step") + " " + nextIdx + '</option>')
-                    .val(nextIdx)
-                    .selectpicker('refresh');
-
-                this.ui.step_format.prop('disabled', false).selectpicker('refresh');
-                idx = nextIdx;
-            }
-        }
-
-        // set into the model
-        this.storeCurrentStepData();
-
-        this.currentStepIndex = idx;
-        this.loadCurrentStepData();
     },
 
     disableStepsTab: function () {
@@ -164,20 +128,71 @@ let Layout = LayoutView.extend({
     },
 
     onRender: function () {
-        let format = this.model.get('format');
         let actionLayout = this;
 
         // creator user name
         let username = this.model.get('user');
 
+        this.actionTypePromise.then(function (data) {
+            actionLayout.ui.action_type.val(data.label);
+        });
+
         if (!this.model.isNew()) {
-            let currentStepIndex = this.model.get('data').steps.length;
+            if (this.model.get('completed')) {
+                // all steps are readable
+                for (let i = 0; i < this.model.get('data').steps.length; ++i) {
+                    this.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
+                }
 
-            let previousStep = currentStepIndex > 1 ? this.model.get('data').steps[currentStepIndex-1] : null;
-            let currentStep = currentStepIndex > 0 ? this.model.get('data').steps[currentStepIndex] : null;
+                this.ui.step_index.selectpicker({});
 
-            if (currentStep) {
-                // @todo
+                // @todo display a finished panel
+            } else {
+                this.actionTypePromise.then(function (data) {
+                    let currentStepIndex = actionLayout.model.get('data').steps.length - 1;
+                    let currentStepData = currentStepIndex > 0 ? actionLayout.model.get('data').steps[currentStepIndex] : null;
+                    let currentStepFormat = null;
+
+                    if (currentStepData && currentStepData.done) {
+                        // init the next step if not the last
+                        if (currentStepIndex + 1 < data.steps.length) {
+                            ++currentStepIndex;
+                            currentStepFormat = data.format.steps[currentStepIndex];
+                        }
+                    } else if (currentStepData) {
+                        // display the current step
+                        currentStepFormat = data.format.steps[currentStepIndex];
+                        // @todo
+                    } else if (data.format.steps.length) {
+                        // initiate the first step
+                        currentStepIndex = 0;
+                        currentStepFormat = data.format.steps[0];
+                    }
+
+                    if (currentStepFormat !== null) {
+                        let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: currentStepFormat.type});
+                        actionLayout.displayStepData(currentStepIndex, stepFormat);
+                        /*
+                        let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: currentStepFormat.type});
+                        actionLayout.ui.step_format.val(stepFormat.get('label'));
+
+                        let Element = window.application.accession.actions.getElement(currentStepFormat.type);
+                        if (Element && Element.ActionStepProcessView) {
+                            actionLayout.showChildView('contextual', new Element.ActionStepProcessView({
+                                model: actionLayout.model,
+                                namingOptions: actionLayout.namingOptions,
+                                namingFormat: actionLayout.namingFormat,
+                                stepIndex: actionLayout.currentStepIndex
+                            }));
+                        }*/
+                    }
+
+                    for (let i = 0; i < currentStepIndex+1; ++i) {
+                        actionLayout.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
+                    }
+
+                    actionLayout.ui.step_index.selectpicker({});
+                });
             }
 
             this.enableTabs();

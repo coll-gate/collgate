@@ -16,11 +16,32 @@ let AccessionList = function() {
 
     this.name = "accession_list";
     this.group = "standard";
+    this.description = _t("Take a list of accession in input and dispose this same list as output for the next step.");
 };
 
 _.extend(AccessionList.prototype, ActionStepFormat.prototype, {
     defaultFormat: function() {
         return {};
+    }
+});
+
+AccessionList.ActionStepProcessView = Marionette.View.extend({
+    className: 'action-step-process',
+    template: "<div></div>",
+
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
+    },
+
+    exportInput: function() {
+
+    },
+
+    importData: function() {
+
     }
 });
 

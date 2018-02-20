@@ -16,6 +16,7 @@ let Format = function() {
 
     this.name = "accessionconsumer_batchproducer";
     this.group = "standard";
+    this.description = _t("Take a list of accession in input and generate one or many batch in output.");
 };
 
 _.extend(Format.prototype, ActionStepFormat.prototype, {

@@ -14,7 +14,8 @@ module.exports = Backbone.Model.extend({
             id: 0,
             group: 0,
             value: '',
-            label: ''
+            label: '',
+            description: ''
         }
     },
     url: window.application.url(['accession', 'actiontype', 'stepformat', ':id'])

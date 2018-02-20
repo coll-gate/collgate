@@ -28,7 +28,8 @@ let Layout = LayoutView.extend({
         config_save: 'button[name=save]',
         step_index: 'select.action-type-step-index',
         name: 'input[name=name]',
-        delete_step: 'span[name=delete-step]'
+        delete_step: 'span[name=delete-step]',
+        step_description: 'p[name=step-description]'
     },
 
     regions: {
@@ -126,6 +127,7 @@ let Layout = LayoutView.extend({
                 stepIndex: this.currentStepIndex
             });
 
+            this.ui.step_description.text(new Element().description);
             this.showChildView('contextual', actionFormatType);
         }
     },

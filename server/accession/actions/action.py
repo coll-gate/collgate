@@ -89,7 +89,8 @@ def create_action(request):
         'completed': action.completed,
         'user': user.username,
         'action_type': action.action_type_id,
-        'data': action.data
+        'data': action.data,
+        'created_date': action.created_date.strftime("%Y-%m-%d %H:%M:%S")
     }
 
     return HttpResponseRest(request, results)
@@ -283,7 +284,8 @@ def get_action_details(request, act_id):
         'user': action.user.username,
         'data': action.data,
         'action_type': action.action_type_id,
-        'completed': action.completed
+        'completed': action.completed,
+        'created_date': action.created_date.strftime("%Y-%m-%d %H:%M:%S")
     }
 
     return HttpResponseRest(request, result)
