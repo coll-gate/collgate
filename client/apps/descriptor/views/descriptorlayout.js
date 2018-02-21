@@ -10,7 +10,6 @@
 
 let LayoutView = require('../../main/views/layout');
 let DescriptorDetails = require('./descriptordetails');
-let ScrollingMoreView = require('../../main/views/scrollingmore');
 
 let Layout = LayoutView.extend({
     template: require("../templates/descriptorlayout.html"),
@@ -22,7 +21,7 @@ let Layout = LayoutView.extend({
     ui: {
         configuration_tab: 'a[aria-controls=configuration]',
         values_tab: 'a[aria-controls=values]',
-        step_format: 'select.batch-action-format-step',
+        format_type: '#format_type',
         description: 'textarea[name=description]',
         config_save: 'button[name=save]'
     },
@@ -66,12 +65,12 @@ let Layout = LayoutView.extend({
     },
 
     changeFormatType: function () {
-        let formatType = this.ui.step_format.val();
+        let formatType = this.ui.format_type.val();
 
         // update the contextual region according to the format
         let Element = window.application.accession.actions.getElement(formatType);
-        if (Element && Element.BatchActionTypeFormatDetailsView) {
-            this.showChildView('contextual', new Element.BatchActionTypeFormatDetailsView({model: this.model}));
+        if (Element && Element.DescriptorTypeDetailsView) {
+            this.showChildView('contextual', new Element.DescriptorTypeDetailsView({model: this.model}));
         } else {
             this.getRegion('contextual').empty();
         }
@@ -155,7 +154,7 @@ let Layout = LayoutView.extend({
 
     onUpdateConfig: function () {
         let childView = this.getChildView('contextual');
-        let formatType = this.ui.step_format.val();
+        let formatType = this.ui.format_type.val();
 
         if (childView) {
             let format = childView.getFormat();

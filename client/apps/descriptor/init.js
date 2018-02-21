@@ -122,7 +122,6 @@ DescriptorModule.prototype = {
 
         app.main.cache.register('descriptors');
         app.main.cache.register('layouts');
-        app.main.cache.register('indexes');
         app.main.cache.register('entity_columns');
 
         let DescriptorMetaModelCacheFetcher = require('./utils/descriptormetamodelcachefetcher');
