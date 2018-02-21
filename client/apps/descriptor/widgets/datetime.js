@@ -202,7 +202,7 @@ DateTimeType.DescriptorTypeDetailsView = Marionette.View.extend({
 });
 
 DateTimeType.format = function (value) {
-    return moment(value).format("LT");
+    return moment(value).format("L LT");
 };
 
 module.exports = DateTimeType;

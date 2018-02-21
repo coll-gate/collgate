@@ -10,6 +10,7 @@
 
 let LayoutView = require('../../../main/views/layout');
 let ActionModel = require('../../models/action');
+let ActionTypeModel = require('../../models/actiontype');
 let ScrollingMoreView = require('../../../main/views/scrollingmore');
 let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
 
@@ -25,10 +26,14 @@ let Layout = LayoutView.extend({
         steps_tab: 'a[aria-controls=steps]',
         entities: 'a[aria-controls=entities]',
         description: 'textarea[name=description]',
+        action_type: 'input[name=action-type]',
         name: 'input[name=name]',
-        update: 'button[name=update]',
-        step_index: 'select.action-type-step-index',
-        process_step: 'button[name=process-step]'
+        username: 'input[name=username]',
+        save: 'button[name=save]',
+        step_index: 'select[name=step-index]',
+        step_format: 'input[name=step-format]',
+        step_continue: 'button[name=step-continue]',
+        step_description: 'p[name=step-description]'
     },
 
     regions: {
@@ -38,8 +43,8 @@ let Layout = LayoutView.extend({
     },
 
     events: {
-        'click @ui.update': 'onUpdateAction',
-        'click @ui.process_step': 'onProcessStep'
+        'click @ui.save': 'onSaveAction',
+        'click @ui.step_continue': 'onProcessStep'
     },
 
     initialize: function (model, options) {
@@ -52,6 +57,9 @@ let Layout = LayoutView.extend({
         // naming options
         let self = this;
         let namingOptions = Object.resolve('data.naming_options', this.model.get('format')) || [];
+
+        this.actionType = new ActionTypeModel({id: this.model.get('action_type')});
+        this.actionTypePromise = this.actionType.fetch();
 
         this.namingOptions = null;
         this.namingFormat = null;
@@ -88,132 +96,147 @@ let Layout = LayoutView.extend({
         this.ui.steps_tab.parent().removeClass('disabled');
     },
 
-    loadCurrentStepData: function() {
-        // if (this.currentStepIndex >= 0) {
-        //     let stepData = this.model.get('format')['steps'][this.currentStepIndex];
-        //     this.ui.format_type.val(stepData.type).prop('disabled', false).selectpicker('refresh');
-        //
-        //     let Element = window.application.accession.actions.getElement(stepData.type);
-        //     let actionFormatType = new Element.ActionStepFormatDetailsView({
-        //         model: this.model,
-        //         namingOptions: this.namingOptions,
-        //         namingFormat: this.namingFormat,
-        //         stepIndex: this.currentStepIndex
-        //     });
-        //
-        //     this.showChildView('contextual', actionFormatType);
-        // }
+    displayStepData: function(stepIndex, stepFormat) {
+        if (stepFormat === null) {
+            return;
+        }
+
+        let Element = window.application.accession.actions.getElement(stepFormat.id);
+        if (Element && Element.ActionStepProcessView) {
+            this.ui.step_format.val(stepFormat.get('label'));
+            this.ui.step_description.text(new Element().description);
+
+            this.showChildView('contextual', new Element.ActionStepProcessView({
+                model: this.model,
+                namingOptions: this.namingOptions,
+                namingFormat: this.namingFormat,
+                stepIndex: this.currentStepIndex
+            }));
+        }
     },
 
     onProcessStep: function() {
         // store current step before changes to new current one
         if (this.currentStepIndex >= 0) {
-            // this.getChildView('contextual').storeData();
+            // @todo
+            // this.getChildView('contextual').processStep();
         }
     },
 
-    changeStep: function () {
-        let format = this.model.get('format');
-        let idx = parseInt(this.ui.step_index.val());
-
-        if (idx < 0) {
-            // create a new one
-            if (format['steps'].length >= 10) {
-                $.alert.warning(_t("Max number of step reached (10)"));
-                return;
-            } else {
-                let nextIdx = format.steps.length;
-                let formatType = this.ui.format_type.val();
-
-                let stepData = {
-                   'index': nextIdx,
-                   'type': 'accession_list'
-                };
-
-                let element = window.application.accession.actions.newElement(formatType);
-                if (element) {
-                    stepData = element.defaultFormat();
-                }
-
-                stepData.index = nextIdx;
-                stepData.type = formatType;
-
-                // initial step data
-                this.model.get('format')['steps'].push(stepData);
-
-                this.ui.step_index
-                    .append('<option value="' + nextIdx + '">' + _t("Step") + " " + nextIdx + '</option>')
-                    .val(nextIdx)
-                    .selectpicker('refresh');
-
-                this.ui.format_type.prop('disabled', false).selectpicker('refresh');
-                idx = nextIdx;
-            }
-        }
-
-        // set into the model
-        this.storeCurrentStepData();
-
-        this.currentStepIndex = idx;
-        this.loadCurrentStepData();
+    disableStepsTab: function () {
+        this.ui.steps_tab.parent().addClass('disabled');
     },
 
     onRender: function () {
-        let format = this.model.get('format');
         let actionLayout = this;
 
-        // for (let i = 0; i < format.steps.length; ++i) {
-        //     this.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
-        // }
-        //
-        // this.namingOptionsPromise.then(function() {
-        //     batchLayout.ui.step_index.selectpicker({}).on('change', $.proxy(batchLayout.changeStep, batchLayout));
-        // });
-        //
-        // window.application.accession.views.actionTypeFormats.drawSelect(this.ui.format_type, true, false);
-        // this.ui.format_type.prop('disabled', true).selectpicker('refresh');
-        //
-        // if (!this.model.isNew()) {
-        //     if (format.steps.length) {
-        //         // select first step if exists
-        //         this.namingOptionsPromise.then(function () {
-        //             batchLayout.ui.step_index.val(0).selectpicker('refresh');
-        //             batchLayout.currentStepIndex = 0;
-        //             batchLayout.loadCurrentStepData();
-        //         });
-        //     }
-        //
-        //     this.enableTabs();
-        // } else {
-        // }
+        // creator user name
+        let username = this.model.get('user');
+
+        this.actionTypePromise.then(function (data) {
+            actionLayout.ui.action_type.val(data.label);
+        });
+
+        if (!this.model.isNew()) {
+            if (this.model.get('completed')) {
+                // all steps are readable
+                for (let i = 0; i < this.model.get('data').steps.length; ++i) {
+                    this.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
+                }
+
+                this.ui.step_index.selectpicker({});
+
+                // @todo display a finished panel
+            } else {
+                this.actionTypePromise.then(function (data) {
+                    let currentStepIndex = actionLayout.model.get('data').steps.length - 1;
+                    let currentStepData = currentStepIndex > 0 ? actionLayout.model.get('data').steps[currentStepIndex] : null;
+                    let currentStepFormat = null;
+
+                    if (currentStepData && currentStepData.done) {
+                        // init the next step if not the last
+                        if (currentStepIndex + 1 < data.steps.length) {
+                            ++currentStepIndex;
+                            currentStepFormat = data.format.steps[currentStepIndex];
+                        }
+                    } else if (currentStepData) {
+                        // display the current step
+                        currentStepFormat = data.format.steps[currentStepIndex];
+                        // @todo
+                    } else if (data.format.steps.length) {
+                        // initiate the first step
+                        currentStepIndex = 0;
+                        currentStepFormat = data.format.steps[0];
+                    }
+
+                    if (currentStepFormat !== null) {
+                        let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: currentStepFormat.type});
+                        actionLayout.displayStepData(currentStepIndex, stepFormat);
+                        /*
+                        let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: currentStepFormat.type});
+                        actionLayout.ui.step_format.val(stepFormat.get('label'));
+
+                        let Element = window.application.accession.actions.getElement(currentStepFormat.type);
+                        if (Element && Element.ActionStepProcessView) {
+                            actionLayout.showChildView('contextual', new Element.ActionStepProcessView({
+                                model: actionLayout.model,
+                                namingOptions: actionLayout.namingOptions,
+                                namingFormat: actionLayout.namingFormat,
+                                stepIndex: actionLayout.currentStepIndex
+                            }));
+                        }*/
+                    }
+
+                    for (let i = 0; i < currentStepIndex+1; ++i) {
+                        actionLayout.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
+                    }
+
+                    actionLayout.ui.step_index.selectpicker({});
+                });
+            }
+
+            this.enableTabs();
+        } else {
+            if (!username) {
+                username = window.session.user.username;
+            }
+
+            // not available tabs
+            this.disableStepsTab();
+        }
+
+        $.ajax({
+            type: "GET",
+            url: window.application.url(['permission', 'user', 'username', username]),
+            dataType: 'json'
+        }).done(function (data) {
+            let name = [data.first_name, data.last_name, '(' + data.username + ')'];
+            actionLayout.ui.username.val(name.join(' '));
+        });
     },
 
     onBeforeDetach: function () {
-        this.ui.step_index.selectpicker('destroy');
-        this.$el.find("select.action-type-format-type").selectpicker("destroy");
     },
 
-    onUpdateAction: function() {
+    onSaveAction: function() {
         let name = this.ui.name.val().trim();
         let description = this.ui.description.val().trim();
+        let actionType = parseInt(this.model.get('action_type'));
 
-        // // store possible last changes on current step
-        // this.storeCurrentStepData();
-        //
-        // let model = this.model;
-        // let format = model.get('format');
-        //
-        // if (model.isNew()) {
-        //     model.save({name: name, description: description, format: format}, {wait: true}).then(function () {
-        //         $.alert.success(_t("Successfully changed !"));
-        //         Backbone.history.navigate('app/accession/actiontype/' + model.get('id') + '/', {trigger: true, replace: true});
-        //     });
-        // } else {
-        //     model.save({name: name, description: description, format: format}, {wait: true, patch: true}).then(function () {
-        //         $.alert.success(_t("Successfully changed !"));
-        //         Backbone.history.navigate('app/accession/actiontype/' + model.get('id') + '/', {trigger: true, replace: true});
-        //     });
-        // }
+        // update action info data
+        let model = this.model;
+
+        if (model.isNew()) {
+            model.save({name: name, description: description, action_type: actionType}, {wait: true}).then(function () {
+                $.alert.success(_t("Successfully created !"));
+                Backbone.history.navigate('app/accession/action/' + model.get('id') + '/', {trigger: true, replace: true});
+            });
+        } else {
+            model.save({name: name, description: description}, {wait: true, patch: true}).then(function () {
+                $.alert.success(_t("Successfully changed !"));
+                Backbone.history.navigate('app/accession/action/' + model.get('id') + '/', {trigger: true, replace: true});
+            });
+        }
     }
 });
 

@@ -680,10 +680,10 @@
 #     values = request.data['values']
 #
 #     # validate the values[0]
-#     format_type = target.descriptor_type.format
+#     step_format = target.descriptor_type.format
 #
 #     if condition == DescriptorCondition.EQUAL or condition == DescriptorCondition.NOT_EQUAL:
-#         DescriptorFormatTypeManager.validate(format_type, values, target)
+#         DescriptorFormatTypeManager.validate(step_format, values, target)
 #
 #     dmtc = DescriptorModelTypeCondition()
 #
@@ -735,12 +735,12 @@
 #         values = request.data['values']
 #
 #         # validate the values
-#         format_type = target.descriptor_type.format
+#         step_format = target.descriptor_type.format
 #
 #         condition = DescriptorCondition(request.data['condition'])
 #
 #         if condition == DescriptorCondition.EQUAL or condition == DescriptorCondition.NOT_EQUAL:
-#             DescriptorFormatTypeManager.validate(format_type, values, target)
+#             DescriptorFormatTypeManager.validate(step_format, values, target)
 #
 #         condition = DescriptorCondition(request.data['condition'])
 #
@@ -790,12 +790,12 @@
 #     dmt = DescriptorModelType.objects.select_related('descriptor_type').get(name=dmt_name)
 #
 #     limit = 100
-#     format_type = dmt.descriptor_type.format
+#     step_format = dmt.descriptor_type.format
 #
 #     # json array
 #     values = json.loads(request.GET['values'])
 #
 #     # no cursor, simple list, limited to 100 elements per call
-#     results = DescriptorFormatTypeManager.get_display_values_for(format_type, dmt.descriptor_type, values, limit)
+#     results = DescriptorFormatTypeManager.get_display_values_for(step_format, dmt.descriptor_type, values, limit)
 #
 #     return HttpResponseRest(request, results)

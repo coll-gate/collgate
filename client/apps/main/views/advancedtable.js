@@ -826,11 +826,11 @@ let View = Marionette.CompositeView.extend({
             e.originalEvent.preventDefault();
         }
 
-        if (!application.main.dnd.isSelector('advanced-table-column')) {
+        if (!window.application.main.dnd.isSelector('advanced-table-column')) {
             return false;
         }
 
-        if (e.currentTarget === application.main.dnd.get()[0]) {
+        if (e.currentTarget === window.application.main.dnd.get()[0]) {
             return false;
         }
 
@@ -838,7 +838,7 @@ let View = Marionette.CompositeView.extend({
             return false;
         }
 
-        if (application.main.dnd.get().children('div.table-advanced-label').length === 0) {
+        if (window.application.main.dnd.get().children('div.table-advanced-label').length === 0) {
             return false;
         }
 
@@ -877,7 +877,7 @@ let View = Marionette.CompositeView.extend({
             e.originalEvent.stopPropagation();
         }
 
-        if (!application.main.dnd.isSelector('advanced-table-column')) {
+        if (!window.application.main.dnd.isSelector('advanced-table-column')) {
             return false;
         }
 
@@ -889,7 +889,7 @@ let View = Marionette.CompositeView.extend({
         target.css('opacity', 'initial')
             .children('div.table-advanced-label').removeClass('highlight-label');
 
-        let srcName = application.main.dnd.get().attr('name');
+        let srcName = window.application.main.dnd.get().attr('name');
         let dstName = target.attr('name');
 
         if (srcName !== dstName) {
@@ -905,9 +905,16 @@ let View = Marionette.CompositeView.extend({
 
             // switch labels
             let headColumns = $(this.ui.thead.children('tr')[0]).children('th,td');
-            headColumns.eq(i1 > i2 ? i1 : i2).moveBefore(headColumns.eq(i1 > i2 ? i2 : i1))
-                .css('opacity', 'initial')
-                .children('div.table-advanced-label').removeClass('highlight-label');
+
+            if (i1 > i2) {
+                headColumns.eq(i2).detach().insertAfter(headColumns.eq(i1))
+                    .css('opacity', 'initial')
+                    .children('div.table-advanced-label').removeClass('highlight-label');
+            } else {
+                headColumns.eq(i2).moveBefore(headColumns.eq(i1))
+                    .css('opacity', 'initial')
+                    .children('div.table-advanced-label').removeClass('highlight-label');
+            }
 
             // switch for any row and reset opacity
             if (i1 < i2) {
@@ -918,7 +925,7 @@ let View = Marionette.CompositeView.extend({
             } else {
                 $.each(this.ui.tbody.children('tr'), function (i, element) {
                     let columns = $(element).children('th,td');
-                    columns.eq(i1).moveBefore(columns.eq(i2).css('opacity', 'initial'));
+                    columns.eq(i2).detach().insertAfter(columns.eq(i1).css('opacity', 'initial'));
                 });
             }
 
@@ -948,7 +955,7 @@ let View = Marionette.CompositeView.extend({
 
             // save user settings
             if (this.getUserSettingName()) {
-                application.updateUserSetting(
+                window.application.updateUserSetting(
                     this.getUserSettingName(),
                     this.selectedColumns,
                     this.getUserSettingVersion());

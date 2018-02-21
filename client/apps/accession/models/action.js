@@ -19,11 +19,11 @@ let Model = Backbone.Model.extend({
     },
 
     defaults: {
-        id: 0,
+        id: null,
         name: '',
         action_type: null,
         completed: false,
-        data: {},
+        data: {steps: []},
         user: '',
         description: ''
     },

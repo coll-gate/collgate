@@ -1,6 +1,6 @@
 /**
- * @file actiontypeformat.js
- * @brief Action type format model
+ * @file actionstepformat.js
+ * @brief Action step format model
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-15
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -14,8 +14,9 @@ module.exports = Backbone.Model.extend({
             id: 0,
             group: 0,
             value: '',
-            label: ''
+            label: '',
+            description: ''
         }
     },
-    url: window.application.url(['accession', 'actiontype', 'format', ':id'])
+    url: window.application.url(['accession', 'actiontype', 'stepformat', ':id'])
 });

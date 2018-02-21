@@ -16,6 +16,7 @@ let Format = function() {
 
     this.name = "batchconsumer_batchmodifier";
     this.group = "standard";
+    this.description = _t("Take a list of batch in input and some descriptors to be defined on those batches, the output list is the list of the batches.");
 };
 
 _.extend(Format.prototype, ActionStepFormat.prototype, {

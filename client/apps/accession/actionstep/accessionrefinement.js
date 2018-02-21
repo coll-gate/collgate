@@ -16,6 +16,7 @@ let Format = function() {
 
     this.name = "accession_refinement";
     this.group = "standard";
+    this.description = _t("Take a list of accession in input and generate a filtered list of accession based on the input.");
 };
 
 _.extend(Format.prototype, ActionStepFormat.prototype, {

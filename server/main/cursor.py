@@ -211,6 +211,9 @@ class CursorQuery(object):
             elif type(field) is JSONField:
                 self.model_fields[field.name] = ('JSON', 'JSON', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
+            elif type(field) is models.fields.BooleanField:
+                self.model_fields[field.name] = ('BOOL', 'BOOL', field.null)
+                self.query_select.append('"%s"."%s"' % (db_table, field.name))
             elif type(field) is ArrayField:
                 if type(field.base_field) is models.fields.IntegerField or type(
                         field.base_field) == models.fields.AutoField:
@@ -391,6 +394,11 @@ class CursorQuery(object):
                     return "'1900-01-01 00:00:00'::timestamp"
                 else:
                     return "NULL"
+            elif field_data[1] == 'BOOL':
+                if field_data[2]:
+                    return "FALSE"
+                else:
+                    return "NULL"
             else:
                 if field_data[2]:
                     return "''"
@@ -416,6 +424,8 @@ class CursorQuery(object):
         elif field_data[1] == 'DATETIME':
             dt = datetime.datetime.strptime(value.replace("'", "''"), '%Y-%m-%d %H:%M:%S')
             return "'" + dt.strftime('%Y-%m-%d %H:%M:%S') + "'::timestamp"
+        elif field_data[1] == 'BOOL':
+            return "TRUE" if value else "FALSE"
         else:
             return "'" + value.replace("'", "''") + "'"
 

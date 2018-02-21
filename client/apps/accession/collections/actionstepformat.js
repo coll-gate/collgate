@@ -1,5 +1,5 @@
 /**
- * @file actiontypeformat.js
+ * @file actionstepformat.js
  * @brief Action type format collection
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-15
@@ -8,10 +8,10 @@
  * @details
  */
 
-let FormatModel = require('../models/actiontypeformat');
+let FormatModel = require('../models/actionstepformat');
 
 let Collection = Backbone.Collection.extend({
-    url: window.application.url(['accession', 'actiontype', 'format']),
+    url: window.application.url(['accession', 'actiontype', 'stepformat']),
     model: FormatModel,
 
     initialize: function(models, options) {

@@ -507,6 +507,20 @@ def get_user_permissions(request, username):
     return HttpResponseRest(request, response)
 
 
+@RestPermissionUserName.def_admin_request(Method.GET, Format.JSON)
+def get_user_info(request, username):
+    user = get_object_or_404(User, username=username)
+
+    result = {
+        'id': user.pk,
+        'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name
+    }
+
+    return HttpResponseRest(request, result)
+
+
 @RestPermissionUserName.def_admin_request(Method.PATCH, Format.JSON, content={
     "type": "object",
     "properties": {

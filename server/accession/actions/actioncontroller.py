@@ -66,7 +66,7 @@ class ActionController(object):
         action = Action()
         action.name = name  # informative name
         action.user = self.user
-        action.type = self.action_type
+        action.action_type = self.action_type
 
         # initial data structure
         data = {'steps': []}
