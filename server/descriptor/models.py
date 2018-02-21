@@ -978,6 +978,7 @@ class DescriptorIndex(models.Model):
 
     class Meta:
         verbose_name = _("descriptor index")
+        unique_together = ('descriptor', 'target')
 
     @classmethod
     def get_defaults_columns(cls):

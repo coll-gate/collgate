@@ -141,33 +141,16 @@ let Controller = Marionette.Object.extend({
             },
 
             onCreate: function () {
-                // let view = this;
-
-                // if (this.validate()) {
-                    // create a new local model and open an edit view with this model
-                    let model = new IndexModel({
-                        type: JSON.parse(this.ui.type.val()),
-                        descriptor: JSON.parse(this.ui.descriptor.val())[1],
-                        target: this.ui.target.val()
-                    });
-
-                    model.save();
-
-                    // this.collection.create(model);
-                    this.destroy();
-                    // model.collection.fetch();
-
-                    // let defaultLayout = new DefaultLayout();
-                    // window.application.main.showContent(defaultLayout);
-                    //
-                    // defaultLayout.showChildView('title', new TitleView({
-                    //     title: _t("Descriptor"),
-                    //     model: model
-                    // }));
-
-                    // let descriptorLayout = new DescriptorLayout({model: model});
-                    // defaultLayout.showChildView('content', descriptorLayout);
-                // }
+                let view = this;
+                let model = new IndexModel({
+                    type: JSON.parse(this.ui.type.val()),
+                    descriptor: JSON.parse(this.ui.descriptor.val())[1],
+                    target: this.ui.target.val()
+                });
+                model.save().then(function () {
+                    view.collection.add(model);
+                });
+                this.destroy();
             }
         });
 

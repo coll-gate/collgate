@@ -21,7 +21,7 @@ let IndexListView = require('../../descriptor/views/descriptorindexlist');
 let Router = Marionette.AppRouter.extend({
     routes: {
         "app/descriptor/index/": "getIndexList",
-        "app/descriptor/index/:id/": "getIndex",
+        // "app/descriptor/index/:id/": "getIndex",
     },
 
     getIndexList: function (options) {
@@ -59,17 +59,17 @@ let Router = Marionette.AppRouter.extend({
         });
     },
 
-    getIndex : function(tid) {
-        let defaultLayout = new DefaultLayout();
-        window.application.main.showContent(defaultLayout);
-
-        // let model = new DescriptorModel({id: tid});
-        //
-        // model.fetch().then(function () {
-        //     defaultLayout.showChildView('title', new TitleView({title: _t("Details for the descriptor index"), model: model}));
-            // defaultLayout.showChildView('content', new DescriptorLayout({model: model, initialTab: tab.replace('/', '')}));
-        // });
-    },
+    // getIndex : function(tid) {
+    //     let defaultLayout = new DefaultLayout();
+    //     window.application.main.showContent(defaultLayout);
+    //
+    //     // let model = new DescriptorModel({id: tid});
+    //     //
+    //     // model.fetch().then(function () {
+    //     //     defaultLayout.showChildView('title', new TitleView({title: _t("Details for the descriptor index"), model: model}));
+    //         // defaultLayout.showChildView('content', new DescriptorLayout({model: model, initialTab: tab.replace('/', '')}));
+    //     // });
+    // },
 });
 
 module.exports = Router;

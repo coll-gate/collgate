@@ -13,6 +13,7 @@ import json
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.db import IntegrityError, transaction
 from django.db.models import Q, Count
 from django.db.models.functions import Length
 from django.shortcuts import get_object_or_404
@@ -266,9 +267,9 @@ def get_index(request, index_id):
 
     response = {
         'id': index.id,
-        'descriptor': index.descriptor,
-        'target': index.target,
-        'type': index.type,
+        'descriptor': index.descriptor.name,
+        'target': index.target.name.capitalize(),
+        'type': JSONBFieldIndexType(index.type).name
     }
 
     return HttpResponseRest(request, response)
@@ -288,7 +289,7 @@ def get_index(request, index_id):
     },
     staff=True
 )
-def get_index(request):
+def create_index(request):
     descriptor_id = int(request.data.get('descriptor'))
     target = request.data.get('target')
     index_type = JSONBFieldIndexType(request.data.get('type', 0))
@@ -304,14 +305,15 @@ def get_index(request):
         type=index_type.value
     )
 
-    index.save()
-    index.create_or_drop_index(index.target)
+    with transaction.atomic():
+        index.save()
+        index.create_or_drop_index()
 
     response = {
         'id': index.id,
         'descriptor': index.descriptor.name,
-        'target': index.target.model,
-        'type': index.type,
+        'target': index.target.name.capitalize(),
+        'type': JSONBFieldIndexType(index.type).name
     }
 
     return HttpResponseRest(request, response)
@@ -321,11 +323,14 @@ def get_index(request):
 def delete_index(request, index_id):
     index = get_object_or_404(DescriptorIndex, id=int(index_id))
 
-    if index.count_index_usage() == 0:
+    # if index.count_index_usage() == 0:
+    with transaction.atomic():
+        index.type = JSONBFieldIndexType.NONE
+        index.create_or_drop_index()
         index.delete()
-    else:
-        from django.core import exceptions
-        raise exceptions.SuspiciousOperation(_("This index refer to a descriptor used in a layout"))
+    # else:
+    #     from django.core import exceptions
+    #     raise exceptions.SuspiciousOperation(_("This index refer to a descriptor used in a layout"))
 
     return HttpResponseRest(request, {})
 
