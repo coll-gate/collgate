@@ -141,15 +141,12 @@ let Controller = Marionette.Object.extend({
             },
 
             onCreate: function () {
-                let view = this;
                 let model = new IndexModel({
                     type: JSON.parse(this.ui.type.val()),
                     descriptor: JSON.parse(this.ui.descriptor.val())[1],
                     target: this.ui.target.val()
                 });
-                model.save().then(function () {
-                    view.collection.add(model);
-                });
+                this.collection.create(model, {wait: true});
                 this.destroy();
             }
         });
