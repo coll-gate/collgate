@@ -16,27 +16,27 @@ let View = AdvancedTable.extend({
     className: "object descriptor-group-list advanced-table-container",
     childView: DescriptorView,
     userSettingName: 'descriptor_list_columns',
-    userSettingVersion: '1.0',
+    userSettingVersion: '1.4',
 
     defaultColumns: [
-        // {name: 'select', width: 'auto', sort_by: null},
+        {name: 'lock', width: 'auto', sort_by: null},
+        {name: 'group_name', width: 'auto', sort_by: '+0'},
         {name: 'code', width: 'auto', sort_by: null},
-        {name: 'name', width: 'auto', sort_by: '+0'},
+        {name: 'name', width: 'auto', sort_by: null},
         {name: 'label', width: 'auto', sort_by: null},
     ],
 
     columnsOptions: {
-        // 'select': {
-        //     label: '',
-        //     width: 'auto',
-        //     type: 'checkbox',
-        //     glyphicon: ['fa-square-o', 'fa-square-o'],
-        //     // event: 'accession-select',
-        //     fixed: true
-        // },
+        'lock': {
+            label: '',
+            width: 'auto',
+            glyphicon: ['fa-lock', 'fa-lock'],
+            fixed: true
+        },
         'code': {label: _t('Code'), width: 'auto', minWidth: true, event: 'view-descriptor-details'},
         'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-descriptor-details'},
         'label': {label: _t('Label'), width: 'auto', minWidth: true, event: 'view-descriptor-details'},
+        'group_name': {width: 'auto', minWidth: true}
     },
 
     initialize: function (options) {

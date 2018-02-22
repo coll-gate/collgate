@@ -24,7 +24,8 @@ let View = Marionette.View.extend({
     ui: {
         delete_btn: '.action.delete',
         edit_btn: '.action.edit',
-        manage_btn: '.action.manage'
+        manage_btn: '.action.manage',
+        lock: 'td[name=lock]'
     },
 
     events: {
@@ -76,6 +77,10 @@ let View = Marionette.View.extend({
     onRender: function() {
         if (!window.application.permission.manager.isStaff()) {
             $(this.ui.delete_descriptor_model_type).hide();
+        }
+
+        if (this.model.get('can_modify')) {
+            this.ui.lock.find('span').hide()
         }
     },
 
