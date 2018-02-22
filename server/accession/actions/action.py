@@ -135,54 +135,69 @@ def update_action(request, act_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "inputs": {
-                # @todo different input modes
-                "type": [{
-                    "type": "object",
-                    "properties": {
-                        "op": {"type": "string", "enum": ['in', 'notin']},
-                        "term": {"type": "string"},
-                        "value": {"type": "array", "minItems": 0, "maxItems": 32768, "additionalItems": {"type": "number"}, "items": []}
-                    },
-                }, {
-                    "type": "boolean"
-                }],
-                "required": False
-            }
+            "action": {"type": "string", "enum": ['reset', 'setup', 'process']},    # action in term of API
+            "inputs_type": {"type": "string", "enum": ['panel', 'upload', 'list']},
+            "panel": {"type": "numeric", "required": False},
+            "list": {"type": "array", "required": False, "minItems": 0, "maxItems": 32768, "additionalItems": {
+                    "type": "number"
+                }, "items": []},
+            "upload": {"type": "numeric", "required": False}  # @todo process to upload and store file
         },
     }, perms={
         'accession.change_action': _("You are not allowed to modify an action")
     })
 def action_process_step(request, act_id):
-    inputs = request.data.get('inputs')
+    inputs_type = request.data.get('inputs_type')
+    action = request.data.get('action')
     user = request.user
 
     action = get_object_or_404(Action, pk=int(act_id))
-    action_type = action.type
+    action_type = action.action_type
 
-    inputs_entities = []
+    # action is completed, nothing more to do
+    if action.completed:
+        raise SuspiciousOperation(_("This action is already completed"))
 
-    if inputs is not None and type(inputs) is bool:
-        # @todo from which collection ?
-        pass
-    else:
-        if inputs["op"] == "in":
-            pass
-    #         input_batches = Batch.objects.filter(id__in=inputs["value"])
-        elif inputs["op"] == "notin":
-            pass
-    #         input_batches = Batch.objects.all().exclude(id__in=inputs["value"])
-
-    step_index = len(action.data.get('steps', []))
-    format_steps = action_type.format.get('steps', [])
-
-    if step_index >= len(format_steps):
-        raise SuspiciousOperation("Trying to process more steps than allowed")
+    # @todo does we perform a user consistency check on permissions ?
 
     result = {'id': action.id}
 
-    action_controller = ActionController(action)
-    action_controller.process_step(step_index, inputs_entities)
+    if action == "reset":
+        # reset the previously set inputs or options for the current step
+        action_controller = ActionController(action)
+
+        if not action_controller.is_current_step_valid:
+            raise SuspiciousOperation(_("There is not current valid step to reset"))
+
+        if action_controller.is_current_step_done:
+            raise SuspiciousOperation(_("The current step is done"))
+
+        action_controller.reset_current_step()
+    elif action == "setup":
+        # setup the inputs or options for the current step if not done
+        action_controller = ActionController(action)
+
+        if not action_controller.is_current_step_valid:
+            raise SuspiciousOperation(_("There is not current valid step to reset"))
+
+        if action_controller.is_current_step_done:
+            raise SuspiciousOperation(_("The current step is done"))
+
+        # @todo
+        input_data = []
+
+        action_controller.setup_input(inputs_type, input_data)
+    elif action == "process":
+        # process the step according the previously set inputs or options and done it
+        action_controller = ActionController(action)
+
+        if not action_controller.is_current_step_valid:
+            raise SuspiciousOperation(_("There is not current valid step to reset"))
+
+        if action_controller.is_current_step_done:
+            raise SuspiciousOperation(_("The current step is done"))
+
+        action_controller.process_current_step()
 
     result['data'] = action.data
     result['completed'] = action.completed

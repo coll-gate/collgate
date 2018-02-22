@@ -368,7 +368,7 @@ class ActionStepBatchConsumerBatchProducer(ActionStepFormat):
         # batch.name = name_builder.pick(self.naming_variables(accession.name, accession.code), naming_constants)
         #
         # batch.accession = accession
-        # batch.descriptor_meta_model = batch_layout
+        # batch.layout = batch_layout
         #
         # # @todo set configured descriptors (date, type...)
         #

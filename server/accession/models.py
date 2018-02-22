@@ -211,7 +211,7 @@ class Accession(DescribableEntity):
         }
 
     def data(self, field=None, default=None):
-        data = self.descriptor_meta_model.parameters.get('data')
+        data = self.layout.parameters.get('data')
         if data and field in data:
             return data.get(field)
         else:

@@ -11,26 +11,30 @@
 <div class="well well-sm">
     <div class="row">
         <div class="col-lg-6 form-group">
-            <label><%- _t('Accessions list') %></label>
+            <label class="control-label"><%- _t('Accessions list') %></label>
             <select name="accession-list-type" class="form-control">
                 <option value="panel"><%= _t("From a panel") %></option>
                 <option value="upload"><%= _t("From a CSV or XLSX") %></option>
                 <option value="manual"><%= _t("Manual selection") %></option>
             </select>
         </div>
-        <div class="col-lg-6 form-group">
-            <label><%- _t('Panel') %></label>
-            <select name="accession-panel" class="form-control"></select>
+        <div class="col-lg-6 form-group" name="panel">
+            <label class="control-label"><%- _t('Panel') %></label>
+            <div class="input-group" style="width: 100%;">
+                <select name="accession-panel" class="form-control" style="width: 100%;"></select>
+            </div>
         </div>
-        <div class="col-lg-6 form-group">
-            <label><%- _t('Upload') %></label>
+        <div class="col-lg-6 form-group" name="upload" style="display: none;">
+            <label class="control-label"><%- _t('Upload') %></label>
             <input name="accession-upload" type="file" class="form-control" />
         </div>
     </div>
-    <div class="row">
+    <div class="row" name="manual" style="display: none;">
         <div class="col-lg-12 form-group">
-            <label><%- _t('Selection of accessions') %></label>
-            <select name="accession-list" class="form-control" multiple="true"></select>
+            <label class="control-label"><%- _t('Selection of accessions') %></label>
+            <div class="" style="width: 100%;">
+                <select name="accession-list" class="form-control" multiple="true" style="width: 100%;"></select>
+            </div>
         </div>
     </div>
 </div>

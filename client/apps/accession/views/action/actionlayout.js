@@ -96,7 +96,7 @@ let Layout = LayoutView.extend({
         this.ui.steps_tab.parent().removeClass('disabled');
     },
 
-    displayStepData: function(stepIndex, stepFormat) {
+    displayStepData: function(stepIndex, stepFormat, readOnly) {
         if (stepFormat === null) {
             return;
         }
@@ -108,6 +108,7 @@ let Layout = LayoutView.extend({
 
             this.showChildView('contextual', new Element.ActionStepProcessView({
                 model: this.model,
+                readonly: readOnly,
                 namingOptions: this.namingOptions,
                 namingFormat: this.namingFormat,
                 stepIndex: this.currentStepIndex
@@ -147,6 +148,7 @@ let Layout = LayoutView.extend({
                 this.ui.step_index.selectpicker({});
 
                 // @todo display a finished panel
+                // actionLayout.displayStepData(currentStepIndex, stepFormat, true);
             } else {
                 this.actionTypePromise.then(function (data) {
                     let currentStepIndex = actionLayout.model.get('data').steps.length - 1;
@@ -171,7 +173,7 @@ let Layout = LayoutView.extend({
 
                     if (currentStepFormat !== null) {
                         let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: currentStepFormat.type});
-                        actionLayout.displayStepData(currentStepIndex, stepFormat);
+                        actionLayout.displayStepData(currentStepIndex, stepFormat, false);
                         /*
                         let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: currentStepFormat.type});
                         actionLayout.ui.step_format.val(stepFormat.get('label'));
