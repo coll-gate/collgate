@@ -413,7 +413,7 @@ I18NextWebpackPlugin.prototype.full = function () {
             case '.htm':
                 let template = fs.readFileSync(fullPath, 'utf-8');
                 // convert to template using backbone
-                var content = _.template(template);
+                let content = _.template(template);
 
                 parser.parseFuncFromString(content.source);
                 break;
