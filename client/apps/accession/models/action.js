@@ -25,7 +25,8 @@ let Model = Backbone.Model.extend({
         completed: false,
         data: {steps: []},
         user: '',
-        description: ''
+        description: '',
+        created_date: moment().format('YYYY-MM-DD HH:mm:ss')
     },
 
     parse: function(data) {

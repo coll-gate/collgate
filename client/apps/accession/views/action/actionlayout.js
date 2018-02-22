@@ -213,7 +213,7 @@ let Layout = LayoutView.extend({
             dataType: 'json'
         }).done(function (data) {
             let name = [data.first_name, data.last_name, '(' + data.username + ')'];
-            actionLayout.ui.username.val(name.join(' '));
+            $(actionLayout.ui.username).val(name.join(' '));
         });
     },
 

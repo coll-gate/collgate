@@ -57,8 +57,13 @@ class ActionController(object):
 
         # initial data structure
         data = {'steps': []}
-
         action.data = data
+
+        self.action = action
+
+        # and init the first step
+        if self.has_more_steps:
+            self.add_step_data()
 
         action.save()
         return action
@@ -109,7 +114,7 @@ class ActionController(object):
         # step format
         action_steps = self.action.data.get('steps')
         if not action_steps:
-            raise ActionError("Empty action steps")
+            return True
 
         # then at least one element
         step_index = len(action_steps) - 1
@@ -119,7 +124,7 @@ class ActionController(object):
 
     @property
     def has_more_steps(self):
-        action_type_steps = self.action_type['steps']
+        action_type_steps = self.action_type.format['steps']
         action_steps = self.action.data['steps']
 
         return len(action_type_steps) > len(action_steps)
@@ -129,7 +134,7 @@ class ActionController(object):
         if not self.is_current_step_done:
             raise ActionError(_("Current action step if not done"))
 
-        action_type_steps = self.action_type['steps']
+        action_type_steps = self.action_type.format['steps']
         action_steps = self.action.data['steps']
 
         # no more steps
@@ -155,7 +160,7 @@ class ActionController(object):
             raise ActionError("Current action step is already done")
 
         # step format
-        action_type_steps = self.action_type['steps']
+        action_type_steps = self.action_type.format['steps']
         step_index = len(action_type_steps) - 1
 
         step_format = action_type_steps[step_index]
@@ -177,7 +182,7 @@ class ActionController(object):
             raise ActionError("Current action step is already done")
 
         # step format
-        action_type_steps = self.action_type['steps']
+        action_type_steps = self.action_type.format['steps']
         step_index = len(action_type_steps) - 1
 
         step_format = action_type_steps[step_index]
