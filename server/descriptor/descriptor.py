@@ -530,6 +530,7 @@ def create_descriptor(request):
         "type": "object",
         "properties": {
             "name": Descriptor.NAME_VALIDATOR,
+            "group_name": Descriptor.NAME_VALIDATOR,
             "code": {"type": "string", 'minLength': 3, 'maxLength': 32},
             "description": {"type": "string", 'maxLength': 1024, 'blank': True},
             "format": {
@@ -625,6 +626,7 @@ def update_descriptor(request, des_id):
             descriptor.values = values
 
     descriptor.name = descriptor_params['name']
+    descriptor.group_name = descriptor_params['group_name']
     descriptor.format = format_type
     descriptor.description = description
 

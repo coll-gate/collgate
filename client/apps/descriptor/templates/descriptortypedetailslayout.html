@@ -21,6 +21,13 @@
 </div>
 
 <div class="row">
+    <div class="descriptor-group-name form-group col-md-6">
+        <label for="descriptor_group_name"><%- _t('Group name') %></label>
+        <input id="descriptor_group_name" class="form-control" type="text" maxlength="255" value="<%= group_name %>">
+    </div>
+</div>
+
+<div class="row">
     <div class="descriptor-type-format form-group col-md-6">
         <label for="format_type"><%- _t('Type of format') %></label>
         <select id="format_type" class="form-control"></select>

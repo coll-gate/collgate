@@ -20,6 +20,7 @@ let View = Marionette.View.extend({
     ui: {
         name: '#descriptor_type_name',
         code: '#descriptor_type_code',
+        group_name: '#descriptor_group_name',
         description: '#descriptor_type_description',
         format_type: '#format_type',
         save: '#save',
@@ -163,6 +164,7 @@ let View = Marionette.View.extend({
 
         let name = this.ui.name.val();
         let code = this.ui.code.val();
+        let group_name = this.ui.group_name.val();
         let description = this.ui.description.val();
 
         let format = {};
@@ -177,6 +179,7 @@ let View = Marionette.View.extend({
         this.model.save({
             name: name,
             code: code,
+            group_name: group_name,
             format: format,
             description: description
         }, {wait: true}).done(function () {

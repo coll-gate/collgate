@@ -24,7 +24,7 @@ let View = Marionette.View.extend({
     ui: {
         delete_btn: '.action.delete',
         edit_btn: '.action.edit',
-        manage_btn: '.action.manage',
+        // manage_btn: '.action.manage',
         lock: 'td[name=lock]'
     },
 
@@ -40,7 +40,7 @@ let View = Marionette.View.extend({
             actions: {
                 tag: {display: true, event: 'changeLabel'},
                 edit: {display: true, event: 'viewDescriptor'},
-                manage: {display: true, event: 'viewDescriptorValue'},
+                // manage: {display: true, event: 'viewDescriptorValue'},
                 remove: {display: true, event: 'deleteDescriptor'}
             }
         }
@@ -53,19 +53,18 @@ let View = Marionette.View.extend({
     actionsProperties: function() {
         let properties = {
             edit: {disabled: false},
-            manage: {disabled: false},
             remove: {disabled: false}
         };
 
         // @todo check user permissions
 
-        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
-            // properties.edit.disabled = true;
-        }
+        // if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        //     // properties.edit.disabled = true;
+        // }
 
-        if (!_.contains(['enum_single', 'enum_pair', 'enum_ordinal'], this.model.get('format').type)) {
-            properties.manage.disabled = true;
-        }
+        // if (!_.contains(['enum_single', 'enum_pair', 'enum_ordinal'], this.model.get('format').type)) {
+        //     properties.manage.disabled = true;
+        // }
 
         if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
             properties.remove.disabled = true;
@@ -122,7 +121,7 @@ let View = Marionette.View.extend({
         //     $.alert.error(_t("Some values exists for this type of descriptor"));
         // }
 
-        application.descriptor.controllers.descriptor.deleteModel(this.model);
+        window.application.descriptor.controllers.descriptor.deleteModel(this.model);
     }
 });
 
