@@ -77,6 +77,9 @@ class Descriptor(Entity):
     Type of descriptor
     """
 
+    GROUP_NAME_VALIDATOR = {"type": "string", "maxLength": 32, "pattern": "^([a-zA-Z0-9\-\_]+|)$",
+                            "required": False, "blank": True}
+
     server_cache_update = ("descriptor", "entity_columns")
     client_cache_update = ("entity_columns",)
 

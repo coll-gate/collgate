@@ -530,7 +530,7 @@ def create_descriptor(request):
         "type": "object",
         "properties": {
             "name": Descriptor.NAME_VALIDATOR,
-            "group_name": Descriptor.NAME_VALIDATOR,
+            "group_name": Descriptor.GROUP_NAME_VALIDATOR,
             "code": {"type": "string", 'minLength': 3, 'maxLength': 32},
             "description": {"type": "string", 'maxLength': 1024, 'blank': True},
             "format": {
@@ -540,7 +540,7 @@ def create_descriptor(request):
                 },
                 "additionalProperties": True
             }
-        },
+        }
     },
     perms={
         'descriptor.change_descriptor': _('You are not allowed to modify a descriptor')

@@ -33,6 +33,7 @@ let View = Marionette.View.extend({
         'click @ui.apply': 'saveDescriptor',
         'click @ui.cancel': 'cancelDescriptor',
         'input @ui.name': 'inputName',
+        'input @ui.group_name': 'inputGroupName',
         'change @ui.format_type': 'changeFormatType'
     },
 
@@ -158,31 +159,42 @@ let View = Marionette.View.extend({
         }
     },
 
+    inputGroupName: function () {
+        let v = this.ui.group_name.val();
+        let re = /^[a-zA-Z0-9_-]+$/i;
+
+        if (v.length > 0 && !re.test(v)) {
+            $(this.ui.group_name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
+        } else {
+            $(this.ui.group_name).validateField('ok');
+        }
+    },
+
     saveDescriptor: function () {
+        // Check inputs
         if (!$(this.ui.name.isValidField()))
             return;
 
-        let name = this.ui.name.val();
-        let code = this.ui.code.val();
-        let group_name = this.ui.group_name.val();
-        let description = this.ui.description.val();
+        if (!$(this.ui.group_name.isValidField()))
+            return;
 
         let format = {};
-
         if (this.getChildView('content')) {
             format = this.getChildView('content').getFormat();
         }
-
         // merge the format type
         format.type = this.ui.format_type.val();
 
-        this.model.save({
-            name: name,
-            code: code,
-            group_name: group_name,
-            format: format,
-            description: description
-        }, {wait: true}).done(function () {
+        let params = {
+            name: this.ui.name.val(),
+            code: this.ui.code.val(),
+            group_name: this.ui.group_name.val(),
+            description: this.ui.description.val(),
+            format: format
+        };
+
+        // Save the model
+        this.model.save(params, {wait: true}).done(function () {
             $.alert.success(_t("Done"))
         });
     }
