@@ -10,7 +10,7 @@
 
 let DescriptorTypeModel = require('../models/descriptorvalue');
 
-let Collection = Backbone.Collection.extend({
+let Collection = window.Backbone.Collection.extend({
     url: function() {
         return window.application.url(['descriptor', 'descriptor', this.type_id, 'value']);
     },
@@ -54,7 +54,7 @@ let Collection = Backbone.Collection.extend({
             opts.data.sort_by = JSON.stringify(data.sort_by);
         }
 
-        return Backbone.Collection.prototype.fetch.call(this, opts);
+        return window.Backbone.Collection.prototype.fetch.call(this, opts);
     }
 });
 

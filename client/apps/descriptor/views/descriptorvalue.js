@@ -14,17 +14,13 @@ let Dialog = require('../../main/views/dialog');
 let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-value actions',
-    template: require('../templates/descriptorvalue.html'),
-    // templateContext: function () {
-    //     // let ctx = this.model;
-    //     // ctx.format = this.model.collection.format;
-    //     //
-    //     // // @todo check with user permission
-    //     ctx.can_delete = this.getOption('can_delete');
-    //     // ctx.can_modify = this.getOption('can_modify');
-    //     // return ctx;
-    //     return {RowActionsBtn: require('../../main/templates/rowactionsbuttons.html')}
-    // },
+    template: require("../../descriptor/templates/entity.html"),
+    templateContext: function () {
+        return {
+            columnsList: this.getOption('columnsList'),
+            columnsOptions: this.getOption('columnsOptions')
+        }
+    },
 
     ui: {
         delete_btn: 'button.action.delete',
@@ -49,6 +45,10 @@ let View = Marionette.View.extend({
     initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
     },
+
+    // onRender: function () {
+    //
+    // },
 
     actionsProperties: function() {
         let properties = {

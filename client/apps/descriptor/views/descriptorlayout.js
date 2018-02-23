@@ -10,6 +10,8 @@
 
 let LayoutView = require('../../main/views/layout');
 let DescriptorDetails = require('./descriptordetails');
+let ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
 
 let Layout = LayoutView.extend({
     template: require("../templates/descriptorlayout.html"),
@@ -21,20 +23,11 @@ let Layout = LayoutView.extend({
     ui: {
         configuration_tab: 'a[aria-controls=configuration]',
         values_tab: 'a[aria-controls=values]',
-        format_type: '#format_type',
-        description: 'textarea[name=description]',
-        config_save: 'button[name=save]'
     },
 
     regions: {
-        // 'contextual': "div.contextual-region",
-        'configuration': "#config_content",
-        'values': "#values_content"
-    },
-
-    events: {
-        'change @ui.format_type': 'changeFormatType',
-        'click @ui.config_save': 'onUpdateConfig'
+        'configuration': "div.tab-pane[name=configuration]",
+        'values': "div.tab-pane[name=values]"
     },
 
     initialize: function (model, options) {
@@ -51,7 +44,6 @@ let Layout = LayoutView.extend({
 
         // and update history
         Backbone.history.navigate('app/descriptor/descriptor/' + this.model.get('id') + '/', {
-            /*trigger: true,*/
             replace: false
         });
     },
@@ -64,18 +56,6 @@ let Layout = LayoutView.extend({
         this.ui.values_tab.parent().removeClass('disabled');
     },
 
-    changeFormatType: function () {
-        let formatType = this.ui.format_type.val();
-
-        // update the contextual region according to the format
-        let Element = window.application.accession.actions.getElement(formatType);
-        if (Element && Element.DescriptorTypeDetailsView) {
-            this.showChildView('contextual', new Element.DescriptorTypeDetailsView({model: this.model}));
-        } else {
-            this.getRegion('contextual').empty();
-        }
-    },
-
     onRender: function () {
         let format = this.model.get('format');
         let descriptorLayout = this;
@@ -85,7 +65,7 @@ let Layout = LayoutView.extend({
         descriptorLayout.showChildView('configuration', descriptorDetails);
 
         if (!this.model.isNew()) {
-            if (_.indexOf(application.descriptor.format_with_value_list, format.type) !== -1) {
+            if (_.indexOf(window.application.descriptor.format_with_value_list, format.type) !== -1) {
 
                 let model = this.model;
                 let DescriptorValueCollection = require('../collections/descriptorvalue');
@@ -95,52 +75,44 @@ let Layout = LayoutView.extend({
                 });
 
                 // values tab
-                this.model.fetch().then(function () {
-                    collection.fetch().then(function () {
-                        let valueListView = null;
+                collection.fetch().then(function () {
+                    let valueListView = null;
 
-                        let DescriptorValueListView = require('../views/descriptorvaluelist');
-                        let DescriptorValuePairListView = require('../views/descriptorvaluepairlist');
-                        let DescriptorValueOrdinalListView = require('../views/descriptorvalueordinallist');
+                    let DescriptorValueListView = require('../views/descriptorvaluelist');
+                    let DescriptorValuePairListView = require('../views/descriptorvaluepairlist');
+                    let DescriptorValueOrdinalListView = require('../views/descriptorvalueordinallist');
 
-                        if (model.get('format').type === "enum_single") {
-                                valueListView = new DescriptorValueListView({
-                                    collection: collection,
-                                    model: model,
-                                });
+                    if (model.get('format').type === "enum_single") {
+                        valueListView = new DescriptorValueListView({
+                            collection: collection,
+                            model: model,
+                        });
 
-                            // @todo lookup for permission
-                            if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
-                                // defaultLayout.showChildView('bottom', new DescriptorValueAddView({collection: collection}));
-                            }
-                        } else if (model.get('format').type === "enum_pair") {
-                                valueListView = new DescriptorValuePairListView({
-                                    collection: collection,
-                                    model: model,
-                                });
+                    } else if (model.get('format').type === "enum_pair") {
+                        valueListView = new DescriptorValuePairListView({
+                            collection: collection,
+                            model: model,
+                        });
 
-                            // @todo lookup for permission
-                            if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
-                                // defaultLayout.showChildView('bottom', new DescriptorValueAddView({collection: collection}));
-                            }
-                        } else if (model.get('format').type === "enum_ordinal") {
-                                valueListView = new DescriptorValueOrdinalListView({
-                                    collection: collection,
-                                    model: model,
-                                });
-                        }
+                    } else if (model.get('format').type === "enum_ordinal") {
+                        valueListView = new DescriptorValueOrdinalListView({
+                            collection: collection,
+                            model: model,
+                        });
+                    }
 
-                        if (valueListView) {
-                            descriptorLayout.showChildView('values', valueListView);
-                            // defaultLayout.showChildView('content', valueListView);
-                            // descriptorLayout.showChildView('bottom', new ScrollingMoreView({
-                            //     targetView: valueListView,
-                            //     more: -1
-                            // }));
-                        }
-                    });
+                    if (valueListView) {
+
+                        let contentBottomFooterLayout = new ContentBottomFooterLayout();
+                        descriptorLayout.showChildView('values', contentBottomFooterLayout);
+
+                        contentBottomFooterLayout.showChildView('content', valueListView);
+                        contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                            targetView: valueListView,
+                            more: -1
+                        }));
+                    }
                 });
-
 
                 this.enableTabs();
             } else {
@@ -151,29 +123,6 @@ let Layout = LayoutView.extend({
             this.disableValuesTab();
         }
     },
-
-    onUpdateConfig: function () {
-        let childView = this.getChildView('contextual');
-        let formatType = this.ui.format_type.val();
-
-        if (childView) {
-            let format = childView.getFormat();
-            format.type = formatType;
-
-            let description = this.ui.description.val();
-            let model = this.model;
-
-            if (model.isNew()) {
-                model.save({description: description, format: format}, {wait: true}).then(function () {
-                    //Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
-                });
-            } else {
-                model.save({description: description}, {wait: true, patch: true}).then(function () {
-                    //Backbone.history.navigate('app/accession/batchactiontype/' + model.get('id') + '/', {trigger: true, replace: true});
-                });
-            }
-        }
-    }
 });
 
 module.exports = Layout;

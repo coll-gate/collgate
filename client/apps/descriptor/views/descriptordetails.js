@@ -195,7 +195,7 @@ let View = Marionette.View.extend({
 
         // Save the model
         this.model.save(params, {wait: true}).done(function () {
-            $.alert.success(_t("Done"))
+            $.alert.success(_t("Descriptor has been successfully saved"))
         });
     }
 });
