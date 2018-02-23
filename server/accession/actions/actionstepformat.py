@@ -119,12 +119,11 @@ class ActionStepFormat(object):
 
         return step_data
 
-    def process(self, action, input_array, step_data):
+    def process(self, action, step_data):
         """
         Process the specialized action step to the given action, using input array,
         and complete the step data structure.
         :param action: Valid and already existing action in DB.
-        :param input_array: Empty or non empty array of accession or batch or even other types.
         :param step_data: Initialized step data structure to be filled during process.
         :return:
         """
@@ -254,7 +253,7 @@ class ActionStepAccessionConsumerBatchProducer(ActionStepFormat):
 
         return None
 
-    def process(self, action, input_array, step_data):
+    def process(self, action, step_data):
         # @todo
         pass
 
@@ -288,11 +287,11 @@ class ActionStepAccessionList(ActionStepFormat):
         # nothing to check
         return None
 
-    def process(self, action, input_array, step_data):
+    def process(self, action, step_data):
         """
         Store the input array as output array of this step to be used as input of the next one.
         """
-        inputs = self.inputs(action, input_array)
+        inputs = step_data['inputs']
 
         # retrieve each accession, 1 accession per row (what about input format mapping ? @todo)
         accessions_id = [int(accession_id) for accession_id in inputs]
@@ -324,10 +323,10 @@ class ActionStepAccessionRefinement(ActionStepFormat):
     def check(self, action_controller, action_type_format):
         return None
 
-    def process(self, action, input_array, step_data):
+    def process(self, action, step_data):
         steps_data = action.data.get('steps', [])
 
-        inputs = self.inputs(action, input_array)
+        # inputs = self.inputs(action, input_array)
         # @todo
 
 
@@ -351,7 +350,7 @@ class ActionStepBatchConsumerBatchProducer(ActionStepFormat):
     def check(self, action_controller, action_type_format):
         return None
 
-    def process(self, action, input_array, step_data):
+    def process(self, action, step_data):
         # @todo
         # name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
         # naming_constants = self.naming_constants(
@@ -368,7 +367,7 @@ class ActionStepBatchConsumerBatchProducer(ActionStepFormat):
         # batch.name = name_builder.pick(self.naming_variables(accession.name, accession.code), naming_constants)
         #
         # batch.accession = accession
-        # batch.descriptor_meta_model = batch_layout
+        # batch.layout = batch_layout
         #
         # # @todo set configured descriptors (date, type...)
         #
@@ -398,8 +397,8 @@ class ActionStepBatchConsumerBatchModifier(ActionStepFormat):
     def check(self, action_controller, action_type_format):
         return None
 
-    def process(self, action, input_array, step_data):
+    def process(self, action, step_data):
         steps_data = action.data.get('steps', [])
 
-        inputs = self.inputs(action, input_array)
+        # inputs = self.inputs(action, input_array)
         # @todo

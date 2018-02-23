@@ -89,6 +89,8 @@ function I18NextWebpackPlugin(options) {
 // }
 
 I18NextWebpackPlugin.prototype.watch = function (files, dirs, missing, startTime, delay, callback, callbackUndelayed) {
+    return;
+
     let self = this;
     let ignored = function (path) {
         return path.match(/.*\/locale\/.*\/default.json/) !== null;
@@ -125,9 +127,12 @@ I18NextWebpackPlugin.prototype.watch = function (files, dirs, missing, startTime
 I18NextWebpackPlugin.prototype.apply = function (compiler) {
     let self = this;
 
+    // @todo issue on recent i18n or webpack...
+    return;
+
     compiler.plugin('after-environment', function (compilation, callback) {
- //       self.orgWatchFileSystem = compiler.watchFileSystem;
-   //     compiler.watchFileSystem = self;
+        // self.orgWatchFileSystem = compiler.watchFileSystem;
+        // compiler.watchFileSystem = self;
     });
 
     compiler.plugin('watch-run', function (watching, callback) {
@@ -413,7 +418,7 @@ I18NextWebpackPlugin.prototype.full = function () {
             case '.htm':
                 let template = fs.readFileSync(fullPath, 'utf-8');
                 // convert to template using backbone
-                var content = _.template(template);
+                let content = _.template(template);
 
                 parser.parseFuncFromString(content.source);
                 break;

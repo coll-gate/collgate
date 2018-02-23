@@ -13,7 +13,7 @@
 <div class="row naming-option-list">
     <% for (var i = 0; i < namingOptions.length; ++i) { %>
     <div class="col-xs-6">
-        <label><%- _t('Constant ') + (i+1).toString() %></label>
+        <label><%- _t('Constant') + ' ' + (i+1).toString() %></label>
         <input name="naming-constant" index="<%= i %>" class="form-control" type="text" max="16" value="<%= namingOptions[i] %>">
     </div>
     <% } %>

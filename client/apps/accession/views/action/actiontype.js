@@ -32,7 +32,7 @@ let View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: require('../../../main/behaviors/actionbuttonevents'),
             actions: {
-                edit: {display: true, title: _t("Rename type of action"), event: 'renameActionType'},
+                edit: {display: true, title: _t("Rename the type of action"), event: 'renameActionType'},
                 tag: {display: true, title: _t("Edit label"), event: 'editLabel'},
                 manage: {display: true, event: 'viewDetails'},
                 remove: {display: true, event: 'onDeleteActionType'}

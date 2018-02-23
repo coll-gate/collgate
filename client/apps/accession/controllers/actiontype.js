@@ -150,7 +150,7 @@ let Controller = Marionette.Object.extend({
                         window.application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
-                            title: _t("Batch action type"),
+                            title: _t("Action type"),
                             model: model
                         }));
 

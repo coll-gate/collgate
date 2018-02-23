@@ -71,8 +71,10 @@
                 </div>
                 <div class="contextual-region"></div>
             </div>
-            <div class="form-group text-center" style="margin-left: 40%; margin-right: 40%;">
-                <button name="step-continue" class="btn btn-success btn-block"><%- _t('Continue') %></button>
+            <div class="form-group text-center btn-group" role="group" style="float: right; padding-right: 15px;">
+                <button type="button" name="step-reset" class="btn btn-warning btn-secondary"><span class="fa fa-eraser">&nbsp;</span><%- _t('Clear selections') %></button>
+                <button type="button" name="step-setup" class="btn btn-info  btn-secondary"><span class="fa fa-upload">&nbsp;</span><%- _t('Setup selections') %></button>
+                <button type="button" name="step-continue" class="btn btn-success btn-secondary"><%- _t('Continue') %>&nbsp;<span class="fa fa-step-forward"></span></button>
             </div>
         </div>
     </div>

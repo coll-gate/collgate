@@ -17,11 +17,18 @@ let ActionStepFormat = function() {
 };
 
 ActionStepFormat.prototype = {
+    /**
+     * Generate the default data related to the step during configuration of the step.
+     * To be overridden by the specialization.
+     */
     defaultFormat: function() {
         return {};
     }
 };
 
+/**
+ * Default view for the configuration of the step of the action type. To be specialized.
+ */
 ActionStepFormat.ActionStepFormatDetailsView = Marionette.View.extend({
     className: 'action-step-format-details',
     template: "<div></div>",
@@ -38,6 +45,9 @@ ActionStepFormat.ActionStepFormatDetailsView = Marionette.View.extend({
     storeData: function() {}
 });
 
+/**
+ * Default view for the settings of the step of the action (during processing). To be specialized.
+ */
 ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
     className: 'action-step-process',
     template: "<div></div>",
@@ -49,19 +59,31 @@ ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
     onRender: function() {},
 
     /**
-     * Upload a CSV or XLSX of input for the current step.
+     * Upload a CSV or XLSX of input.
      */
-    exportInput: function() {},
+    exportInputs: function() {},
 
     /**
-     * Download a CSV or XLSX of current input for the current step.
+     * Download a CSV or XLSX of current input.
      */
     importData: function() {},
 
     /**
-     * Apply a PATCH on the action on the current step with actually defined assets.
+     * Get the currently defined inputs type.
      */
-    processStep: function() {}
+    inputsType: function() {
+        return null;
+    },
+
+    /**
+     * Get the related list of inputs depending of the inputs type :
+     *  - an array if manual selection
+     *  - an id if a panel
+     *  - a file object if import of a CSV or XLSX
+     */
+    inputsData: function() {
+        return null;
+    }
 });
 
 module.exports = ActionStepFormat;
