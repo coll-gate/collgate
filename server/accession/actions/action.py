@@ -40,11 +40,6 @@ class RestActionId(RestAction):
     suffix = 'id'
 
 
-class RestActionIdProcessStep(RestActionId):
-    regex = r'^processstep/$'
-    suffix = 'processtep'
-
-
 class RestActionEntity(RestAction):
     regex = r'^entity/$'
     suffix = 'entity'
@@ -97,7 +92,7 @@ def create_action(request):
 
 
 @RestActionId.def_auth_request(
-    Method.PATCH, Format.JSON, content={
+    Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
             "name": Action.NAME_VALIDATOR_OPTIONAL,
@@ -131,12 +126,12 @@ def update_action(request, act_id):
     return HttpResponseRest(request, result)
 
 
-@RestActionIdProcessStep.def_auth_request(
+@RestActionId.def_auth_request(
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
             "action": {"type": "string", "enum": ['reset', 'setup', 'process']},    # action in term of API
-            "inputs_type": {"type": "string", "enum": ['panel', 'upload', 'list']},
+            "inputs_type": {"type": "string", "enum": ['panel', 'upload', 'list'], "required": False},
             "panel": {"type": "numeric", "required": False},
             "list": {"type": "array", "required": False, "minItems": 0, "maxItems": 32768, "additionalItems": {
                     "type": "number"
@@ -148,11 +143,10 @@ def update_action(request, act_id):
     })
 def action_process_step(request, act_id):
     inputs_type = request.data.get('inputs_type')
-    action = request.data.get('action')
+    action_type = request.data.get('action')
     user = request.user
 
     action = get_object_or_404(Action, pk=int(act_id))
-    action_type = action.action_type
 
     # action is completed, nothing more to do
     if action.completed:
@@ -162,7 +156,7 @@ def action_process_step(request, act_id):
 
     result = {'id': action.id}
 
-    if action == "reset":
+    if action_type == "reset":
         # reset the previously set inputs or options for the current step
         action_controller = ActionController(action)
 
@@ -173,7 +167,7 @@ def action_process_step(request, act_id):
             raise SuspiciousOperation(_("The current step is done"))
 
         action_controller.reset_current_step()
-    elif action == "setup":
+    elif action_type == "setup":
         # setup the inputs or options for the current step if not done
         action_controller = ActionController(action)
 
@@ -184,10 +178,15 @@ def action_process_step(request, act_id):
             raise SuspiciousOperation(_("The current step is done"))
 
         # @todo
-        input_data = []
+        if inputs_type == "list":
+            input_data = request.data.get('list', [])
+        elif inputs_type == "panel":
+            input_data = []  # @todo from panel
+        elif inputs_type == "upload":
+            input_data = []  # @todo from uploaded file
 
-        action_controller.setup_input(inputs_type, input_data)
-    elif action == "process":
+        action_controller.setup_input(input_data)
+    elif action_type == "process":
         # process the step according the previously set inputs or options and done it
         action_controller = ActionController(action)
 

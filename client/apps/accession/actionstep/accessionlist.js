@@ -59,7 +59,7 @@ AccessionList.ActionStepProcessView = Marionette.View.extend({
 
     onAttach: function () {
         if (this.getOption('readonly')) {
-
+            // @todo can download the list of entries as CSV or XLSX
         } else {
             this.ui.panel.select2({
                 dropdownParent: this.$el,
@@ -161,10 +161,13 @@ AccessionList.ActionStepProcessView = Marionette.View.extend({
         }
     },
 
-    onBeforeDetach: function() {
+    onBeforeDestroy: function() {
         this.ui.list_type.selectpicker('destroy');
-        this.ui.manual.select2('destroy');
-        this.ui.panel.select2('destroy');
+
+        if (!this.getOption('readonly')) {
+         //   this.ui.manual.select2('destroy');
+//            this.ui.panel.select2('destroy');
+        }
     },
 
     exportInput: function() {
@@ -173,6 +176,30 @@ AccessionList.ActionStepProcessView = Marionette.View.extend({
 
     importData: function() {
 
+    },
+
+    inputsType: function() {
+        return this.ui.list_type.val();
+    },
+
+    inputsData: function() {
+        let v = this.ui.list_type.val();
+
+        if (v === "panel") {
+            return parseInt(this.ui.panel.val());
+        } else if (v === "upload") {
+            return {}; // @todo
+        } else if (v === "list") {
+            let ids = this.ui.manual.val();
+
+            let results = _.map(ids, function (id) {
+                return parseInt(id);
+            });
+
+            return results;
+        }
+
+        return null;
     },
 
     onChangeListType: function() {
@@ -186,7 +213,7 @@ AccessionList.ActionStepProcessView = Marionette.View.extend({
             this.ui.panel_group.css('display', 'none');
             this.ui.upload_group.css('display', 'block');
             this.ui.manual_group.css('display', 'none');
-        } else if (v === "manual") {
+        } else if (v === "list") {
             this.ui.panel_group.css('display', 'none');
             this.ui.upload_group.css('display', 'none');
             this.ui.manual_group.css('display', 'block');
