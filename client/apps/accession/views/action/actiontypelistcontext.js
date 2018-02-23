@@ -18,7 +18,7 @@ let View = Marionette.View.extend({
         return {
             actions: this.getOption('actions'),
             options: {
-                'create-action-type': {className: 'btn-default', label: _t('Create type of action')}
+                'create-action-type': {className: 'btn-default', label: _t('Create a type of action')}
             }
         }
     },

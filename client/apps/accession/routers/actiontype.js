@@ -35,7 +35,7 @@ let Router = Marionette.AppRouter.extend({
         let defaultLayout = new DefaultLayout({});
         window.application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: _t("List of types of action")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of types of actions")}));
 
         let columns = window.application.main.cache.lookup({
             type: 'entity_columns',

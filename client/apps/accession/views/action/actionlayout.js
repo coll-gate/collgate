@@ -229,51 +229,54 @@ let Layout = LayoutView.extend({
         });
 
         if (!this.model.isNew()) {
-            if (this.model.get('completed')) {
-                // all steps are readable
-                for (let i = 0; i < this.model.get('data').steps.length; ++i) {
-                    this.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
+            let steps = this.model.get('data').steps;
+
+            for (let i = 0; i < steps.length; ++i) {
+                let label =  _t("Step") + " " + i ;
+                if (steps[i].state === this.STEP_DONE) {
+                    label += " " + _t("(done)");
+                } else if (i+1 === steps.length) {
+                    label += " " + _t("(current)");
                 }
 
-                this.ui.step_index.selectpicker({});
-
-                // @todo display a finished panel
-                // actionLayout.displayStepData(this.currentStepIndex, stepFormat, true);
-            } else {
-                this.actionTypePromise.then(function (data) {
-                    let currentStepIndex = actionLayout.model.get('data').steps.length - 1;
-                    let currentStepData = currentStepIndex > 0 ? actionLayout.model.get('data').steps[currentStepIndex] : null;
-                    let currentStepFormat = null;
-
-                    if (currentStepData && currentStepData.done) {
-                        // init the next step if not the last
-                        if (currentStepIndex + 1 < data.steps.length) {
-                            ++currentStepIndex;
-                            currentStepFormat = data.format.steps[currentStepIndex];
-                        }
-                    } else if (currentStepData) {
-                        // display the current step
-                        currentStepFormat = data.format.steps[currentStepIndex];
-                        // @todo
-                    } else if (data.format.steps.length) {
-                        // initiate the first step
-                        currentStepIndex = 0;
-                        currentStepFormat = data.format.steps[0];
-                    }
-
-                    for (let i = 0; i < currentStepIndex+1; ++i) {
-                        actionLayout.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
-                    }
-
-                    actionLayout.ui.step_index.selectpicker({});
-                    if (currentStepFormat !== null) {
-                        let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: currentStepFormat.type});
-                        actionLayout.displayStepData(currentStepIndex, stepFormat, false);
-                    }
-
-                    actionLayout.currentStepIndex = currentStepIndex;
-                });
+                this.ui.step_index.append('<option value="' + i + '">' + label + '</option>');
             }
+
+            this.ui.step_index.selectpicker({});
+
+            this.actionTypePromise.then(function (data) {
+                let currentStepIndex = actionLayout.model.get('data').steps.length - 1;
+                let currentStepData = currentStepIndex > 0 ? actionLayout.model.get('data').steps[currentStepIndex] : null;
+                let currentStepFormat = null;
+
+                if (currentStepData && currentStepData.done) {
+                    // init the next step if not the last
+                    if (currentStepIndex + 1 < data.steps.length) {
+                        ++currentStepIndex;
+                        currentStepFormat = data.format.steps[currentStepIndex];
+                    }
+                } else if (currentStepData) {
+                    // display the current step
+                    currentStepFormat = data.format.steps[currentStepIndex];
+                    // @todo
+                } else if (data.format.steps.length) {
+                    // initiate the first step
+                    currentStepIndex = 0;
+                    currentStepFormat = data.format.steps[0];
+                }
+
+                for (let i = 0; i < currentStepIndex+1; ++i) {
+                    actionLayout.ui.step_index.append('<option value="' + i + '">' + _t("Step") + " " + i + '</option>');
+                }
+
+                actionLayout.ui.step_index.selectpicker({});
+                if (currentStepFormat !== null) {
+                    let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: currentStepFormat.type});
+                    actionLayout.displayStepData(currentStepIndex, stepFormat, false);
+                }
+
+                actionLayout.currentStepIndex = currentStepIndex;
+            });
 
             this.enableTabs();
         } else {
