@@ -192,11 +192,9 @@ AccessionList.ActionStepProcessView = Marionette.View.extend({
         } else if (v === "list") {
             let ids = this.ui.manual.val();
 
-            let results = _.map(ids, function (id) {
+            return _.map(ids, function (id) {
                 return parseInt(id);
             });
-
-            return results;
         }
 
         return null;

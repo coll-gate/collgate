@@ -25,6 +25,46 @@ _.extend(Format.prototype, ActionStepFormat.prototype, {
     }
 });
 
+Format.ActionStepProcessView = Marionette.View.extend({
+    className: 'action-step-process',
+    template: require('../templates/actionstep/batchconsumerbatchproducerprocess.html'),
+
+    initialize: function(options) {
+        options || (options = {readonly: true});
+
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
+        if (this.getOption('readonly')) {
+
+        } else {
+
+        }
+    },
+
+    onBeforeDestroy: function() {
+        if (!this.getOption('readonly')) {
+        }
+    },
+
+    exportInput: function() {
+
+    },
+
+    importData: function() {
+
+    },
+
+    inputsType: function() {
+        return null;
+    },
+
+    inputsData: function() {
+        return null;
+    }
+});
+
 Format.ActionStepFormatDetailsView = Marionette.View.extend({
     className: 'action-step-format-details',
     template: require('../templates/actionstep/batchconsumerbatchproducer.html'),
