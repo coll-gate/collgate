@@ -13,31 +13,9 @@ let Dialog = require('../../main/views/dialog');
 
 let View = Marionette.View.extend({
     tagName: 'tr',
-    className: 'element object descriptor-value',
+    className: 'element object descriptor-value actions',
     template: require('../templates/descriptorvaluepair.html'),
-    templateContext: function () {
-        // let ctx = this.model;
-        // ctx.format = this.model.collection.format;
-        //
-        // // @todo check with user permission
-        // ctx.can_delete = this.getOption('can_delete');
-        // ctx.can_modify = this.getOption('can_modify');
-        // return ctx;
-        return {
-            RowActionsBtn: require('../../main/templates/rowactionsbuttons.html')
-        };
-    },
 
-    behaviors: {
-        ActionBtnEvents: {
-            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
-            actions: {
-                edit: {display: true, title: _t("Edit value0"), event: 'onEditValue0'},
-                edit2: {display: true, title: _t("Edit value1"), event: 'onEditValue1'},
-                remove: {display: true, event: 'deleteDescriptorValue'}
-            }
-        }
-    },
     ui: {
         delete_btn: '.action.delete',
         edit_btn: '.action.edit',
@@ -50,11 +28,22 @@ let View = Marionette.View.extend({
         'click @ui.edit2_btn': 'onEditValue1'
     },
 
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {display: true, title: _t("Edit value0"), event: 'onEditValue0'},
+                edit2: {display: true, title: _t("Edit value1"), event: 'onEditValue1'},
+                remove: {display: true, event: 'deleteDescriptorValue'}
+            }
+        }
+    },
+
     initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    actionsProperties: function() {
+    actionsProperties: function () {
         let properties = {
             edit: {disabled: false},
             edit2: {disabled: false},
@@ -74,7 +63,7 @@ let View = Marionette.View.extend({
     },
 
     deleteDescriptorValue: function () {
-        if (!this.getOption('can_delete') || !window.application.permission.manager.isStaff()) {
+        if (this.getOption('can_delete') || window.application.permission.manager.isStaff()) {
             this.model.destroy({wait: true});
         }
         return false;

@@ -5,11 +5,9 @@
  * @date 2016-10-28
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
-let Marionette = require('backbone.marionette');
-let DescriptorValueModel = require('../models/descriptorvalue');
 let DescriptorValueOrdinalView = require('../views/descriptorvalueordinal');
 let AdvancedTable = require('../../main/views/advancedtable');
 
@@ -19,7 +17,7 @@ let View = AdvancedTable.extend({
     childView: DescriptorValueOrdinalView,
     childViewContainer: 'tbody.descriptor-value-list',
 
-    templateContext: function() {
+    templateContext: function () {
         return {
             format: this.collection.format,
             items: this.collection.toJSON()
@@ -45,13 +43,13 @@ let View = AdvancedTable.extend({
         'click @ui.sort_by_value0': 'sortColumn'
     },
 
-    initialize: function() {
+    initialize: function () {
         this.listenTo(this.collection, 'reset', this.render, this);
 
         View.__super__.initialize.apply(this);
     },
 
-    onRender: function() {
+    onRender: function () {
         let sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
         let sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
 
@@ -78,11 +76,13 @@ let View = AdvancedTable.extend({
         }
 
         this.collection.next = null;
-        this.collection.fetch({reset: true, update: false, remove: true, data: {
-            // more: this.capacity()+1,
-            cursor: null,
-            sort_by: sort_by
-        }});
+        this.collection.fetch({
+            reset: true, update: false, remove: true, data: {
+                // more: this.capacity()+1,
+                cursor: null,
+                sort_by: sort_by
+            }
+        });
     }
 });
 

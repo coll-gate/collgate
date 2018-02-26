@@ -5,11 +5,9 @@
  * @date 2016-08-01
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
-let Marionette = require('backbone.marionette');
-let DescriptorValueModel = require('../models/descriptorvalue');
 let DescriptorValuePairView = require('../views/descriptorvaluepair');
 let AdvancedTable = require('../../main/views/advancedtable');
 
@@ -19,7 +17,7 @@ let View = AdvancedTable.extend({
     childView: DescriptorValuePairView,
     childViewContainer: 'tbody.descriptor-value-list',
 
-    templateContext: function() {
+    templateContext: function () {
         return {
             format: this.collection.format,
             items: this.collection.toJSON()
@@ -45,13 +43,56 @@ let View = AdvancedTable.extend({
         'click @ui.sort_by_value1': 'sortColumn'
     },
 
-    initialize: function() {
+    initialize: function () {
         View.__super__.initialize.apply(this, arguments);
 
         this.listenTo(this.collection, 'reset', this.render, this);
     },
 
-    onRender: function() {
+    onShowTab: function () {
+        let view = this;
+
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
+            return
+        }
+
+        let contextLayout = window.application.getView().getChildView('right');
+        if (!contextLayout) {
+            let DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            window.application.getView().showChildView('right', contextLayout);
+        }
+
+        let TitleView = require('../../main/views/titleview');
+        contextLayout.showChildView('title', new TitleView({
+            title: _t("Actions on descriptor values"),
+            glyphicon: 'fa-wrench'
+        }));
+
+        let actions = [
+            'create-value'
+        ];
+
+        let ListContextView = require('./valuelistcontext');
+        let contextView = new ListContextView({actions: actions});
+        contextLayout.showChildView('content', contextView);
+
+        contextView.on("value:create", function () {
+            view.onCreateValue();
+        });
+
+        View.__super__.onShowTab.apply(this, arguments);
+    },
+
+    onBeforeDetach: function () {
+        window.application.main.defaultRightView();
+    },
+
+    onCreateValue: function () {
+        this.collection.create({value0: _t("New value")});
+    },
+
+    onRender: function () {
         let sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
         let sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
 
@@ -78,11 +119,13 @@ let View = AdvancedTable.extend({
         }
 
         this.collection.next = null;
-        this.collection.fetch({reset: true, update: false, remove: true, data: {
-            // more: this.capacity()+1,
-            cursor: null,
-            sort_by: sort_by
-        }});
+        this.collection.fetch({
+            reset: true, update: false, remove: true, data: {
+                // more: this.capacity()+1,
+                cursor: null,
+                sort_by: sort_by
+            }
+        });
     }
 });
 
