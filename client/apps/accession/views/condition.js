@@ -89,14 +89,14 @@ let View = Marionette.View.extend({
                 ].includes(this.ui.condition.val())) {
                 this.widget.create(column.format, this.ui.field_value_group, {
                     readOnly: false,
-                    descriptorTypeId: column.id,
+                    descriptorId: column.id,
                     multiple: true,
                     extended_search: false
                 });
             } else {
                 this.widget.create(column.format, this.ui.field_value_group, {
                     readOnly: false,
-                    descriptorTypeId: column.id,
+                    descriptorId: column.id,
                     multiple: false,
                     extended_search: false
                 });
@@ -215,7 +215,7 @@ let View = Marionette.View.extend({
             if (this.widget) {
                 this.widget.create(column.format, this.ui.field_value_group, {
                     readOnly: false,
-                    descriptorTypeId: column.id,
+                    descriptorId: column.id,
                     extended_search: false
                 });
             }

@@ -90,12 +90,12 @@ let View = ItemView.extend({
                 widget.create(format, el.children('td.descriptor-value'), {
                     readOnly: false,
                     history: true,
-                    descriptorTypeId: descriptorModel.get('id')
+                    descriptorId: descriptorModel.get('id')
                 });
 
                 widget.set(format, definesValues, defaultValues, {
-                    descriptorTypeId: descriptorModel.get('id'),
-                    descriptorModelType: layoutDescriptorModel
+                    descriptorId: descriptorModel.get('id'),
+                    descriptor: layoutDescriptorModel
                 });
 
                 if (layoutDescriptorModel.set_once && exists) {
@@ -286,7 +286,7 @@ let View = ItemView.extend({
             let appLabel = tokens[tokens.length-4];
             let modelName = tokens[tokens.length-3];
             let objectId = tokens[tokens.length-2];
-            let valueName = '#' + descriptorModel.get('name');
+            let valueName = '#' + descriptorModel.get('code');
 
             let options = {};
 

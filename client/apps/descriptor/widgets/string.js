@@ -217,7 +217,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    showHistory: function(appLabel, modelName, objectId, valueName, descriptorModelType, options) {
+    showHistory: function(appLabel, modelName, objectId, valueName, descriptor, options) {
         options || (options = {});
 
         // refresh values
@@ -234,7 +234,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
             let dialog = new DescribableValueHistoryDialog({
                 entries: data.items,
                 readOnly: this.readOnly,
-                descriptorModelType: descriptorModelType
+                descriptor: descriptor
             });
 
             dialog.render();

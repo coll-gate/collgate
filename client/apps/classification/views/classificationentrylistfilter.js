@@ -146,7 +146,7 @@ let View = Marionette.View.extend({
             if (this.widget) {
                 this.widget.create(column.format, this.ui.search_group, {
                     readOnly: false,
-                    descriptorTypeId: column.id});
+                    descriptorId: column.id});
 
                 return;
             }
