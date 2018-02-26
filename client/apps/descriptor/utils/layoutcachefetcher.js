@@ -1,6 +1,6 @@
 /**
- * @file descriptormetamodelcachefetcher.js
- * @brief Cache fetcher specialized for descriptor meta model.
+ * @file layoutcachefetcher.js
+ * @brief Cache fetcher specialized for layout description.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-09-05
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -10,20 +10,20 @@
 
 let CacheFetcher = require('../../main/utils/cachefetcher');
 
-let DescriptorMetaModelCacheFetcher = function() {
+let LayoutCacheFetcher = function() {
     CacheFetcher.call(this);
 
     this.type = "layout";
 };
 
-DescriptorMetaModelCacheFetcher.prototype = Object.create(CacheFetcher.prototype);
-DescriptorMetaModelCacheFetcher.prototype.constructor = DescriptorMetaModelCacheFetcher;
+LayoutCacheFetcher.prototype = Object.create(CacheFetcher.prototype);
+LayoutCacheFetcher.prototype.constructor = LayoutCacheFetcher;
 
 /**
  * Fetch values.
  * @param keys Keys list.
  */
-DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
+LayoutCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     // make the list of values
     let keysToFetch = new Set();
 
@@ -90,9 +90,9 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
                 };
             }
 
-            window.session.logger.debug("Cache miss for descriptor meta model " + options.format.model + ".");
+            window.session.logger.debug("Cache miss for layout " + options.format.model + ".");
         }).fail(function () {
-           window.session.logger.debug("Cache failure for descriptor meta model " + options.format.model + ".");
+           window.session.logger.debug("Cache failure for layout " + options.format.model + ".");
         });
 
         return promise;
@@ -101,8 +101,8 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
     }
 };
 
-DescriptorMetaModelCacheFetcher.prototype.get = function(cacheManager, options) {
+LayoutCacheFetcher.prototype.get = function(cacheManager, options) {
     return cacheManager.get('layout', options.format.model);
 };
 
-module.exports = DescriptorMetaModelCacheFetcher;
+module.exports = LayoutCacheFetcher;

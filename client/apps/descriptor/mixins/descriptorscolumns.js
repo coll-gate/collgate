@@ -1,4 +1,4 @@
-/**
+    /**
  * @file descriptorscolumns.js
  * @brief Management of colums of descriptors for a list view
  * @author Frédéric SCHERMA (INRA UMR1095)

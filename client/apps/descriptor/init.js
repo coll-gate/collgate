@@ -121,11 +121,11 @@ DescriptorModule.prototype = {
         //
 
         app.main.cache.register('descriptors');
-        app.main.cache.register('layouts');
+        app.main.cache.register('layout');
         app.main.cache.register('entity_columns');
 
-        let DescriptorMetaModelCacheFetcher = require('./utils/descriptormetamodelcachefetcher');
-        app.main.cache.registerFetcher(new DescriptorMetaModelCacheFetcher());
+        let LayoutCacheFetcher = require('./utils/layoutcachefetcher');
+        app.main.cache.registerFetcher(new LayoutCacheFetcher());
 
         let DescriptorCacheFetcher = require('./utils/descriptorcachefetcher');
         app.main.cache.registerFetcher(new DescriptorCacheFetcher());
