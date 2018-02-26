@@ -44,7 +44,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
         self.allow_multiple = True
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         return instance.geolocation_app.geolocation_manager.country_format_type_validator(value)
 
     def check(self, descriptor_type_format):
@@ -62,7 +62,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
 
         return None
 
-    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+    def get_display_values_for(self, descriptor, descriptor_type_format, values, limit):
         items = {}
 
         # search for the countries
@@ -111,7 +111,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
         self.allow_multiple = True
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         return instance.geolocation_app.geolocation_manager.city_format_type_validator(value)
 
     def check(self, descriptor_type_format):
@@ -129,7 +129,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
 
         return None
 
-    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+    def get_display_values_for(self, descriptor, descriptor_type_format, values, limit):
         items = {}
 
         # search for the cities

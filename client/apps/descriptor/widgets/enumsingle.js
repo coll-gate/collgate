@@ -27,7 +27,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             readOnly: false,
             history: false,
             multiple: false,
-            descriptorTypeId: 0
+            descriptorId: 0
         });
 
         if (options.readOnly) {
@@ -51,7 +51,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.groupEl = this._createInputGroup(parent, "fa-list", select, options.history);
 
                 // init the autocomplete
-                let url = window.application.url(['descriptor', 'descriptor', options.descriptorTypeId]);
+                let url = window.application.url(['descriptor', 'descriptor', options.descriptorId]);
                 let initials = [];
 
                 let container = parent.closest('div.modal-dialog').parent();
@@ -121,7 +121,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
                 // init the selectpicker
-                let url = window.application.url(['descriptor', 'descriptor', options.descriptorTypeId]);
+                let url = window.application.url(['descriptor', 'descriptor', options.descriptorId]);
 
                 // refresh values (@todo could be cached but how)
                 this.promise = $.ajax({
@@ -199,8 +199,8 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
     set: function (format, definesValues, defaultValues, options) {
         options || (options = {
-            descriptorTypeId: 0,
-            descriptorModelType: null
+            descriptorId: 0,
+            descriptor: null
         });
 
         if (!this.el || !this.parent) {
@@ -209,7 +209,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        let url = window.application.url(['descriptor', 'descriptor', options.descriptorTypeId]);
+        let url = window.application.url(['descriptor', 'descriptor', options.descriptorId]);
 
         if (this.readOnly) {
             let type = this;
@@ -221,7 +221,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
                     window.application.main.cache.lookup({
                         type: "descriptors",
-                        format: {name: options.descriptorModelType.name}
+                        format: {name: options.descriptor.name}
                     }, keys).done(function (data) {
                         let results = [];
 
@@ -236,7 +236,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
                     window.application.main.cache.lookup({
                         type: "descriptors",
-                        format: {name: options.descriptorModelType.name}
+                        format: {name: options.descriptor.name}
                     }, keys).done(function (data) {
                         type.el.val(data[defaultValues].value);
                     });

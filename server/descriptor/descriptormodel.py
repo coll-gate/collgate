@@ -796,6 +796,6 @@
 #     values = json.loads(request.GET['values'])
 #
 #     # no cursor, simple list, limited to 100 elements per call
-#     results = DescriptorFormatTypeManager.get_display_values_for(step_format, dmt.descriptor_type, values, limit)
+#     results = DescriptorFormatTypeManager.get_display_values_for(dmt.descriptor_type, step_format, values, limit)
 #
 #     return HttpResponseRest(request, results)

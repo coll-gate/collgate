@@ -16,7 +16,7 @@ let View = Dialog.extend({
     templateContext: function () {
         return {
             title: this.title,
-            descriptor_model_type: this.descriptorModelType,
+            descriptor: this.descriptor,
             values: this.entries,
             unit: ""
         };
@@ -39,15 +39,15 @@ let View = Dialog.extend({
 
         View.__super__.initialize.apply(this, arguments);
 
-        this.descriptorModelType = options.descriptorModelType;
+        this.descriptor = options.descriptor;
         this.entries = options.entries;
 
         this.unit = "";
 
-        if (this.descriptorModelType.get('format').unit === "custom" && this.descriptorModelType.get('format').custom_unit !== "") {
-            this.unit = this.descriptorModelType.get('format').custom_unit;
-        } else if (this.descriptorModelType.get('format').unit) {
-            this.unit = window.application.descriptor.collections.formatUnits.findLabel(this.descriptorModelType.get('format').unit);
+        if (this.descriptor.get('format').unit === "custom" && this.descriptor.get('format').custom_unit !== "") {
+            this.unit = this.descriptor.get('format').custom_unit;
+        } else if (this.descriptor.get('format').unit) {
+            this.unit = window.application.descriptor.collections.formatUnits.findLabel(this.descriptor.get('format').unit);
         }
 
         this.model = options.model;
@@ -66,8 +66,8 @@ let View = Dialog.extend({
         // setup widget for each value
         let elts = $("li.descriptor-value span.history-value");
 
-        let descriptorType = this.descriptorModelType;
-        let format = descriptorType.get('format');
+        let descriptor = this.descriptor;
+        let format = descriptor.get('format');
 
         $.each(elts, function(i, elt) {
             let widget = window.application.descriptor.widgets.newElement(format.type);
@@ -76,19 +76,19 @@ let View = Dialog.extend({
                 widget.create(format, $(elt), {
                     readOnly: true,
                     history: false,
-                    descriptorTypeId: descriptorType.get('id')
+                    descriptorId: descriptor.get('id')
                 });
 
                 widget.set(format, true, self.entries[i].value, {
-                    descriptorTypeId: descriptorType.get('id'),
-                    descriptorModelType: self.descriptorModelType
+                    descriptorId: descriptor.get('id'),
+                    descriptor: self.descriptor.attributes
                 });
             }
 
             if (!self.readOnly) {
                 $(elt).addClass('element').css('cursor', 'pointer').on('click', function(e) {
-                    self.descriptorModelType.widget.set(
-                        self.descriptorModelType.get('format'),
+                    self.descriptor.widget.set(
+                        self.descriptor.get('format'),
                         true,
                         widget.values());
 

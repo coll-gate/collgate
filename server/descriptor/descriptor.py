@@ -1218,7 +1218,7 @@ def get_some_display_values_for_descriptor(request, descriptor_name_or_code):
     values = json.loads(request.GET['values'])
 
     # no cursor, simple list, limited to 100 elements per call
-    results = DescriptorFormatTypeManager.get_display_values_for(format_type, descriptor, values, limit)
+    results = DescriptorFormatTypeManager.get_display_values_for(descriptor, format_type, values, limit)
 
     return HttpResponseRest(request, results)
 

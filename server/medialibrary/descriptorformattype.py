@@ -47,7 +47,7 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         self.available_operators = None
         self.column_display = False
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is a string and if the related entity exists
         if not isinstance(value, str):
             return _("The descriptor value must be a string")
@@ -138,7 +138,7 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         self.available_operators = None
         self.column_display = False
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is a string and if the related entity exists
         if not isinstance(value, list):
             return _("The descriptor value must be an array of string")
@@ -219,7 +219,7 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
 
                 new_media.save()
 
-    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+    def get_display_values_for(self, descriptor, descriptor_type_format, values, limit):
         items = {}
 
         # search for the media

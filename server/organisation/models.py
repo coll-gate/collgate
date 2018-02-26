@@ -152,10 +152,10 @@ class Organisation(DescribableEntity):
 
     @classmethod
     def is_type(cls, organisation_type):
-        descriptor_type = Descriptor.objects.get(code=cls.TYPE_CODE)
+        descriptor = Descriptor.objects.get(code=cls.TYPE_CODE)
 
         try:
-            descriptor_type.get_value(organisation_type)
+            descriptor.get_value(organisation_type)
         except ObjectDoesNotExist:
             return False
 

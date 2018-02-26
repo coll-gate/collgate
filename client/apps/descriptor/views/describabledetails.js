@@ -66,22 +66,21 @@ let View = ItemView.extend({
             let i = el.attr('index');
             let id = el.attr('descriptor');
             let descriptorModel = view.descriptorCollection.get(id);
-            // let descriptorType = descriptorModelType.descriptor_type;
             let format = descriptorModel.get('format');
 
             let values = (model.get('descriptors')[descriptorModel.get('code')] ? model.get('descriptors')[descriptorModel.get('code')] : null);
 
-            let widget = application.descriptor.widgets.newElement(format.type);
+            let widget = window.application.descriptor.widgets.newElement(format.type);
             if (widget) {
                 widget.create(format, el.children('td.descriptor-value'), {
                     readOnly: true,
                     history: true,
-                    descriptorTypeId: descriptorModel.get('id')
+                    descriptorId: descriptorModel.get('id')
                 });
 
                 widget.set(format, true, values, {
-                    descriptorTypeId: descriptorModel.get('id'),
-                    descriptorModelType: descriptorModel.attributes
+                    descriptorId: descriptorModel.get('id'),
+                    descriptor: descriptorModel.attributes
                 });
             }
 
@@ -154,11 +153,12 @@ let View = ItemView.extend({
             let appLabel = tokens[tokens.length - 4];
             let modelName = tokens[tokens.length - 3];
             let objectId = tokens[tokens.length - 2];
-            let valueName = '#' + descriptorModel.get('name');
+            let valueName = '#' + descriptorModel.get('code');
 
             let options = {};
 
-            descriptorModel.widget.showHistory(appLabel, modelName, objectId, valueName, descriptorModel, options);
+            descriptorModel.widget.showHistory(
+                appLabel, modelName, objectId, valueName, descriptorModel, options);
         }
     }
 });

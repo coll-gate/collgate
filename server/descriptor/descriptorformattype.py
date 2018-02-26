@@ -73,12 +73,12 @@ class DescriptorFormatType(object):
         # displayed field by default, used by client for default sort sub-field
         self.display_fields = None
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         """
         Validate the value according the format.
         :param descriptor_type_format: Format of the related type of descriptor
         :param value: Value to validate
-        :param descriptor_model_type: related descriptor model type
+        :param descriptor: related descriptor
         :return: None if the validation is done, else a string with the error detail
         """
         return None
@@ -104,12 +104,12 @@ class DescriptorFormatType(object):
         """
         pass
 
-    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+    def get_display_values_for(self, descriptor, descriptor_type_format, values, limit):
         """
         For a list of values, lookup those values into the descriptor object and
         returns them as dict of value_id:display_value.
 
-        :param descriptor_type: Descriptor type instance
+        :param descriptor: Descriptor instance
         :param descriptor_type_format: Related format of the descriptor type (parsed in Python object, not in JSON)        
         :param values: List a of values (str or integer, depending of the descriptor)
         :param limit: Max results        
@@ -121,12 +121,12 @@ class DescriptorFormatType(object):
             'items': {}
         }
 
-    def get_detailed_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+    def get_detailed_values_for(self, descriptor, descriptor_type_format, values, limit):
         """
         For a list of values, lookup those values into the descriptor object and
         returns them as dict of value_id:{details...}.
 
-        :param descriptor_type: Descriptor type instance
+        :param descriptor: Descriptor instance
         :param descriptor_type_format: Related format of the descriptor type (parsed in Python object, not in JSON)
         :param values: List a of values (str or integer, depending of the descriptor)
         :param limit: Max results
@@ -475,12 +475,12 @@ class DescriptorFormatTypeManager(object):
         return dft
 
     @classmethod
-    def validate(cls, descriptor_type_format, value, descriptor_model_type):
+    def validate(cls, descriptor_type_format, value, descriptor):
         """
         Call the validate of the correct descriptor format type.
         :param descriptor_type_format: Format of the type of descriptor as python object
         :param value: Value to validate
-        :param descriptor_model_type: Related type of model of descriptor
+        :param descriptor: Related descriptor
         :except ValueError with descriptor of the problem
         """
         format_type = descriptor_type_format['type']
@@ -489,9 +489,9 @@ class DescriptorFormatTypeManager(object):
         if dft is None:
             raise ValueError("Unsupported descriptor format type %s" % format_type)
 
-        res = dft.validate(descriptor_type_format, value, descriptor_model_type)
+        res = dft.validate(descriptor_type_format, value, descriptor)
         if res is not None:
-            raise ValueError(res + " (%s)" % descriptor_model_type.get_label())
+            raise ValueError(res + " (%s)" % descriptor.get_label())
 
     @classmethod
     def check(cls, descriptor_type_format):
@@ -548,14 +548,14 @@ class DescriptorFormatTypeManager(object):
         dft.own(entity, old_value, new_value)
 
     @classmethod
-    def get_display_values_for(cls, descriptor_type_format, descriptor_type, values, limit):
+    def get_display_values_for(cls, descriptor, descriptor_type_format, values, limit):
         """
         For a list of values, lookup those values into the descriptor format type object and
         returns them as dict of value_id:display_value.
         
         :param limit: 
+        :param descriptor: Descriptor instance
         :param descriptor_type_format: Format of the type of descriptor as python object
-        :param descriptor_type: Descriptor type instance        
         :param values: List a of values (str or integer, depending of the descriptor)
         :param limit: Max results
         :return: A dict of pair(value_id:display_value)
@@ -566,7 +566,7 @@ class DescriptorFormatTypeManager(object):
         if dft is None:
             raise ValueError("Unsupported descriptor format type %s" % format_type)
 
-        return dft.get_display_values_for(descriptor_type, descriptor_type_format, values, limit)
+        return dft.get_display_values_for(descriptor, descriptor_type_format, values, limit)
 
 
 class DescriptorFormatTypeGroupSingle(DescriptorFormatTypeGroup):
@@ -613,14 +613,14 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
         self.data = "TEXT"
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
-        # check if the value is a string and exists into the type of descriptor
+    def validate(self, descriptor_type_format, value, descriptor):
+        # check if the value is a string and exists into the descriptor
         if not isinstance(value, str):
             return _("The descriptor value must be a string")
 
         # check if the value exists
         try:
-            descriptor_model_type.descriptor_type.get_value(value)
+            descriptor.get_value(value)
         except ObjectDoesNotExist:
             return _("The descriptor value must exists")
 
@@ -650,10 +650,10 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
 
         return None
 
-    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+    def get_display_values_for(self, descriptor, descriptor_type_format, values, limit):
         items = {}
 
-        descriptor_values = descriptor_type.get_values_from_list(values, limit)
+        descriptor_values = descriptor.get_values_from_list(values, limit)
 
         if descriptor_type_format['display_fields'] == "value0":
             for value in descriptor_values:
@@ -696,14 +696,14 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
         self.data = "TEXT"
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
-        # check if the value is a string and exists into the type of descriptor
+    def validate(self, descriptor_type_format, value, descriptor):
+        # check if the value is a string and exists into the descriptor
         if not isinstance(value, str):
             return _("The descriptor value must be a string")
 
         # check if the value exists
         try:
-            descriptor_model_type.get_value(value)
+            descriptor.get_value(value)
         except ObjectDoesNotExist:
             return _("The descriptor value must exists")
 
@@ -734,10 +734,10 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
 
         return None
 
-    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+    def get_display_values_for(self, descriptor, descriptor_type_format, values, limit):
         items = {}
 
-        descriptor_values = descriptor_type.get_values_from_list(values, limit)
+        descriptor_values = descriptor.get_values_from_list(values, limit)
 
         if descriptor_type_format['display_fields'] == "value0":
             for value in descriptor_values:
@@ -789,14 +789,14 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
         self.data = "TEXT"
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
-        # check if the value is a string and exists into the type of descriptor
+    def validate(self, descriptor_type_format, value, descriptor):
+        # check if the value is a string and exists into the descriptor
         if not isinstance(value, str):
             return _("The descriptor value must be a string")
 
         # check if the value exists
         try:
-            descriptor_model_type.descriptor_type.get_value(value)
+            descriptor.get_value(value)
         except ObjectDoesNotExist:
             return _("The descriptor value must exists")
 
@@ -835,8 +835,8 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
 
         return None
 
-    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
-        items = descriptor_type.get_values_from_list(values, limit)
+    def get_display_values_for(self, descriptor, descriptor_type_format, values, limit):
+        items = descriptor.get_values_from_list(values, limit)
 
         return {
             'cacheable': True,
@@ -872,7 +872,7 @@ class DescriptorFormatTypeBoolean(DescriptorFormatType):
         self.format_fields = ["type"]
         self.data = "BOOLEAN"
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is a boolean
         if not isinstance(value, bool):
             return _("The descriptor value must be a boolean")
@@ -898,7 +898,7 @@ class DescriptorFormatTypeNumeric(DescriptorFormatType):
         self.data = "TEXT"
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is a decimal (string with digits - and .) with the according precision of decimals
         if not isinstance(value, str):
             return _("The descriptor value must be a decimal string")
@@ -959,7 +959,7 @@ class DescriptorFormatTypeNumericRange(DescriptorFormatType):
         self.data = ["TEXT", "TEXT"]
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is a decimal (string with digits - and .) with the according precision of
         # decimals and into the range min/max
         if not isinstance(value, str):
@@ -1043,7 +1043,7 @@ class DescriptorFormatTypeOrdinal(DescriptorFormatType):
         self.data = "INTEGER"
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is an integer into the range min/max
         if not isinstance(value, int):
             return _("The descriptor value must be an integer")
@@ -1113,7 +1113,7 @@ class DescriptorFormatTypeString(DescriptorFormatType):
         self.data = "TEXT"
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'icontains']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is a string matching the regexp and the max length of 1024 characters
         if not isinstance(value, str):
             return _("The descriptor value must be a string")
@@ -1169,7 +1169,7 @@ class DescriptorFormatTypeDate(DescriptorFormatType):
         self.data = "TEXT"
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is a YYYYMMDD date
         if not isinstance(value, str) or DescriptorFormatTypeDate.DATE_RE.match(value) is None:
             return _("The descriptor value must be a date string (YYYYMMDD)")
@@ -1197,7 +1197,7 @@ class DescriptorFormatTypeTime(DescriptorFormatType):
         self.data = "TEXT"
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is a HH:MM:SS time
         if not isinstance(value, str) or DescriptorFormatTypeTime.TIME_RE.match(value) is None:
             return _("The descriptor value must be a time string (HH:MM:SS)")
@@ -1229,7 +1229,7 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
             args = set()
             super(Q, self).__init__(children=list(args) + list(kwargs.items()))
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
 
         if len(value) != 3 and isinstance(value, list):
             return _("The descriptor value must be an array of 3 string values")
@@ -1644,7 +1644,7 @@ class DescriptorFormatTypeDateTime(DescriptorFormatType):
         self.data = "TEXT"
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is an ISO and UTC (convert to UTC if necessary)
         if not isinstance(value, str) or DescriptorFormatTypeDateTime.DATETIME_RE.match(value) is None:
             return _("The descriptor value must be a datetime string (ISO 8601)")
@@ -1670,7 +1670,7 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
         self.data = "INTEGER"
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
+    def validate(self, descriptor_type_format, value, descriptor):
         # check if the value is an integer and if the related entity exists
         if not isinstance(value, int):
             return _("The descriptor value must be an integer")
@@ -1709,7 +1709,7 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
 
         return None
 
-    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+    def get_display_values_for(self, descriptor, descriptor_type_format, values, limit):
         items = {}
 
         # search for the entities

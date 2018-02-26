@@ -194,10 +194,10 @@ DescriptorFormatType.prototype = {
      * @param modelName Model name.
      * @param objectId Entity integer identifier.
      * @param valueName Name of the value, of the descriptor model type.
-     * @param descriptorModelType Descriptor model type.
+     * @param descriptor Descriptor model.
      * @param options
      */
-    showHistory: function(appLabel, modelName, objectId, valueName, descriptorModelType, options) {
+    showHistory: function(appLabel, modelName, objectId, valueName, descriptor, options) {
         options || (options = {});
         let self = this;
 
@@ -215,7 +215,7 @@ DescriptorFormatType.prototype = {
             let dialog = new DescribableValueHistoryDialog({
                 entries: data.items,
                 readOnly: self.readOnly,
-                descriptorModelType: descriptorModelType
+                descriptor: descriptor
             });
 
             dialog.render();

@@ -34,9 +34,9 @@ def organisation_type(request):
     organisation_types = []
 
     # stored in a type of descriptor
-    descriptor_type = get_object_or_404(Descriptor, code=Organisation.TYPE_CODE)
+    descriptor = get_object_or_404(Descriptor, code=Organisation.TYPE_CODE)
 
-    cursor_prev, cursor_next, values = descriptor_type.get_values(sort_by='id')
+    cursor_prev, cursor_next, values = descriptor.get_values(sort_by='id')
 
     for st in values:
         organisation_types.append({
