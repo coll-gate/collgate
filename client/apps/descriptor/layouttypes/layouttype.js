@@ -1,5 +1,5 @@
 /**
- * @file descriptormetamodeltype.js
+ * @file layouttype.js
  * @brief Base class for any descriptor layout type widgets.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-09-13
@@ -10,8 +10,8 @@
 
 let Marionette = require('backbone.marionette');
 
-let DescriptorMetaModelType = Marionette.View.extend({
-    className: 'descriptor-meta-model-type-details-data',
+let LayoutType = Marionette.View.extend({
+    className: 'layout-type-details-data',
     template: "<div></div>",
 
     initialize: function() {
@@ -26,6 +26,6 @@ let DescriptorMetaModelType = Marionette.View.extend({
     }
 });
 
-DescriptorMetaModelType.descriptorMetaModelTarget = null;
+LayoutType.layoutTarget = null;
 
-module.exports = DescriptorMetaModelType;
+module.exports = LayoutType;

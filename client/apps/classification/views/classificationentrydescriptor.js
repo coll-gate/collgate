@@ -43,7 +43,7 @@ let View = DescribableDetails.extend({
             view.onModify();
         });
 
-        // contextView.on("descriptormetamodel:replace", function () {
+        // contextView.on("layout:replace", function () {
         //     // this will update the model and so on the view
         //     let ClassificationEntryDescriptorCreateView = require('./classificationentrydescriptorcreate');
         //     let classificationEntryDescriptorCreateView = new ClassificationEntryDescriptorCreateView({model: view.model});
@@ -51,7 +51,7 @@ let View = DescribableDetails.extend({
         //     classificationEntryDescriptorCreateView.onDefine();
         // });
         //
-        // contextView.on("descriptormetamodel:delete", function () {
+        // contextView.on("layout:delete", function () {
         //     let ConfirmDialog = require('../../main/views/confirmdialog');
         //     let confirmDialog = new ConfirmDialog({
         //         title: _t('Delete descriptors'),

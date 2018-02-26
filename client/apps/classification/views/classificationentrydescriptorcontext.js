@@ -38,9 +38,9 @@ let View = Marionette.View.extend({
     },
 
     triggers: {
-        // "click @ui.add": "descriptormetamodel:add",
-        // "click @ui.replace": "descriptormetamodel:replace",
-        // "click @ui.delete": "descriptormetamodel:delete",
+        // "click @ui.add": "layout:add",
+        // "click @ui.replace": "layout:replace",
+        // "click @ui.delete": "layout:delete",
         "click @ui.modify": "describable:modify",
         "click @ui.apply": "describable:apply",
         "click @ui.cancel": "describable:cancel"

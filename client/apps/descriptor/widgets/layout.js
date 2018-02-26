@@ -1,5 +1,5 @@
 /**
- * @file descriptormetamodel.js
+ * @file layoutmodel.js
  * @brief Display and manage a layout of descriptor reference value format
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-07-10
@@ -10,7 +10,7 @@
 
 let DescriptorFormatType = require('./descriptorformattype');
 
-let DescriptorMetaModel = function () {
+let LayoutModel = function () {
     DescriptorFormatType.call(this);
 
     this.name = "layout";
@@ -20,7 +20,7 @@ let DescriptorMetaModel = function () {
     this.allow_multiple = true
 };
 
-_.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
+_.extend(LayoutModel.prototype, DescriptorFormatType.prototype, {
     create: function (format, parent, options) {
         options || (options = {
             readOnly: false,
@@ -243,4 +243,4 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
 
 // not edition view
 
-module.exports = DescriptorMetaModel;
+module.exports = LayoutModel;

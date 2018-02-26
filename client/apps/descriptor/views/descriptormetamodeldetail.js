@@ -37,7 +37,7 @@ let View = Marionette.View.extend({
         let target = this.model.get('target');
 
         // update the contextual region according to the format
-        let Element = window.application.descriptor.descriptorMetaModelTypes.getElement(target);
+        let Element = window.application.descriptor.layoutTypes.getElement(target);
         if (Element) {
             this.showChildView('content', new Element({model: this.model}));
         } else {

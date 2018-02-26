@@ -113,8 +113,8 @@ DescriptorModule.prototype = {
         // descriptor layout types
         //
 
-        let DescriptorMetaModelTypeManager = require('./descriptormetamodeltypes/descriptormetamodeltypemanager');
-        this.descriptorMetaModelTypes = new DescriptorMetaModelTypeManager();
+        let DescriptorMetaModelTypeManager = require('./layouttypes/layouttypemanager');
+        this.layoutTypes = new DescriptorMetaModelTypeManager();
 
         //
         // cache
@@ -141,7 +141,7 @@ DescriptorModule.prototype = {
         this.routers.descriptor = new DescriptorRouter();
 
         let LayoutRouter = require('./routers/layout');
-        this.routers.descriptorMetaModel = new LayoutRouter();
+        this.routers.layout = new LayoutRouter();
 
         let IndexationRouter = require('./routers/indexation');
         this.routers.indexation = new IndexationRouter();

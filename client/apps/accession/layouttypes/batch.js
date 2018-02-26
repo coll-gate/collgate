@@ -8,10 +8,10 @@
  * @details
  */
 
-let DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
+let DescriptorMetaModelType = require('../../descriptor/layouttypes/layouttype');
 
 let Batch = DescriptorMetaModelType.extend({
-    template: require('../templates/descriptormetamodeltypes/batch.html'),
+    template: require('../templates/layouttypes/batch.html'),
 
     regions: {
         "namingOptions": "div.accession-naming-options"
@@ -49,6 +49,6 @@ let Batch = DescriptorMetaModelType.extend({
     }
 });
 
-Batch.descriptorMetaModelTarget = 'accession.batch';
+Batch.layoutTarget = 'accession.batch';
 
 module.exports = Batch;

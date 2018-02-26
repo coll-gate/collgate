@@ -8,10 +8,10 @@
  * @details
  */
 
-let DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
+let DescriptorMetaModelType = require('../../descriptor/layouttypes/layouttype');
 
 let Accession = DescriptorMetaModelType.extend({
-    template: require('../templates/descriptormetamodeltypes/accession.html'),
+    template: require('../templates/layouttypes/accession.html'),
 
     regions: {
         "namingOptions": "div.accession-naming-options"
@@ -95,6 +95,6 @@ let Accession = DescriptorMetaModelType.extend({
     }
 });
 
-Accession.descriptorMetaModelTarget = 'accession.accession';
+Accession.layoutTarget = 'accession.accession';
 
 module.exports = Accession;

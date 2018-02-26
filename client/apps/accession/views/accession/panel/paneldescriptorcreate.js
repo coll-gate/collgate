@@ -74,7 +74,7 @@ let View = Marionette.View.extend({
                         let model = this.getOption('model');
 
                         if (this.ui.layout.val() != null) {
-                            let metaModel = parseInt(this.ui.layout.val());
+                            let layoutId = parseInt(this.ui.layout.val());
 
                             view.destroy();
 
@@ -84,7 +84,7 @@ let View = Marionette.View.extend({
                             // patch the accessionPanel descriptor meta model
                             model.save(
                                 {
-                                    layout: metaModel
+                                    layout: layoutId
                                 },
 
                                 {
@@ -95,7 +95,7 @@ let View = Marionette.View.extend({
 
                             // $.ajax({
                             //     method: "GET",
-                            //     url: window.application.url(['descriptor', 'layout', metaModel, 'layout']),
+                            //     url: window.application.url(['descriptor', 'layout', layoutId, 'layout']),
                             //     dataType: 'json'
                             // }).done(function (data) {
                             //     let accessionPanelDescriptorView = new AccessionPanelDescriptorView({
@@ -119,7 +119,7 @@ let View = Marionette.View.extend({
 
             let DefaultLayout = require('../../../../main/views/defaultlayout');
             let contextLayout = new DefaultLayout();
-            application.getView().showChildView('right', contextLayout);
+            window.application.getView().showChildView('right', contextLayout);
 
             let actions = [];
 
@@ -132,7 +132,7 @@ let View = Marionette.View.extend({
             contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
             contextLayout.showChildView('content', contextView);
 
-            contextView.on("descriptormetamodel:add", function () {
+            contextView.on("layout:add", function () {
                 view.onDefine();
             });
         }

@@ -74,13 +74,13 @@ let View = Marionette.View.extend({
                         let model = this.getOption('model');
 
                         if (this.ui.layout.val() != null) {
-                            let metaModel = parseInt(this.ui.layout.val());
+                            let layoutId = parseInt(this.ui.layout.val());
 
                             view.destroy();
 
                             model.save(
                                 {
-                                    layout: metaModel
+                                    layout: layoutId
                                 },
 
                                 {
@@ -116,7 +116,7 @@ let View = Marionette.View.extend({
             contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
             contextLayout.showChildView('content', contextView);
 
-            contextView.on("descriptormetamodel:add", function () {
+            contextView.on("layout:add", function () {
                 view.onDefine();
             });
         }

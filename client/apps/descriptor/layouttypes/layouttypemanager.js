@@ -1,5 +1,5 @@
 /**
- * @file descriptormetamodeltypemanager.js
+ * @file layouttypemanager.js
  * @brief Base class for any descriptor layout type views.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-09-13
@@ -8,22 +8,22 @@
  * @details
  */
 
-let DescriptorMetaModelTypeManager = function() {
-    this.descriptorMetaModelTypes = {};
+let LayoutTypeManager = function() {
+    this.layoutTypes = {};
 };
 
-DescriptorMetaModelTypeManager.prototype = {
+LayoutTypeManager.prototype = {
     registerElement: function (modelName, viewClass) {
-        this.descriptorMetaModelTypes[viewClass.descriptorMetaModelTarget] = viewClass;
+        this.layoutTypes[viewClass.layoutTarget] = viewClass;
     },
 
     getElement: function(modelName) {
-        let element = this.descriptorMetaModelTypes[modelName];
+        let element = this.layoutTypes[modelName];
         return element;
     },
 
     makeView: function(modelName, model) {
-        let Element = this.descriptorMetaModelTypes[modelName];
+        let Element = this.layoutTypes[modelName];
         if (Element) {
             return new Element({mode: model});
         }
@@ -31,4 +31,4 @@ DescriptorMetaModelTypeManager.prototype = {
     }
 };
 
-module.exports = DescriptorMetaModelTypeManager;
+module.exports = LayoutTypeManager;

@@ -34,14 +34,14 @@ AccessionModule.prototype = {
         // register the layout type of descriptors
         //
 
-        let metaModelTypes = [
+        let layoutTypes = [
             'accession',
             'batch'
         ];
 
-        for (let i = 0; i < metaModelTypes.length; ++i) {
-            let moduleName = metaModelTypes[i].replace(/_/g, '').toLowerCase();
-            app.descriptor.descriptorMetaModelTypes.registerElement(metaModelTypes[i], require('./descriptormetamodeltypes/' + moduleName));
+        for (let i = 0; i < layoutTypes.length; ++i) {
+            let moduleName = layoutTypes[i].replace(/_/g, '').toLowerCase();
+            app.descriptor.layoutTypes.registerElement(layoutTypes[i], require('./layouttypes/' + moduleName));
         }
 
         //

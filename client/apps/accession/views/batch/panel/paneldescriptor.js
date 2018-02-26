@@ -36,7 +36,7 @@ let View = DescribableDetails.extend({
             view.onModify();
         });
 
-        contextView.on("descriptormetamodel:replace", function () {
+        contextView.on("layout:replace", function () {
             view.onReplace();
         });
     },

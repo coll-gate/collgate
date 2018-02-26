@@ -33,7 +33,7 @@ ClassificationModule.prototype = {
 
         for (let i = 0; i < metaModelTypes.length; ++i) {
             let moduleName = metaModelTypes[i].replace(/_/g, '').toLowerCase();
-            app.descriptor.descriptorMetaModelTypes.registerElement(metaModelTypes[i], require('./descriptormetamodeltypes/' + moduleName));
+            app.descriptor.layoutTypes.registerElement(metaModelTypes[i], require('./descriptormetamodeltypes/' + moduleName));
         }
 
         //

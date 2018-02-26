@@ -8,7 +8,7 @@
  * @details
  */
 
-let DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
+let DescriptorMetaModelType = require('../../descriptor/layouttypes/layouttype');
 
 let ClassificationEntry = DescriptorMetaModelType.extend({
     template: require('../templates/descriptormetamodeltypes/classificationentry.html'),
@@ -43,6 +43,6 @@ let ClassificationEntry = DescriptorMetaModelType.extend({
     }
 });
 
-ClassificationEntry.descriptorMetaModelTarget = 'classification.classificationentry';
+ClassificationEntry.layoutTarget = 'classification.classificationentry';
 
 module.exports = ClassificationEntry;

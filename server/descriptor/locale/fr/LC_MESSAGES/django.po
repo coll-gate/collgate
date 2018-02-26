@@ -142,20 +142,9 @@ msgstr "Ce type de descripteur ne contient pas de liste"
 msgid "Field name must be value0 or value1"
 msgstr "Le nom de champs doit être value0 ou value1"
 
-#: descriptor.py:995 descriptormetamodel.py:811 descriptormetamodel.py:867
-#: descriptormodel.py:605
-msgid "Unsupported language identifier"
-msgstr "Identifiant de langue indéfini"
-
 #: descriptor.py:1056
 msgid "List of values are not available for drop-down"
 msgstr "La liste des valeurs n'est pas disponible pour la liste déroulante"
-
-#: descriptorcolumns.py:56
-#, fuzzy
-#| msgid "Invalid describable entity model type name"
-msgid "Invalid descriptor meta model list parameter format"
-msgstr "Nom de type d'entité de modèle de descripteur invalide"
 
 #: descriptorformattype.py:576
 msgid "Single value"
@@ -655,144 +644,6 @@ msgstr "%/heure"
 #: descriptorformatunit.py:244
 msgid "%/day"
 msgstr "%/jour"
-
-#: descriptormetamodel.py:181
-msgid "You are not allowed to create a meta-model of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer un méta-modèle de descripteur"
-
-#: descriptormetamodel.py:272
-msgid "You are not allowed to remove a meta-model of descriptor"
-msgstr "Vous n'êtes pas autorisé à supprimer un méta-modèle de descripteur"
-
-#: descriptormetamodel.py:279
-msgid ""
-"It is not possible to remove a meta-model of descriptor that contains models "
-"of descriptor"
-msgstr ""
-"Il n'est pas possible de retirer un méta-modèle de descripteur contanant des "
-"modèles de descripteur"
-
-#: descriptormetamodel.py:282
-msgid "There is some data using the meta-model of descriptor"
-msgstr "Il existe de données utilisant ce méta-modèle de descripteur"
-
-#: descriptormetamodel.py:304 descriptormetamodel.py:342
-#: descriptormetamodel.py:561 descriptormetamodel.py:641
-#: descriptormetamodel.py:703 descriptormetamodel.py:733
-#: descriptormetamodel.py:795 descriptormetamodel.py:850
-msgid "You are not allowed to modify a meta-model of descriptor"
-msgstr "Vous n'êtes pas autorisé à modifier un méta-modèle de descripteur"
-
-#: descriptormetamodel.py:311
-msgid "Inconsistent parameters->type with target model"
-msgstr ""
-
-#: descriptormetamodel.py:562
-msgid "You are not allowed to create a panel of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer un panel de descripteur"
-
-#: descriptormetamodel.py:577
-msgid ""
-"A panel of descriptor for this model already exists into this meta-model of "
-"descriptor"
-msgstr ""
-"Un panel de descripteur avec ce modèle existe déjà dans ce méta-modèle de "
-"descripteur"
-
-#: descriptormetamodel.py:642 descriptormetamodel.py:704
-#: descriptormetamodel.py:851
-msgid "You are not allowed to modify a panel of descriptor"
-msgstr "Vous n'êtes pas autorisé à modifier un panel de descripteur"
-
-#: descriptormetamodel.py:734
-msgid "You are not allowed to remove a panel of descriptor"
-msgstr "Vous n'êtes pas autorisé à supprimer un panl de descripteur"
-
-#: descriptormetamodel.py:741
-msgid "There is some entities attached to this panel"
-msgstr "Il existe des entités rattachées à ce panel"
-
-#: descriptormodel.py:147
-msgid "You are not allowed to create a model of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer un modèle de descripteur"
-
-#: descriptormodel.py:152
-msgid "A model of descriptor with a similar name already exists"
-msgstr "A model de descripteur avec un nom similaire existe déjà"
-
-#: descriptormodel.py:186 descriptormodel.py:328 descriptormodel.py:394
-#: descriptormodel.py:455 descriptormodel.py:528 descriptormodel.py:588
-#: descriptormodel.py:656 descriptormodel.py:716 descriptormodel.py:767
-msgid "You are not allowed to modify a model of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer un modèle de descripteur"
-
-#: descriptormodel.py:208
-msgid "You are not allowed to remove a model of descriptor"
-msgstr "Vous n'êtes pas autorisé à supprimer un modèle de descripteur"
-
-#: descriptormodel.py:215
-msgid "Only empty models of descriptor can be removed"
-msgstr "Seul les modèles de descripteur vides peuvent être retirés"
-
-#: descriptormodel.py:218
-msgid "Only unused models of descriptor can be removed"
-msgstr "Seul les modèles de descripteur inutilisés peuvent être supprimés"
-
-#: descriptormodel.py:329
-msgid "You are not allowed to create a type of model of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer un type de modèle de descripteur"
-
-#: descriptormodel.py:346 descriptormodel.py:482
-msgid "The name of descriptor model type already exists"
-msgstr "Ce nom de model de descripteur existe déjà"
-
-#: descriptormodel.py:395 descriptormodel.py:456 descriptormodel.py:589
-#: descriptormodel.py:657 descriptormodel.py:717 descriptormodel.py:768
-msgid "You are not allowed to modify a type of model of descriptor"
-msgstr "Vous n'êtes pas autorisé à modifier un type de modèle de descripteur"
-
-#: descriptormodel.py:478 descriptormodel.py:540
-msgid "There is some data using the model of descriptor"
-msgstr "Il existe de données utilisant ce modèle de descripteur"
-
-#: descriptormodel.py:498
-msgid ""
-"A required type of model of descriptor cannot have a condition. You must "
-"delete the condition before to set the required state"
-msgstr ""
-"A type de modèle de descripteur obligatoire ne peut pas avoir de condition. "
-"Vous devez retirer la condition avant de définir l'état obligatoire"
-
-#: descriptormodel.py:529
-msgid "You are not allowed to remove a type of model of descriptor"
-msgstr "Vous n'êtes pas autorisé à supprimer un type de modèle de descripteur"
-
-#: descriptormodel.py:671
-msgid ""
-"It is not possible to define a condition on a required type of model of "
-"descriptor"
-msgstr ""
-"Il est impossible de définir une condition sur un type de modèle de "
-"descripteur obligatoire"
-
-#: descriptormodel.py:676
-msgid ""
-"Cyclic condition detected. You cannot define this condition or you must "
-"remove the condition on the target"
-msgstr ""
-"Condition cyclique détecté. Vous ne pouvez pas définir cette conditon ou "
-"vous devez retirer la condition sur la cible"
-
-#: descriptormodel.py:718
-msgid "You are not allowed to modify a condition of a model of descriptor"
-msgstr ""
-"Vous n'êtes pas autorisé à modifier une condition ce modèle de descripteur"
-
-#: descriptormodel.py:769
-msgid "You are not allowed to delete a condition of a model of descriptor"
-msgstr ""
-"Vous n'êtes pas autorisé à supprimer une condition sur ce modèle de "
-"descripteur"
 
 #: models.py:77
 msgid "descriptor group"

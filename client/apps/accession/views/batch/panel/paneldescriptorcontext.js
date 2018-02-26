@@ -37,7 +37,7 @@ let View = Marionette.View.extend({
         "click @ui.modify": "describable:modify",
         "click @ui.apply": "describable:apply",
         "click @ui.cancel": "describable:cancel",
-        "click @ui.add": "descriptormetamodel:add"
+        "click @ui.add": "layout:add"
     },
 
     initialize: function(options) {
