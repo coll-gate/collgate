@@ -43,14 +43,10 @@ let View = Marionette.View.extend({
     },
 
     initialize: function () {
-        this.listenTo(this.model, 'change', this.render, this);
+        // this.listenTo(this.model, 'change', this.render, this);
     },
 
-    // onRender: function () {
-    //
-    // },
-
-    actionsProperties: function() {
+    actionsProperties: function () {
         let properties = {
             edit: {disabled: false},
             remove: {disable: false}
@@ -59,7 +55,6 @@ let View = Marionette.View.extend({
         if (!this.getOption('can_modify') || !window.application.permission.manager.isStaff()) {
             properties.edit.disabled = true;
         }
-
         if (!this.getOption('can_delete') || !window.application.permission.manager.isStaff()) {
             properties.remove.disabled = true;
         }
@@ -68,7 +63,7 @@ let View = Marionette.View.extend({
     },
 
     deleteDescriptorValue: function () {
-        if (!this.getOption('can_delete') || !window.application.permission.manager.isStaff()) {
+        if (!this.getOption('can_delete') || window.application.permission.manager.isStaff()) {
             this.model.destroy({wait: true});
         }
         return false;
@@ -166,7 +161,7 @@ let View = Marionette.View.extend({
                                     data: JSON.stringify(values)
                                 }).done(function () {
                                     // manually update the current context value
-                                    model.set('value0', values[session.language]);
+                                    model.set('value0', values[window.session.language]);
                                     $.alert.success(_t("Successfully valued !"));
                                 }).always(function () {
                                     view.destroy();

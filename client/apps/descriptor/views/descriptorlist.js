@@ -20,10 +20,10 @@ let View = AdvancedTable.extend({
 
     defaultColumns: [
         {name: 'lock', width: 'auto', sort_by: null},
-        {name: 'group_name', width: 'auto', sort_by: '+0'},
         {name: 'code', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: null},
         {name: 'label', width: 'auto', sort_by: null},
+        {name: 'group_name', width: 'auto', sort_by: '+0'}
     ],
 
     columnsOptions: {

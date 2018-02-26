@@ -5,7 +5,7 @@
  * @date 2016-07-21
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 let DescriptorValueView = require('../views/descriptorvalue');
@@ -17,6 +17,15 @@ let View = AdvancedTable.extend({
     childView: DescriptorValueView,
     userSettingName: 'descriptor_value_list_columns',
     userSettingVersion: '1.0',
+    childViewOptions: function () {
+        return Object.assign(
+            View.__super__.childViewOptions.apply(this, arguments),
+            {
+                can_delete: this.model.get('can_delete'),
+                can_modify: this.model.get('can_modify'),
+            }
+        );
+    },
 
     defaultColumns: [
         {name: 'id', width: 'auto', sort_by: null},
@@ -30,52 +39,47 @@ let View = AdvancedTable.extend({
 
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
-        // this.filters = this.getOption('filters');
+        this.listenTo(this.collection, 'change', this.render, this);
     },
 
-    // onRender: function () {
-    //     View.__super__.onRender.apply(this, arguments);
-    //     this.onShowTab();
-    // },
-    //
-    // onShowTab: function () {
-    //     let view = this;
-    //
-    //     let contextLayout = window.application.getView().getChildView('right');
-    //     if (!contextLayout) {
-    //         let DefaultLayout = require('../../main/views/defaultlayout');
-    //         contextLayout = new DefaultLayout();
-    //         window.application.getView().showChildView('right', contextLayout);
-    //     }
-    //
-    //     let TitleView = require('../../main/views/titleview');
-    //     contextLayout.showChildView('title', new TitleView({
-    //         title: _t("Actions on descriptors"),
-    //         glyphicon: 'fa-wrench'
-    //     }));
-    //
-    //     let actions = [
-    //         'create-descriptor'
-    //     ];
-    //
-    //     let ListContextView = require('./descriptorlistcontext');
-    //     let contextView = new ListContextView({actions: actions});
-    //     contextLayout.showChildView('content', contextView);
-    //
-    //     contextView.on("descriptor:create", function () {
-    //         view.onCreateDescriptor();
-    //     });
-    //
-    //     View.__super__.onShowTab.apply(this, arguments);
-    // },
-    //
-    // onBeforeDetach: function () {
-    //     application.main.defaultRightView();
-    // },
-    //
-    // onCreateDescriptor: function () {
-    //     window.application.descriptor.controllers.descriptor.create();
-    // }
+    onShowTab: function () {
+        let view = this;
+
+        let contextLayout = window.application.getView().getChildView('right');
+        if (!contextLayout) {
+            let DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            window.application.getView().showChildView('right', contextLayout);
+        }
+
+        let TitleView = require('../../main/views/titleview');
+        contextLayout.showChildView('title', new TitleView({
+            title: _t("Actions on descriptor values"),
+            glyphicon: 'fa-wrench'
+        }));
+
+        let actions = [
+            'create-value'
+        ];
+
+        let ListContextView = require('./valuelistcontext');
+        let contextView = new ListContextView({actions: actions});
+        contextLayout.showChildView('content', contextView);
+
+        contextView.on("value:create", function () {
+            view.onCreateValue();
+        });
+
+        View.__super__.onShowTab.apply(this, arguments);
+    },
+
+    onBeforeDetach: function () {
+        window.application.main.defaultRightView();
+    },
+
+    onCreateValue: function () {
+        this.collection.create({value0: _t("New value")});
+    },
 });
 
 // support of descriptors columns extension
