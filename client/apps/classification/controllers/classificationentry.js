@@ -73,10 +73,10 @@ let Controller = Marionette.Object.extend({
 
                     this.ui.parent_group.hide();
 
-                    application.main.views.languages.drawSelect(this.ui.language);
+                    window.application.main.views.languages.drawSelect(this.ui.language);
 
                     this.ui.layout.selectpicker({});
-                    this.ui.classification.selectpicker({});
+                    this.ui.classification.prop('disabled', true).selectpicker({});
                     this.ui.rank.selectpicker({});
 
                     // on default descriptor layout
@@ -310,7 +310,7 @@ let Controller = Marionette.Object.extend({
                         view.destroy();
 
                         let defaultLayout = new DefaultLayout();
-                        application.main.showContent(defaultLayout);
+                        window.application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
                             title: _t("Classification entry"),

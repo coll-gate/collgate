@@ -8,10 +8,10 @@
  * @details
  */
 
-let DescriptorMetaModelType = require('../../descriptor/layouttypes/layouttype');
+let LayoutType = require('../../descriptor/layouttypes/layouttype');
 
-let ClassificationEntry = DescriptorMetaModelType.extend({
-    template: require('../templates/descriptormetamodeltypes/classificationentry.html'),
+let ClassificationEntry = LayoutType.extend({
+    template: require('../templates/layouttypes/classificationentry.html'),
 
     ui: {
         'classification': 'select.classification'
@@ -32,7 +32,7 @@ let ClassificationEntry = DescriptorMetaModelType.extend({
 
         let value = Object.resolve('data.classification', this.model.get('parameters'));
 
-        classifications.drawSelect(select, true, false, value).done(function () {
+        classifications.drawSelect(select, true, true, value).done(function () {
         });
     },
 

@@ -103,7 +103,7 @@ let View = Marionette.View.extend({
 
             let DefaultLayout = require('../../../../main/views/defaultlayout');
             let contextLayout = new DefaultLayout();
-            application.getView().showChildView('right', contextLayout);
+            window.application.getView().showChildView('right', contextLayout);
 
             let actions = [];
 

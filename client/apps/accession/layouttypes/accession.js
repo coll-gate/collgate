@@ -8,9 +8,9 @@
  * @details
  */
 
-let DescriptorMetaModelType = require('../../descriptor/layouttypes/layouttype');
+let LayoutType = require('../../descriptor/layouttypes/layouttype');
 
-let Accession = DescriptorMetaModelType.extend({
+let Accession = LayoutType.extend({
     template: require('../templates/layouttypes/accession.html'),
 
     regions: {

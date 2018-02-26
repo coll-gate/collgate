@@ -119,6 +119,8 @@ def create_classification_entry(request):
         # @todo do we allow that ?
         layout = None
 
+    classification_entry = None
+
     try:
         with transaction.atomic():
             classification_entry = ClassificationEntryManager.create_classification_entry(

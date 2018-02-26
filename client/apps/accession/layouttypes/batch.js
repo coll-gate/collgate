@@ -8,9 +8,9 @@
  * @details
  */
 
-let DescriptorMetaModelType = require('../../descriptor/layouttypes/layouttype');
+let LayoutType = require('../../descriptor/layouttypes/layouttype');
 
-let Batch = DescriptorMetaModelType.extend({
+let Batch = LayoutType.extend({
     template: require('../templates/layouttypes/batch.html'),
 
     regions: {
