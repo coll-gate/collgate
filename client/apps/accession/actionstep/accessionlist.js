@@ -152,8 +152,7 @@ AccessionList.ActionStepProcessView = Marionette.View.extend({
                     },
                     cache: true
                 },
-                // fix when a selected element is larger... but not a perfect solution
-                width: (this.$el.innerWidth() - 20 - 15) + "px",
+                width: "100%",
                 allowClear: true,
                 minimumInputLength: 1,
                 placeholder: _t("Enter a value.")

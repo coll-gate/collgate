@@ -38,10 +38,11 @@ class ActionController(object):
             self.user = action_type_or_action.user
             self.action = action_type_or_action
 
-    def create(self, name):
+    def create(self, name, description):
         """
         Create a new action using a name.
-        :param name: Informative name
+        :param name: Informative name str
+        :param description: Description str
         :return: A newly created action instance
         """
         if self.action is not None:
@@ -57,6 +58,7 @@ class ActionController(object):
         action = Action()
         action.name = name  # informative name
         action.user = self.user
+        action.description = description
         action.action_type = self.action_type
 
         # initial data structure

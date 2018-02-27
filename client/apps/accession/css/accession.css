@@ -1,3 +1,7 @@
 div.action-format-type {
     margin: 15px;
 }
+
+div.panel-heading.current {
+    background: repeating-linear-gradient(45deg,#ddd,#ddd 10px,#f5f5f5 0,#f5f5f5 25px);
+}
