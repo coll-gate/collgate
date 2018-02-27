@@ -602,13 +602,13 @@ def update_descriptor(request, des_id):
         # regenerate values only if difference in range or translation
         if org_min_range != min_range or org_max_range != max_range or format_type['trans'] != org_format.get('trans',
                                                                                                               False):
-            values = {}
 
-            i = 1  # begin to 1
+            values = {}
 
             # translation mean a dict of dict
             if format_type['trans']:
                 for lang in InterfaceLanguages.choices():
+                    i = 1  # begin to 1
                     lvalues = {}
 
                     for ordinal in range(min_range, max_range + 1):
@@ -618,6 +618,7 @@ def update_descriptor(request, des_id):
 
                     values[lang[0]] = lvalues
             else:
+                i = 1  # begin to 1
                 for ordinal in range(min_range, max_range + 1):
                     code = "%s:%07i" % (descriptor.code, i)
                     values[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
