@@ -36,6 +36,7 @@ let Layout = LayoutView.extend({
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onDescriptorCreate, this);
         }
+        this.listenTo(this.model, 'change:format', this.onRender, this);
     },
 
     onDescriptorCreate: function () {
@@ -44,7 +45,7 @@ let Layout = LayoutView.extend({
 
         // and update history
         Backbone.history.navigate('app/descriptor/descriptor/' + this.model.get('id') + '/', {
-            replace: false
+            replace: true
         });
     },
 

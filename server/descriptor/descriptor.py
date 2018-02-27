@@ -440,22 +440,6 @@ def delete_descriptor(request, des_id):
 
     descriptor.delete()
 
-    # INDEXATION TEST --
-    # from accession.models import Accession
-    # descriptor.index = 1
-    # descriptor.save()
-    # descriptor.create_or_drop_index(Accession)
-    # result = Accession.
-    # sql = """select * from pg_indexes where tablename not like 'pg%';"""
-    #
-    # from django.db import connections
-    # connection = connections['default']
-    # with connection.cursor() as cursor:
-    #     cursor.execute(sql)
-    #     result = cursor.fetchall()
-
-    # from django.db import models
-
     return HttpResponseRest(request, {})
 
 
@@ -499,15 +483,18 @@ def create_descriptor(request):
 
     lang = translation.get_language()
 
-    descriptor = Descriptor.objects.create(
-        name=descriptor_params['name'],
-        code=code,
-        label={lang: descriptor_params['label']},
-        group_name=descriptor_params['group_name'],
-        format=descriptor_params['format'],
-        can_delete=True,
-        can_modify=True
-    )
+    with transaction.atomic():
+        descriptor = Descriptor.objects.create(
+            name=descriptor_params['name'],
+            code=code,
+            label={lang: descriptor_params['label']},
+            group_name=descriptor_params['group_name'],
+            format=descriptor_params['format'],
+            can_delete=True,
+            can_modify=True
+        )
+
+        DescriptorFormatTypeManager.reset_values(descriptor)
 
     response = {
         'id': descriptor.id,
@@ -565,75 +552,44 @@ def update_descriptor(request, des_id):
     # format validation
     DescriptorFormatTypeManager.check(format_type)
 
-    # @todo must be operated by DescriptorFormatType
-    # had values -> has no values
-    if not format_type['type'].startswith('enum_') and org_format['type'].startswith('enum_'):
-        # overwrite values
-        descriptor.values = None
-        descriptor.values_set.all().delete()
-
-    # single enumeration
-    if format_type['type'] == 'enum_single':
-        # reset if type or translation differs
-        if org_format['type'] != 'enum_single' or format_type['trans'] != org_format.get('trans', False):
-            # reset values
-            descriptor.values = None
-            descriptor.values_set.all().delete()
-
-    # pair enumeration
-    elif format_type['type'] == 'enum_pair':
-        # reset if type or translation differs
-        if org_format['type'] != 'enum_pair' or format_type['trans'] != org_format.get('trans', False):
-            # reset values
-            descriptor.values = None
-            descriptor.values_set.all().delete()
-
-    # ordinal enumeration
-    elif format_type['type'] == 'enum_ordinal':
-        # range as integer in this case
-        org_min_range, org_max_range = [int(x) for x in org_format.get('range', ['0', '0'])]
-        min_range, max_range = [int(x) for x in format_type['range']]
-
-        # reset values because it changes of type
-        if org_format['type'] != 'enum_ordinal':
-            descriptor.values = None
-            descriptor.values_set.all().delete()
-
-        # regenerate values only if difference in range or translation
-        if org_min_range != min_range or org_max_range != max_range or format_type['trans'] != org_format.get('trans',
-                                                                                                              False):
-
-            values = {}
-
-            # translation mean a dict of dict
-            if format_type['trans']:
-                for lang in InterfaceLanguages.choices():
-                    i = 1  # begin to 1
-                    lvalues = {}
-
-                    for ordinal in range(min_range, max_range + 1):
-                        code = "%s:%07i" % (descriptor.code, i)
-                        lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
-                        i += 1
-
-                    values[lang[0]] = lvalues
-            else:
-                i = 1  # begin to 1
-                for ordinal in range(min_range, max_range + 1):
-                    code = "%s:%07i" % (descriptor.code, i)
-                    values[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
-                    i += 1
-
-            descriptor.values = values
-
     descriptor.name = descriptor_params['name']
     descriptor.group_name = descriptor_params['group_name']
     descriptor.format = format_type
     descriptor.description = description
 
-    count = descriptor.count_num_values()
+    with transaction.atomic():
+        if not format_type['type'].startswith('enum_') and org_format['type'].startswith('enum_'):
+            # reset values
+            DescriptorFormatTypeManager.reset_values(descriptor)
 
-    descriptor.save()
+        # single enumeration
+        if format_type['type'] == 'enum_single':
+            # reset if type or translation differs
+            if org_format['type'] != 'enum_single' or format_type['trans'] != org_format.get('trans', False):
+                # reset values
+                DescriptorFormatTypeManager.reset_values(descriptor)
+
+        # pair enumeration
+        elif format_type['type'] == 'enum_pair':
+            # reset if type or translation differs
+            if org_format['type'] != 'enum_pair' or format_type['trans'] != org_format.get('trans', False):
+                # reset values
+                DescriptorFormatTypeManager.reset_values(descriptor)
+
+        # ordinal enumeration
+        elif format_type['type'] == 'enum_ordinal':
+            # range as integer in this case
+            org_min_range, org_max_range = [int(x) for x in org_format.get('range', ['0', '0'])]
+            min_range, max_range = [int(x) for x in format_type['range']]
+
+            if org_format['type'] != 'enum_ordinal' or format_type['trans'] != org_format.get('trans', False) \
+                    or org_min_range != min_range or org_max_range != max_range:
+                # reset values
+                DescriptorFormatTypeManager.reset_values(descriptor)
+
+        count = descriptor.count_num_values()
+
+        descriptor.save()
 
     response = {
         'id': descriptor.id,

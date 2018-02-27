@@ -198,6 +198,15 @@ class DescriptorFormatType(object):
         else:
             return "'" + value.replace("'", "''") + "'"
 
+    def reset_values(self, descriptor):
+        """
+        Reset the descriptor values
+        :param descriptor: Descriptor instance
+        :return:
+        """
+        descriptor.values = None
+        descriptor.values_set.all().delete()
+
     def operator(self, operator, db_table, descriptor_name, value):
         """
         According to operator switch to the operator method.
@@ -568,6 +577,20 @@ class DescriptorFormatTypeManager(object):
 
         return dft.get_display_values_for(descriptor, descriptor_type_format, values, limit)
 
+    @classmethod
+    def reset_values(cls, descriptor):
+        """
+        Call the reset_values method of the correct descriptor format type.
+        :param descriptor: Descriptor instance
+        """
+        descriptor_format = descriptor.format
+
+        dft = cls.descriptor_format_types.get(descriptor_format['type'])
+        if dft is None:
+            raise ValueError("Unsupported descriptor format type %s" % descriptor_format['type'])
+
+        dft.reset_values(descriptor)
+
 
 class DescriptorFormatTypeGroupSingle(DescriptorFormatTypeGroup):
     """
@@ -856,6 +879,43 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
         ]
 
         return " AND ".join(on_clauses)
+
+    def reset_values(self, descriptor):
+        if descriptor.format['type'] == self.name:
+            # range as integer in this case
+            min_range, max_range = [int(x) for x in descriptor.format.get('range', ['0', '0'])]
+
+            # reset values because it changes of type
+            descriptor.values = None
+            descriptor.values_set.all().delete()
+
+            # regenerate values
+            values = {}
+
+            # translation mean a dict of dict
+            if descriptor.format['trans']:
+                from main.models import InterfaceLanguages
+                for lang in InterfaceLanguages.choices():
+                    i = 1  # begin to 1
+                    lvalues = {}
+
+                    for ordinal in range(min_range, max_range + 1):
+                        code = "%s:%07i" % (descriptor.code, i)
+                        lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
+                        i += 1
+
+                    values[lang[0]] = lvalues
+            else:
+                i = 1  # begin to 1
+                for ordinal in range(min_range, max_range + 1):
+                    code = "%s:%07i" % (descriptor.code, i)
+                    values[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
+                    i += 1
+
+            descriptor.values = values
+            descriptor.save()
+        else:
+            raise ValueError("Invalid descriptor format type %s" % descriptor.format['type'])
 
 
 class DescriptorFormatTypeBoolean(DescriptorFormatType):
