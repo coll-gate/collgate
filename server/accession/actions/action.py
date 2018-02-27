@@ -69,13 +69,13 @@ class RestActionEntityIdCount(RestActionEntityId):
 def create_action(request):
     action_type_id = int_arg(request.data.get('action_type'))
     name = request.data.get('name')
+    description = request.data.get('description', '')
     user = request.user
 
     action_type = get_object_or_404(ActionType, pk=action_type_id)
 
     action_controller = ActionController(action_type, user)
-    action = action_controller.create(name)
-    action.description = request.data.get('description', '')
+    action = action_controller.create(name, description)
 
     results = {
         'id': action.id,
