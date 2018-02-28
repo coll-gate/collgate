@@ -239,15 +239,14 @@ let Layout = LayoutView.extend({
         let currentStepIndex = this.model.get('data').steps.length - 1;
 
         for (let i = 0; i < data.format.steps.length; ++i) {
-            let collapsable = $('<div class="panel panel-default"></div>');
-            collapsable.attr('panel-id', i);
+            let panel = $('<div class="panel panel-default"></div>');
+            panel.attr('panel-id', i);
 
             let heading = $('<div class="panel-heading" data-toggle="tooltip" data-placement="left" title="' + _t('Collapse/Expand') + '">');
             if (i === currentStepIndex) {
                 heading.addClass('current');
             }
-
-            collapsable.append(heading);
+            panel.append(heading);
 
             let title = $('<a class="accordion-toggle" data-toggle="collapse" href="#action_step' + i + '"></a>');
             if (i !== currentStepIndex) {
@@ -262,10 +261,10 @@ let Layout = LayoutView.extend({
             } else {
                 content.addClass('out');
             }
-            content.append($('<div style="margin: 15px;"></div>'));
-            collapsable.append(content);
+            content.append($('<div class="panel-body-no" style="margin: 15px;"></div>'));
+            panel.append(content);
 
-            this.ui.steps_group.append(collapsable);
+            this.ui.steps_group.append(panel);
             this.addRegion('step' + i, '#action_step' + i + ' > div');
 
             let currentStepFormat = data.format.steps[i];
