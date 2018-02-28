@@ -12,8 +12,8 @@
 <div class="column" style="margin-top: 10px; height: calc(100% - 1px);">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="div.tab-pane[name=general]" aria-controls="general" role="tab" data-toggle="tab"><%= _t("General") %></a></li>
-        <li role="presentation"><a href="div.tab-pane[name=steps]" aria-controls="steps" role="tab" data-toggle="tab"><%= _t("Steps") %></a></li>
+        <li role="presentation" class="active"><a href="div.tab-pane[name=general]" aria-controls="general" role="tab" data-toggle="tab"><%- _t("General") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=steps]" aria-controls="steps" role="tab" data-toggle="tab"><%- _t("Steps") %></a></li>
     </ul>
     <!-- Tab panes -->
     <div class="tab-content" style="height: calc(100% - 42px - 10px - 34px - 5px);">
@@ -42,7 +42,7 @@
                 <div class="row">
                     <div class="col-lg-12 form-group">
                         <label><%- _t('Description') %></label>
-                        <textarea maxlength="1024" class="form-control" name="description" style="min-width: 100%; max-width: 100%; min-height: 3em; max-height: 10em;"><%= description %></textarea>
+                        <textarea maxlength="1024" class="form-control" name="description" style="min-width: 100%; max-width: 100%; min-height: 3em; max-height: 10em;"><%- description %></textarea>
                     </div>
                 </div>
             </div>

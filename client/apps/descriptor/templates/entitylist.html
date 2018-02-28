@@ -20,19 +20,19 @@
                     if (column.action != undefined) classes += " action";
                     if (column.glyphicon != undefined) classes += " glyph-fixed-column";
                     if (column.fixed) classes += " fixed-column"; %>
-                    <th name="<%= columnName %>" class="<%= classes %>">
+                    <th name="<%- columnName %>" class="<%- classes %>">
                     <% if (column.glyphicon != undefined) { %>
                         <% if (column.fixed) { %>
-                            <span class="fa <%= column.glyphicon[0] %> column-action"></span>
+                            <span class="fa <%- column.glyphicon[0] %> column-action"></span>
                         <% } else { %>
-                            <span class="fa <%= column.glyphicon[0] %> column-action" draggable="true"></span>
+                            <span class="fa <%- column.glyphicon[0] %> column-action" draggable="true"></span>
                         <% } %>
                     <% } else { %>
                         <span class="column-sorter fa fa-sort column-action action"></span>
                         <% if (column.fixed) { %>
-                            <span class="column-label"><%= column.label || column.name %></span>
+                            <span class="column-label"><%- column.label || column.name %></span>
                         <% } else { %>
-                            <span class="column-label" draggable="true"><%= column.label || column.name %></span>
+                            <span class="column-label" draggable="true"><%- column.label || column.name %></span>
                         <% } %>
                     <% } %>
                     </th>
@@ -57,9 +57,9 @@
     </div>
     <ul class="columns-list"></ul>
     <div class="btn-group">
-        <span class="btn btn-default select-all"><span class="fa fa-check-square-o"></span>&nbsp;<%= _t("All") %></span>
-        <span class="btn btn-default select-none"><span class="fa fa-square-o"></span>&nbsp;<%= _t("None") %></span>
-        <span class="btn btn-default select-accept"><span class="fa fa-check"></span>&nbsp;<%= _t("Accept") %></span>
-        <span class="btn btn-default select-cancel"><span class="fa fa-times"></span>&nbsp;<%= _t("Cancel") %></span>
+        <span class="btn btn-default select-all"><span class="fa fa-check-square-o"></span>&nbsp;<%- _t("All") %></span>
+        <span class="btn btn-default select-none"><span class="fa fa-square-o"></span>&nbsp;<%- _t("None") %></span>
+        <span class="btn btn-default select-accept"><span class="fa fa-check"></span>&nbsp;<%- _t("Accept") %></span>
+        <span class="btn btn-default select-cancel"><span class="fa fa-times"></span>&nbsp;<%- _t("Cancel") %></span>
     </div>
 </div>

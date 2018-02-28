@@ -11,12 +11,12 @@
 <span style="font-weight:bold; font-size:18px;">
     <span name="parents">
     <% for (var i = parent_details.length-1; i >= 0; --i) { %><span name="parent">
-            <span class="action view-classification-entry classification-rank text-selection-all" data-classification-entry-id="<%= parent_details[i].id %>" value="<%= parent_details[i].rank %>"><%= parent_details[i].name %></span>
+            <span class="action view-classification-entry classification-rank text-selection-all" data-classification-entry-id="<%- parent_details[i].id %>" value="<%- parent_details[i].rank %>"><%- parent_details[i].name %></span>
         </span>
         <span class="fa fa-chevron-right" style="margin-left: 0.5rem; margin-right: 0.5rem;"></span><% } %></span>
     <span name="details">
-        <span class="classification-entry text-selection-all" classification_entry_id="<%= id %>" name="name"><%- name %></span>
-        <span class="classification-rank badge left-margin text-selection-all" name="classification-rank" value="<%= rank %>"></span>
+        <span class="classification-entry text-selection-all" classification_entry_id="<%- id %>" name="name"><%- name %></span>
+        <span class="classification-rank badge left-margin text-selection-all" name="classification-rank" value="<%- rank %>"></span>
     </span>
     <span class="fa fa-pencil-square-o action change-parent"></span>
     <br>

@@ -12,19 +12,19 @@
     <thead>
         <tr>
             <th><span class="fa fa-bolt" /></th>
-            <th><%= _t("Type") %></th>
-            <th><%= _t("Name") %></th>
-            <th><%= _t("Language") %></th>
+            <th><%- _t("Type") %></th>
+            <th><%- _t("Name") %></th>
+            <th><%- _t("Language") %></th>
         </tr>
     </thead>
     <tbody>
         <% _.each(synonyms, function(synonym) { %>
         <tr class="element">
             <th scope="row">
-                <% if (synonym.synonym_type !== classification_entry_name) { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym fa fa-minus-circle"></span><% } %>
+                <% if (synonym.synonym_type !== classification_entry_name) { %><span data-synonym-id="<%- synonym.id %>" class="action remove-synonym fa fa-minus-circle"></span><% } %>
             </th>
             <td name="synonym-type" class="classification-entry-synonym-type" value="<%- synonym.synonym_type %>"></td>
-            <td name="name" class="action rename-synonym" data-synonym-id="<%= synonym.id %>"><%- synonym.name %></td>
+            <td name="name" class="action rename-synonym" data-synonym-id="<%- synonym.id %>"><%- synonym.name %></td>
             <td name="language" class="language" value="<%- synonym.language %>"></td>
         </tr>
         <% }) %>

@@ -12,20 +12,20 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= _t("Add descriptor") %></h4>
+            <h4 class="modal-title"><%- _t("Add descriptor") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="descriptor-type form-group">
-                    <label class="control-label" for="type"><%= _t("Descriptor") %></label>
+                    <label class="control-label" for="type"><%- _t("Descriptor") %></label>
                     <select class="form-control model" id="type" name="type" data-live-search="true" multiple data-actions-box="true">
                     </select>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
-            <button type="button" class="btn btn-success create"><%= _t("Add") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %></button>
+            <button type="button" class="btn btn-success create"><%- _t("Add") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

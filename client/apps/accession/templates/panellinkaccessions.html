@@ -12,25 +12,25 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= _t("Link accession(s) to existing panel") %></h4>
+            <h4 class="modal-title"><%- _t("Link accession(s) to existing panel") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="form-group">
-                    <label class="control-label" for="panel"><%= _t("Accession panel") %></label>
+                    <label class="control-label" for="panel"><%- _t("Accession panel") %></label>
                     <select id="panel" style="width:100%;" class="form-control">
                         <% _.each(panels, function(panel) { %>
-                            <option value="<%= panel.id %>"><%= panel.name %></option>
+                            <option value="<%- panel.id %>"><%- panel.name %></option>
                         <% }) %>
                     </select>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %>
             </button>
-            <button type="button" class="btn btn-success link-to-panel"><%= _t("Link to panel") %></button>
-            <button type="button" class="btn btn-success link-to-panel" data-gotopanel="1"><%= _t("Link and go to panel") %></button>
+            <button type="button" class="btn btn-success link-to-panel"><%- _t("Link to panel") %></button>
+            <button type="button" class="btn btn-success link-to-panel" data-gotopanel="1"><%- _t("Link and go to panel") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

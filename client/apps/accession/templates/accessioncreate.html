@@ -12,15 +12,15 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= _t("Create an accession") %></h4>
+            <h4 class="modal-title"><%- _t("Create an accession") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="form-group">
-                    <label class="control-label" for="layout"><%= _t("Template") %></label>
+                    <label class="control-label" for="layout"><%- _t("Template") %></label>
                     <select id="layout" style="width:100%;" class="form-control">
                         <% _.each(layouts, function(layout) { %>
-                            <option value="<%= layout.id %>"><%= layout.label %></option>
+                            <option value="<%- layout.id %>"><%- layout.label %></option>
                         <% }) %>
                     </select>
                 </div>
@@ -28,30 +28,30 @@
                     <div class="naming-options col-xs-12"></div>
                     <div class="col-xs-8">
                         <div class="form-group">
-                            <label class="control-label" for="accession_name"><%= _t("Principal name of the accession") %></label>
+                            <label class="control-label" for="accession_name"><%- _t("Principal name of the accession") %></label>
                             <input class="form-control name" id="accession_name" type="text" name="accession" value="" maxlength="128" autocomplete="off" style="width:100%;" autofocus="">
                         </div>
                     </div>
                     <div class="col-xs-4">
                         <div class="form-group">
-                            <label class="control-label" for="accession_language"><%= _t("Language") %></label>
+                            <label class="control-label" for="accession_language"><%- _t("Language") %></label>
                             <select class="form-control language" id="accession_language" name="language"></select>
                         </div>
                     </div>
                 </div>
                 <div class="form-group primary-classification-group">
-                    <label class="control-label" for="primary_classification"><%= _t("Primary classification") %></label>
+                    <label class="control-label" for="primary_classification"><%- _t("Primary classification") %></label>
                     <select id="primary_classification" style="width:100%;" class="form-control"></select>
                 </div>
                 <div class="form-group primary-classification-entry-group">
-                    <label class="control-label" for="primary_classification_entry"><%= _t("Primary classification entry") %></label>
+                    <label class="control-label" for="primary_classification_entry"><%- _t("Primary classification entry") %></label>
                     <select id="primary_classification_entry" style="width:100%;" class="form-control"></select>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
-            <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %></button>
+            <button type="button" class="btn btn-success continue"><%- _t("Continue") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

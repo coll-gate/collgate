@@ -12,14 +12,14 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= _t("Create an action") %></h4>
+            <h4 class="modal-title"><%- _t("Create an action") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="form-group">
-                            <label class="control-label"><%= _t("Name") %></label>
+                            <label class="control-label"><%- _t("Name") %></label>
                             <input class="form-control" name="name" type="text" value="" maxlength="128" autocomplete="off" autofocus="" style="width:100%;">
                         </div>
                     </div>
@@ -27,7 +27,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="form-group">
-                            <label class="control-label"><%= _t("Label for current language") %></label>
+                            <label class="control-label"><%- _t("Label for current language") %></label>
                             <select class="form-control" name="action-type" style="width:100%;"></select>
                         </div>
                     </div>
@@ -35,8 +35,8 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
-            <button type="button" class="btn btn-success continue"><%= _t("Continue") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %></button>
+            <button type="button" class="btn btn-success continue"><%- _t("Continue") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

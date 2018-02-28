@@ -8,7 +8,7 @@
  - @details 
 -->
 
-<td name="description" class="glyph-fixed-column"><span class="fa fa-question-circle" title="<%= description %>" style="cursor: help;"></span></td>
-<td class="action edit" name="name"><%= name %></td>
-<td class="action edit" name="verbose_name"><%= verbose_name %></td>
-<td class="action manage" name="num_descriptor_model_types"><span class="badge" style="cursor: pointer;" title="<%= _t('Manage models of type of descriptor') %>"><%= num_descriptor_model_types %></span></td>
+<td name="description" class="glyph-fixed-column"><span class="fa fa-question-circle" title="<%- description %>" style="cursor: help;"></span></td>
+<td class="action edit" name="name"><%- name %></td>
+<td class="action edit" name="verbose_name"><%- verbose_name %></td>
+<td class="action manage" name="num_descriptor_model_types"><span class="badge" style="cursor: pointer;" title="<%- _t('Manage models of type of descriptor') %>"><%- num_descriptor_model_types %></span></td>
