@@ -18,9 +18,9 @@
                     <% var classes = "unselectable"; %>
                     <% if (column.minWidth != undefined) classes += " title-column"; %>
                     <% if (column.action != undefined) classes += " column-action"; %>
-                    <th name="<%= columnName %>" class="unselectable descriptor-column">
+                    <th name="<%- columnName %>" class="unselectable descriptor-column">
                         <span class="fa fa-sort action sortby-asc-column column-action"></span>
-                        <span class="column-label" draggable="true"><%= column.label %></span>
+                        <span class="column-label" draggable="true"><%- column.label %></span>
                     </th>
                 <% } %>
             </tr>

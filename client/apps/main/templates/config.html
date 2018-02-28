@@ -8,28 +8,28 @@
  - @details 
 -->
 
-<span class="config-id label label-default"><span class="config-module" style="font-weight: bold;"><%= module %>&nbsp;:&nbsp;</span><%= id %></span>
+<span class="config-id label label-default"><span class="config-module" style="font-weight: bold;"><%- module %>&nbsp;:&nbsp;</span><%- id %></span>
 <div class="config-values">
 <% for (var i = 0; i < values.length; ++i) { %>
     <% if (values[i].state == 0) { %>
         <div class="config-value-box alert alert-success">
-            <span class="config-state label label-success"><%= _t("Configured") %></span>&nbsp;
-            <span class="config-value"><%= values[i].value %></span>
+            <span class="config-state label label-success"><%- _t("Configured") %></span>&nbsp;
+            <span class="config-value"><%- values[i].value %></span>
         </div>
     <% } else if (values[i].state == 1) { %>
         <div class="config-value-box alert alert-danger">
-            <span class="config-state label label-danger"><%= _t("Improperly configured") %></span>&nbsp;
-            <span class="config-value"><%= values[i].value %></span>
+            <span class="config-state label label-danger"><%- _t("Improperly configured") %></span>&nbsp;
+            <span class="config-value"><%- values[i].value %></span>
         </div>
     <% } else if (values[i].state == 2) { %>
         <div class="config-value-box alert alert-warning">
-            <span class="config-state label label-warning"><%= _t("Partially configured") %></span>&nbsp;
-            <span class="config-value"><%= values[i].value %></span>
+            <span class="config-state label label-warning"><%- _t("Partially configured") %></span>&nbsp;
+            <span class="config-value"><%- values[i].value %></span>
         </div>
     <% } else { %>
         <div class="config-value-box alert alert-info">
-            <span class="config-state label label-default"><%= _t("Undefined") %></span>&nbsp;
-            <span class="config-value"><%= values[i].value %></span>
+            <span class="config-state label label-default"><%- _t("Undefined") %></span>&nbsp;
+            <span class="config-value"><%- values[i].value %></span>
         </div>
     <% } %>
 <% } %>

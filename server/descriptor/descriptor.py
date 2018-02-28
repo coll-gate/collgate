@@ -975,6 +975,8 @@ def set_values_for_descriptor(request, des_id, val_id, field):
     for lang, label in new_values.items():
         if lang not in languages_values:
             raise SuspiciousOperation(_("Unsupported language identifier"))
+        import validictory
+        validictory.validate(label, DescriptorValue.LABEL_VALIDATOR)
 
     format_type = descriptor.format
 

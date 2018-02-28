@@ -12,7 +12,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><span class="fa fa-search fa-lg"></span> <%= _t("Advanced search")
+            <h4 class="modal-title"><span class="fa fa-search fa-lg"></span> <%- _t("Advanced search")
                 %></h4>
         </div>
         <div class="modal-body">
@@ -20,20 +20,20 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label" for="entity_type"><%= _t("Entity") %></label>
+                            <label class="control-label" for="entity_type"><%- _t("Entity") %></label>
                             <select id="entity_type" class="form-control">
                                 <% _.each(entity_types, function(entity_type) { %>
-                                <option value="<%= entity_type.id %>"><%= entity_type.label %></option>
+                                <option value="<%- entity_type.id %>"><%- entity_type.label %></option>
                                 <% }) %>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label" for="layout"><%= _t("Descriptors model") %></label>
+                            <label class="control-label" for="layout"><%- _t("Descriptors model") %></label>
                             <select id="layout" class="form-control" multiple>
                                 <% _.each(layouts, function(layout) { %>
-                                <option value="<%= layout.id %>"><%= layout.label %></option>
+                                <option value="<%- layout.id %>"><%- layout.label %></option>
                                 <% }) %>
                             </select>
                         </div>
@@ -44,7 +44,7 @@
                     <div id="conditions_part" class="panel-body"
                          style="overflow-y: scroll; max-height:500px; padding-left: 30px"></div>
                     <div class="panel-footer">
-                        <span class="action add fa fa-plus-circle fa-lg" title=<%= _t("Add a condition")
+                        <span class="action add fa fa-plus-circle fa-lg" title=<%- _t("Add a condition")
                         %>></span>
                     </div>
                 </div>
@@ -54,10 +54,10 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default save pull-left"><%= _t("Save") %></button>
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %>
+            <button type="button" class="btn btn-default save pull-left"><%- _t("Save") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %>
             </button>
-            <button type="button" class="btn btn-success search"><%= _t("Search") %></button>
+            <button type="button" class="btn btn-success search"><%- _t("Search") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

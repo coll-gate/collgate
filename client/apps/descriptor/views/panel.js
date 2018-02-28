@@ -347,7 +347,7 @@ let View = Marionette.CompositeView.extend({
                                 for (i = 0; i < view.descriptorGroupCollection.length; i++) {
                                     let group_name = view.descriptorGroupCollection.models[i].attributes.group_name[0];
 
-                                    if (group_name === null) {
+                                    if (!group_name) {
                                         group_name = _t('Unclassified');
                                     }
 

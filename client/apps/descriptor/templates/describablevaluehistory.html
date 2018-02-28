@@ -13,7 +13,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= _t("History of {0}", descriptor.get('label')) %></h4>
+            <h4 class="modal-title"><%- _t("History of {0}", descriptor.get('label')) %></h4>
         </div>
         <div class="modal-body">
             <div style="overflow-y: auto;">
@@ -21,10 +21,10 @@
                     <% _.each(values, function(value) { %>
                         <% let date = moment(value.timestamp); %>
                         <% let ldate = date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'); %>
-                        <li class="descriptor-value" value-history="" format-type="<%= format.type %>">
+                        <li class="descriptor-value" value-history="" format-type="<%- format.type %>">
                             <span class="history-details"><h4>
-                                <span class="label label-info label-large history-date text-selection-all "><%= ldate %></span>
-                                <span class="label label-success label-large history-username text-selection-all "><%= value.username %></span>
+                                <span class="label label-info label-large history-date text-selection-all "><%- ldate %></span>
+                                <span class="label label-success label-large history-username text-selection-all "><%- value.username %></span>
                             </h4></span>
                             <span class="history-value"></span>
                         </li>

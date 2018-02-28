@@ -10,20 +10,20 @@
 
 <td class="glyph-fixed-column lock-status">
     <% if (!can_delete) { %>
-        <span class="fa fa-lock" title="<%= _t('Descriptor type locked') %>"></span>
+        <span class="fa fa-lock" title="<%- _t('Descriptor type locked') %>"></span>
     <% } %>
 </td>
 <td class="glyph-fixed-column" name="description">
-    <span class="fa fa-question-circle" title="<%= description %>" style="cursor: help;"></span>
+    <span class="fa fa-question-circle" title="<%- description %>" style="cursor: help;"></span>
 </td>
-<td class="action edit" name="name" value="<%= name %>"><%= name %></td>
-<td class="action edit" name="code"><%= code %></td>
-<td class="action edit" name="type" value="<%= format.type %>"><%= format.type %></td>
+<td class="action edit" name="name" value="<%- name %>"><%- name %></td>
+<td class="action edit" name="code"><%- code %></td>
+<td class="action edit" name="type" value="<%- format.type %>"><%- format.type %></td>
 <% if (format.type === "enum_single" || format.type === "enum_pair" || format.type === "enum_ordinal") { %>
 <td class="action manage" name="num_descriptor_values">
-    <span class="badge" style="cursor: pointer;" title="<%= _t('Manage values of the descriptor') %>"><%= num_descriptor_values %></span>
+    <span class="badge" style="cursor: pointer;" title="<%- _t('Manage values of the descriptor') %>"><%- num_descriptor_values %></span>
     <% } else { %>
 <td class="action edit" name="num_descriptor_values">
-    <abbr class="text-muted" title="<%= _t('No values for this descriptor') %>">NA</abbr>
+    <abbr class="text-muted" title="<%- _t('No values for this descriptor') %>">NA</abbr>
     <% } %>
 </td>

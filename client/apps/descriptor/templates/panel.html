@@ -11,7 +11,7 @@
 <div class="panel panel-ghost top-placeholder"
      style="border-radius: 8px; margin: 0 5px; display: none; background-color: whitesmoke;">
     <div class="panel-body center-block" style="text-align: center">
-        <h4><%= _t("Move it to..") %></h4>
+        <h4><%- _t("Move it to..") %></h4>
         <span class="fa fa-3x fa-angle-double-down faa-vertical animated"></span>
     </div>
 </div>
@@ -24,26 +24,26 @@
         </span>
         <!--<span class="delete-descriptor-panel action fa fa-lg fa-minus-circle"></span>-->
 
-        <span name="label" class="action rename"><%= label %></span>
-        <span class="action change-label label-placeholder" style="color: #ddd;"><%= _t("Undefined label") %></span>
+        <span name="label" class="action rename"><%- label %></span>
+        <span class="action change-label label-placeholder" style="color: #ddd;"><%- _t("Undefined label") %></span>
 
         <div class="pull-right">
             <div class="btn-group btn-group-sm">
                 <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                   title="<%= _t('Panel configuration') %>">
+                   title="<%- _t('Panel configuration') %>">
                     <span class="action fa fa-lg fa-cog" style="color: gray"></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a class="action rename"><%= _t("Rename") %></a></li>
+                    <li><a class="action rename"><%- _t("Rename") %></a></li>
                     <li role="separator" class="divider"></li>
-                    <li><a class="action delete-descriptor-panel"><%= _t("Remove") %></a></li>
+                    <li><a class="action delete-descriptor-panel"><%- _t("Remove") %></a></li>
                 </ul>
             </div>
-            <a class="accordion-toggle" data-toggle="collapse" href="#collapse<%= id %>" style="margin-left: 20px"
-               aria-expanded="true" aria-controls="collapse<%= id %>"></a>
+            <a class="accordion-toggle" data-toggle="collapse" href="#collapse<%- id %>" style="margin-left: 20px"
+               aria-expanded="true" aria-controls="collapse<%- id %>"></a>
         </div>
     </div>
-    <div class="panel-body collapse in panel-descriptors" id="collapse<%= id %>">
+    <div class="panel-body collapse in panel-descriptors" id="collapse<%- id %>">
         <div>
             <ul class="list-group descriptor-list" style="margin-bottom: 5px"></ul>
             <div class="panel panel-ghost add-descriptor-btn" style="border-radius: 0 0 15px 15px;">
@@ -58,7 +58,7 @@
 <div class="panel panel-ghost bottom-placeholder"
      style="border-radius: 8px; margin: 10px 5px; display: none; background-color: whitesmoke;">
     <div class="panel-body center-block" style="text-align: center">
-        <h4><%= _t("Move it to..") %></h4>
+        <h4><%- _t("Move it to..") %></h4>
         <span class="fa fa-3x fa-angle-double-down faa-vertical animated"></span>
     </div>
 </div>

@@ -12,23 +12,23 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= _t("Get audits entries for an entity") %></h4>
+            <h4 class="modal-title"><%- _t("Get audits entries for an entity") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="form-group">
-                    <label class="control-label" for="entity"><%= _t("Entity content type") %></label>
+                    <label class="control-label" for="entity"><%- _t("Entity content type") %></label>
                     <select class="form-control contents-types" id="content_type" name="content-type"></select>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" for="entity"><%= _t("Entity UUID or name") %></label>
+                    <label class="control-label" for="entity"><%- _t("Entity UUID or name") %></label>
                     <select class="form-control entities" id="entity" name="entity"></select>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
-            <button type="button" class="btn btn-success search"><%= _t("Search") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %></button>
+            <button type="button" class="btn btn-success search"><%- _t("Search") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

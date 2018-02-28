@@ -9,5 +9,5 @@
 -->
 
 <% _.each(items, function(item){ %>
-    <option value="<%= item.id %>"><%= gettext(item.value) %></option>
+    <option value="<%- item.id %>"><%- gettext(item.value) %></option>
 <% }) %>

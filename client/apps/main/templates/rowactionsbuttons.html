@@ -12,49 +12,49 @@
     <div class="action actions-buttons btn-group btn-group-xs" role="group">
         <% if (typeof(show) !== 'undefined' && show.display !== false) { %>
         <% if (show.disabled === true) { disabled = 'disabled=""'; } else { disabled = ""; } %>
-        <button class="action btn btn-default" name="show" type="button" title="<%= show.title %>" <%= disabled %>>
+        <button class="action btn btn-default" name="show" type="button" title="<%- show.title %>" <%- disabled %>>
             <span class="fa fa-eye fa-lg"></span>
         </button>
         <% } %>
 
         <% if (typeof(edit) !== 'undefined' && edit.display !== false) { %>
         <% if (edit.disabled === true) { disabled = 'disabled=""'; } else { disabled = ""; } %>
-        <button class="action btn btn-default" name="edit" type="button" title="<%= edit.title %>" <%= disabled %>>
+        <button class="action btn btn-default" name="edit" type="button" title="<%- edit.title %>" <%- disabled %>>
             <span class="fa fa-pencil-square-o fa-lg"></span>
         </button>
         <% } %>
 
         <% if (typeof(edit2) !== 'undefined' && edit2.display !== false) { %>
         <% if (edit2.disabled === true) { disabled = 'disabled=""'; } else { disabled = ""; } %>
-        <button class="action btn btn-default" name="edit2" type="button" title="<%= edit2.title %>" <%= disabled %>>
+        <button class="action btn btn-default" name="edit2" type="button" title="<%- edit2.title %>" <%- disabled %>>
             <span class="fa fa-pencil-square-o fa-lg"></span>
         </button>
         <% } %>
 
         <% if (typeof(tag) !== 'undefined' && tag.display !== false) { %>
         <% if (tag.disabled === true) { disabled = 'disabled=""'; } else { disabled = ""; } %>
-        <button class="action btn btn-default" name="tag" type="button" title="<%= tag.title %>" <%= disabled %>>
+        <button class="action btn btn-default" name="tag" type="button" title="<%- tag.title %>" <%- disabled %>>
             <span class="fa fa-tag fa-lg"></span>
         </button>
         <% } %>
 
         <% if (typeof(manage) !== 'undefined' && manage.display !== false) { %>
         <% if (manage.disabled === true) { disabled = 'disabled=""'; } else { disabled = ""; } %>
-        <button class="action btn btn-default" name="manage" type="button" title="<%= manage.title %>" <%= disabled %>>
+        <button class="action btn btn-default" name="manage" type="button" title="<%- manage.title %>" <%- disabled %>>
             <span class="fa fa-th-list fa-lg"></span>
         </button>
         <% } %>
 
         <% if (typeof(remove) !== 'undefined' && remove.display !== false) { %>
         <% if (remove.disabled === true) { disabled = 'disabled=""'; } else { disabled = ""; } %>
-        <button class="action btn btn-default" name="remove" type="button" title="<%= remove.title %>" <%= disabled %>>
+        <button class="action btn btn-default" name="remove" type="button" title="<%- remove.title %>" <%- disabled %>>
             <span class="fa fa-trash fa-lg"></span>
         </button>
         <% } %>
 
         <% if (typeof(unlink) !== 'undefined' && unlink.display !== false) { %>
         <% if (unlink.disabled === true) { disabled = 'disabled=""'; } else { disabled = ""; } %>
-        <button class="action btn btn-default" name="unlink" type="button" title="<%= unlink.title %>" <%= disabled %>>
+        <button class="action btn btn-default" name="unlink" type="button" title="<%- unlink.title %>" <%- disabled %>>
             <span class="fa fa-chain-broken fa-lg"></span>
         </button>
         <% } %>

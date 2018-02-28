@@ -12,12 +12,12 @@
 <td class="glyph-fixed-column lock-status">
     <% if (!can_delete) { %>
         <% className = ""; %>
-        <span class="fa fa-lock" title="<%= _t('Classification locked') %>"></span>
+        <span class="fa fa-lock" title="<%- _t('Classification locked') %>"></span>
     <% } %>
 </td>
-<td name="description" class="glyph-fixed-column"><span class="fa fa-question-circle" title="<%= description %>" style="cursor: help;"></span></td>
-<td class="<%= className %> rename" name="name" value="<%= name %>"><%= name %></td>
-<td class="<%= className %> edit-label" name="label" value="<%= label %>"><%= label %></td>
+<td name="description" class="glyph-fixed-column"><span class="fa fa-question-circle" title="<%- description %>" style="cursor: help;"></span></td>
+<td class="<%- className %> rename" name="name" value="<%- name %>"><%- name %></td>
+<td class="<%- className %> edit-label" name="label" value="<%- label %>"><%- label %></td>
 <td class="action manage last-column" name="num_classification_ranks">
-    <span class="badge" title="<%= _t('Manage ranks') %>"><%= num_classification_ranks %></span>
+    <span class="badge" title="<%- _t('Manage ranks') %>"><%- num_classification_ranks %></span>
 </td>

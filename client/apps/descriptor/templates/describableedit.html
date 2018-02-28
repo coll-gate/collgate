@@ -8,23 +8,23 @@
  - @details 
 -->
 
-<div class="object <%= target.split('.')[1] %>" object-type="<%= target %>" object-id="-1" style="width:100%;">
+<div class="object <%- target.split('.')[1] %>" object-type="<%- target %>" object-id="-1" style="width:100%;">
     <div class="panels panel-group" style="margin-top: 10px;">
         <% var pi = 0; %>
         <% _.each(panels, function(panel) { %>
-            <div class="panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>">
+            <div class="panel panel panel-default" name="<%- panel.name %>" panel-id="<%- panel.id %>">
                 <% var collapsed = pi > 0 ? "collapsed" : ""; %>
-                <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= _t('Collapse/Expand') %>">
-                    <a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label[session.language] %></a>
+                <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%- _t('Collapse/Expand') %>">
+                    <a class="accordion-toggle <%- collapsed %>" data-toggle="collapse" href="#collapse<%- pi %>"><%- panel.label[session.language] %></a>
                 </div>
                 <% var inout = pi == 0 ? "in" : ""; %>
-                <div id="collapse<%= pi %>" class="panel-collapse collapse <%= inout %>">
+                <div id="collapse<%- pi %>" class="panel-collapse collapse <%- inout %>">
                     <div class="descriptors">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th><%= _t("Descriptor") %></th>
-                                    <th><%= _t("Value") %></th>
+                                    <th><%- _t("Descriptor") %></th>
+                                    <th><%- _t("Value") %></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -33,20 +33,20 @@
                                     <% var descriptor = descriptors_data[layoutdescriptor.name];%>
                                     <% var format = descriptor.format; %>
                                     <% var mandatory = descriptor.mandatory ? "mandatory-field" : ""; %>
-                                    <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor.id %>" code="<%= descriptor.code %>">
-                                        <td class="descriptor-name <%= mandatory %>" style="padding-top: 15px;">
-                                            <%= descriptor.label %>
+                                    <tr class="descriptor" panel-index="<%- pi %>" index="<%- i %>" descriptor-model-type="<%- descriptor.id %>" code="<%- descriptor.code %>">
+                                        <td class="descriptor-name <%- mandatory %>" style="padding-top: 15px;">
+                                            <%- descriptor.label %>
                                             <span class="descriptor-type-unit">
                                             <% if (descriptor.format.unit === "custom") { %>
                                                 <% if (descriptor.format.custom_unit != undefined && descriptor.format.custom_unit !== "") { %>
-                                                    (<%= descriptor.format.custom_unit %>)
+                                                    (<%- descriptor.format.custom_unit %>)
                                                 <% } %>
                                             <% } else if (descriptor.format.unit != undefined) { %>
-                                                (<%= application.descriptor.collections.formatUnits.findLabel(descriptor.format.unit) %>)
+                                                (<%- application.descriptor.collections.formatUnits.findLabel(descriptor.format.unit) %>)
                                             <% } %>
                                             </span>
                                         </td>
-                                        <td class="descriptor-value" format-type="<%= format.type %>"></td>
+                                        <td class="descriptor-value" format-type="<%- format.type %>"></td>
                                     </tr>
                                     <% ++i; %>
                                 <% }) %>
@@ -59,7 +59,7 @@
         <% }) %>
     </div>
     <div class="footer pull-right">
-        <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
-        <button type="button" class="btn btn-success apply"><%= _t("Apply") %></button>
+        <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %></button>
+        <button type="button" class="btn btn-success apply"><%- _t("Apply") %></button>
     </div>
 </div>
