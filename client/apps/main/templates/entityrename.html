@@ -12,19 +12,19 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= _t("Rename") %></h4>
+            <h4 class="modal-title"><%- _t("Rename") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="form-group">
-                    <label class="control-label"><%= _t("Name") %></label>
-                    <input class="form-control entity-name" type="text" name="name" value="" maxlength="<%= maxlength %>" autofocus="" autocomplete="off" style="width:100%;">
+                    <label class="control-label"><%- _t("Name") %></label>
+                    <input class="form-control entity-name" type="text" name="name" value="" maxlength="<%- maxlength %>" autofocus="" autocomplete="off" style="width:100%;">
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
-            <button type="button" class="btn btn-success apply"><%= _t("Apply") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %></button>
+            <button type="button" class="btn btn-success apply"><%- _t("Apply") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

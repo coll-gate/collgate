@@ -11,19 +11,19 @@
 <div class="row">
     <div class="descriptor-type-name form-group col-md-6">
         <label for="descriptor_type_name"><%- _t('Descriptor type name') %></label>
-        <input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="<%= name %>">
+        <input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="<%- name %>">
     </div>
     <div class="descriptor-type-code form-group col-md-6">
         <label for="descriptor_type_code"><%- _t('Descriptor type code') %></label>
         <input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255"
-               value="<%= code %>">
+               value="<%- code %>">
     </div>
 </div>
 
 <div class="row">
     <div class="descriptor-group-name form-group col-md-6">
         <label for="descriptor_group_name"><%- _t('Group name') %></label>
-        <input id="descriptor_group_name" class="form-control" type="text" maxlength="255" value="<%= group_name %>">
+        <input id="descriptor_group_name" class="form-control" type="text" maxlength="255" value="<%- group_name %>">
     </div>
 </div>
 
@@ -38,7 +38,7 @@
 
 <div class="descriptor-type-description form-group">
     <label for="descriptor_type_description"><%- _t('Description') %></label>
-    <textarea id="descriptor_type_description" class="form-control" maxlength="1024"><%= description %></textarea>
+    <textarea id="descriptor_type_description" class="form-control" maxlength="1024"><%- description %></textarea>
 </div>
 
 <div class="descriptor-type-update form-group pull-right">

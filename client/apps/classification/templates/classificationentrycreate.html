@@ -12,49 +12,49 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= _t("Create a classification entry") %></h4>
+            <h4 class="modal-title"><%- _t("Create a classification entry") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="row">
                     <div class="col-xs-8">
                         <div class="form-group">
-                            <label class="control-label" for="classification_entry_name"><%= _t("Principal name of the classification entry") %></label>
+                            <label class="control-label" for="classification_entry_name"><%- _t("Principal name of the classification entry") %></label>
                             <input class="form-control name" id="classification_entry_name" type="text" name="classification-entry" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%;">
                         </div>
                     </div>
                     <div class="col-xs-4">
                         <div class="form-group">
-                            <label class="control-label" for="classification_entry_language"><%= _t("Language") %></label>
+                            <label class="control-label" for="classification_entry_language"><%- _t("Language") %></label>
                             <select class="form-control language" id="classification_entry_language" name="language"></select>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" for="layout"><%= _t("Layout") %></label>
+                    <label class="control-label" for="layout"><%- _t("Layout") %></label>
                     <select id="layout" style="width:100%;" class="form-control">
                         <% _.each(layouts, function(layout) { %>
-                            <option value="<%= layout.id %>"><%= layout.label %></option>
+                            <option value="<%- layout.id %>"><%- layout.label %></option>
                         <% }) %>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" for="classification"><%= _t("Classification") + " " + _t("(Linked to layout)") %></label>
+                    <label class="control-label" for="classification"><%- _t("Classification") + " " + _t("(Linked to layout)") %></label>
                     <select class="form-control classifications" id="classification" name="classification"></select>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" for="classification_rank"><%= _t("Classification rank") %></label>
+                    <label class="control-label" for="classification_rank"><%- _t("Classification rank") %></label>
                     <select class="form-control classification-ranks" id="classification_rank" name="classification-rank"></select>
                 </div>
                 <div class="form-group classification-entry-parent-group">
-                    <label class="control-label" for="classification_entry_parent"><%= _t("Direct parent") %></label>
+                    <label class="control-label" for="classification_entry_parent"><%- _t("Direct parent") %></label>
                     <select id="classification_entry_parent" style="width:100%;" class="form-control"></select>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
-            <button type="button" class="btn btn-success create"><%= _t("Create") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %></button>
+            <button type="button" class="btn btn-success create"><%- _t("Create") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

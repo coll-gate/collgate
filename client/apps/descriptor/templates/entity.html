@@ -12,20 +12,20 @@
     var columnName = columnsList[i];
     var column = columnsOptions[columnName];
     if (column.custom) {
-        %><td name="<%= columnName %>"></td><%
+        %><td name="<%- columnName %>"></td><%
     } else if (column.glyphicon != undefined) {
-        %><td name="<%= columnName %>" class="glyph-fixed-column"><span class="fa <%= column.glyphicon[1] %>"></span></td><%
+        %><td name="<%- columnName %>" class="glyph-fixed-column"><span class="fa <%- column.glyphicon[1] %>"></span></td><%
     } else if (column.query) {
-        %><td name="<%= columnName %>"></td><%
+        %><td name="<%- columnName %>"></td><%
     } else if (columnName.startsWith('$') && (columnName.replace(/^\$/, '') in arguments[0])) {
-        %><td name="<%= columnName %>"><%= arguments[0]['format'][columnName.replace(/^\$/, '')] %></td><%
+        %><td name="<%- columnName %>"><%- arguments[0]['format'][columnName.replace(/^\$/, '')] %></td><%
     } else if (columnName.startsWith('@') && (columnName.replace(/^@/, '') in arguments[0])) {
-        %><td name="<%= columnName %>"><%= arguments[0][columnName.replace(/^@/, '')] %></td><%
+        %><td name="<%- columnName %>"><%- arguments[0][columnName.replace(/^@/, '')] %></td><%
     } else if (!columnName.startsWith('#') && (columnName in arguments[0])) {
-        %><td name="<%= columnName %>"><%= arguments[0][columnName] %></td><%
+        %><td name="<%- columnName %>"><%- arguments[0][columnName] %></td><%
     } else if (columnName.startsWith('#') && (columnName.replace(/^#/, '') in descriptors)) {
-        %><td name="<%= columnName %>"><%= descriptors[columnName.replace(/^#/, '')] || "" %></td><%
+        %><td name="<%- columnName %>"><%- descriptors[columnName.replace(/^#/, '')] || "" %></td><%
     } else {
-        %><td name="<%= columnName %>"></td><%
+        %><td name="<%- columnName %>"></td><%
     }
 } %>

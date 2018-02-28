@@ -12,15 +12,15 @@
 <td class="glyph-fixed-column lock-status">
     <% if (!classification.get('can_modify')) { %>
         <% className = ""; %>
-        <span class="fa fa-lock" title="<%= _t('Classification locked') %>"></span>
+        <span class="fa fa-lock" title="<%- _t('Classification locked') %>"></span>
     <% } %>
 </td>
-<td class="<%= className %> rename" name="name" value="<%= name %>"><%= name %></td>
-<td class="<%= className %> edit-label" name="label" value="<%= label %>"><%= label %></td>
+<td class="<%- className %> rename" name="name" value="<%- name %>"><%- name %></td>
+<td class="<%- className %> edit-label" name="label" value="<%- label %>"><%- label %></td>
 <td class="last-column" name="level">
     <% if (!classification.get('can_modify')) { %>
-        <span class="badge"><%= level %></span>
+        <span class="badge"><%- level %></span>
     <% } else { %>
-        <span class="badge" title="drag'n'drop to change level"><%= level %></span>
+        <span class="badge" title="drag'n'drop to change level"><%- level %></span>
     <% } %>
 </td>

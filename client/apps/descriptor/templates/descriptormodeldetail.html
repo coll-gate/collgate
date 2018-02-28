@@ -11,15 +11,15 @@
 <div class="descriptor-model-detail">
     <div class="descriptor-model-name form-group" style="width: 50%;">
         <label for="descriptor_model_name"><%- _t('Descriptor model name') %></label>
-        <input id="descriptor_model_name" class="form-control" type="text" maxlength="255" value="<%= name %>">
+        <input id="descriptor_model_name" class="form-control" type="text" maxlength="255" value="<%- name %>">
     </div>
     <div class="descriptor-model-verbose-name form-group" style="width: 50%;">
         <label for="descriptor_model_verbose_name"><%- _t('Verbose name') %></label>
-        <input id="descriptor_model_verbose_name" class="form-control" type="text" maxlength="255" value="<%= verbose_name %>">
+        <input id="descriptor_model_verbose_name" class="form-control" type="text" maxlength="255" value="<%- verbose_name %>">
     </div>
     <div class="descriptor-model-description form-group" style="width: 50%;">
         <label for="descriptor_model_description"><%- _t('Description') %></label>
-        <textarea id="descriptor_model_description" class="form-control" maxlength="1024"><%= description %></textarea>
+        <textarea id="descriptor_model_description" class="form-control" maxlength="1024"><%- description %></textarea>
     </div>
     <div class="descriptor-model-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px;">
         <button id="save" class="form-control btn btn-success"><%- _t('Update') %></button>
