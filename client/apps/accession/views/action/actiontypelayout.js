@@ -150,11 +150,13 @@ let Layout = LayoutView.extend({
         let heading = $('<div class="panel-heading unselectable current" data-toggle="tooltip" data-placement="left" title="' + _t('Collapse/Expand') + '">');
         panel.append(heading);
 
+        // heading title
         let title = $('<span name="step-label" class="action"></span>').on('click', function() {
             self.onChangeFormatType(parseInt(panel.attr('panel-id')));
         });
         heading.append(title);
 
+        // collapse button and options dropdown
         let helpers = $('<div class="pull-right"><div class="btn-group btn-group-sm"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="action fa fa-lg fa-cog" style="color: gray"></span></a></div><a class="accordion-toggle" data-toggle="collapse" href="#action_step' + i + '" style="margin-left: 20px;"></a></div>');
         if (collapsed) {
             helpers.find('a.accordion-toggle').addClass('collapsed');
@@ -174,11 +176,13 @@ let Layout = LayoutView.extend({
 
         heading.append(helpers);
 
+        // toggle collapse on double click on heading
         heading.on('dblclick', function(e) {
             heading.parent().children('div.panel-collapse').collapse('toggle');
             return true;
         });
 
+        // collapse-able inner part
         let panelCollapse = $('<div class="panel-collapse collapse"></div>');
         panelCollapse.attr('id', 'action_step' + i);
         if (!collapsed) {
@@ -186,6 +190,7 @@ let Layout = LayoutView.extend({
         }
         panel.append(panelCollapse);
 
+        // panel-body make an expand issue so don't use it... it is the content part related to the dynamic region
         let content = $('<div class="panel-body-no" style="margin: 10px;"></div>');
         panelCollapse.append(content);
 
