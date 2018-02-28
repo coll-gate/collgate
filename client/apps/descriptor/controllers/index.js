@@ -97,7 +97,7 @@ let Controller = Marionette.Object.extend({
                     for (i = 0; i < descriptorCollection.length; i++) {
                         let group_name = descriptorCollection.models[i].get('group_name');
 
-                        if (group_name === null) {
+                        if (!group_name) {
                             group_name = _t('Unclassified');
                         }
 
