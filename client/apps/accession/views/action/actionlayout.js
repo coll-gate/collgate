@@ -239,7 +239,7 @@ let Layout = LayoutView.extend({
         let currentStepIndex = this.model.get('data').steps.length - 1;
 
         for (let i = 0; i < data.format.steps.length; ++i) {
-            let collapsable = $('<div class="panel panel panel-default"></div>');
+            let collapsable = $('<div class="panel panel-default"></div>');
             collapsable.attr('panel-id', i);
 
             let heading = $('<div class="panel-heading" data-toggle="tooltip" data-placement="left" title="' + _t('Collapse/Expand') + '">');

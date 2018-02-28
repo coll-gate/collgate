@@ -1,0 +1,30 @@
+<!--
+ - @file actiontypestepchange.html
+ - @brief
+ - @author Frederic SCHERMA (INRA UMR1095)
+ - @date 2018-02-28
+ - @copyright Copyright (c) 2018 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%- _t("Change step format") %></h4>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="panel-name form-group">
+                    <label for="panel_name"><%- _t('Step type') %></label>
+                    <select name="step-format" class="form-control action-step-format"></select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %></button>
+            <button type="button" class="btn btn-success change"><%- _t("Change") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
