@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file layouts.py
+# @file accession_layouts.py
 # @brief Setup the value for the organisation layouts and types of models of descriptors.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
@@ -47,7 +47,6 @@ LAYOUTS = {
                             'set_once': False
                         }
                     ]
-                    # 'descriptor_model_name': 'organisation'
                 }
             ]
         }
@@ -84,7 +83,6 @@ LAYOUTS = {
                             'set_once': False
                         }
                     ]
-                    # 'descriptor_model_name': 'organisation'
                 }
             ]
         }

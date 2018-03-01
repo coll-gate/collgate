@@ -64,7 +64,20 @@ DESCRIPTORS = {
             'type': 'string',
             'regexp': '^[0-9]{0,16}$'
         }
-    }
+    },
+    'comment': {
+        'id': None,
+        'name': 'comment',
+        'code': 'DE_005',
+        'group_name': 'common',
+        'label': {'en': 'comment', 'fr': 'commentaire'},
+        'can_delete': False,
+        'can_modify': False,
+        'description': 'Defines a simple comment string.',
+        'format': {
+            'type': 'string'
+        }
+    },
 }
 
 

@@ -207,7 +207,7 @@ class FixtureManager:
             }
 
             if parameters_type == 'accession.accession':
-                # primary classification model
+                # primary classification instance
                 primary_classification_name = parameters['data'].get('primary_classification')
 
                 if primary_classification_name is None:
@@ -241,8 +241,23 @@ class FixtureManager:
 
                 layout.parameters = final_parameters
                 has_updated = True
-            else:
-                pass
+
+            elif parameters_type == 'classification.classificationentry':
+                # classification instance
+                classification_name = parameters['data'].get('classification')
+
+                if classification_name is None:
+                    continue
+
+                try:
+                    classification = Classification.objects.get(name=classification_name)
+                except Classification.DoesNotExist:
+                    raise
+
+                final_parameters['data']['classification'] = classification.id
+
+                layout.parameters = final_parameters
+                has_updated = True
 
             if has_updated:
                 layout.save()
