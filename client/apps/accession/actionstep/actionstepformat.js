@@ -72,7 +72,7 @@ ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
      * Get the currently defined inputs type.
      */
     inputsType: function() {
-        return null;
+        return 'none';
     },
 
     /**

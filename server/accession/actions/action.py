@@ -131,7 +131,7 @@ def update_action(request, act_id):
         "type": "object",
         "properties": {
             "action": {"type": "string", "enum": ['reset', 'setup', 'process']},    # action in term of API
-            "inputs_type": {"type": "string", "enum": ['panel', 'upload', 'list'], "required": False},
+            "inputs_type": {"type": "string", "enum": ['none', 'panel', 'upload', 'list'], "required": False},
             "panel": {"type": "numeric", "required": False},
             "list": {"type": "array", "required": False, "minItems": 0, "maxItems": 32768, "additionalItems": {
                     "type": "number"
@@ -184,6 +184,8 @@ def action_process_step(request, act_id):
             input_data = []  # @todo from panel
         elif inputs_type == "upload":
             input_data = []  # @todo from uploaded file
+        else:
+            input_data = []
 
         action_controller.setup_input(input_data)
     elif action_type == "process":

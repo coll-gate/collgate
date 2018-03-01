@@ -45,6 +45,7 @@ class ActionStepFormat(object):
     IO_ACCESSION_ID = 0
     IO_BATCH_ID = 1
     IO_DESCRIPTOR = 2
+    NUM_IO_TYPES = 3
 
     def __init__(self):
         # name referred as a code, stored in format.type.
@@ -119,12 +120,13 @@ class ActionStepFormat(object):
 
         return step_data
 
-    def process(self, action, step_data):
+    def process(self, action, step_data, input_data):
         """
         Process the specialized action step to the given action, using input array,
         and complete the step data structure.
         :param action: Valid and already existing action in DB.
         :param step_data: Initialized step data structure to be filled during process.
+        :param input_data Input data corresponding to the output from the previous step or None if no previous step
         :return:
         """
         pass
@@ -253,9 +255,16 @@ class ActionStepAccessionConsumerBatchProducer(ActionStepFormat):
 
         return None
 
-    def process(self, action, step_data):
-        # @todo
+    def process(self, action, step_data, input_data):
         pass
+        # # retrieve each accession, 1 accession per row (what about input format mapping ? @todo)
+        # accessions_id = [int(accession_id) for accession_id in inputs]
+        #
+        # if Accession.objects.filter(id__in=accessions_id).count() != len(accessions_id):
+        #     raise ActionError("Some accessions ids does not exists")
+        #
+        # # generate output, simply the input
+        # step_data['outputs'] = accessions_id
 
 
 class ActionStepAccessionList(ActionStepFormat):
@@ -287,20 +296,18 @@ class ActionStepAccessionList(ActionStepFormat):
         # nothing to check
         return None
 
-    def process(self, action, step_data):
+    def process(self, action, step_data, input_data):
         """
         Store the input array as output array of this step to be used as input of the next one.
         """
-        inputs = step_data['inputs']
+        # if input_data is not None and step_data['data']:
+        #     raise ActionError("Accession list action step take its own data set")
 
-        # retrieve each accession, 1 accession per row (what about input format mapping ? @todo)
-        accessions_id = [int(accession_id) for accession_id in inputs]
+        # inputs is a list a accession id
+        inputs = step_data['data']
 
-        if Accession.objects.filter(id__in=accessions_id).count() != len(accessions_id):
+        if Accession.objects.filter(id__in=inputs).count() != len(inputs):
             raise ActionError("Some accessions ids does not exists")
-
-        # generate output, simply the input
-        step_data['outputs'] = accessions_id
 
 
 class ActionStepAccessionRefinement(ActionStepFormat):
@@ -323,7 +330,7 @@ class ActionStepAccessionRefinement(ActionStepFormat):
     def check(self, action_controller, action_type_format):
         return None
 
-    def process(self, action, step_data):
+    def process(self, action, step_data, input_data):
         steps_data = action.data.get('steps', [])
 
         # inputs = self.inputs(action, input_array)
@@ -350,7 +357,7 @@ class ActionStepBatchConsumerBatchProducer(ActionStepFormat):
     def check(self, action_controller, action_type_format):
         return None
 
-    def process(self, action, step_data):
+    def process(self, action, step_data, input_data):
         # @todo
         # name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
         # naming_constants = self.naming_constants(
@@ -397,7 +404,7 @@ class ActionStepBatchConsumerBatchModifier(ActionStepFormat):
     def check(self, action_controller, action_type_format):
         return None
 
-    def process(self, action, step_data):
+    def process(self, action, step_data, input_data):
         steps_data = action.data.get('steps', [])
 
         # inputs = self.inputs(action, input_array)
