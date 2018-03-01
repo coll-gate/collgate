@@ -14,16 +14,11 @@ import json
 import os
 import sys
 
-import validictory
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import SuspiciousOperation
-
 from classification.models import Classification
-from main.models import EntitySynonymType, Entity
-# from ..models import Descriptor, DescriptorModel, DescriptorModelType, \
-#     Layout, DescriptorPanel, DescriptorValue
+from main.models import EntitySynonymType
 
-from ..models import Descriptor, Layout, DescriptorValue
+from ..models import Descriptor, Layout, DescriptorValue, JSONBFieldIndexType, DescriptorIndex
 
 
 class FixtureManager:
@@ -33,7 +28,7 @@ class FixtureManager:
 
     def __init__(self):
         self.descriptor_types = {}
-        self.descriptor_models = {}
+        self.descriptor_indexes = []
         self.layouts = {}
 
     def set_descriptor(self, name, obj_id):
@@ -42,11 +37,12 @@ class FixtureManager:
             'name': name
         }
 
-    # def set_descriptor_model(self, name, obj_id):
-    #     self.descriptor_models[name] = {
-    #         'id': obj_id,
-    #         'name': name
-    #     }
+    def set_descriptor_index(self, obj_id):
+        self.descriptor_indexes.append(
+            {
+                'id': obj_id
+            }
+        )
 
     def set_layout(self, name, obj_id):
         self.layouts[name] = {
@@ -65,16 +61,16 @@ class FixtureManager:
 
         return type_id
 
-    # def get_descriptor_model_id(self, name):
-    #     # local search first
-    #     model_id = self.descriptor_models.get(name, {'id': None})['id']
-    #     if model_id is None:
-    #         try:
-    #             model_id = DescriptorModel.objects.get(name=name).id
-    #         except DescriptorModel.DoesNotExist:
-    #             return None
-    #
-    #     return model_id
+    def get_descriptor_index(self, obj_id):
+        # local search first
+        index_id = next((x for x in self.descriptor_indexes if x.id == obj_id), None)
+        if index_id is None:
+            try:
+                index_id = DescriptorIndex.objects.get(id=obj_id).id
+            except DescriptorIndex.DoesNotExist:
+                return None
+
+        return index_id
 
     def get_layout_id(self, name):
         # local search first
@@ -124,55 +120,27 @@ class FixtureManager:
             # lookup table
             self.set_descriptor(descriptor_name, descriptor.id)
 
-    # def create_or_update_models(self, descriptor_models):
-    #     sys.stdout.write("   + Create descriptor models...\n")
-    #
-    #     for k, descriptor_model_data in descriptor_models.items():
-    #         descriptor_model_name = descriptor_model_data['name']
-    #
-    #         if k != descriptor_model_name:
-    #             raise ValueError('Descriptor model key name differs from value name (%s)' % descriptor_model_name)
-    #
-    #         descriptor_model, created = DescriptorModel.objects.update_or_create(
-    #             name=descriptor_model_name,
-    #             defaults={
-    #                 'verbose_name': descriptor_model_data['verbose_name'],
-    #                 'description': descriptor_model_data['description']
-    #             }
-    #         )
-    #
-    #         # keep id for others fixtures
-    #         descriptor_model_data['id'] = descriptor_model.id
-    #
-    #         # lookup table
-    #         self.set_descriptor_model(descriptor_model_name, descriptor_model.id)
-    #
-    #         position = 0
-    #
-    #         for model_type_data in descriptor_model_data['types']:
-    #             model_type_name = model_type_data.get('name')
-    #             if model_type_data is None:
-    #                 model_type_name = "%s_%s" % (descriptor_model_data['name'], model_type_data['descriptor_type_name'])
-    #
-    #             descriptor_type_id = self.get_descriptor_type_id(model_type_data['descriptor_type_name'])
-    #
-    #             descriptor_model_type, created = DescriptorModelType.objects.update_or_create(
-    #                 name=model_type_name, defaults={
-    #                     'descriptor_model': descriptor_model,
-    #                     'label': model_type_data.get('label', {}),
-    #                     'mandatory': model_type_data.get('mandatory', False),
-    #                     'set_once': model_type_data.get('set_once', False),
-    #                     'position': position,
-    #                     'descriptor_type_id': descriptor_type_id,
-    #                     'index': model_type_data.get('index', 0)
-    #                 }
-    #             )
-    #
-    #             # keep id and generated name for others fixtures
-    #             model_type_data['id'] = descriptor_model_type.id
-    #             model_type_data['name'] = model_type_name
-    #
-    #             position += 1
+    def create_or_update_indexes(self, descriptor_indexes):
+        sys.stdout.write("   + Create descriptor indexes...\n")
+
+        for descriptor_data in descriptor_indexes:
+            index_type = JSONBFieldIndexType(int(descriptor_data['type']))
+            sys.stdout.write("   + Descriptor index %s, %s, %s\n" % (str(descriptor_data['descriptor_name']), index_type.name, str(descriptor_data['target'])))
+
+            descriptor = Descriptor.objects.get(name=str(descriptor_data['descriptor_name']))
+
+            app_label, model = str(descriptor_data['target']).split('.')
+            target = ContentType.objects.get_by_natural_key(app_label, model)
+
+            index, created = DescriptorIndex.objects.update_or_create(
+                descriptor=descriptor,
+                target=target,
+                type=index_type.value
+            )
+
+            index.create_or_drop_index()
+
+            self.set_descriptor_index(index.id)
 
     def create_or_update_layouts(self, layouts):
         sys.stdout.write("   + Create descriptor layouts...\n")

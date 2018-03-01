@@ -11,8 +11,8 @@
 
 def fixture(fixture_manager, factory_manager):
 
-    acc_seq = "CREATE SEQUENCE accession_naming_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;"
-    bat_seq = "CREATE SEQUENCE batch_naming_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;"
+    acc_seq = "CREATE SEQUENCE IF NOT EXISTS accession_naming_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;"
+    bat_seq = "CREATE SEQUENCE IF NOT EXISTS batch_naming_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;"
 
     from django.db import connection
 

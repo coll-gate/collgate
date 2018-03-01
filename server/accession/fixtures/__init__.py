@@ -14,5 +14,5 @@ ORDER = [
     'actiontypes',
     'descriptorstypes',
     'mcpdtypes',
-    # 'descriptorsmodels'
+    'descriptorsindexes'
 ]
