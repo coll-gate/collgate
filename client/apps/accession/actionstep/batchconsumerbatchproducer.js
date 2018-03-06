@@ -57,7 +57,7 @@ Format.ActionStepProcessView = Marionette.View.extend({
     },
 
     inputsType: function() {
-        return null;
+        return 'none';
     },
 
     inputsData: function() {

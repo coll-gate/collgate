@@ -1,5 +1,5 @@
 /**
- * @file accessionlst.js
+ * @file accessionlist.js
  * @brief Simple accession list action step
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-12-11
