@@ -7,15 +7,18 @@
 # @copyright Copyright (c) 2018 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details
-
+import io
 import json
+import mimetypes
 
+import magic
 from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from accession.actions.actioncontroller import ActionController
 from accession.actions.actionstepformat import ActionStepFormatManager
+from accession.actions.actiondataparser import ActionDataParser
 from accession.base import RestAccession
 from accession.batch import RestBatchId
 from accession.models import Action, Accession, ActionType, Batch
@@ -53,6 +56,11 @@ class RestActionEntityId(RestActionEntity):
 class RestActionEntityIdCount(RestActionEntityId):
     regex = r'^count/$'
     suffix = 'count'
+
+
+class RestActionIdUpload(RestActionId):
+    regex = r'^upload/$'
+    suffix = 'upload'
 
 
 @RestAction.def_auth_request(
@@ -302,6 +310,76 @@ def get_action_details(request, act_id):
         'action_type': action.action_type_id,
         'completed': action.completed,
         'created_date': action.created_date.strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestActionIdUpload.def_auth_request(Method.POST, Format.ANY, perms={
+    'accession.change_action': _("You are not allowed to modify an action")
+})
+def upload_action_id_content(request, act_id):
+    action = get_object_or_404(Action, pk=int(act_id))
+
+    if not request.FILES:
+        raise SuspiciousOperation(_("No file specified"))
+
+    up = request.FILES['file']
+    format = request.POST.get('format')
+    target = request.POST.get('target')
+
+    # check file size
+    # @todo on conf
+    LIMIT = 1024*1024*1024
+
+    if up.size > LIMIT:  # localsettings.max_file_size:
+        SuspiciousOperation(_("Upload file size limit is set to %i bytes") % LIMIT)  # localsettings.max_file_size)
+
+    # simple check mime-types using the file extension (can process a test using libmagic)
+    guessed_mime_type = mimetypes.guess_type(up.name)[0]
+    if guessed_mime_type is None:
+        SuspiciousOperation(_("Undetermined uploaded file type"))
+
+    # @todo on conf
+    ALLOWED_MIMES = (
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/csv',
+        'text/plain'
+    )
+
+    if guessed_mime_type not in ALLOWED_MIMES:
+        raise SuspiciousOperation(_("Unsupported file format"))
+
+    # test mime-type with a buffer of a least 1024 bytes
+    test_mime_buffer = io.BytesIO()
+    data = io.BytesIO()
+
+    # copy file content
+    for chunk in up.chunks():
+        data.write(chunk)
+
+        if test_mime_buffer.tell() < 1024:
+            test_mime_buffer.write(chunk)
+
+    data.seek(0, io.SEEK_SET)
+
+    guessed_mime_type = magic.from_buffer(test_mime_buffer.getvalue(), mime=True)
+
+    if guessed_mime_type not in ALLOWED_MIMES:
+        raise SuspiciousOperation(_("Unsupported file format"))
+
+    # decode according mime type CSV or XLSX
+    parser = ActionDataParser()
+
+    # @todo
+
+    # count number and format of columns
+    # @todo
+
+    # read row of input
+    parser.parse_csv(data)
+
+    result = {
     }
 
     return HttpResponseRest(request, result)

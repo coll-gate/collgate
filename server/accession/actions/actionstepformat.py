@@ -298,7 +298,7 @@ class ActionStepAccessionList(ActionStepFormat):
 
     def process(self, action, step_data, input_data):
         """
-        Store the input array as output array of this step to be used as input of the next one.
+        Check the data array and the existences of the accessions.
         """
         # if input_data is not None and step_data['data']:
         #     raise ActionError("Accession list action step take its own data set")

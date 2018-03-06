@@ -8,6 +8,21 @@
  - @details
 -->
 
-<div class="well well-sm">
-TODO
+<div class="row">
+    <div class="col-lg-6 form-group">
+        <label class="control-label"><%- _t('Accessions original list') %></label>
+        <select name="get-accession-list" class="form-control" title="<%- _t('Download as...') %>">
+            <option value="original-csv"><%- _t("Accession list as CSV") %></option>
+            <option value="original-xlsx"><%- _t("Accession list as XLSX") %></option>
+            <option value="original-panel"><%- _t("Generate a new panel") %></option>
+        </select>
+    </div>
+    <div class="col-lg-6 form-group" name="upload">
+        <label class="control-label"><%- _t('Upload the refined list of accessions') %></label>
+        <input name="accession-upload" type="file" class="form-control" accept="application/vnd.ms-excel,text/csv,.csv,.xlsx" />
+    </div>
+    <div class="col-lg-6 form-group" name="panel-group">
+        <label class="control-label"><%- _t('Setup the refined list of accessions from the temporary panel') %></label>
+        <button name="set-from-panel"><%- _t('Set from panel') %></button>
+    </div>
 </div>
