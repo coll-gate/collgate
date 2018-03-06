@@ -22,7 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from main.models import Entity
 
-from django.db import connections, models
+from django.db import connections, models, connection
 from django.db.models.sql.compiler import SQLCompiler
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice
@@ -268,6 +268,25 @@ class Descriptor(Entity):
             return len(self.values) == 0
         else:
             return self.values_set.all().exists()
+
+    def has_records(self):
+        """
+        Check if the descriptor has recorded values in describable entities.
+        :return:
+        """
+
+        from django.apps import apps
+        for entity in apps.get_app_config('descriptor').describable_entities:
+            content_type = get_object_or_404(ContentType, app_label=entity._meta.app_label,
+                                             model=entity._meta.model_name)
+
+            for describable in content_type.get_all_objects_for_this_type():
+                # if the descriptor code is present in a JSONb field of describable entity,
+                # this mean that some records exist.
+                if self.code in describable.descriptors:
+                    return True
+
+        return False
 
     def in_usage(self):
         """
