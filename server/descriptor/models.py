@@ -269,22 +269,31 @@ class Descriptor(Entity):
         else:
             return self.values_set.all().exists()
 
-    def has_records(self):
+    def has_records(self, layout=None):
         """
         Check if the descriptor has recorded values in describable entities.
-        :return:
+        :param layout: limit searching on a layout, the default value is none
+        :return: True if there is some values
         """
 
-        from django.apps import apps
-        for entity in apps.get_app_config('descriptor').describable_entities:
-            content_type = get_object_or_404(ContentType, app_label=entity._meta.app_label,
-                                             model=entity._meta.model_name)
-
+        def handle(content_type):
             for describable in content_type.get_all_objects_for_this_type():
                 # if the descriptor code is present in a JSONb field of describable entity,
                 # this mean that some records exist.
                 if self.code in describable.descriptors:
                     return True
+
+        if not layout:
+            from django.apps import apps
+            for entity in apps.get_app_config('descriptor').describable_entities:
+                content_type = get_object_or_404(ContentType, app_label=entity._meta.app_label,
+                                                 model=entity._meta.model_name)
+                if handle(content_type):
+                    return True
+
+        else:
+            if handle(layout.target):
+                return True
 
         return False
 
@@ -1723,19 +1732,54 @@ class Layout(Entity):
         """
         Check if some entities use of this layout
         """
+        # from django.apps import apps
+        # describable_entities = apps.get_app_config('descriptor').describable_entities
+        #
+        # # @todo: could be optimized ? Specified kind of describable entity!
+        # for de in describable_entities:
+        # field_name = de._meta.model_name + '_set'
+        # attr = getattr(self, field_name)
+        # if attr and attr.filter(layout=self).exists():
+        #     return True
+
         from django.apps import apps
-        describable_entities = apps.get_app_config('descriptor').describable_entities
+        for entity in apps.get_app_config('descriptor').describable_entities:
+            content_type = get_object_or_404(ContentType, app_label=entity._meta.app_label,
+                                             model=entity._meta.model_name)
 
-        # @todo: could be optimized ? Specified kind of describable entity!
-        for de in describable_entities:
-            field_name = de._meta.model_name + '_set'
-
-            attr = getattr(self, field_name)
-            if attr and attr.filter(layout=self).exists():
-                return True
+            for describable in content_type.get_all_objects_for_this_type():
+                if describable.layout_id == self.id:
+                    return True
         return False
 
-    def audit_create(self, user):
+
+def audit_create(self, user):
+    return {
+        'name': self.name,
+        'target': self.target_id,
+        'label': self.label,
+        'description': self.description
+    }
+
+
+def audit_update(self, user):
+    if hasattr(self, 'updated_fields'):
+        result = {'updated_fields': self.updated_fields}
+
+        if 'name' in self.updated_fields:
+            result['name'] = self.name
+
+        if 'target' in self.updated_fields:
+            result['target'] = self.target_id
+
+        if 'label' in self.updated_fields:
+            result['label'] = self.label
+
+        if 'description' in self.updated_fields:
+            result['description'] = self.description
+
+        return result
+    else:
         return {
             'name': self.name,
             'target': self.target_id,
@@ -1743,35 +1787,11 @@ class Layout(Entity):
             'description': self.description
         }
 
-    def audit_update(self, user):
-        if hasattr(self, 'updated_fields'):
-            result = {'updated_fields': self.updated_fields}
 
-            if 'name' in self.updated_fields:
-                result['name'] = self.name
-
-            if 'target' in self.updated_fields:
-                result['target'] = self.target_id
-
-            if 'label' in self.updated_fields:
-                result['label'] = self.label
-
-            if 'description' in self.updated_fields:
-                result['description'] = self.description
-
-            return result
-        else:
-            return {
-                'name': self.name,
-                'target': self.target_id,
-                'label': self.label,
-                'description': self.description
-            }
-
-    def audit_delete(self, user):
-        return {
-            'name': self.name
-        }
+def audit_delete(self, user):
+    return {
+        'name': self.name
+    }
 
 
 class DescriptorCondition(ChoiceEnum):

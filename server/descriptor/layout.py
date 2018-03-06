@@ -295,10 +295,6 @@ def get_layout(request, layout_id):
 def delete_layout(request, layout_id):
     layout = get_object_or_404(Layout, id=int(layout_id))
 
-    # if layout.descriptor_models.all().count() > 0:
-    #     raise SuspiciousOperation(
-    #         _('It is not possible to remove a layout of descriptor that contains models of descriptor'))
-
     if layout.in_usage():
         raise SuspiciousOperation(_("There is some data using the layout of descriptor"))
 
@@ -535,13 +531,31 @@ def create_panel_for_layout(request, layout_id):
 
 @RestLayoutIdPanelId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
-    # 'descriptor.add_descriptorpanel': _('You are not allowed to create a panel of descriptor'),
 }, staff=True)
 def remove_panel_for_layout(request, layout_id, pan_id):
     layout = get_object_or_404(Layout, id=int(layout_id))
     panel_list = layout.layout_content.get('panels')
 
-    panel_list.remove(panel_list[int(pan_id)])
+    # todo: check if descriptors in the panel are used in external panel conditions
+
+    panel = panel_list[int(pan_id)]
+
+    for lyt_descriptor in panel.get('descriptors'):
+
+        for p in layout.layout_content.get('panels'):
+            if p == panel:
+                continue
+            for d in p.get('descriptors'):
+                if d.get('conditions'):
+                    if d["conditions"].get('target_name') == lyt_descriptor.get('name'):
+                        raise SuspiciousOperation(
+                            _("the descriptor cannot be removed, because it is involved in a condition"))
+
+        mdl_descriptor = Descriptor.objects.get(name=lyt_descriptor.get('name'))
+        if mdl_descriptor.has_records(layout):
+            raise SuspiciousOperation(_("Only unused descriptors can be removed, these descriptors have some records"))
+
+    panel_list.remove(panel)
     layout.save()
 
     return HttpResponseRest(request, {})
@@ -808,17 +822,25 @@ def modify_descriptor_panel_for_layout(request, layout_id, pan_id, desc_id):
 @RestLayoutIdPanelIdDescriptorId.def_auth_request(
     Method.DELETE, Format.JSON, perms={
         'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
-        # 'descriptor.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor'),
     },
     staff=True)
 def remove_descriptor_for_layout(request, layout_id, pan_id, desc_id):
-    # todo: alert message about that
-
     layout = get_object_or_404(Layout, id=int(layout_id))
     panel = layout.layout_content.get('panels')[int(pan_id)]
-    descriptor = panel.get('descriptors')[int(desc_id)]
+    lyt_descriptor = panel.get('descriptors')[int(desc_id)]
 
-    panel.get('descriptors').remove(descriptor)
+    for p in layout.layout_content.get('panels'):
+        for d in p.get('descriptors'):
+            if d.get('conditions'):
+                if d["conditions"].get('target_name') == lyt_descriptor.get('name'):
+                    raise SuspiciousOperation(
+                        _("the descriptor cannot be removed, because it is involved in a condition"))
+
+    mdl_descriptor = Descriptor.objects.get(name=lyt_descriptor.get('name'))
+    if mdl_descriptor.has_records(layout):
+        raise SuspiciousOperation(_("Only unused descriptors can be removed, this descriptor has some records"))
+
+    panel.get('descriptors').remove(lyt_descriptor)
     layout.save()
 
     return HttpResponseRest(request, {})
