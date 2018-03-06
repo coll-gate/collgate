@@ -431,12 +431,15 @@ def search_descriptor(request):
 def delete_descriptor(request, des_id):
     descriptor = get_object_or_404(Descriptor, id=int(des_id))
 
-    # todo: Check if the descriptor has values and it's used
-    # if descriptor.has_values():
-    #     raise SuspiciousOperation(_("Only an empty values of descriptor can be deleted"))
-    #
-    # if descriptor.in_usage():
-    #     raise SuspiciousOperation(_("Only unused types of descriptor can be deleted"))
+    if not descriptor.can_delete:
+        raise SuspiciousOperation(_("It is not permit to delete this descriptor"))
+
+    if descriptor.in_usage():
+        raise SuspiciousOperation(
+            _("Only unused descriptor can be deleted, the descriptor is use in one or more layout"))
+
+    if descriptor.has_records():
+        raise SuspiciousOperation(_("Only unused descriptor can be deleted, the descriptor has some records"))
 
     descriptor.delete()
 
@@ -545,9 +548,11 @@ def update_descriptor(request, des_id):
     if not descriptor.can_modify:
         raise SuspiciousOperation(_("It is not permit to modify this descriptor"))
 
-    # @todo check if there is some values and used descriptor... inconsistency of the describables in DB
-    # may we test if the descriptor type is mapped into descriptor layout, and if these descriptor layout
-    # have data ?
+    # if descriptor.in_usage():
+    #     raise SuspiciousOperation(_("Only unused types of descriptor can be modified"))
+
+    if descriptor.has_records():
+        raise SuspiciousOperation(_("Only unused descriptor can be modified, the descriptor has some records"))
 
     # format validation
     DescriptorFormatTypeManager.check(format_type)
