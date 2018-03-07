@@ -536,8 +536,6 @@ def remove_panel_for_layout(request, layout_id, pan_id):
     layout = get_object_or_404(Layout, id=int(layout_id))
     panel_list = layout.layout_content.get('panels')
 
-    # todo: check if descriptors in the panel are used in external panel conditions
-
     panel = panel_list[int(pan_id)]
 
     for lyt_descriptor in panel.get('descriptors'):
@@ -549,7 +547,7 @@ def remove_panel_for_layout(request, layout_id, pan_id):
                 if d.get('conditions'):
                     if d["conditions"].get('target_name') == lyt_descriptor.get('name'):
                         raise SuspiciousOperation(
-                            _("the descriptor cannot be removed, because it is involved in a condition"))
+                            _("this panel cannot be removed, because some descriptors are involved in conditions"))
 
         mdl_descriptor = Descriptor.objects.get(name=lyt_descriptor.get('name'))
         if mdl_descriptor.has_records(layout):
