@@ -82,7 +82,14 @@ Format.ActionStepProcessView = Marionette.View.extend({
 
     onGetAccessionList: function () {
         let type = this.ui.accession_list.val();
-        alert(type);
+
+        if (type === 'original-csv') {
+            // @todo
+        } else if (type === 'original-xlsx') {
+            // @todo
+        } else if (type === 'original-panel') {
+            // @todo
+        }
     },
 
     onAccessionUpload: function () {
@@ -95,7 +102,6 @@ Format.ActionStepProcessView = Marionette.View.extend({
 
         let formData = new FormData();
         formData.append('file', file);
-        formData.append('format', 'csv');   // @todo
         formData.append('target', target);
 
         $.ajax({
@@ -128,7 +134,7 @@ Format.ActionStepProcessView = Marionette.View.extend({
         }).done(function (data) {
             self.ui.accession_upload.prop('disabled', false);
 
-            // self..... // @todo
+            $.alert.success(_t("Successfully uploaded !"));
         }).fail(function () {
             $.alert.error(_t("Error during file upload"));
             self.ui.accession_upload.prop('disabled', false);
