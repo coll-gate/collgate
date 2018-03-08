@@ -348,3 +348,72 @@ class ActionController(object):
                         entity_id=e_id,
                         entity_type_id=content_type_id,
                     ))
+
+    def has_step_data(self, step_index):
+        """
+        Has data for a particular step index.
+        """
+        action_steps = self.action.data.get('steps')
+        if not action_steps:
+            raise ActionError("Empty action steps")
+
+        action_steps = self.action.data['steps']
+
+        if step_index >= len(action_steps):
+            raise ActionError("Action step index out of range")
+
+        action_step = action_steps[step_index]
+
+        # # check step state
+        action_step_state = action_step.get('state', ActionController.STEP_INIT)
+        if action_step_state == ActionController.STEP_INIT:
+            return False
+
+        return action_step.get('data') is not None
+
+    def get_step_data(self, step_index):
+        """
+        Get the data for a particular step index.
+        """
+        action_steps = self.action.data.get('steps')
+        if not action_steps:
+            raise ActionError("Empty action steps")
+
+        action_steps = self.action.data['steps']
+
+        if step_index >= len(action_steps):
+            raise ActionError("Action step index out of range")
+
+        # # check step state
+        # action_step_state = action_step.get('state', ActionController.STEP_INIT)
+        # if action_step_state != ActionController.STEP_DONE:
+        #     raise ActionError("Current action step state must be done")
+
+        action_step = action_steps[step_index]
+        return action_step.get('data')
+
+    def get_step_data_format(self, step_index):
+        """
+        Get the columns format for the data of a particular step index.
+        """
+        action_steps = self.action.data.get('steps')
+        if not action_steps:
+            raise ActionError("Empty action steps")
+
+        action_steps = self.action.data['steps']
+
+        if step_index >= len(action_steps):
+            raise ActionError("Action step index out of range")
+
+        # # check step state
+        # action_step_state = action_step.get('state', ActionController.STEP_INIT)
+        # if action_step_state != ActionController.STEP_DONE:
+        #     raise ActionError("Current action step state must be done")
+
+        # step format
+        action_type_steps = self.action_type.format['steps']
+
+        step_format = action_type_steps[step_index]
+        action_step_format = ActionStepFormatManager.get(step_format['type'])
+
+        return action_step_format.data_format

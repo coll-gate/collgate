@@ -328,7 +328,7 @@ class ActionStepAccessionRefinement(ActionStepFormat):
         self.data_format = (ActionStepFormat.IO_ACCESSION_ID,)
         self.accept_user_data = True
 
-    def validate(self, action_type_format, data):
+    def validate(self, action_type_format, data, columns):
         return None
 
     def check(self, action_controller, action_type_format):

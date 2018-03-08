@@ -136,7 +136,7 @@ let Layout = LayoutView.extend({
             region.$el.prepend(descr);
 
             let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: stepData.type});
-            this.$el.find('div[panel-id=' + stepIndex + ']').find('span[name=step-label]').text(stepFormat.get('label'));
+            this.$el.find('div[panel-id=' + stepIndex + ']').find('span[name=step-label]').text((stepIndex+1) + " - " + stepFormat.get('label'));
         }
     },
 

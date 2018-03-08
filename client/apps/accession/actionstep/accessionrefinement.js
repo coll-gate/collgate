@@ -84,12 +84,29 @@ Format.ActionStepProcessView = Marionette.View.extend({
         let type = this.ui.accession_list.val();
 
         if (type === 'original-csv') {
-            // @todo
+            // download the document as csv
+            let form = $('<form></form>');
+
+            form.append('<input type="number" name="step_index" value="' + (this.getOption("stepIndex")-1) + '">');
+            form.append('<input type="text" name="format" value="csv">');
+
+            form.attr('action', window.application.url(['accession', 'action', this.model.get('id'), 'download']))
+                .appendTo('body').submit().remove();
         } else if (type === 'original-xlsx') {
-            // @todo
+            // download the document as xlsx
+            let form = $('<form></form>');
+
+            form.append('<input type="number" name="step_index" value="' + this.getOption("stepIndex") + '">');
+            form.append('<input type="text" name="format" value="xlsx">');
+
+            form.attr('action', window.application.url(['accession', 'action', this.model.get('id'), 'download']))
+                .appendTo('body').submit().remove();
         } else if (type === 'original-panel') {
-            // @todo
+            // @todo a dialog to name the panel
+            alert("todo");
         }
+
+        this.ui.accession_list.val("").selectpicker('refresh');
     },
 
     onAccessionUpload: function () {

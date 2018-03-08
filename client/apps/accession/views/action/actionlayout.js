@@ -270,7 +270,7 @@ let Layout = LayoutView.extend({
             let currentStepFormat = data.format.steps[i];
             if (currentStepFormat !== null) {
                 let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: currentStepFormat.type});
-                title.text(stepFormat.get('label'));
+                title.text((i+1) + " - " + stepFormat.get('label') + (i === currentStepIndex ? " (" + _t("current") + ")" : ""));
             }
         }
 

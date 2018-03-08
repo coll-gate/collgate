@@ -13,10 +13,12 @@ import json
 import mimetypes
 
 from django.core.exceptions import SuspiciousOperation
+from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from accession.actions.actioncontroller import ActionController
+from accession.actions.actiondataexporter import ActionDataExporter
 from accession.actions.actionstepformat import ActionStepFormatManager
 from accession.actions.actiondataparser import ActionDataParser
 from accession.base import RestAccession
@@ -61,6 +63,11 @@ class RestActionEntityIdCount(RestActionEntityId):
 class RestActionIdUpload(RestActionId):
     regex = r'^upload/$'
     suffix = 'upload'
+
+
+class RestActionIdDownload(RestActionId):
+    regex = r'^download/$'
+    suffix = 'download'
 
 
 @RestAction.def_auth_request(
@@ -384,6 +391,46 @@ def upload_action_id_content(request, act_id):
     }
 
     return HttpResponseRest(request, result)
+
+
+@RestActionIdDownload.def_auth_request(Method.GET, Format.ANY, parameters=('step_index', 'format'), perms={
+    'accession.get_action': _("You are not allowed to get an action")
+})
+def download_action_id_content(request, act_id):
+    action = get_object_or_404(Action, pk=int(act_id))
+    step_index = int_arg(request.GET['step_index'])
+    file_format = request.GET['format']
+
+    # decode according mime type CSV or XLSX
+    action_controller = ActionController(action)
+
+    exporter = ActionDataExporter(action_controller, step_index)
+
+    if not action_controller.is_current_step_valid:
+        raise SuspiciousOperation(_("The step index is not valid"))
+
+    if not action_controller.has_step_data(step_index):
+        raise SuspiciousOperation(_("The step index has no data"))
+
+    if file_format == 'csv':
+        mime_type = 'text/csv'
+        file_ext = ".csv"
+        data = exporter.export_data_as_csv()
+    elif file_format == 'xlsx':
+        mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        file_ext = ".xlsx"
+        data = exporter.export_data_as_xslx()
+    else:
+        raise SuspiciousOperation("Invalid format")
+
+    # @todo what to do on file name ?
+    file_name = "action_data" + file_ext
+
+    response = StreamingHttpResponse(data, content_type=mime_type)
+    response['Content-Disposition'] = 'attachment; filename="' + file_name + '"'
+    response['Content-Length'] = exporter.size
+
+    return response
 
 
 @RestActionEntityId.def_auth_request(Method.GET, Format.JSON, perms={
