@@ -114,10 +114,16 @@ let Layout = LayoutView.extend({
         region.$el.empty();
 
         let Element = window.application.accession.actions.getElement(stepFormat.id);
-        if (Element && Element.ActionStepProcessView) {
+        if (Element && Element.ActionStepReadView && readOnly) {
+            this.showChildView('step' + stepIndex, new Element.ActionStepReadView({
+                model: this.model,
+                namingOptions: this.namingOptions,
+                namingFormat: this.namingFormat,
+                stepIndex: stepIndex
+            }));
+        } else if (Element && Element.ActionStepProcessView && !readOnly) {
             this.showChildView('step' + stepIndex, new Element.ActionStepProcessView({
                 model: this.model,
-                readonly: readOnly,
                 namingOptions: this.namingOptions,
                 namingFormat: this.namingFormat,
                 stepIndex: stepIndex

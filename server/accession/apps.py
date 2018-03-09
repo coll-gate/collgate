@@ -182,6 +182,21 @@ class CollGateAccession(ApplicationMain):
 
     def post_ready(self):
         from accession import localsettings
+
+        localsettings.max_file_size = self.get_setting('max_file_size')
+
+        if not isinstance(localsettings.max_file_size, int):
+            configuration.wrong("accession", "Accession action upload data max file size", "Max file size must be an integer.")
+
+        if localsettings.max_file_size <= 1024:
+            configuration.wrong("accession",
+                                "Accession action upload data max file size",
+                                "Max file size must be greater than 1024 bytes.")
+        else:
+            configuration.validate("accession",
+                                   "Accession action upload data max file size",
+                                   "Max file size is %i bytes." % localsettings.max_file_size)
+
         from main.models import EntitySynonymType
         if self.is_table_exists(EntitySynonymType):
             builtins_types = ["accession_name",

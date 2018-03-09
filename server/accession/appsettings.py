@@ -11,7 +11,8 @@
 # Default settings of the application
 APP_DB_DEFAULT_SETTINGS = {
     "accession_naming": "{SEQ.6}",
-    "batch_naming": "{VAR.ACCESSION_CODE}-{CONST}-{YEAR}-{HASH.3}"
+    "batch_naming": "{VAR.ACCESSION_CODE}-{CONST}-{YEAR}-{HASH.3}",
+    'max_file_size': 16*1024*1024  # 16Mio
 }
 
 APP_VERBOSE_NAME = "Coll-Gate :: Accession"

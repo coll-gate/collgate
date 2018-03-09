@@ -17,6 +17,7 @@ from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from accession import localsettings
 from accession.actions.actioncontroller import ActionController
 from accession.actions.actiondataexporter import ActionDataExporter
 from accession.actions.actionstepformat import ActionStepFormatManager
@@ -28,6 +29,12 @@ from accession.models import Action, Accession, ActionType, Batch, ActionToEntit
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Method, Format
 from igdectk.rest.response import HttpResponseRest
+
+ALLOWED_MIMES = (
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'text/csv',
+    'text/plain'
+)
 
 
 class RestAction(RestAccession):
@@ -332,23 +339,13 @@ def upload_action_id_content(request, act_id):
     target = request.POST.get('target')
 
     # check file size
-    # @todo on conf
-    LIMIT = 1024*1024*1024
+    if up.size > localsettings.max_file_size:
+        SuspiciousOperation(_("Upload file size limit is set to %i bytes") % localsettings.max_file_size)
 
-    if up.size > LIMIT:  # localsettings.max_file_size:
-        SuspiciousOperation(_("Upload file size limit is set to %i bytes") % LIMIT)  # localsettings.max_file_size)
-
-    # simple check mime-types using the file extension (can process a test using libmagic)
+    # simple check mime-types using the file extension
     mime_type = mimetypes.guess_type(up.name)[0]
     if mime_type is None:
         SuspiciousOperation(_("Undetermined uploaded file type"))
-
-    # @todo on conf
-    ALLOWED_MIMES = (
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/csv',
-        'text/plain'
-    )
 
     if mime_type not in ALLOWED_MIMES:
         raise SuspiciousOperation(_("Unsupported file format"))
@@ -423,7 +420,6 @@ def download_action_id_content(request, act_id):
     else:
         raise SuspiciousOperation("Invalid format")
 
-    # @todo what to do on file name ?
     file_name = "Action%sDataStep%i" % (act_id, step_index+1,) + file_ext
 
     response = StreamingHttpResponse(data, content_type=mime_type)

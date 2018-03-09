@@ -25,7 +25,7 @@ _.extend(Format.prototype, ActionStepFormat.prototype, {
     }
 });
 
-Format.ActionStepProcessView = Marionette.View.extend({
+Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     className: 'action-step-process',
     template: require('../templates/actionstep/accessionrefinementprocess.html'),
 
@@ -48,20 +48,12 @@ Format.ActionStepProcessView = Marionette.View.extend({
     },
 
     onRender: function () {
-        if (this.getOption('readonly')) {
-
-        } else {
-            this.ui.panel_group.css('display', 'none');
-            this.ui.accession_list.selectpicker({});
-        }
+        this.ui.panel_group.css('display', 'none');
+        this.ui.accession_list.selectpicker({});
     },
 
     onBeforeDestroy: function () {
-        if (this.getOption('readonly')) {
-
-        } else {
-            this.ui.accession_list.selectpicker('destroy');
-        }
+        this.ui.accession_list.selectpicker('destroy');
     },
 
     exportInput: function () {
@@ -83,24 +75,11 @@ Format.ActionStepProcessView = Marionette.View.extend({
     onGetAccessionList: function () {
         let type = this.ui.accession_list.val();
 
+        // get accession list from the previous step
         if (type === 'original-csv') {
-            // download the document as csv
-            let form = $('<form></form>');
-
-            form.append('<input type="number" name="step_index" value="' + (this.getOption("stepIndex")-1) + '">');
-            form.append('<input type="text" name="format" value="csv">');
-
-            form.attr('action', window.application.url(['accession', 'action', this.model.get('id'), 'download']))
-                .appendTo('body').submit().remove();
+            this.downloadData('csv', this.getOption("stepIndex")-1);
         } else if (type === 'original-xlsx') {
-            // download the document as xlsx
-            let form = $('<form></form>');
-
-            form.append('<input type="number" name="step_index" value="' + (this.getOption("stepIndex")-1) + '">');
-            form.append('<input type="text" name="format" value="xlsx">');
-
-            form.attr('action', window.application.url(['accession', 'action', this.model.get('id'), 'download']))
-                .appendTo('body').submit().remove();
+            this.downloadData('xlsx', this.getOption("stepIndex")-1);
         } else if (type === 'original-panel') {
             // @todo a dialog to name the panel
             alert("todo");
@@ -159,7 +138,7 @@ Format.ActionStepProcessView = Marionette.View.extend({
     }
 });
 
-Format.ActionStepFormatDetailsView = Marionette.View.extend({
+Format.ActionStepFormatDetailsView = ActionStepFormat.ActionStepFormatDetailsView.extend({
     className: 'action-step-format-details',
     template: require('../templates/actionstep/accessionrefinement.html'),
 

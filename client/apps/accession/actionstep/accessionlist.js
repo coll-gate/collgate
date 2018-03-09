@@ -25,7 +25,7 @@ _.extend(AccessionList.prototype, ActionStepFormat.prototype, {
     }
 });
 
-AccessionList.ActionStepProcessView = Marionette.View.extend({
+AccessionList.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     className: 'action-step-process',
     template: require('../templates/actionstep/accessionlistprocess.html'),
 
@@ -218,7 +218,10 @@ AccessionList.ActionStepProcessView = Marionette.View.extend({
     }
 });
 
-AccessionList.ActionStepFormatDetailsView = Marionette.View.extend({
+AccessionList.ActionStepReadView = ActionStepFormat.ActionStepReadView.extend({
+});
+
+AccessionList.ActionStepFormatDetailsView = ActionStepFormat.ActionStepFormatDetailsView.extend({
     className: 'action-step-format-details',
     template: require('../templates/actionstep/accessionlist.html'),
 
