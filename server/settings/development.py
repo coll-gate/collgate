@@ -33,7 +33,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '147.99.146.242']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '147.99.146.242', '10.0.2.2']
 INTERNAL_IPS = ['localhost', '127.0.0.1']
 
 # session cookie path
@@ -166,7 +166,8 @@ EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = "Coll-Gate IS"
 
 WEBPACK = {
-    'host': 'http://127.0.0.1:8080',
+    'host': '%hostname%',  # 'http://127.0.0.1',
+    'port': '8080',
     'entry': '/build/app.js'
 }
 

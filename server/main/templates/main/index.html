@@ -238,12 +238,7 @@ initIndex();
 </script>
 
 <script language="javascript">
-    $(function() {
-        // avoid FancyTree error message on console (opening an empty node, or with invisible nodes as first)
-        // $(document).on("error", function() {
-        //    // nothing
-        // });
-
+    function applicationLoaded() {  // $(function() {
         //
         // multi languages support
         //
@@ -413,7 +408,7 @@ initIndex();
                 window.application.updateUserSetting('ui', ui, window.application.UI_SETTING_VERSION);
             }
         });
-    });
+    }
 </script>
 
 {% bootstrap igdectk.alert_js %}
@@ -432,11 +427,23 @@ initIndex();
 <!-- include application core -->
 {% collgate "development" as development %}
 
+<script language="javascript">
 {% if debug and development %}
-<script src='{% collgate "webpack_host" %}{% collgate "webpack_entry" %}'></script>
+    {% collgate "webpack_host" as WEBPACK_HOST %}
+    {% if WEBPACK_HOST == '%hostname%' %}
+        window.applicationUrl = "http://" + document.location.hostname + ":" + '{% collgate "webpack_port" %}' + '{% collgate "webpack_entry" %}';
+    {% else %}
+        window.applicationUrl = '{% collgate "webpack_host" %}:{% collgate "webpack_port" %}{% collgate "webpack_entry" %}';
+    {% endif %}
 {% else %}
-<script src="{% static 'main/js/app.min.js' %}"></script>
+    window.applicationUrl = {% static 'main/js/app.min.js' %}; {# <script src="{% static 'main/js/app.min.js' %}"></script> #}
 {% endif %}
+
+    // load application and setup
+    $.getScript(window.applicationUrl, function() {
+        applicationLoaded();
+    });
+</script>
 
 </body>
 </html>

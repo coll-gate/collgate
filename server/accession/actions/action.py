@@ -424,7 +424,7 @@ def download_action_id_content(request, act_id):
         raise SuspiciousOperation("Invalid format")
 
     # @todo what to do on file name ?
-    file_name = "action_data" + file_ext
+    file_name = "Action%sDataStep%i" % (act_id, step_index+1,) + file_ext
 
     response = StreamingHttpResponse(data, content_type=mime_type)
     response['Content-Disposition'] = 'attachment; filename="' + file_name + '"'

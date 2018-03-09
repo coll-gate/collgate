@@ -96,7 +96,7 @@ Format.ActionStepProcessView = Marionette.View.extend({
             // download the document as xlsx
             let form = $('<form></form>');
 
-            form.append('<input type="number" name="step_index" value="' + this.getOption("stepIndex") + '">');
+            form.append('<input type="number" name="step_index" value="' + (this.getOption("stepIndex")-1) + '">');
             form.append('<input type="text" name="format" value="xlsx">');
 
             form.attr('action', window.application.url(['accession', 'action', this.model.get('id'), 'download']))
