@@ -124,7 +124,7 @@ ActionStepFormat.ActionStepReadView = Marionette.View.extend({
     },
 
     onRender: function() {
-        this.ui.get_data.selectpicker('destroy');
+        this.ui.get_data.selectpicker({});
     },
 
 
