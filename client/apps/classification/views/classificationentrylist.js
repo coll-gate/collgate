@@ -21,13 +21,13 @@ let View = AdvancedTable.extend({
     userSettingName: 'classificationentry_list_columns', //function() {
         //return /*this.classification.get('name')*/'classificationentry' + '_classification_list_columns';
     //},
-    userSettingVersion: '1.0',
+    userSettingVersion: '2.1',
 
     defaultColumns: [
         {name: 'name', width: 'auto', sort_by: '+1'},
         {name: 'rank', width: 'auto', sort_by: '+0'},
         {name: 'parent', width: 'auto', sort_by: null},
-        {name: 'synonym', width: 'auto', sort_by: null}
+        // {name: 'synonym', width: 'auto', sort_by: null}
     ],
 
     columnsOptions: {
@@ -47,13 +47,13 @@ let View = AdvancedTable.extend({
             custom: 'parentCell',
             field: 'name'
         },
-        'synonym': {
-            label: _t('Synonym'),
-            width: 'auto',
-            minWidth: true,
-            custom: 'synonymCell',
-            field: 'name'
-        }
+        // 'synonym': {
+        //     label: _t('Synonym'),
+        //     width: 'auto',
+        //     minWidth: true,
+        //     custom: 'synonymCell',
+        //     field: 'name'
+        // }
     },
 
     templateContext: function () {

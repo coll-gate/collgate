@@ -21,7 +21,7 @@ from classification import localsettings
 from descriptor.models import Layout
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
-from main.models import Entity, EntitySynonym
+from main.models import Entity, EntitySynonym, EntitySynonymType, ContentType
 
 
 class BotanicalRank(ChoiceEnum):
@@ -275,7 +275,8 @@ class ClassificationEntry(Entity):
 
     @classmethod
     def get_defaults_columns(cls):
-        return {
+
+        columns = {
             'name': {
                 'label': _('Name'),
                 'query': False,
@@ -316,16 +317,32 @@ class ClassificationEntry(Entity):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
-            'synonym': {
-                'label': _('Synonym'),
-                'field': 'name',
-                'query': False,   # done by a prefetch related
-                'format': {
-                    'type': 'synonym',
-                    'model': 'classification.classificationsynonym'
-                }
-            },
+            # 'synonym': {
+            #     'label': _('Synonym'),
+            #     'field': 'name',
+            #     'query': False,   # done by a prefetch related
+            #     'format': {
+            #         'type': 'synonym',
+            #         'model': 'classification.classificationsynonym'
+            #     }
+            # },
         }
+
+        synonym_types = EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(ClassificationEntry))
+
+        for synonym_type in synonym_types:
+            columns['&' + synonym_type.name] = {
+                'label': synonym_type.get_label(),
+                'field': 'synonym',
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'classification.classificationentrysynonym',
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            }
+
+        return columns
 
     class Meta:
         verbose_name = _("classification entry")

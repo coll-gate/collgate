@@ -22,7 +22,7 @@ from classification.models import ClassificationEntry
 from descriptor.models import DescribableEntity
 from descriptor.models import Layout
 from igdectk.common.models import ChoiceEnum, IntegerChoice
-from main.models import Entity, EntitySynonym, EntityStatus, ContentType, uuid
+from main.models import Entity, EntitySynonym, EntityStatus, ContentType, uuid, EntitySynonymType
 
 
 class AccessionClassificationEntry(models.Model):
@@ -76,7 +76,7 @@ class Accession(DescribableEntity):
 
     @classmethod
     def get_defaults_columns(cls):
-        return {
+        columns = {
             'primary_classification_entry': {
                 'label': _('Classification'),
                 'field': 'name',
@@ -98,16 +98,16 @@ class Accession(DescribableEntity):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
-            'synonym': {
-                'label': _('Synonym'),
-                'field': 'name',
-                'query': False,  # done by a prefetch related
-                'format': {
-                    'type': 'string',
-                    'model': 'accession.accessionsynonym'
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            },
+            # 'synonym': {
+            #     'label': _('Synonym'),
+            #     'field': 'name',
+            #     'query': False,  # done by a prefetch related
+            #     'format': {
+            #         'type': 'string',
+            #         'model': 'accession.accessionsynonym'
+            #     },
+            #     'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            # },
             'name': {
                 'label': _('Name'),
                 'query': False,  # done by a prefetch related
@@ -145,6 +145,23 @@ class Accession(DescribableEntity):
                 'search_display': True
             }
         }
+
+        synonym_types = EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession))
+
+        for synonym_type in synonym_types:
+            columns['&' + synonym_type.name] = {
+                'label': synonym_type.get_label(),
+                'field': 'synonym',
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.accessionsynonym',
+                    # 'synonym_type': synonym_type.id
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            }
+
+        return columns
 
     class Meta:
         verbose_name = _("accession")

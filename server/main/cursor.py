@@ -44,9 +44,10 @@ class CursorField(object):
     FIELD_TYPE_COUNT = 2
     FIELD_TYPE_LABEL = 3
     FIELD_TYPE_FORMAT = 4
+    FIELD_TYPE_SYNONYM = 5
 
     def __init__(self, field, index, cursor_query):
-        self._name = field.lstrip('+-#@$')
+        self._name = field.lstrip('+-#@$&')
         self._index = index
 
         if field[0] == '#' or field[1] == '#':
@@ -55,6 +56,8 @@ class CursorField(object):
             self._type = CursorField.FIELD_TYPE_LABEL
         elif field[0] == '$' or field[1] == '$':
             self._type = CursorField.FIELD_TYPE_FORMAT
+        elif field[0] == '&' or field[1] == '&':
+            self._type = CursorField.FIELD_TYPE_SYNONYM
         elif self.name in cursor_query.count_fields():
             self._type = CursorField.FIELD_TYPE_COUNT
         else:
@@ -70,6 +73,10 @@ class CursorField(object):
     @property
     def index(self):
         return self._index
+
+    @property
+    def is_synonym(self):
+        return self._type == CursorField.FIELD_TYPE_SYNONYM
 
     @property
     def is_descriptor(self):
@@ -156,6 +163,10 @@ class CursorQuery(object):
 
     def __init__(self, model, db='default'):
         self._model = model
+
+        self._synonym_model = None
+        self._synonym_table_aliases = {}
+
         self._query_set = None
         self._order_by = ('id',)
         self._cursor = None
@@ -522,7 +533,7 @@ class CursorQuery(object):
                     cast_type = description['handler'].data
                 elif cf.is_count:
                     cast_type = 'INTEGER'
-                elif cf.is_label:
+                elif cf.is_label or cf.is_synonym:
                     cast_type = "TEXT"
                 else:
                     cast_type = self.model_fields[cf.name][1]
@@ -667,6 +678,7 @@ class CursorQuery(object):
                     # only if sub-value of descriptor
                     if self.FIELDS_SEP in cf.name:
                         select_related.append('#' + cf.name)
+
                 elif cf.name in self.model_fields:
                     if self.model_fields[cf.name][0] == 'FK':
                         if self.FIELDS_SEP in cf.name:
@@ -813,6 +825,18 @@ class CursorQuery(object):
                         lqs.append(self._cast_default_type(db_table, cf.name, op, self._convert_value(value, cmp), lang))
                     elif cf.is_format:
                         pass
+                    elif cf.is_synonym:
+
+                        if not self._synonym_model:
+                            raise CursorQueryError('Synonym model is not define, use CursorQuery.select_synonym() method')
+                        else:
+                            self.join_synonym(cf.name)
+
+                            alias = self._synonym_table_aliases[cf.name]
+
+                            op = self.OPERATORS_MAP.get(cmp)
+                            lqs.append('"%s"."%s" %s %s' % (alias, 'name', op, self._make_value(self._convert_value(value, cmp), ['TEXT', 'TEXT'])))
+
                     else:
                         field_model = self.model_fields[cf.name]
                         op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(
@@ -1014,6 +1038,26 @@ class CursorQuery(object):
         self.query_from.append(_from)
         return self
 
+    def join_synonym(self, synonym_type_name):
+        db_table = self._model._meta.db_table
+        synonym_db_table = self._synonym_model._meta.db_table
+        alias = synonym_type_name + "_" + synonym_db_table
+
+        from main.models import EntitySynonymType
+        synonym_type = EntitySynonymType.objects.get(name=synonym_type_name)
+
+        self._synonym_table_aliases[synonym_type_name] = alias
+
+        on_clause = [
+            '"%s"."id" = "%s"."entity_id"' % (db_table, alias),
+            '"%s"."synonym_type_id" = %d' % (alias, synonym_type.id)
+        ]
+        _from = 'LEFT JOIN "%s" AS "%s" ON (%s)' % (synonym_db_table, alias, " AND ".join(on_clause))
+
+        self.query_from.append(_from)
+
+        return self
+
     def join(self, related_field, fields=None):
         if related_field.startswith('#'):
             descriptor = related_field.lstrip('#')
@@ -1187,6 +1231,25 @@ class CursorQuery(object):
             self.add_select_related(fields)
         else:
             self._select_related = True
+        return self
+
+    def select_synonym(self, synonym_model):
+        """
+        Make left join to the synonym model of the entity.
+
+        :param fields:
+        :return: self
+        """
+
+        if self._query_set is not None:
+            raise CursorQueryError("Cannot call select_related() after iterate over results")
+
+        if self._synonym_model is not None:
+            raise CursorQueryError("Cannot call select_synonym() one more time")
+
+        if issubclass(synonym_model, models.Model):
+            self._synonym_model = synonym_model
+
         return self
 
     def prefetch_related(self, prefetch):

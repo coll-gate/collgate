@@ -25,7 +25,7 @@ from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cursor import CursorQuery
-from main.models import Language
+from main.models import Language, EntitySynonymType
 from .base import RestClassification
 from .controller import ClassificationEntryManager
 from .models import ClassificationEntry
@@ -171,11 +171,29 @@ def get_classification_entry_list(request):
 
     cq = CursorQuery(ClassificationEntry)
 
-    if request.GET.get('filters'):
-        cq.filter(json.loads(request.GET['filters']))
-
     if request.GET.get('search'):
-        cq.filter(json.loads(request.GET['search']))
+        search = json.loads(request.GET['search'])
+        for criteria in search:
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
+                    target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name',
+                                                                                                     flat=True).distinct():
+                cq.select_synonym(ClassificationEntrySynonym)
+                break
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        for criteria in filters:
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name', flat=True).distinct():
+                cq.select_synonym(ClassificationEntrySynonym)
+                break
+        cq.filter(filters)
+
+    # if request.GET.get('filters'):
+    #     cq.filter(json.loads(request.GET['filters']))
+
+    # if request.GET.get('search'):
+    #     cq.filter(json.loads(request.GET['search']))
 
     cq.prefetch_related(Prefetch(
             "synonyms",
@@ -198,7 +216,7 @@ def get_classification_entry_list(request):
             'descriptors': classification_entry.descriptors,
             'parent_list': classification_entry.parent_list,
             # 'parent_details': None,
-            'synonyms': []
+            'synonyms': {}
         }
 
         # if classification_entry.parent:
@@ -209,12 +227,13 @@ def get_classification_entry_list(request):
         #     }
 
         for synonym in classification_entry.synonyms.all():
-            c['synonyms'].append({
+            synonym_type = EntitySynonymType.objects.get(id=synonym.synonym_type_id)
+            c['synonyms'][synonym_type.name] = {
                 'id': synonym.id,
                 'name': synonym.name,
                 'synonym_type': synonym.synonym_type_id,
                 'language': synonym.language
-            })
+            }
 
         classification_entry_items.append(c)
 
@@ -236,11 +255,21 @@ def get_classification_list_count(request):
     from main.cursor import CursorQuery
     cq = CursorQuery(ClassificationEntry)
 
-    if request.GET.get('filters'):
-        cq.filter(json.loads(request.GET['filters']))
-
     if request.GET.get('search'):
-        cq.filter(json.loads(request.GET['search']))
+        search = json.loads(request.GET['search'])
+        for criteria in search:
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name', flat=True).distinct():
+                cq.select_synonym(ClassificationEntrySynonym)
+                break
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        for criteria in filters:
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name', flat=True).distinct():
+                cq.select_synonym(ClassificationEntrySynonym)
+                break
+        cq.filter(filters)
 
     count = cq.count()
 
@@ -772,6 +801,12 @@ def get_classification_id_entry_list(request, cls_id):
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
+        for criteria in filters:
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
+                    target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name',
+                                                                                                     flat=True).distinct():
+                cq.select_synonym(ClassificationEntrySynonym)
+                break
         cq.filter(filters)
 
     cq.prefetch_related(Prefetch(
@@ -796,7 +831,7 @@ def get_classification_id_entry_list(request, cls_id):
             'descriptors': classification_entry.descriptors,
             'parent_list': classification_entry.parent_list,
             # 'parent_details': None,
-            'synonyms': []
+            'synonyms': {}
         }
 
         # if classification_entry.parent:
@@ -807,12 +842,13 @@ def get_classification_id_entry_list(request, cls_id):
         #     }
 
         for synonym in classification_entry.synonyms.all():
-            c['synonyms'].append({
+            synonym_type = EntitySynonymType.objects.get(id=synonym.synonym_type_id)
+            c['synonyms'][synonym_type.name] = {
                 'id': synonym.id,
                 'name': synonym.name,
                 'synonym_type': synonym.synonym_type_id,
                 'language': synonym.language
-            })
+            }
 
         classification_entry_items.append(c)
 
@@ -838,6 +874,12 @@ def get_classification_id_list_count(request, cls_id):
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
+        for criteria in filters:
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
+                    target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name',
+                                                                                                     flat=True).distinct():
+                cq.select_synonym(ClassificationEntrySynonym)
+                break
         cq.filter(filters)
 
     cq.select_related('rank->classification')

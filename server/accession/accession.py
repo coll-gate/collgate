@@ -24,7 +24,7 @@ from descriptor.describable import DescriptorsBuilder
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from main.models import Language
+from main.models import Language, EntitySynonymType
 from permission.utils import get_permissions_for
 from classification.models import ClassificationEntry
 
@@ -198,11 +198,23 @@ def get_accession_list_count(request):
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
                 break
-
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
+                    target_model=ContentType.objects.get_for_model(Accession)).values_list('name',
+                                                                                           flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
+        for criteria in filters:
+            if 'field' in criteria and criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
+                cq = CursorQuery(AccessionView)
+                break
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
         cq.filter(filters)
 
     count = cq.count()
@@ -239,16 +251,26 @@ def get_accession_list(request):
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
                 break
-
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name',flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
+        for criteria in filters:
+            if 'field' in criteria and criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
+                cq = CursorQuery(AccessionView)
+                break
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
         cq.filter(filters)
 
-    # cq.prefetch_related(Prefetch(
-    #     "synonyms",
-    #     queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language')))
+    cq.prefetch_related(Prefetch(
+        "synonyms",
+        queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language')))
 
     cq.select_related('primary_classification_entry->name', 'primary_classification_entry->rank')
     # cq.select_related('#test_accession->code')
@@ -266,7 +288,7 @@ def get_accession_list(request):
             'primary_classification_entry': accession.primary_classification_entry_id,
             'layout': accession.layout_id,
             'descriptors': accession.descriptors,
-            'synonyms': [],
+            'synonyms': {},
             'primary_classification_entry_details': {
                 'id': accession.primary_classification_entry.id,
                 'name': accession.primary_classification_entry.name,
@@ -274,13 +296,14 @@ def get_accession_list(request):
             }
         }
 
-        # for synonym in accession.synonyms.all():
-        #     a['synonyms'].append({
-        #         'id': synonym.id,
-        #         'name': synonym.name,
-        #         'synonym_type': synonym.synonym_type_id,
-        #         'language': synonym.language
-        #     })
+        for synonym in accession.synonyms.all():
+            synonym_type = EntitySynonymType.objects.get(id=synonym.synonym_type_id)
+            a['synonyms'][synonym_type.name] = {
+                'id': synonym.id,
+                'name': synonym.name,
+                'synonym_type': synonym.synonym_type_id,
+                'language': synonym.language
+            }
 
         accession_items.append(a)
 
