@@ -20,6 +20,7 @@ from django.db import transaction, IntegrityError
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from main.models import EntitySynonymType
 from .models import AccessionPanel, Accession, AccessionSynonym, AccessionView
 from .base import RestAccession
 from .accession import RestAccessionId
@@ -196,9 +197,27 @@ def create_panel(request):
     cq = CursorQuery(Accession)
 
     if search:
+        for criteria in search:
+            if 'field' in criteria and criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
+                cq = CursorQuery(AccessionView)
+                break
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
+                    target_model=ContentType.objects.get_for_model(Accession)).values_list('name',
+                                                                                           flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
         cq.filter(search)
 
     if filters:
+        for criteria in filters:
+            if 'field' in criteria and criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
+                cq = CursorQuery(AccessionView)
+                break
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
         cq.filter(filters)
 
     if related_entity:
@@ -456,8 +475,31 @@ def get_panel_accession_list_count(request, panel_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
 
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+
+        for criteria in search:
+            if 'field' in criteria and criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
+                cq = CursorQuery(AccessionView)
+                break
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
+                    target_model=ContentType.objects.get_for_model(Accession)).values_list('name',
+                                                                                           flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
+        cq.filter(search)
+
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
+        for criteria in filters:
+            if 'field' in criteria and criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
+                cq = CursorQuery(AccessionView)
+                break
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
         cq.filter(filters)
 
     cq.inner_join(AccessionPanel, accessionpanel=int(panel_id))
@@ -497,10 +539,29 @@ def get_panel_accession_list(request, panel_id):
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
+
+        for criteria in search:
+            if 'field' in criteria and criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
+                cq = CursorQuery(AccessionView)
+                break
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
+                    target_model=ContentType.objects.get_for_model(Accession)).values_list('name',
+                                                                                           flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
+        for criteria in filters:
+            if 'field' in criteria and criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
+                cq = CursorQuery(AccessionView)
+                break
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
         cq.filter(filters)
 
     cq.prefetch_related(Prefetch(
@@ -523,7 +584,7 @@ def get_panel_accession_list(request, panel_id):
             'primary_classification_entry': accession.primary_classification_entry_id,
             'layout': accession.layout_id,
             'descriptors': accession.descriptors,
-            'synonyms': [],
+            'synonyms': {},
             'primary_classification_entry_details': {
                 'id': accession.primary_classification_entry.id,
                 'name': accession.primary_classification_entry.name,
@@ -532,12 +593,13 @@ def get_panel_accession_list(request, panel_id):
         }
 
         for synonym in accession.synonyms.all():
-            a['synonyms'].append({
+            synonym_type = EntitySynonymType.objects.get(id=synonym.synonym_type_id)
+            a['synonyms'][synonym_type.name] = {
                 'id': synonym.id,
                 'name': synonym.name,
                 'synonym_type': synonym.synonym_type_id,
                 'language': synonym.language
-            })
+            }
 
         accession_items.append(a)
 
@@ -601,11 +663,32 @@ def modify_panel_accessions(request, panel_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
 
-    if request.data['selection'].get('filters'):
-        cq.filter(request.data['selection'].get('filters'))
-
     if request.data['selection'].get('search'):
+        search = json.loads(request.GET['search'])
+
+        for criteria in search:
+            if 'field' in criteria and criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
+                cq = CursorQuery(AccessionView)
+                break
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
+                    target_model=ContentType.objects.get_for_model(Accession)).values_list('name',
+                                                                                           flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
         cq.filter(request.data['selection'].get('search'))
+
+    if request.data['selection'].get('filters'):
+        filters = json.loads(request.GET['filters'])
+        for criteria in filters:
+            if 'field' in criteria and criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
+                cq = CursorQuery(AccessionView)
+                break
+            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
+                cq.select_synonym(AccessionSynonym)
+                break
+        cq.filter(request.data['selection'].get('filters'))
 
     if request.data['selection'].get('from'):
         related_entity = request.data['selection']['from']

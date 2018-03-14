@@ -829,7 +829,7 @@ class CursorQuery(object):
 
                         if not self._synonym_model:
                             raise CursorQueryError('Synonym model is not define, use CursorQuery.select_synonym() method')
-                        else:
+                        elif cf.name not in self._synonym_table_aliases:
                             self.join_synonym(cf.name)
 
                             alias = self._synonym_table_aliases[cf.name]
