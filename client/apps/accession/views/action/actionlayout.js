@@ -114,10 +114,16 @@ let Layout = LayoutView.extend({
         region.$el.empty();
 
         let Element = window.application.accession.actions.getElement(stepFormat.id);
-        if (Element && Element.ActionStepProcessView) {
+        if (Element && Element.ActionStepReadView && readOnly) {
+            this.showChildView('step' + stepIndex, new Element.ActionStepReadView({
+                model: this.model,
+                namingOptions: this.namingOptions,
+                namingFormat: this.namingFormat,
+                stepIndex: stepIndex
+            }));
+        } else if (Element && Element.ActionStepProcessView && !readOnly) {
             this.showChildView('step' + stepIndex, new Element.ActionStepProcessView({
                 model: this.model,
-                readonly: readOnly,
                 namingOptions: this.namingOptions,
                 namingFormat: this.namingFormat,
                 stepIndex: stepIndex
@@ -224,12 +230,12 @@ let Layout = LayoutView.extend({
 
                     // collapse and style
                     let prev = self.ui.steps_group.find('div.panel[panel-id=' + self.currentStepIndex + ']').children('div.panel-heading');
-                    prev.removeClass('current').parent().collapse('hide');
+                    prev.removeClass('action-current').addClass('action-done').parent().collapse('hide');
 
                     ++self.currentStepIndex;
 
                     let next = self.ui.steps_group.find('div.panel[panel-id=' + self.currentStepIndex + ']').children('div.panel-heading');
-                    next.addClass('current').parent().collapse('show').collapse('show');
+                    next.removeClass('action-next').addClass('action-current').parent().collapse('show').collapse('show');
                 });
             }
         }
@@ -244,7 +250,11 @@ let Layout = LayoutView.extend({
 
             let heading = $('<div class="panel-heading" data-toggle="tooltip" data-placement="left" title="' + _t('Collapse/Expand') + '">');
             if (i === currentStepIndex) {
-                heading.addClass('current');
+                heading.addClass('action-current');
+            } else if (i < currentStepIndex) {
+                heading.addClass('action-done');
+            } else if (i > currentStepIndex) {
+                heading.addClass('action-next');
             }
             panel.append(heading);
 
@@ -270,7 +280,9 @@ let Layout = LayoutView.extend({
             let currentStepFormat = data.format.steps[i];
             if (currentStepFormat !== null) {
                 let stepFormat = window.application.accession.collections.actionStepFormats.findWhere({id: currentStepFormat.type});
-                title.text(stepFormat.get('label'));
+                let suffix = i === currentStepIndex ? _t("current") : i < currentStepIndex ? _t("done") : _t("to be done");
+
+                title.text((i+1) + " - " + stepFormat.get('label') + " (" + suffix + ")" );
             }
         }
 

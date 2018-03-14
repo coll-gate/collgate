@@ -57,17 +57,21 @@ class ActionStepFormat(object):
         # i18n verbose name displayable for the client
         self.verbose_name = ''
 
-        # supported input format
-        self.input_format = ()
+        # accepted data format
+        self.accept_format = ()
 
-        # generated output format
-        self.output_format = ()
+        # accept data from user
+        self.accept_user_data = False
 
-    def validate(self, action_type_format, value):
+        # supported data format
+        self.data_format = ()
+
+    def validate(self, action_type_format, data, columns):
         """
         Validate the value according the format.
         :param action_type_format: Format of the related action type
-        :param value: Value to validate
+        :param data: Value to validate
+        :param columns: Format of the colums of data
         :return: None if the validation is done, else a string with the error detail
         """
         return None
@@ -99,10 +103,10 @@ class ActionStepFormat(object):
 
         return constants
 
-    def inputs(self, action, default_inputs_array=None):
+    def data(self, action, default=None):
         """
-        Returns the outputs of the previous step to uses as input of the next or to correct.
-        :param default_inputs_array: Returned array in case of initial state (new action).
+        Returns the data array of the previous step to uses as input of the current.
+        :param default: Returned array in case of initial state (new action).
         :param action: Valid action instance.
         :return: Array of input corresponding to the previous step output or to the default input array
         when there is no previous step.
@@ -111,14 +115,14 @@ class ActionStepFormat(object):
         current_step_index = len(steps_data)
 
         if current_step_index == 0:
-            return default_inputs_array
+            return default
 
-        step_data = steps_data[current_step_index]
+        step_data = steps_data[current_step_index-1]
 
         if step_data is None:
             raise ActionError("Missing action step data")
 
-        return step_data
+        return step_data.get('data')
 
     def process(self, action, step_data, input_data):
         """
@@ -168,11 +172,12 @@ class ActionStepFormatManager(object):
         return step
 
     @classmethod
-    def validate(cls, action_step_name, value):
+    def validate(cls, action_step_name, data, columns):
         """
         Call the validate of the correct descriptor format type.
         :param action_step_name: Format of the type of action as python object
-        :param value: Value to validate
+        :param data: Value to validate
+        :param columns:
         :except ValueError with descriptor of the problem
         """
         step_format = action_step_name['type']
@@ -181,7 +186,7 @@ class ActionStepFormatManager(object):
         if act is None:
             raise ValueError("Unsupported format of action step %s" % step_format)
 
-        res = act.validate(step_format, value)
+        res = act.validate(step_format, data)
         if res is not None:
             raise ValueError(res)
 
@@ -228,8 +233,10 @@ class ActionStepAccessionConsumerBatchProducer(ActionStepFormat):
         self.group = ActionFormatStepGroupStandard()
         self.verbose_name = _("Accession Consumer - Batch Producer")
         self.format_fields = ["type"]
+        self.accept_format = (ActionStepFormat.IO_ACCESSION_ID,)
+        self.data_format = (ActionStepFormat.IO_BATCH_ID,)
 
-    def validate(self, action_type_format, value):
+    def validate(self, action_type_format, data, columns):
         return None
 
     def check(self, action_controller, action_type_format):
@@ -280,16 +287,10 @@ class ActionStepAccessionList(ActionStepFormat):
         self.name = "accession_list"
         self.group = ActionFormatStepGroupStandard()
         self.verbose_name = _("List of accessions")
-        self.input_format = (ActionStepFormat.IO_ACCESSION_ID,)
-        self.output_format = (ActionStepFormat.IO_ACCESSION_ID,)
+        self.data_format = (ActionStepFormat.IO_ACCESSION_ID,)
+        self.accept_user_data = True
 
-    def validate(self, action_type_format, value):
-        """
-        Validate the value according the format.
-        :param action_type_format: Format of the related action type
-        :param value: Value to validate
-        :return: None if the validation is done, else a string with the error detail
-        """
+    def validate(self, action_type_format, data, columns):
         return None
 
     def check(self, action_controller, action_type_format):
@@ -323,8 +324,11 @@ class ActionStepAccessionRefinement(ActionStepFormat):
         self.name = "accession_refinement"
         self.group = ActionFormatStepGroupStandard()
         self.verbose_name = _("Refine a list of accessions")
+        self.accept_format = (ActionStepFormat.IO_ACCESSION_ID,)
+        self.data_format = (ActionStepFormat.IO_ACCESSION_ID,)
+        self.accept_user_data = True
 
-    def validate(self, action_type_format, value):
+    def validate(self, action_type_format, data, columns):
         return None
 
     def check(self, action_controller, action_type_format):
@@ -350,8 +354,10 @@ class ActionStepBatchConsumerBatchProducer(ActionStepFormat):
         self.name = "batchconsumer_batchproducer"
         self.group = ActionFormatStepGroupStandard()
         self.verbose_name = _("Batch consumer - Batch producer")
+        self.accept_format = (ActionStepFormat.IO_BATCH_ID,)
+        self.data_format = (ActionStepFormat.IO_BATCH_ID,)
 
-    def validate(self, action_type_format, value):
+    def validate(self, action_type_format, data, columns):
         return None
 
     def check(self, action_controller, action_type_format):
@@ -397,8 +403,10 @@ class ActionStepBatchConsumerBatchModifier(ActionStepFormat):
         self.name = "batchconsumer_batchmodifier"
         self.group = ActionFormatStepGroupStandard()
         self.verbose_name = _("Batch consumer - Batch modifier")
+        self.accept_format = (ActionStepFormat.IO_BATCH_ID,)
+        self.data_format = (ActionStepFormat.IO_BATCH_ID,)
 
-    def validate(self, action_type_format, value):
+    def validate(self, action_type_format, data, columns):
         return None
 
     def check(self, action_controller, action_type_format):

@@ -1,0 +1,20 @@
+<!--
+ - @file actionstepread.html
+ - @brief Action step read back data (default behavior).
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2018-03-09
+ - @copyright Copyright (c) 2018 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div class="row">
+    <div class="col-lg-6 form-group">
+        <label class="control-label"><%- _t('Related step data') %></label>
+        <select name="get-data" class="form-control" title="<%- _t('Download as...') %>">
+            <option value="original-csv"><%- _t("List as CSV") %></option>
+            <option value="original-xlsx"><%- _t("List as XLSX") %></option>
+            <option value="original-panel"><%- _t("Generate a new panel") %></option>
+        </select>
+    </div>
+</div>

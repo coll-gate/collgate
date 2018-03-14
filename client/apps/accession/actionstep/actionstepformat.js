@@ -26,6 +26,28 @@ ActionStepFormat.prototype = {
     }
 };
 
+let downloadData = function (dataFormat, stepIndex) {
+    if (dataFormat === 'csv') {
+        // download the document as csv
+        let form = $('<form></form>');
+
+        form.append('<input type="number" name="step_index" value="' + stepIndex + '">');
+        form.append('<input type="text" name="format" value="csv">');
+
+        form.attr('action', window.application.url(['accession', 'action', this.model.get('id'), 'download']))
+            .appendTo('body').submit().remove();
+    } else if (dataFormat === 'xlsx') {
+        // download the document as xlsx
+        let form = $('<form></form>');
+
+        form.append('<input type="number" name="step_index" value="' + stepIndex + '">');
+        form.append('<input type="text" name="format" value="xlsx">');
+
+        form.attr('action', window.application.url(['accession', 'action', this.model.get('id'), 'download']))
+            .appendTo('body').submit().remove();
+    }
+};
+
 /**
  * Default view for the configuration of the step of the action type. To be specialized.
  */
@@ -46,7 +68,7 @@ ActionStepFormat.ActionStepFormatDetailsView = Marionette.View.extend({
 });
 
 /**
- * Default view for the settings of the step of the action (during processing). To be specialized.
+ * Default view for the processing of a step of an action. To be specialized.
  */
 ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
     className: 'action-step-process',
@@ -57,16 +79,6 @@ ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
     },
 
     onRender: function() {},
-
-    /**
-     * Upload a CSV or XLSX of input.
-     */
-    exportInputs: function() {},
-
-    /**
-     * Download a CSV or XLSX of current input.
-     */
-    importData: function() {},
 
     /**
      * Get the currently defined inputs type.
@@ -83,7 +95,63 @@ ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
      */
     inputsData: function() {
         return null;
-    }
+    },
+
+    /**
+     * Download the data of the step, format as csv or xlsx.
+     * @param data_format
+     */
+    downloadData: downloadData
+});
+
+/**
+ * Default view for the reading-back of a step of an action (once processed for read-only). To be specialized.
+ */
+ActionStepFormat.ActionStepReadView = Marionette.View.extend({
+    className: 'action-step-read',
+    template: require('../templates/actionstep/actionstepread.html'),
+
+    ui: {
+        get_data: 'select[name=get-data]',
+    },
+
+    events: {
+        'change @ui.get_data': 'onGetData',
+    },
+
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
+        this.ui.get_data.selectpicker({});
+    },
+
+
+    onBeforeDestroy: function () {
+        this.ui.get_data.selectpicker('destroy');
+    },
+
+    onGetData: function () {
+        let type = this.ui.get_data.val();
+
+        if (type === 'original-csv') {
+            this.downloadData('csv', this.getOption("stepIndex"));
+        } else if (type === 'original-xlsx') {
+            this.downloadData('xlsx', this.getOption("stepIndex"));
+        } else if (type === 'original-panel') {
+            // @todo a dialog to name the panel
+            alert("todo");
+        }
+
+        this.ui.get_data.val("").selectpicker('refresh');
+    },
+
+    /**
+     * Download the data of the step, format as csv or xlsx.
+     * @param data_format
+     */
+    downloadData: downloadData
 });
 
 module.exports = ActionStepFormat;

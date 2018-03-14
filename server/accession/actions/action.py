@@ -7,25 +7,34 @@
 # @copyright Copyright (c) 2018 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details
+
 import io
 import json
 import mimetypes
 
-import magic
 from django.core.exceptions import SuspiciousOperation
+from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from accession import localsettings
 from accession.actions.actioncontroller import ActionController
+from accession.actions.actiondataexporter import ActionDataExporter
 from accession.actions.actionstepformat import ActionStepFormatManager
 from accession.actions.actiondataparser import ActionDataParser
 from accession.base import RestAccession
 from accession.batch import RestBatchId
-from accession.models import Action, Accession, ActionType, Batch
+from accession.models import Action, Accession, ActionType, Batch, ActionToEntity
 
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Method, Format
 from igdectk.rest.response import HttpResponseRest
+
+ALLOWED_MIMES = (
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'text/csv',
+    'text/plain'
+)
 
 
 class RestAction(RestAccession):
@@ -61,6 +70,11 @@ class RestActionEntityIdCount(RestActionEntityId):
 class RestActionIdUpload(RestActionId):
     regex = r'^upload/$'
     suffix = 'upload'
+
+
+class RestActionIdDownload(RestActionId):
+    regex = r'^download/$'
+    suffix = 'download'
 
 
 @RestAction.def_auth_request(
@@ -139,12 +153,11 @@ def update_action(request, act_id):
         "type": "object",
         "properties": {
             "action": {"type": "string", "enum": ['reset', 'setup', 'process']},    # action in term of API
-            "inputs_type": {"type": "string", "enum": ['none', 'panel', 'upload', 'list'], "required": False},
+            "inputs_type": {"type": "string", "enum": ['none', 'panel', 'list'], "required": False},
             "panel": {"type": "numeric", "required": False},
             "list": {"type": "array", "required": False, "minItems": 0, "maxItems": 32768, "additionalItems": {
                     "type": "number"
-                }, "items": []},
-            "upload": {"type": "numeric", "required": False}  # @todo process to upload and store file
+                }, "items": []}
         },
     }, perms={
         'accession.change_action': _("You are not allowed to modify an action")
@@ -180,7 +193,7 @@ def action_process_step(request, act_id):
         action_controller = ActionController(action)
 
         if not action_controller.is_current_step_valid:
-            raise SuspiciousOperation(_("There is not current valid step to reset"))
+            raise SuspiciousOperation(_("There is not current valid step to setup"))
 
         if action_controller.is_current_step_done:
             raise SuspiciousOperation(_("The current step is done"))
@@ -190,18 +203,16 @@ def action_process_step(request, act_id):
             input_data = request.data.get('list', [])
         elif inputs_type == "panel":
             input_data = []  # @todo from panel
-        elif inputs_type == "upload":
-            input_data = []  # @todo from uploaded file
         else:
             input_data = []
 
-        action_controller.setup_input(input_data)
+        action_controller.setup_data(input_data)
     elif action_type == "process":
         # process the step according the previously set inputs or options and done it
         action_controller = ActionController(action)
 
         if not action_controller.is_current_step_valid:
-            raise SuspiciousOperation(_("There is not current valid step to reset"))
+            raise SuspiciousOperation(_("There is not current valid step to process"))
 
         if action_controller.is_current_step_done:
             raise SuspiciousOperation(_("The current step is done"))
@@ -325,29 +336,18 @@ def upload_action_id_content(request, act_id):
         raise SuspiciousOperation(_("No file specified"))
 
     up = request.FILES['file']
-    format = request.POST.get('format')
     target = request.POST.get('target')
 
     # check file size
-    # @todo on conf
-    LIMIT = 1024*1024*1024
+    if up.size > localsettings.max_file_size:
+        SuspiciousOperation(_("Upload file size limit is set to %i bytes") % localsettings.max_file_size)
 
-    if up.size > LIMIT:  # localsettings.max_file_size:
-        SuspiciousOperation(_("Upload file size limit is set to %i bytes") % LIMIT)  # localsettings.max_file_size)
-
-    # simple check mime-types using the file extension (can process a test using libmagic)
-    guessed_mime_type = mimetypes.guess_type(up.name)[0]
-    if guessed_mime_type is None:
+    # simple check mime-types using the file extension
+    mime_type = mimetypes.guess_type(up.name)[0]
+    if mime_type is None:
         SuspiciousOperation(_("Undetermined uploaded file type"))
 
-    # @todo on conf
-    ALLOWED_MIMES = (
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/csv',
-        'text/plain'
-    )
-
-    if guessed_mime_type not in ALLOWED_MIMES:
+    if mime_type not in ALLOWED_MIMES:
         raise SuspiciousOperation(_("Unsupported file format"))
 
     # test mime-type with a buffer of a least 1024 bytes
@@ -363,110 +363,164 @@ def upload_action_id_content(request, act_id):
 
     data.seek(0, io.SEEK_SET)
 
-    guessed_mime_type = magic.from_buffer(test_mime_buffer.getvalue(), mime=True)
-
-    if guessed_mime_type not in ALLOWED_MIMES:
-        raise SuspiciousOperation(_("Unsupported file format"))
-
     # decode according mime type CSV or XLSX
     parser = ActionDataParser()
 
-    # @todo
-
-    # count number and format of columns
-    # @todo
-
     # read row of input
-    parser.parse_csv(data)
+    if mime_type in ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',):
+        parser.parse_xlsx(data)
+    else:
+        parser.parse_csv(data)
+
+    action_controller = ActionController(action)
+    action_controller.setup_data(parser.data, parser.columns)
+
+    if not action_controller.is_current_step_valid:
+        raise SuspiciousOperation(_("There is not current valid step to setup"))
+
+    if action_controller.is_current_step_done:
+        raise SuspiciousOperation(_("The current step is done"))
+
+    action_controller.setup_data(parser.data, parser.columns)
 
     result = {
+        'id': action.id
     }
 
     return HttpResponseRest(request, result)
 
 
-# @RestActionEntityId.def_auth_request(Method.GET, Format.JSON, perms={
-#     'accession.get_action': _("You are not allowed to get an action"),
-#     'accession.list_action': _("You are not allowed to list actions")
-# })
-# def get_action_list_for_entity_id(request, bat_id):
-#     results_per_page = int_arg(request.GET.get('more', 30))
-#     cursor = json.loads(request.GET.get('cursor', 'null'))
-#     limit = results_per_page
-#     sort_by = json.loads(request.GET.get('sort_by', '[]'))
-#
-#     # @todo how to manage permission to list only auth actions
-#
-#     if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
-#         order_by = sort_by + ['id']
-#     else:
-#         order_by = sort_by
-#
-#     from main.cursor import CursorQuery
-#     cq = CursorQuery(Action)
-#
-#     # @todo filter for action relating this batch as input...
-#     cq.join('input_batches')
-#     # cq.filter(input_batches__in=int(bat_id))
-#
-#     if request.GET.get('search'):
-#         search = json.loads(request.GET['search'])
-#         cq.filter(search)
-#
-#     if request.GET.get('filters'):
-#         filters = json.loads(request.GET['filters'])
-#         cq.filter(filters)
-#
-#     cq.cursor(cursor, order_by)
-#     cq.order_by(order_by).limit(limit)
-#     # print(cq.sql())
-#     batch_action_list = []
-#
-#     for action in cq:
-#         a = {
-#             'id': action.id,
-#             'accession': action.accession_id,
-#             'type': action.type_id,
-#             'data': action.data,
-#             'created_date': action.created_date.strftime("%Y-%m-%d %H:%M:%S")
-#         }
-#
-#         batch_action_list.append(a)
-#
-#     results = {
-#         'perms': [],
-#         'items': batch_action_list,
-#         'prev': cq.prev_cursor,
-#         'cursor': cursor,
-#         'next': cq.next_cursor,
-#     }
-#
-#     return HttpResponseRest(request, results)
-#
-#
-# @RestActionEntityIdCount.def_auth_request(Method.GET, Format.JSON, perms={
-#     'accession.list_action': _("You are not allowed to list the actions")
-# })
-# def get_action_list_for_entity_id_count(request, bat_id):
-#     from main.cursor import CursorQuery
-#     cq = CursorQuery(Action)
-#
-#     if request.GET.get('search'):
-#         search = json.loads(request.GET['search'])
-#         cq.filter(search)
-#
-#     if request.GET.get('filters'):
-#         filters = json.loads(request.GET['filters'])
-#         cq.filter(filters)
-#
-#     # @todo filter for action relating this batch as input...
-#     cq.join('input_batches')
-#
-#     count = cq.count()
-#     # cq.filter(input_batches__in=int(bat_id))
-#
-#     results = {
-#         'count': count
-#     }
-#
-#     return HttpResponseRest(request, results)
+@RestActionIdDownload.def_auth_request(Method.GET, Format.ANY, parameters=('step_index', 'format'), perms={
+    'accession.get_action': _("You are not allowed to get an action")
+})
+def download_action_id_content(request, act_id):
+    action = get_object_or_404(Action, pk=int(act_id))
+    step_index = int_arg(request.GET['step_index'])
+    file_format = request.GET['format']
+
+    # decode according mime type CSV or XLSX
+    action_controller = ActionController(action)
+
+    exporter = ActionDataExporter(action_controller, step_index)
+
+    if not action_controller.is_current_step_valid:
+        raise SuspiciousOperation(_("The step index is not valid"))
+
+    if not action_controller.has_step_data(step_index):
+        raise SuspiciousOperation(_("The step index has no data"))
+
+    if file_format == 'csv':
+        mime_type = 'text/csv'
+        file_ext = ".csv"
+        data = exporter.export_data_as_csv()
+    elif file_format == 'xlsx':
+        mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        file_ext = ".xlsx"
+        data = exporter.export_data_as_xslx()
+    else:
+        raise SuspiciousOperation("Invalid format")
+
+    file_name = "Action%sDataStep%i" % (act_id, step_index+1,) + file_ext
+
+    response = StreamingHttpResponse(data, content_type=mime_type)
+    response['Content-Disposition'] = 'attachment; filename="' + file_name + '"'
+    response['Content-Length'] = exporter.size
+
+    return response
+
+
+@RestActionEntityId.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_action': _("You are not allowed to get an action"),
+    'accession.list_action': _("You are not allowed to list actions")
+})
+def get_action_list_for_entity_id(request, ent_id):
+    # @todo
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = json.loads(request.GET.get('cursor', 'null'))
+    limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
+    # @todo how to manage permission to list only auth actions
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(ActionToEntity)
+
+    # cq = ActionToEntity.objects.filter(entity_id=int(ent_id))
+
+    # @todo filter for action relating
+    cq.inner_join(Action, related_name='id', to_related_name='action_id', entity=int(ent_id))
+    cq.filter(entity=int(ent_id))
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+    # print(cq.sql())
+    action_list = []
+
+    for action in cq:
+        a = {
+            'id': action.id,
+            'entity': action.entity_id,
+            'entity_type': action.entity_type_id,
+            'type': action.type_id,
+            'data': action.data,
+            'created_date': action.created_date.strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        action_list.append(a)
+
+    results = {
+        'perms': [],
+        'items': action_list,
+        'prev': cq.prev_cursor,
+        'cursor': cursor,
+        'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestActionEntityIdCount.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.list_action': _("You are not allowed to list the actions")
+})
+def get_action_list_for_entity_id_count(request, ent_id):
+    # @todo
+    from main.cursor import CursorQuery
+    cq = CursorQuery(ActionToEntity)
+
+    # cq = ActionToEntity.objects.filter(entity_id=int(ent_id))
+
+    # @todo filter for action relating
+    cq.inner_join(Action, related_name='id', to_related_name='action_id', entity=int(ent_id))
+    cq.filter(entity=int(ent_id))
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    # print(cq.sql())
+
+    count = cq.count()
+    # cq.filter(input_batches__in=int(bat_id))
+
+    results = {
+        'count': count
+    }
+
+    return HttpResponseRest(request, results)

@@ -3,5 +3,53 @@ div.action-format-type {
 }
 
 div.panel-heading.current {
-    background: repeating-linear-gradient(45deg,#ddd,#ddd 10px,#f5f5f5 0,#f5f5f5 25px);
+    background: repeating-linear-gradient(45deg, #ddd, #ddd 10px, #f5f5f5 10px, #f5f5f5 25px);
+    font-weight: bold;
+}
+
+div.panel-heading.action-current {
+    /* background: repeating-linear-gradient(45deg, #ffed63, #ffed63 10px, #999 0,#999 25px); */
+    background: #6c995a;
+    border-color: #397239;
+    font-weight: bold;
+}
+
+div.panel-heading.action-current > a:before {
+    font-family: 'FontAwesome';
+    content: '\f192';
+    color: white;
+    padding-right: 5px;
+    font-size: 1.1em;
+}
+
+div.panel-heading.action-done > a:before {
+    font-family: 'FontAwesome';
+    content: '\f058';
+    color: white;
+    padding-right: 5px;
+}
+
+div.panel-heading.action-next > a:before {
+    font-family: 'FontAwesome';
+    content: '\f10c';
+    color: white;
+    padding-right: 5px;
+}
+
+div.panel-heading.action-done {
+    background: #269abc;
+    border-color: #1b6d85;
+    font-weight: bold;
+}
+
+div.panel-heading.action-current > a, div.panel-heading.action-current > a:after,
+div.panel-heading.action-done > a, div.panel-heading.action-done > a:after,
+div.panel-heading.action-next > a, div.panel-heading.action-next > a:after {
+    color: white !important;
+}
+
+div.panel-heading.action-next {
+    background: #dd8d3a !important;
+    border-color: #1b6d85;
+    font-weight: bold;
 }

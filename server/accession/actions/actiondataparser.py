@@ -8,24 +8,90 @@
 # @license MIT (see LICENSE file)
 # @details 
 
-import xlsxwriter
+from django.utils.translation import ugettext_lazy as _
+from openpyxl import Workbook, load_workbook
 
 
 class ActionDataParser(object):
 
     def __init__(self):
         self._data = []
+        self._columns = []
 
     @property
     def data(self):
-        return self.data
+        return self._data
+
+    @property
+    def columns(self):
+        return self._columns
 
     def parse_csv(self, buffer):
-        header = buffer.readline()
+        header = buffer.readline().decode('utf-8')
+
+        # detect separator
+        if ',' in header:
+            separator = ','
+        elif ';' in header:
+            separator = ';'
+        elif '\t' in header:
+            separator = '\t'
+        else:
+            raise ImportError(_("Unsupported CSV format"))
+
+        self._columns = header.split(separator)
+        num_cols = len(self._columns)
+
+        if num_cols <= 0 or num_cols > 100:
+            raise ImportError(_("Number of columns must be comprised between 1 to 100"))
+
+        row = 0
 
         # content
         for line in buffer:
-            print(line)
+            content = line.decode('utf-8').rstrip('\n').split(separator)
+            if len(content) != num_cols:
+                raise ImportError(_("Invalid CSV row %i") % (row+1))
+
+            self._data.append(content)
+
+            row += 1
+
+        return len(self._data)
 
     def parse_xlsx(self, buffer):
-        pass
+        wb = load_workbook(buffer)
+
+        # shn = wb.get_sheet_names()
+        ws = wb.active
+        num_cols = 101
+
+        # count filled cells for the first row
+        for i in range(1, 101):
+            cell = ws.cell(row=1, column=i)
+            if not cell.value:
+                num_cols = i - 1
+                break
+
+            self._columns.append(cell.value)
+
+        if num_cols <= 0 or num_cols > 100:
+            raise ImportError(_("Number of columns must be comprised between 1 to 100"))
+
+        for row in ws.iter_rows(min_row=2, max_col=num_cols, max_row=100000):
+            empty = 0
+            row_data = []
+
+            for cell in row:
+                if not cell.value:
+                    empty += 1
+
+                row_data.append(cell.value)
+
+            # empty row, mean end
+            if empty == num_cols:
+                break
+
+            self._data.append(row_data)
+
+        return len(self._data)

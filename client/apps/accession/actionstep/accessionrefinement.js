@@ -25,7 +25,7 @@ _.extend(Format.prototype, ActionStepFormat.prototype, {
     }
 });
 
-Format.ActionStepProcessView = Marionette.View.extend({
+Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     className: 'action-step-process',
     template: require('../templates/actionstep/accessionrefinementprocess.html'),
 
@@ -48,20 +48,12 @@ Format.ActionStepProcessView = Marionette.View.extend({
     },
 
     onRender: function () {
-        if (this.getOption('readonly')) {
-
-        } else {
-            this.ui.panel_group.css('display', 'none');
-            this.ui.accession_list.selectpicker({});
-        }
+        this.ui.panel_group.css('display', 'none');
+        this.ui.accession_list.selectpicker({});
     },
 
     onBeforeDestroy: function () {
-        if (this.getOption('readonly')) {
-
-        } else {
-            this.ui.accession_list.selectpicker('destroy');
-        }
+        this.ui.accession_list.selectpicker('destroy');
     },
 
     exportInput: function () {
@@ -82,7 +74,18 @@ Format.ActionStepProcessView = Marionette.View.extend({
 
     onGetAccessionList: function () {
         let type = this.ui.accession_list.val();
-        alert(type);
+
+        // get accession list from the previous step
+        if (type === 'original-csv') {
+            this.downloadData('csv', this.getOption("stepIndex")-1);
+        } else if (type === 'original-xlsx') {
+            this.downloadData('xlsx', this.getOption("stepIndex")-1);
+        } else if (type === 'original-panel') {
+            // @todo a dialog to name the panel
+            alert("todo");
+        }
+
+        this.ui.accession_list.val("").selectpicker('refresh');
     },
 
     onAccessionUpload: function () {
@@ -95,7 +98,6 @@ Format.ActionStepProcessView = Marionette.View.extend({
 
         let formData = new FormData();
         formData.append('file', file);
-        formData.append('format', 'csv');   // @todo
         formData.append('target', target);
 
         $.ajax({
@@ -128,7 +130,7 @@ Format.ActionStepProcessView = Marionette.View.extend({
         }).done(function (data) {
             self.ui.accession_upload.prop('disabled', false);
 
-            // self..... // @todo
+            $.alert.success(_t("Successfully uploaded !"));
         }).fail(function () {
             $.alert.error(_t("Error during file upload"));
             self.ui.accession_upload.prop('disabled', false);
@@ -136,7 +138,7 @@ Format.ActionStepProcessView = Marionette.View.extend({
     }
 });
 
-Format.ActionStepFormatDetailsView = Marionette.View.extend({
+Format.ActionStepFormatDetailsView = ActionStepFormat.ActionStepFormatDetailsView.extend({
     className: 'action-step-format-details',
     template: require('../templates/actionstep/accessionrefinement.html'),
 

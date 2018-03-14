@@ -66,6 +66,9 @@ class TemplateAppValue(Node):
         elif arg_repr == "webpack_host":
             attr = getattr(settings, 'WEBPACK', {})
             ret_val = attr['host'] if 'host' in attr else 'localhost'
+        elif arg_repr == "webpack_port":
+            attr = getattr(settings, 'WEBPACK', {})
+            ret_val = attr['port'] if 'port' in attr else '8080'
         elif arg_repr == "webpack_entry":
             attr = getattr(settings, 'WEBPACK', {})
             ret_val = attr['entry'] if 'entry' in attr else '/build/app.js'

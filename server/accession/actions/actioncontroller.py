@@ -175,14 +175,12 @@ class ActionController(object):
         self.action.data['steps'].append(step_data)
         return step_data
 
-    def setup_input(self, input_data):
+    def setup_data(self, input_data, input_columns):
         if not self.is_current_step_valid:
             raise ActionError("Invalid current action step")
 
         if self.is_current_step_done:
             raise ActionError("Current action step is already done")
-
-        # @todo check if the step support input data
 
         # step format
         action_type_steps = self.action_type.format['steps']
@@ -193,6 +191,9 @@ class ActionController(object):
         step_format = action_type_steps[step_index]
         action_step_format = ActionStepFormatManager.get(step_format['type'])
 
+        if not action_step_format.accep_user_data:
+            raise ActionError("Current step does not accept data from user")
+
         action_step = action_steps[step_index]
 
         # check step state
@@ -200,7 +201,8 @@ class ActionController(object):
         if action_step_state != ActionController.STEP_INIT and action_step_state != ActionController.STEP_SETUP:
             raise ActionError("Current action step state must be initial or setup")
 
-        # @todo check input according to step format
+        # validate data according to step format
+        action_step_format.validate(step_format, input_data, input_columns)
 
         action_step['state'] = ActionController.STEP_SETUP
         action_step['data'] = input_data
@@ -346,3 +348,72 @@ class ActionController(object):
                         entity_id=e_id,
                         entity_type_id=content_type_id,
                     ))
+
+    def has_step_data(self, step_index):
+        """
+        Has data for a particular step index.
+        """
+        action_steps = self.action.data.get('steps')
+        if not action_steps:
+            raise ActionError("Empty action steps")
+
+        action_steps = self.action.data['steps']
+
+        if step_index >= len(action_steps):
+            raise ActionError("Action step index out of range")
+
+        action_step = action_steps[step_index]
+
+        # # check step state
+        action_step_state = action_step.get('state', ActionController.STEP_INIT)
+        if action_step_state == ActionController.STEP_INIT:
+            return False
+
+        return action_step.get('data') is not None
+
+    def get_step_data(self, step_index):
+        """
+        Get the data for a particular step index.
+        """
+        action_steps = self.action.data.get('steps')
+        if not action_steps:
+            raise ActionError("Empty action steps")
+
+        action_steps = self.action.data['steps']
+
+        if step_index >= len(action_steps):
+            raise ActionError("Action step index out of range")
+
+        # # check step state
+        # action_step_state = action_step.get('state', ActionController.STEP_INIT)
+        # if action_step_state != ActionController.STEP_DONE:
+        #     raise ActionError("Current action step state must be done")
+
+        action_step = action_steps[step_index]
+        return action_step.get('data')
+
+    def get_step_data_format(self, step_index):
+        """
+        Get the columns format for the data of a particular step index.
+        """
+        action_steps = self.action.data.get('steps')
+        if not action_steps:
+            raise ActionError("Empty action steps")
+
+        action_steps = self.action.data['steps']
+
+        if step_index >= len(action_steps):
+            raise ActionError("Action step index out of range")
+
+        # # check step state
+        # action_step_state = action_step.get('state', ActionController.STEP_INIT)
+        # if action_step_state != ActionController.STEP_DONE:
+        #     raise ActionError("Current action step state must be done")
+
+        # step format
+        action_type_steps = self.action_type.format['steps']
+
+        step_format = action_type_steps[step_index]
+        action_step_format = ActionStepFormatManager.get(step_format['type'])
+
+        return action_step_format.data_format
