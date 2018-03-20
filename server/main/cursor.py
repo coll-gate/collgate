@@ -594,8 +594,8 @@ class CursorQuery(object):
                     elif cf.name not in self._synonym_table_aliases:
                         self.join_synonym(cf.name)
 
-                        alias = self._synonym_table_aliases[cf.name]
-                        self.query_order_by.append('"%s"."name" %s' % (alias, order))
+                    alias = self._synonym_table_aliases[cf.name]
+                    self.query_order_by.append('"%s"."name" %s' % (alias, order))
                 elif self.model_fields[cf.name][0] == 'FK':
                     self.query_order_by.append('"%s"."%s_id" %s' % (db_table, cf.name, order))
                 elif cf.is_label:
