@@ -307,6 +307,13 @@ class CursorQuery(object):
                                                                     self._cursor[prev_cf.index])
                                 if clause:
                                     lqs.append(clause)
+
+                        elif prev_cf.is_synonym:
+                            synonym_db_table = self._synonym_model._meta.db_table
+                            alias = prev_cf.name + "_" + synonym_db_table
+                            lqs.append(self._cast_synonym_type(alias, prev_cf.inclusive_operator, self._cursor[prev_cf.index]))
+                            # lqs.append('"%s"."%s" %s %s' % (alias, 'name', prev_cf.inclusive_operator, final_value))
+
                         else:
                             if self.FIELDS_SEP in prev_cf.name:
                                 pff = prev_cf.name.split(self.FIELDS_SEP)
@@ -336,6 +343,12 @@ class CursorQuery(object):
                                                                 self._cursor[cf.index])
                             if clause:
                                 lqs.append(clause)
+
+                    elif cf.is_synonym:
+                        synonym_db_table = self._synonym_model._meta.db_table
+                        alias = cf.name + "_" + synonym_db_table
+                        lqs.append(self._cast_synonym_type(alias, cf.exclusive_operator, self._cursor[cf.index]))
+
                     else:
                         if self.FIELDS_SEP in cf.name:
                             ff = cf.name.split(self.FIELDS_SEP)
@@ -368,6 +381,13 @@ class CursorQuery(object):
                                                                 self._cursor[cf.index])
                             if clause:
                                 lqs.append(clause)
+
+                    elif cf.is_synonym:
+                        synonym_db_table = self._synonym_model._meta.db_table
+                        alias = cf.name + "_" + synonym_db_table
+                        lqs.append(self._cast_synonym_type(alias, cf.exclusive_operator, self._cursor[cf.index]))
+                        # final_value = self._make_value(self._cursor[cf.index], ('TEXT', 'TEXT', False))
+                        # lqs.append('"%s"."%s" %s %s' % (alias, 'name', cf.exclusive_operator, final_value))
                     else:
                         if self.FIELDS_SEP in cf.name:
                             ff = cf.name.split(self.FIELDS_SEP)
@@ -439,6 +459,19 @@ class CursorQuery(object):
             return "TRUE" if value else "FALSE"
         else:
             return "'" + value.replace("'", "''") + "'"
+    #
+    # def _convert_synonym_value(self, value, cmp):
+    #     # adjust value in some cases
+    #     if cmp in ('isnull', 'notnull'):
+    #         return None
+    #     elif cmp in ('contains', 'icontains') and not isinstance(value, list):
+    #         return "%%" + value + "%%"
+    #     elif cmp in ('startswith', 'istartswith'):
+    #         return value + "%%"
+    #     elif cmp in ('endswith', 'iendswith'):
+    #         return "%%" + value
+    #     else:
+    #         return value
 
     def _convert_value(self, value, cmp):
         # adjust value in some cases
@@ -553,6 +586,16 @@ class CursorQuery(object):
                 if self.FIELDS_SEP in cf.name:
                     ff = cf.name.split(self.FIELDS_SEP)
                     self.query_order_by.append('"%s" %s' % ("_".join(ff), order))
+                elif cf.is_synonym:
+
+                    if not self._synonym_model:
+                        raise CursorQueryError(
+                            'Synonym model is not define, use CursorQuery.set_synonym_model() method')
+                    elif cf.name not in self._synonym_table_aliases:
+                        self.join_synonym(cf.name)
+
+                        alias = self._synonym_table_aliases[cf.name]
+                        self.query_order_by.append('"%s"."name" %s' % (alias, order))
                 elif self.model_fields[cf.name][0] == 'FK':
                     self.query_order_by.append('"%s"."%s_id" %s' % (db_table, cf.name, order))
                 elif cf.is_label:
@@ -618,6 +661,8 @@ class CursorQuery(object):
                         if self.FIELDS_SEP in cf.name:
                             ff = cf.name.split(self.FIELDS_SEP)
                             self._prev_cursor.append(getattr(first_entity, "_".join(ff)))
+                        elif cf.is_synonym:
+                            self._prev_cursor.append(getattr(first_entity, cf.name))
                         elif self.model_fields[cf.name][0] == 'FK':
                             self._prev_cursor.append(getattr(first_entity, cf.name + '_id'))
                         elif cf.is_count:
@@ -634,13 +679,15 @@ class CursorQuery(object):
                         else:
                             self._next_cursor.append(last_entity.descriptors.get(cf.name))
                     elif cf.is_label:
-                            self._next_cursor.append(getattr(last_entity, cf.name)[lang])
+                        self._next_cursor.append(getattr(last_entity, cf.name)[lang])
                     elif cf.is_format:
                         pass
                     else:
                         if self.FIELDS_SEP in cf.name:
                             ff = cf.name.split(self.FIELDS_SEP)
                             self._next_cursor.append(getattr(last_entity, "_".join(ff)))
+                        elif cf.is_synonym:
+                            self._next_cursor.append(getattr(last_entity, cf.name))
                         elif self.model_fields[cf.name][0] == 'FK':
                             self._next_cursor.append(getattr(last_entity, cf.name + '_id'))
                         elif cf.is_count:
@@ -822,20 +869,25 @@ class CursorQuery(object):
                         field_model = self.model_fields[cf.name]
                         op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(
                             cmp)
-                        lqs.append(self._cast_default_type(db_table, cf.name, op, self._convert_value(value, cmp), lang))
+                        lqs.append(
+                            self._cast_default_type(db_table, cf.name, op, self._convert_value(value, cmp), lang))
                     elif cf.is_format:
                         pass
                     elif cf.is_synonym:
 
                         if not self._synonym_model:
-                            raise CursorQueryError('Synonym model is not define, use CursorQuery.select_synonym() method')
+                            raise CursorQueryError(
+                                'Synonym model is not define, use CursorQuery.set_synonym_model() method')
                         elif cf.name not in self._synonym_table_aliases:
                             self.join_synonym(cf.name)
 
                             alias = self._synonym_table_aliases[cf.name]
 
                             op = self.OPERATORS_MAP.get(cmp)
-                            lqs.append('"%s"."%s" %s %s' % (alias, 'name', op, self._make_value(self._convert_value(value, cmp), ['TEXT', 'TEXT'])))
+
+                            lqs.append(self._cast_synonym_type(alias, op, self._convert_value(value, cmp)))
+
+                            # lqs.append('"%s"."%s" %s %s' % (alias, 'name', op, self._make_value(self._convert_synonym_value(value, cmp), ('TEXT', 'TEXT', False))))
 
                     else:
                         field_model = self.model_fields[cf.name]
@@ -980,6 +1032,16 @@ class CursorQuery(object):
             else:
                 return '"%s"."%s" %s %s' % (renamed_table, field_name, operator, final_value)
 
+    def _cast_synonym_type(self, table_alias, operator, value):
+
+        if value is None:
+            value = 'NULL'
+
+        final_value = self._make_value(value, ('TEXT', 'TEXT', False))
+        coalesce_value = "'NULL'"
+
+        return 'COALESCE("%s"."name", %s) %s %s' % (table_alias, coalesce_value, operator, final_value)
+
     def join_descriptor(self, description, descriptor_name, fields=None):
         model_fields = {}
         db_table = self._model._meta.db_table
@@ -1017,7 +1079,7 @@ class CursorQuery(object):
                     '"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is ArrayField:
                 if (type(field.base_field) is models.fields.IntegerField or
-                            type(field.base_field) == models.fields.AutoField):
+                        type(field.base_field) == models.fields.AutoField):
                     base_type = 'INTEGER'
                 else:
                     base_type = 'TEXT'
@@ -1047,6 +1109,8 @@ class CursorQuery(object):
         synonym_type = EntitySynonymType.objects.get(name=synonym_type_name)
 
         self._synonym_table_aliases[synonym_type_name] = alias
+
+        self.query_select.append('"%s"."name" AS "%s"' % (alias, synonym_type_name))
 
         on_clause = [
             '"%s"."id" = "%s"."entity_id"' % (db_table, alias),
@@ -1098,7 +1162,7 @@ class CursorQuery(object):
                         '"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
                 elif type(field) is ArrayField:
                     if (type(field.base_field) is models.fields.IntegerField or
-                                type(field.base_field) == models.fields.AutoField):
+                            type(field.base_field) == models.fields.AutoField):
                         base_type = 'INTEGER'
                     else:
                         base_type = 'TEXT'
@@ -1233,7 +1297,7 @@ class CursorQuery(object):
             self._select_related = True
         return self
 
-    def select_synonym(self, synonym_model):
+    def set_synonym_model(self, synonym_model):
         """
         Make left join to the synonym model of the entity.
 
@@ -1242,10 +1306,10 @@ class CursorQuery(object):
         """
 
         if self._query_set is not None:
-            raise CursorQueryError("Cannot call select_related() after iterate over results")
+            raise CursorQueryError("Cannot call set_synonym_model() after iterate over results")
 
         if self._synonym_model is not None:
-            raise CursorQueryError("Cannot call select_synonym() one more time")
+            raise CursorQueryError("Cannot call set_synonym_model() one more time")
 
         if issubclass(synonym_model, models.Model):
             self._synonym_model = synonym_model
@@ -1383,8 +1447,8 @@ class CursorQuery(object):
 
         try:
             self._process_cursor()
-            self._process_order_by()
             self._process_filter()
+            self._process_order_by()
             self._process_count()
         except KeyError as e:
             raise CursorQueryError(e)
@@ -1416,7 +1480,7 @@ class CursorQuery(object):
             _where = "WHERE " + " OR ".join(self.query_where)
 
         if (
-                    self.query_where or self.query_filters) and self.query_group_by and self.query_order_by and self.query_limit:
+                self.query_where or self.query_filters) and self.query_group_by and self.query_order_by and self.query_limit:
             sql = " ".join([_select, _from, _where, _group_by, _order_by, _limit])
         else:
             sql = _select

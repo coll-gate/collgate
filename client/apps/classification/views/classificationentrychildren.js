@@ -27,7 +27,7 @@ let View = AdvancedTable.extend({
         {name: 'name', width: 'auto', sort_by: '+1'},
         {name: 'rank', width: 'auto', sort_by: '+0'},
         {name: 'parent', width: 'auto', sort_by: null},
-        {name: 'synonym', width: 'auto', sort_by: null}
+        // {name: 'synonym', width: 'auto', sort_by: null}
     ],
 
     columnsOptions: {
@@ -41,13 +41,13 @@ let View = AdvancedTable.extend({
             custom: 'parentCell',
             field: 'name'
         },
-        'synonym': {
-            label: _t('Synonym'),
-            width: 'auto',
-            minWidth: true,
-            custom: 'synonymCell',
-            field: 'name'
-        }
+        // 'synonym': {
+        //     label: _t('Synonym'),
+        //     width: 'auto',
+        //     minWidth: true,
+        //     custom: 'synonymCell',
+        //     field: 'name'
+        // }
     },
 
     templateContext: function () {

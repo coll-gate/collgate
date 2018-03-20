@@ -333,7 +333,7 @@ class ClassificationEntry(Entity):
         for synonym_type in synonym_types:
             columns['&' + synonym_type.name] = {
                 'label': synonym_type.get_label(),
-                'field': 'synonym',
+                # 'field': 'synonym',
                 'query': False,  # done by a prefetch related
                 'format': {
                     'type': 'string',

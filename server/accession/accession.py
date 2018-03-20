@@ -189,6 +189,7 @@ def create_accession(request):
 def get_accession_list_count(request):
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
+    cq.set_synonym_model(AccessionSynonym)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -198,11 +199,6 @@ def get_accession_list_count(request):
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
                 break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
-                    target_model=ContentType.objects.get_for_model(Accession)).values_list('name',
-                                                                                           flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
-                break
         cq.filter(search)
 
     if request.GET.get('filters'):
@@ -211,9 +207,6 @@ def get_accession_list_count(request):
             if 'field' in criteria and criteria.get('field') == 'panels':
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
-                break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
                 break
         cq.filter(filters)
 
@@ -242,6 +235,7 @@ def get_accession_list(request):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
+    cq.set_synonym_model(AccessionSynonym)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -250,9 +244,6 @@ def get_accession_list(request):
             if 'field' in criteria and criteria.get('field') == 'panels':
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
-                break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name',flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
                 break
         cq.filter(search)
 
@@ -263,9 +254,6 @@ def get_accession_list(request):
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
                 break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
-                break
         cq.filter(filters)
 
     cq.prefetch_related(Prefetch(
@@ -273,7 +261,6 @@ def get_accession_list(request):
         queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language')))
 
     cq.select_related('primary_classification_entry->name', 'primary_classification_entry->rank')
-    # cq.select_related('#test_accession->code')
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)

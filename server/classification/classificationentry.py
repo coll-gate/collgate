@@ -170,23 +170,14 @@ def get_classification_entry_list(request):
         order_by = sort_by
 
     cq = CursorQuery(ClassificationEntry)
+    cq.set_synonym_model(ClassificationEntrySynonym)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
-        for criteria in search:
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
-                    target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name',
-                                                                                                     flat=True).distinct():
-                cq.select_synonym(ClassificationEntrySynonym)
-                break
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
-        for criteria in filters:
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name', flat=True).distinct():
-                cq.select_synonym(ClassificationEntrySynonym)
-                break
         cq.filter(filters)
 
     # if request.GET.get('filters'):
@@ -254,21 +245,14 @@ def get_classification_entry_list(request):
 def get_classification_list_count(request):
     from main.cursor import CursorQuery
     cq = CursorQuery(ClassificationEntry)
+    cq.set_synonym_model(ClassificationEntrySynonym)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
-        for criteria in search:
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name', flat=True).distinct():
-                cq.select_synonym(ClassificationEntrySynonym)
-                break
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
-        for criteria in filters:
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name', flat=True).distinct():
-                cq.select_synonym(ClassificationEntrySynonym)
-                break
         cq.filter(filters)
 
     count = cq.count()
@@ -590,6 +574,7 @@ def get_classification_entry_children(request, cls_id):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(ClassificationEntry)
+    cq.set_synonym_model(ClassificationEntrySynonym)
 
     # if only children
     if request.GET.get('deeply', False):
@@ -663,6 +648,7 @@ def get_classification_entry_children_list_count(request, cls_id):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(ClassificationEntry)
+    cq.set_synonym_model(ClassificationEntrySynonym)
 
     # if only children
     if request.GET.get('deeply', False):
@@ -796,17 +782,12 @@ def get_classification_id_entry_list(request, cls_id):
         order_by = sort_by
 
     cq = CursorQuery(ClassificationEntry)
+    cq.set_synonym_model(ClassificationEntrySynonym)
 
     cq.filter(rank__classification=int_arg(cls_id))
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
-        for criteria in filters:
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
-                    target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name',
-                                                                                                     flat=True).distinct():
-                cq.select_synonym(ClassificationEntrySynonym)
-                break
         cq.filter(filters)
 
     cq.prefetch_related(Prefetch(
@@ -869,17 +850,12 @@ def get_classification_id_entry_list(request, cls_id):
 def get_classification_id_list_count(request, cls_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(ClassificationEntry)
+    cq.set_synonym_model(ClassificationEntrySynonym)
 
     cq.filter(rank__classification=int_arg(cls_id))
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
-        for criteria in filters:
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
-                    target_model=ContentType.objects.get_for_model(ClassificationEntry)).values_list('name',
-                                                                                                     flat=True).distinct():
-                cq.select_synonym(ClassificationEntrySynonym)
-                break
         cq.filter(filters)
 
     cq.select_related('rank->classification')

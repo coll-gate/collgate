@@ -151,12 +151,11 @@ class Accession(DescribableEntity):
         for synonym_type in synonym_types:
             columns['&' + synonym_type.name] = {
                 'label': synonym_type.get_label(),
-                'field': 'synonym',
-                'query': False,  # done by a prefetch related
+                # 'field': 'synonym',
+                'query': False,
                 'format': {
                     'type': 'string',
                     'model': 'accession.accessionsynonym',
-                    # 'synonym_type': synonym_type.id
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             }

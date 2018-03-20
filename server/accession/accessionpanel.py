@@ -195,17 +195,13 @@ def create_panel(request):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
+    cq.set_synonym_model(AccessionSynonym)
 
     if search:
         for criteria in search:
             if 'field' in criteria and criteria.get('field') == 'panels':
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
-                break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
-                    target_model=ContentType.objects.get_for_model(Accession)).values_list('name',
-                                                                                           flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
                 break
         cq.filter(search)
 
@@ -214,9 +210,6 @@ def create_panel(request):
             if 'field' in criteria and criteria.get('field') == 'panels':
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
-                break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
                 break
         cq.filter(filters)
 
@@ -474,6 +467,7 @@ def modify_panel(request, panel_id):
 def get_panel_accession_list_count(request, panel_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
+    cq.set_synonym_model(AccessionSynonym)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -483,11 +477,6 @@ def get_panel_accession_list_count(request, panel_id):
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
                 break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
-                    target_model=ContentType.objects.get_for_model(Accession)).values_list('name',
-                                                                                           flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
-                break
         cq.filter(search)
 
     if request.GET.get('filters'):
@@ -496,9 +485,6 @@ def get_panel_accession_list_count(request, panel_id):
             if 'field' in criteria and criteria.get('field') == 'panels':
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
-                break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
                 break
         cq.filter(filters)
 
@@ -536,6 +522,7 @@ def get_panel_accession_list(request, panel_id):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
+    cq.set_synonym_model(AccessionSynonym)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -545,11 +532,6 @@ def get_panel_accession_list(request, panel_id):
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
                 break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
-                    target_model=ContentType.objects.get_for_model(Accession)).values_list('name',
-                                                                                           flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
-                break
         cq.filter(search)
 
     if request.GET.get('filters'):
@@ -558,9 +540,6 @@ def get_panel_accession_list(request, panel_id):
             if 'field' in criteria and criteria.get('field') == 'panels':
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
-                break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
                 break
         cq.filter(filters)
 
@@ -662,6 +641,7 @@ def modify_panel_accessions(request, panel_id):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
+    cq.set_synonym_model(AccessionSynonym)
 
     if request.data['selection'].get('search'):
         search = json.loads(request.GET['search'])
@@ -671,11 +651,6 @@ def modify_panel_accessions(request, panel_id):
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
                 break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(
-                    target_model=ContentType.objects.get_for_model(Accession)).values_list('name',
-                                                                                           flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
-                break
         cq.filter(request.data['selection'].get('search'))
 
     if request.data['selection'].get('filters'):
@@ -684,9 +659,6 @@ def modify_panel_accessions(request, panel_id):
             if 'field' in criteria and criteria.get('field') == 'panels':
                 AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
-                break
-            if 'field' in criteria and criteria.get('field').lstrip('&') in EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('name', flat=True).distinct():
-                cq.select_synonym(AccessionSynonym)
                 break
         cq.filter(request.data['selection'].get('filters'))
 
