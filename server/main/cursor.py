@@ -66,6 +66,8 @@ class CursorField(object):
         self._op = '<' if field[0] == '-' else '>'
         self._ope = '<=' if field[0] == '-' else '>='
 
+        self._synonym_type = None
+
     @property
     def name(self):
         return self._name
@@ -77,6 +79,16 @@ class CursorField(object):
     @property
     def is_synonym(self):
         return self._type == CursorField.FIELD_TYPE_SYNONYM
+
+    def synonym_type(self):
+        if self.is_synonym and self._synonym_type is None:
+            from main.models import EntitySynonymType
+            self._synonym_type = EntitySynonymType.objects.get(name=self.name)
+        return self._synonym_type
+
+    @property
+    def is_multiple_synonym(self):
+        return self.synonym_type().multiple_entry
 
     @property
     def is_descriptor(self):
@@ -150,6 +162,17 @@ class CursorQuery(object):
         'iendswith': 'ILIKE'
     }
 
+    MULTI_SYNONYM_OPERATORS_MAP = {
+        'isnull': '=',
+        'notnull': '!=',
+        '=': '@>',
+        'eq': '@>',
+        '!=': 'NOT @>',
+        'neq': 'NOT @>',
+        'contains': 'LIKE',
+        'icontains': 'ILIKE',
+    }
+
     ARRAY_OPERATORS_MAP = {
         'in': '@>',
         'contains': '@>',
@@ -176,6 +199,8 @@ class CursorQuery(object):
         self._cursor_built = False
         self._prev_cursor = None
         self._next_cursor = None
+
+        self.sub_query_select = []
 
         self.query_select = []
         self.query_distinct = None
@@ -311,7 +336,8 @@ class CursorQuery(object):
                         elif prev_cf.is_synonym:
                             synonym_db_table = self._synonym_model._meta.db_table
                             alias = prev_cf.name + "_" + synonym_db_table
-                            lqs.append(self._cast_synonym_type(alias, prev_cf.inclusive_operator, self._cursor[prev_cf.index]))
+                            lqs.append(
+                                self._cast_synonym_type(alias, prev_cf.inclusive_operator, self._cursor[prev_cf.index]))
                             # lqs.append('"%s"."%s" %s %s' % (alias, 'name', prev_cf.inclusive_operator, final_value))
 
                         else:
@@ -459,24 +485,24 @@ class CursorQuery(object):
             return "TRUE" if value else "FALSE"
         else:
             return "'" + value.replace("'", "''") + "'"
-    #
-    # def _convert_synonym_value(self, value, cmp):
-    #     # adjust value in some cases
-    #     if cmp in ('isnull', 'notnull'):
-    #         return None
-    #     elif cmp in ('contains', 'icontains') and not isinstance(value, list):
-    #         return "%%" + value + "%%"
-    #     elif cmp in ('startswith', 'istartswith'):
-    #         return value + "%%"
-    #     elif cmp in ('endswith', 'iendswith'):
-    #         return "%%" + value
-    #     else:
-    #         return value
 
     def _convert_value(self, value, cmp):
         # adjust value in some cases
         if cmp in ('isnull', 'notnull'):
             return 'NULL'
+        elif cmp in ('contains', 'icontains') and not isinstance(value, list):
+            return "%%" + value + "%%"
+        elif cmp in ('startswith', 'istartswith'):
+            return value + "%%"
+        elif cmp in ('endswith', 'iendswith'):
+            return "%%" + value
+        else:
+            return value
+
+    def _convert_multi_synonym_value(self, value, cmp):
+        # adjust value in some cases
+        if cmp in ('isnull', 'notnull'):
+            return "'{}'"
         elif cmp in ('contains', 'icontains') and not isinstance(value, list):
             return "%%" + value + "%%"
         elif cmp in ('startswith', 'istartswith'):
@@ -592,7 +618,7 @@ class CursorQuery(object):
                         raise CursorQueryError(
                             'Synonym model is not define, use CursorQuery.set_synonym_model() method')
                     elif cf.name not in self._synonym_table_aliases:
-                        self.join_synonym(cf.name)
+                        self.join_synonym(cf)
 
                     alias = self._synonym_table_aliases[cf.name]
                     self.query_order_by.append('"%s"."name" %s' % (alias, order))
@@ -879,15 +905,19 @@ class CursorQuery(object):
                             raise CursorQueryError(
                                 'Synonym model is not define, use CursorQuery.set_synonym_model() method')
                         elif cf.name not in self._synonym_table_aliases:
-                            self.join_synonym(cf.name)
+                            self.join_synonym(cf)
 
-                            alias = self._synonym_table_aliases[cf.name]
+                        alias = self._synonym_table_aliases[cf.name]
 
+                        if cf.is_multiple_synonym:
+                            op = self.MULTI_SYNONYM_OPERATORS_MAP.get(cmp)
+
+                            lqs.append(self._cast_multi_synonym_type(db_table, alias, op, self._convert_multi_synonym_value(value, cmp)))
+
+                        else:
                             op = self.OPERATORS_MAP.get(cmp)
 
                             lqs.append(self._cast_synonym_type(alias, op, self._convert_value(value, cmp)))
-
-                            # lqs.append('"%s"."%s" %s %s' % (alias, 'name', op, self._make_value(self._convert_synonym_value(value, cmp), ('TEXT', 'TEXT', False))))
 
                     else:
                         field_model = self.model_fields[cf.name]
@@ -1042,6 +1072,21 @@ class CursorQuery(object):
 
         return 'COALESCE("%s"."name", %s) %s %s' % (table_alias, coalesce_value, operator, final_value)
 
+    def _cast_multi_synonym_type(self, table_alias, field_alias, operator, value):
+
+        if value is None:
+            value = "'{}'"
+
+        final_value = self._make_value(value, ('TEXT', 'TEXT', False))
+
+        if operator == 'ILIKE' or operator == 'LIKE':
+            return 'array_to_string("%s"."%s", \'\\0\') %s %s' % (table_alias, field_alias, operator, final_value)
+        if operator == '@>' or operator == 'NOT @>':
+            return '"%s"."%s" %s \'{%s}\'' % (table_alias, field_alias, operator, value)
+        else:
+            return '"%s"."%s" %s %s' % (table_alias, field_alias, operator, value)
+
+
     def join_descriptor(self, description, descriptor_name, fields=None):
         model_fields = {}
         db_table = self._model._meta.db_table
@@ -1100,25 +1145,42 @@ class CursorQuery(object):
         self.query_from.append(_from)
         return self
 
-    def join_synonym(self, synonym_type_name):
+    def join_synonym(self, synonym_cf):
         db_table = self._model._meta.db_table
         synonym_db_table = self._synonym_model._meta.db_table
-        alias = synonym_type_name + "_" + synonym_db_table
+        alias = synonym_cf.name + "_" + synonym_db_table
+        synonym_type = synonym_cf.synonym_type()
 
-        from main.models import EntitySynonymType
-        synonym_type = EntitySynonymType.objects.get(name=synonym_type_name)
+        self._synonym_table_aliases[synonym_cf.name] = alias
 
-        self._synonym_table_aliases[synonym_type_name] = alias
+        # --------------- MULTI -----------------
 
-        self.query_select.append('"%s"."name" AS "%s"' % (alias, synonym_type_name))
+        if synonym_cf.is_multiple_synonym:
 
-        on_clause = [
-            '"%s"."id" = "%s"."entity_id"' % (db_table, alias),
-            '"%s"."synonym_type_id" = %d' % (alias, synonym_type.id)
-        ]
-        _from = 'LEFT JOIN "%s" AS "%s" ON (%s)' % (synonym_db_table, alias, " AND ".join(on_clause))
+            _sub_query_select = ['"%s".*' % db_table,
+                                 'ARRAY(SELECT "%s"."name" FROM "%s" WHERE "%s"."synonym_type_id" = %d AND '
+                                 '"%s"."entity_id" = "%s"."id" ) AS "%s"' % (
+                                     synonym_db_table, synonym_db_table, synonym_db_table, synonym_type.id,
+                                     synonym_db_table, db_table, alias)]
 
-        self.query_from.append(_from)
+            _sub_query_from = '(SELECT DISTINCT %s FROM "%s") AS "%s"' % (",".join(_sub_query_select), db_table, db_table)
+
+            self.query_select.append('"%s"."%s" AS "%s"' % (db_table, alias, synonym_cf.name))
+
+            self.query_from[0] = _sub_query_from
+
+        # ---------------------------------------
+
+        else:
+            self.query_select.append('"%s"."name" AS "%s"' % (alias, synonym_cf.name))
+
+            on_clause = [
+                '"%s"."id" = "%s"."entity_id"' % (db_table, alias),
+                '"%s"."synonym_type_id" = %d' % (alias, synonym_type.id)
+            ]
+            _from = 'LEFT JOIN "%s" AS "%s" ON (%s)' % (synonym_db_table, alias, " AND ".join(on_clause))
+
+            self.query_from.append(_from)
 
         return self
 
