@@ -30,7 +30,7 @@ let View = Marionette.View.extend({
         'click @ui.change_label': 'onEditLabel',
         'click @ui.rename_btn': 'onRename',
         'click @ui.unique_btn': 'onToggleUnique',
-        'click @ui.multiple_entry': 'onToggleMultipleEntry',
+        'click @ui.multiple_entry_btn': 'onToggleMultipleEntry',
         'click @ui.has_language_btn': 'onToggleHasLanguage'
     },
 
@@ -40,7 +40,7 @@ let View = Marionette.View.extend({
             actions: {
                 edit: {display: true, event: 'onRename'},
                 tag: {display: true, event: 'onEditLabel'},
-                remove: {display: true, event: 'deleteLanguage'}
+                remove: {display: true, event: 'deleteSynonymType'}
             }
         }
     },
@@ -49,15 +49,31 @@ let View = Marionette.View.extend({
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function() {
-        // if ($.inArray("auth.delete_entitysynonymtype", this.model.perms) < 0) {
-        //     $(this.ui.delete_synonym_type).remove();
-        // }
+    actionsProperties: function () {
+        let properties = {
+            manage: {disabled: false},
+            remove: {disabled: false}
+        };
 
-        application.main.views.contentTypes.htmlFromValue(this.$el);
+        // @todo manage permissions
+
+        if (!window.application.permission.manager.isStaff() || !this.model.get('can_delete')) {
+            // $.inArray("auth.delete_entitysynonymtype", this.model.perms) < 0
+            properties.remove.disabled = true;
+        }
+
+        return properties;
+    },
+
+    onRender: function() {
+        window.application.main.views.contentTypes.htmlFromValue(this.$el);
     },
 
     deleteSynonymType: function () {
+        if (!this.model.get('can_delete') || !window.application.permission.manager.isStaff()) {
+            return false;
+        }
+
         this.model.destroy({wait: true});
     },
 
@@ -95,17 +111,35 @@ let View = Marionette.View.extend({
 
     onToggleUnique: function () {
         // @todo cannot be modified once there is some data
-        alert("u");
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
+            return false;
+        }
+
+        this.model.save({unique: !this.model.get('unique')}, {wait: true, patch: true}).then(function () {
+            $.alert.success(_t("Done"));
+        });
     },
 
     onToggleMultipleEntry: function () {
         // @todo cannot be modified once there is some data
-        alert("l");
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
+            return false;
+        }
+
+        this.model.save({multiple_entry: !this.model.get('multiple_entry')}, {wait: true, patch: true}).then(function () {
+            $.alert.success(_t("Done"));
+        });
     },
 
     onToggleHasLanguage: function () {
         // @todo cannot be modified once there is some data
-        alert("l");
+        if (!this.model.get('can_modify') || !window.application.permission.manager.isStaff()) {
+            return false;
+        }
+
+        this.model.save({has_language: !this.model.get('has_language')}, {wait: true, patch: true}).then(function () {
+            $.alert.success(_t("Done"));
+        });
     }
 });
 

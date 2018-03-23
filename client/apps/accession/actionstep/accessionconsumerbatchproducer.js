@@ -81,10 +81,12 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
         producerIndex: 'select[name=producer_index]',
         options: 'div[name=options]',
         producer: 'div[name=producer]',
-        delete_producer: 'span[name=delete-producer]'
+        add_producer: 'button[name=add-producer]',
+        delete_producer: 'button[name=delete-producer]'
     },
 
     events: {
+        'click @ui.add_producer': 'onAddProducer',
         'click @ui.delete_producer': 'onDeleteCurrentProducer'
     },
 
@@ -160,33 +162,38 @@ Format.ActionStepFormatDetailsView = Marionette.View.extend({
         }
     },
 
-    onChangeProducer: function() {
+    onAddProducer: function() {
         let format = this.model.get('format')['steps'][this.stepIndex];
         let idx = parseInt(this.ui.producerIndex.val());
         let producers =  format.producers;
         let producer = undefined;
 
-        if (idx < 0) {
-            // create a new one
-            if (producers.length >= 5) {
-                $.alert.warning(_t("Cannot create more than 5 producers"));
-            } else {
-                let nextIdx = producers.length;
+        if (producers.length >= 5) {
+            $.alert.warning(_t("Cannot create more than 5 producers"));
+        } else {
+            let nextIdx = producers.length;
 
-                producer = this.defaultProducer();
-                producer.index = nextIdx;
+            producer = this.defaultProducer();
+            producer.index = nextIdx;
 
-                // initial producer data
-                producers.push(producer);
+            // initial producer data
+            producers.push(producer);
 
-                this.ui.producerIndex
-                    .append('<option value="' + nextIdx + '">' + _t("Producer") + " " + nextIdx + '</option>')
-                    .val(nextIdx)
-                    .selectpicker('refresh');
+            this.ui.producerIndex
+                .append('<option value="' + nextIdx + '">' + _t("Producer") + " " + nextIdx + '</option>')
+                .val(nextIdx)
+                .selectpicker('refresh');
 
-                idx = nextIdx;
-            }
+            idx = nextIdx;
         }
+
+        this.storeCurrentProducer();
+        this.currentProducerIndex = idx;
+        this.loadCurrentProducer();
+    },
+
+    onChangeProducer: function() {
+        let idx = parseInt(this.ui.producerIndex.val());
 
         this.storeCurrentProducer();
         this.currentProducerIndex = idx;

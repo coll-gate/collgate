@@ -180,6 +180,10 @@ span.url {
     cursor: pointer;
 }
 
+.action-forbidden {
+    cursor: not-allowed;
+}
+
 .left-margin {
     margin-left: 10px;
 }

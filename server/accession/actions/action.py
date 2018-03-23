@@ -198,13 +198,12 @@ def action_process_step(request, act_id):
         if action_controller.is_current_step_done:
             raise SuspiciousOperation(_("The current step is done"))
 
-        # @todo
         if inputs_type == "list":
             input_data = request.data.get('list', [])
         elif inputs_type == "panel":
             input_data = []  # @todo from panel
         else:
-            input_data = []
+            raise SuspiciousOperation("Unsupported setup")
 
         action_controller.setup_data(input_data)
     elif action_type == "process":
@@ -373,7 +372,6 @@ def upload_action_id_content(request, act_id):
         parser.parse_csv(data)
 
     action_controller = ActionController(action)
-    action_controller.setup_data(parser.data, parser.columns)
 
     if not action_controller.is_current_step_valid:
         raise SuspiciousOperation(_("There is not current valid step to setup"))
@@ -384,7 +382,8 @@ def upload_action_id_content(request, act_id):
     action_controller.setup_data(parser.data, parser.columns)
 
     result = {
-        'id': action.id
+        'id': action.id,
+        'data': action.data
     }
 
     return HttpResponseRest(request, result)
