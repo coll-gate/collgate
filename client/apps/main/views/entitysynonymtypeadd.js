@@ -35,16 +35,17 @@ let View = Marionette.View.extend({
         this.validateName();
 
         if (!this.ui.add_synonym_type_name.hasClass('invalid')) {
-            let CreateLanguageDialog = Dialog.extend({
+            let CreateSynonymTypeDialog = Dialog.extend({
                 attributes: {
-                    'id': 'dlg_create_language'
+                    'id': 'dlg_create_synonym_type'
                 },
                 template: require('../templates/entitysynonymtypecreate.html'),
 
                 ui: {
                     add: "button.add",
-                    code: "#language_code",
-                    label: "#language_label"
+                    name: "input[name=synonym-type]",
+                    entity: "select[name=target-entity]",
+                    label: "input[name=label]"
                 },
 
                 events: {
@@ -61,9 +62,10 @@ let View = Marionette.View.extend({
                 },
 
                 onRender: function () {
-                    CreateLanguageDialog.__super__.onRender.apply(this);
+                    CreateSynonymTypeDialog.__super__.onRender.apply(this);
 
-                    this.ui.code.val(this.getOption('code'));
+                    this.ui.name.val(this.getOption('name'));
+                    this.ui.entity.selectpicker({});
                 },
 
                 validateLabel: function() {
@@ -92,22 +94,25 @@ let View = Marionette.View.extend({
 
                     if (this.validate()) {
                         let label = this.ui.label.val().trim();
+                        let targetModel = this.ui.entity.val();
 
                         this.getOption('collection').create({
-                            code: this.getOption('code'), label: label}, {wait: true});
+                            name: this.getOption('name'),
+                            target_model: targetModel,
+                            label: label}, {wait: true});
 
                         view.destroy();
                     }
                 }
             });
 
-            // show current language label dialog
-            let createLanguageDialog = new CreateLanguageDialog({
+            // show current synonym type label dialog
+            let createSynonymTypeDialog = new CreateSynonymTypeDialog({
                 collection: this.collection,
-                code: this.ui.add_language_code.val()});
-            createLanguageDialog.render();
+                name: this.ui.add_synonym_type_name.val()});
+            createSynonymTypeDialog.render();
 
-            this.ui.add_language_code.cleanField();
+            this.ui.add_synonym_type_name.cleanField();
         }
     },
 

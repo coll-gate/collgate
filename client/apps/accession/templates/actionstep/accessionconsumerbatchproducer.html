@@ -11,15 +11,14 @@
 <div class="row">
     <div class="col-lg-4" style="margin-bottom: 10px;">
         <label><%- _t('Producer number') %></label>
-        <select name="producer_index" class="form-control" title="<%- _t('Select or create a producer') %>">
-            <option value="-1"><%- _t("Add new") %></option>
-        </select>
+        <select name="producer_index" class="form-control" title="<%- _t('Select a producer') %>"></select>
     </div>
     <div class="col-lg-1">
         <label>&nbsp;</label>
-        <span class="btn btn-default form-control">
-            <span class="fa fa-lg fa-remove" name="delete-producer" title="<%- _t('Delete producer') %>" style="color: #760004; cursor: pointer;"></span>
-        </span>
+        <div class="btn-group" role="group" style="width: 100px;">
+            <button type="button" class="btn btn-default fa fa-lg fa-plus" name="add-producer" title="<%- _t('Create producer') %>" style="height: 32px;"></span>
+            <button type="button" class="btn btn-danger fa fa-lg fa-remove" name="delete-producer" title="<%- _t('Delete producer') %>" style="height: 32px;"></span>
+        </div>
     </div>
 </div>
 <div class="row">

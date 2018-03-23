@@ -137,6 +137,10 @@ let Controller = Marionette.Object.extend({
 
         let createActionView = new CreateActionDialog();
         createActionView.render();
+    },
+
+    getActionData: function(id, stepIndex) {
+        alert("todo");
     }
 });
 

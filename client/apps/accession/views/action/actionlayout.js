@@ -64,7 +64,6 @@ let Layout = LayoutView.extend({
         this.namingOptions = null;
         this.namingFormat = null;
         this.currentStepIndex = -1;
-        this.currentStepState = 0;
 
         self.namingOptionsPromise = $.ajax({
             type: "GET",
@@ -206,7 +205,6 @@ let Layout = LayoutView.extend({
                 } else if (inputsType === "panel") {
                     data.panel = inputsData;
                 } else if (inputsType === "upload") {
-                    data.upload = inputsData; // @todo upload the document or manage it by the client
                 }
 
                 this.model.save(data, {wait: true, patch: true}).then(function () {

@@ -139,9 +139,8 @@ ActionStepFormat.ActionStepReadView = Marionette.View.extend({
             this.downloadData('csv', this.getOption("stepIndex"));
         } else if (type === 'original-xlsx') {
             this.downloadData('xlsx', this.getOption("stepIndex"));
-        } else if (type === 'original-panel') {
-            // @todo a dialog to name the panel
-            alert("todo");
+        } else if (type === 'original-display') {
+            window.application.accession.controllers.action.getActionData(this.model.get('id'), this.getOption("stepIndex"));
         }
 
         this.ui.get_data.val("").selectpicker('refresh');

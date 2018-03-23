@@ -358,7 +358,7 @@ class EntitySynonymType(models.Model):
 
     # name pattern
     NAME_VALIDATOR_OPTIONAL = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": "^[a-zA-Z0-9\-\_]+$",
-                               "require": False}
+                               "required": False}
 
     # label validator
     LABEL_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^[^\s]+(\s+[^\s]+)*$"}

@@ -1,0 +1,53 @@
+<!--
+ - @file entitysynonymtypecreate.html
+ - @brief
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2017-06-06
+ - @copyright Copyright (c) 2017 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%- _t("Add a type of synonym") %></h4>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label"><%- _t("Code") %></label>
+                            <input class="form-control name" type="text" name="synonym-type" value="" minlength="3" maxlength="128" readonly="true" autocomplete="off" style="width:100%;">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label"><%- _t("Target entity") %></label>
+                            <select class="form-control target-entity" name="target-entity" style="width:100%;">
+                                <option value="accession.accession"><%- _t("Accession") %></option>
+                                <option value="classification.classificationentry"><%- _t("Classification entry") %></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="control-label"><%- _t("Label for current language") %></label>
+                            <input class="form-control language-label" type="text" name="label" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%;">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %></button>
+            <button type="button" class="btn btn-success add"><%- _t("Add") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

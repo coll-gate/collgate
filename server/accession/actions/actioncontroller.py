@@ -191,7 +191,7 @@ class ActionController(object):
         step_format = action_type_steps[step_index]
         action_step_format = ActionStepFormatManager.get(step_format['type'])
 
-        if not action_step_format.accep_user_data:
+        if not action_step_format.accept_user_data:
             raise ActionError("Current step does not accept data from user")
 
         action_step = action_steps[step_index]
