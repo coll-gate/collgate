@@ -21,6 +21,10 @@
         <label class="control-label"><%- _t('Upload the refined list of accessions') %></label>
         <input name="accession-upload" type="file" class="form-control" accept="application/vnd.ms-excel,text/csv,.csv,.xlsx" />
     </div>
+    <div class="col-lg-6 form-group" name="uploaded" style="display: none;">
+        <label class="control-label"><%- _t('Upload the refined list of accessions') %></label>
+        <input class="form-control" type="text" value="<%- _t('Currently defined') %>" readonly="readonly" />
+    </div>
     <div class="col-lg-6 form-group" name="panel-group">
         <label class="control-label"><%- _t('Setup the refined list of accessions from the temporary panel') %></label>
         <button name="set-from-panel"><%- _t('Set from panel') %></button>

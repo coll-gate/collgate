@@ -25,7 +25,9 @@ div.panel-heading.action-current > a:before {
 }
 
 div.panel-heading.action-current > a {
-    background: #080808aa;
+    /*background:#080808aa;*/
+    text-shadow: 2px 0 0 #666, -2px 0 0 #666, 0 2px 0 #666, 0 -2px 0 #666, 1px 1px #666, -1px -1px 0 #666, 1px -1px 0 #666, -1px 1px 0 #666;
+    /*-webkit-text-stroke: 3px black;*/
     padding: 5px 5px 5px 0px;
     border-radius: 5px;
 }

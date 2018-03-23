@@ -33,7 +33,9 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
         accession_list: 'select[name=get-accession-list]',
         upload_group: 'div[name=upload]',
         panel_group: 'div[name=panel-group]',
-        accession_upload: 'input[name=accession-upload]'
+        accession_upload: 'input[name=accession-upload]',
+        accession_upload_group: 'div[name=upload]',
+        accession_uploaded_group: 'div[name=uploaded]'
     },
 
     events: {
@@ -50,18 +52,20 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     onRender: function () {
         this.ui.panel_group.css('display', 'none');
         this.ui.accession_list.selectpicker({});
+
+        // get accession list from the previous step
+        if (this.getOption("stepIndex") < 1) {
+            this.ui.accession_list.prop('disabled', true);
+        }
+
+        if (this.stepData().state >= 1) {
+            this.ui.accession_upload_group.css('display', 'none');
+            this.ui.accession_uploaded_group.css('display', 'block');
+        }
     },
 
     onBeforeDestroy: function () {
         this.ui.accession_list.selectpicker('destroy');
-    },
-
-    exportInput: function () {
-
-    },
-
-    importData: function () {
-
     },
 
     inputsType: function () {
@@ -75,7 +79,10 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     onGetAccessionList: function () {
         let type = this.ui.accession_list.val();
 
-        // get accession list from the previous step
+        if (this.getOption("stepIndex") < 1) {
+            return;
+        }
+
         if (type === 'original-csv') {
             this.downloadData('csv', this.getOption("stepIndex")-1);
         } else if (type === 'original-xlsx') {
@@ -129,6 +136,7 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
             }
         }).done(function (data) {
             self.ui.accession_upload.prop('disabled', false);
+            self.render();
 
             $.alert.success(_t("Successfully uploaded !"));
         }).fail(function () {
@@ -136,6 +144,9 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
             self.ui.accession_upload.prop('disabled', false);
         });
     }
+});
+
+Format.ActionStepReadView = ActionStepFormat.ActionStepReadView.extend({
 });
 
 Format.ActionStepFormatDetailsView = ActionStepFormat.ActionStepFormatDetailsView.extend({

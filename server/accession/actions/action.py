@@ -154,10 +154,13 @@ def update_action(request, act_id):
         "properties": {
             "action": {"type": "string", "enum": ['reset', 'setup', 'process']},    # action in term of API
             "inputs_type": {"type": "string", "enum": ['none', 'panel', 'list'], "required": False},
-            "panel": {"type": "numeric", "required": False},
+            "panel": {"type": ["numeric", "null"], "required": False},
             "list": {"type": "array", "required": False, "minItems": 0, "maxItems": 32768, "additionalItems": {
                     "type": "number"
-                }, "items": []}
+                }, "items": []},
+            "columns": {"type": "array", "required": False, "minItems": 0, "maxItems": 100, "additionalItems": {
+                    "type": "string"
+                }, "items": []},
         },
     }, perms={
         'accession.change_action': _("You are not allowed to modify an action")
@@ -198,14 +201,17 @@ def action_process_step(request, act_id):
         if action_controller.is_current_step_done:
             raise SuspiciousOperation(_("The current step is done"))
 
+        # @todo columns list...
         if inputs_type == "list":
+            input_columns = []  # @todo might be sent with the request
             input_data = request.data.get('list', [])
         elif inputs_type == "panel":
-            input_data = []  # @todo from panel
+            input_columns = []  # @todo detect available columns from the panel
+            input_data = []     # @todo and take columns of interest
         else:
             raise SuspiciousOperation("Unsupported setup")
 
-        action_controller.setup_data(input_data)
+        action_controller.setup_data(input_data, input_columns)
     elif action_type == "process":
         # process the step according the previously set inputs or options and done it
         action_controller = ActionController(action)
@@ -325,7 +331,7 @@ def get_action_details(request, act_id):
     return HttpResponseRest(request, result)
 
 
-@RestActionIdUpload.def_auth_request(Method.POST, Format.ANY, perms={
+@RestActionIdUpload.def_auth_request(Method.POST, Format.JSON, perms={
     'accession.change_action': _("You are not allowed to modify an action")
 })
 def upload_action_id_content(request, act_id):
