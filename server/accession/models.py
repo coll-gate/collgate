@@ -160,6 +160,10 @@ class Accession(DescribableEntity):
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             }
 
+            if synonym_type.multiple_entry:
+                columns['&' + synonym_type.name]['column_display'] = False
+                columns['&' + synonym_type.name]['search_display'] = True
+
         return columns
 
     class Meta:
@@ -637,7 +641,7 @@ class AccessionPanel(Panel):
     """
 
     # related accessions
-    accessions = models.ManyToManyField(Accession)
+    accessions = models.ManyToManyField(Accession, related_name='panels')
 
     @classmethod
     def get_defaults_columns(cls):
@@ -680,6 +684,15 @@ class AccessionPanel(Panel):
             ("get_accessionpanel", "Can get a accession panel"),
             ("list_accessionpanel", "Can list accession panel"),
         )
+
+
+# class AccessionView(Accession):
+#     # panels
+#     panels = ArrayField(models.IntegerField())
+#
+#     class Meta:
+#         managed = False
+#         db_table = 'accession_panel_list'
 
 
 class AccessionView(models.Model):
@@ -752,7 +765,7 @@ class AccessionView(models.Model):
 
     @classmethod
     def get_defaults_columns(cls):
-        return {
+        columns = {
             'primary_classification_entry': {
                 'label': _('Classification'),
                 'field': 'name',
@@ -774,16 +787,16 @@ class AccessionView(models.Model):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
-            'synonym': {
-                'label': _('Synonym'),
-                'field': 'name',
-                'query': False,  # done by a prefetch related
-                'format': {
-                    'type': 'string',
-                    'model': 'accession.accessionsynonym'
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            },
+            # 'synonym': {
+            #     'label': _('Synonym'),
+            #     'field': 'name',
+            #     'query': False,  # done by a prefetch related
+            #     'format': {
+            #         'type': 'string',
+            #         'model': 'accession.accessionsynonym'
+            #     },
+            #     'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            # },
             'name': {
                 'label': _('Name'),
                 'query': False,  # done by a prefetch related
@@ -801,8 +814,46 @@ class AccessionView(models.Model):
                     'model': 'accession.accession'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'panels': {
+                'label': _('Linked panels'),
+                'field': 'name',
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'entity',
+                    'model': 'accession.accessionpanel'
+                },
+                'available_operators': [
+                    'contains',
+                    'not_contains',
+                    'overlap',
+                    'not_overlap'
+                ],
+
+                'column_display': False,
+                'search_display': True
             }
         }
+
+        synonym_types = EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession))
+
+        for synonym_type in synonym_types:
+            columns['&' + synonym_type.name] = {
+                'label': synonym_type.get_label(),
+                # 'field': 'synonym',
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.accessionsynonym',
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            }
+
+            if synonym_type.multiple_entry:
+                columns['&' + synonym_type.name]['column_display'] = False
+                columns['&' + synonym_type.name]['search_display'] = True
+
+        return columns
 
 
 class BatchView(models.Model):

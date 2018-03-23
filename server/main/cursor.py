@@ -200,8 +200,6 @@ class CursorQuery(object):
         self._prev_cursor = None
         self._next_cursor = None
 
-        self.sub_query_select = []
-
         self.query_select = []
         self.query_distinct = None
         self.query_from = ['"%s"' % model._meta.db_table]
@@ -220,6 +218,9 @@ class CursorQuery(object):
         self._filter_clauses = []
 
         db_table = model._meta.db_table
+
+        self.sub_query_select = ['"%s".*' % db_table]
+        self._sub_query_array_fields = {}
 
         self.model_fields = {}
 
@@ -262,6 +263,9 @@ class CursorQuery(object):
             else:
                 self.model_fields[field.name] = ('TEXT', 'TEXT', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
+
+    def get_model(self):
+        return self._model
 
     def count_fields(self):
         return self._counts
@@ -912,7 +916,8 @@ class CursorQuery(object):
                         if cf.is_multiple_synonym:
                             op = self.MULTI_SYNONYM_OPERATORS_MAP.get(cmp)
 
-                            lqs.append(self._cast_multi_synonym_type(db_table, alias, op, self._convert_multi_synonym_value(value, cmp)))
+                            lqs.append(self._cast_multi_synonym_type(db_table, alias, op,
+                                                                     self._convert_multi_synonym_value(value, cmp)))
 
                         else:
                             op = self.OPERATORS_MAP.get(cmp)
@@ -920,10 +925,24 @@ class CursorQuery(object):
                             lqs.append(self._cast_synonym_type(alias, op, self._convert_value(value, cmp)))
 
                     else:
-                        field_model = self.model_fields[cf.name]
-                        op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(
-                            cmp)
-                        lqs.append(self._cast_default_type(db_table, cf.name, op, self._convert_value(value, cmp)))
+                        if self._sub_query_array_fields.get(cf.name):
+                            if not self._sub_query_array_fields[cf.name].get('handle'):
+                                self.join_sub_query_array_field(cf)
+
+                            field_model = ('ARRAY', 'INTEGER')
+
+                            op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(cmp)
+
+                            final_value = self._make_value(self._convert_value(value, cmp), field_model)
+
+                            lqs.append('"%s"."%s" %s %s' % (db_table, cf.name, op, final_value))
+
+                        else:
+                            field_model = self.model_fields[cf.name]
+
+                            op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(cmp)
+
+                            lqs.append(self._cast_default_type(db_table, cf.name, op, self._convert_value(value, cmp)))
 
             # operator
             elif filter_type == 'op':
@@ -1086,7 +1105,6 @@ class CursorQuery(object):
         else:
             return '"%s"."%s" %s %s' % (table_alias, field_alias, operator, value)
 
-
     def join_descriptor(self, description, descriptor_name, fields=None):
         model_fields = {}
         db_table = self._model._meta.db_table
@@ -1145,6 +1163,26 @@ class CursorQuery(object):
         self.query_from.append(_from)
         return self
 
+    def join_sub_query_array_field(self, cf):
+
+        related_db_table = self._sub_query_array_fields[cf.name]['related_db_table']
+        selected_field = self._sub_query_array_fields[cf.name]['selected_field']
+        from_related_field = self._sub_query_array_fields[cf.name]['from_related_field']
+        to_related_field = self._sub_query_array_fields[cf.name]['to_related_field']
+        alias = cf.name
+        db_table = self._model._meta.db_table
+
+        self.sub_query_select.append(
+            'ARRAY(SELECT "%s"."%s" FROM "%s" WHERE "%s"."%s" = "%s"."%s" ) AS "%s"' % (
+                related_db_table, selected_field, related_db_table, db_table, from_related_field, related_db_table,
+                to_related_field, alias)
+        )
+        # self.query_select.append('"%s"."%s"' % (db_table, alias))
+
+        self._sub_query_array_fields[cf.name]['handle'] = True
+
+        return self
+
     def join_synonym(self, synonym_cf):
         db_table = self._model._meta.db_table
         synonym_db_table = self._synonym_model._meta.db_table
@@ -1157,17 +1195,16 @@ class CursorQuery(object):
 
         if synonym_cf.is_multiple_synonym:
 
-            _sub_query_select = ['"%s".*' % db_table,
-                                 'ARRAY(SELECT "%s"."name" FROM "%s" WHERE "%s"."synonym_type_id" = %d AND '
-                                 '"%s"."entity_id" = "%s"."id" ) AS "%s"' % (
-                                     synonym_db_table, synonym_db_table, synonym_db_table, synonym_type.id,
-                                     synonym_db_table, db_table, alias)]
-
-            _sub_query_from = '(SELECT DISTINCT %s FROM "%s") AS "%s"' % (",".join(_sub_query_select), db_table, db_table)
+            self.sub_query_select.append(
+                'ARRAY(SELECT "%s"."name" FROM "%s" WHERE "%s"."synonym_type_id" = %d AND "%s"."entity_id" = "%s"."id" ) AS "%s"' % (
+                    synonym_db_table, synonym_db_table, synonym_db_table, synonym_type.id, synonym_db_table, db_table,
+                    alias))
 
             self.query_select.append('"%s"."%s" AS "%s"' % (db_table, alias, synonym_cf.name))
 
-            self.query_from[0] = _sub_query_from
+            # _sub_query_from = '(SELECT DISTINCT %s FROM "%s") AS "%s"' % (",".join(self.sub_query_select), db_table, db_table)
+            #
+            # self.query_from[0] = _sub_query_from
 
         # ---------------------------------------
 
@@ -1361,20 +1398,45 @@ class CursorQuery(object):
 
     def set_synonym_model(self, synonym_model):
         """
-        Make left join to the synonym model of the entity.
+        Make link to the synonym model of the entity.
 
-        :param fields:
+        :param synonym_model: django model of the entity synonyms
         :return: self
         """
 
         if self._query_set is not None:
-            raise CursorQueryError("Cannot call set_synonym_model() after iterate over results")
+            raise CursorQueryError("Can not call set_synonym_model() after iterate over results")
 
         if self._synonym_model is not None:
-            raise CursorQueryError("Cannot call set_synonym_model() one more time")
+            raise CursorQueryError("Can not call set_synonym_model() one more time")
 
         if issubclass(synonym_model, models.Model):
             self._synonym_model = synonym_model
+        else:
+            raise CursorQueryError("Only subclass of models.Model can be passed as arg to set_synonym_model() method")
+
+        return self
+
+    # def m2m_to_array_field(self, related_model, related_field_name, field_alias):
+    def m2m_to_array_field(self, relationship, selected_field, from_related_field, to_related_field, alias):
+        """
+        Add array field which contains elements of the given model field.
+        """
+
+        from django.db.models.fields.related import RelatedField
+
+        x = issubclass(RelatedField, type(relationship))
+        print(x)
+
+        # if not issubclass(RelatedField, type(relationship)):
+        #     raise CursorQueryError('relationship')
+
+        self._sub_query_array_fields[alias] = {
+            'related_db_table': relationship.through._meta.db_table,
+            'selected_field': selected_field,
+            'from_related_field': from_related_field,
+            'to_related_field': to_related_field
+        }
 
         return self
 
@@ -1515,6 +1577,12 @@ class CursorQuery(object):
         except KeyError as e:
             raise CursorQueryError(e)
 
+        # perform sub query
+        if len(self.sub_query_select) > 1:
+            _sub_query_from = '(SELECT DISTINCT %s FROM "%s") AS "%s"' % (
+                ",".join(self.sub_query_select), self._model._meta.db_table, self._model._meta.db_table)
+            self.query_from[0] = _sub_query_from
+
         _select = "SELECT DISTINCT " if self.query_distinct else "SELECT " + ", ".join(self.query_select)
         _from = "FROM " + " ".join(self.query_from)
 
@@ -1623,6 +1691,12 @@ class CursorQuery(object):
             self._process_filter()
         except KeyError as e:
             raise CursorQueryError(e)
+
+        # perform sub query
+        if len(self.sub_query_select) > 1:
+            _sub_query_from = '(SELECT DISTINCT %s FROM "%s") AS "%s"' % (
+                ",".join(self.sub_query_select), self._model._meta.db_table, self._model._meta.db_table)
+            self.query_from[0] = _sub_query_from
 
         _select = "SELECT DISTINCT COUNT(*)" if self.query_distinct else "SELECT COUNT(*)"
         _from = "FROM " + " ".join(self.query_from)

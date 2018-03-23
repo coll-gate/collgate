@@ -235,30 +235,39 @@ def get_accession_list(request):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
-    cq.set_synonym_model(AccessionSynonym)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
-
-        for criteria in search:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
+        # for criteria in search:
+        #     if 'field' in criteria and criteria.get('field') == 'panels':
+        #         AccessionView._meta.model_name = "accession"
+        #         cq = CursorQuery(AccessionView)
+        #         break
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
-        for criteria in filters:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
+        # for criteria in filters:
+        #     if 'field' in criteria and criteria.get('field') == 'panels' and cq.get_model() != AccessionView:
+        #         AccessionView._meta.model_name = "accession"
+        #         cq = CursorQuery(AccessionView)
+        #         break
         cq.filter(filters)
+
+    cq.m2m_to_array_field(
+        relationship=AccessionPanel.accessions,
+        selected_field='accessionpanel_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='panels'
+    )
+
+    cq.set_synonym_model(AccessionSynonym)
 
     cq.prefetch_related(Prefetch(
         "synonyms",
-        queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language')))
+        queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language')
+    ))
 
     cq.select_related('primary_classification_entry->name', 'primary_classification_entry->rank')
 
@@ -276,6 +285,7 @@ def get_accession_list(request):
             'layout': accession.layout_id,
             'descriptors': accession.descriptors,
             'synonyms': {},
+            # 'panels': [],
             'primary_classification_entry_details': {
                 'id': accession.primary_classification_entry.id,
                 'name': accession.primary_classification_entry.name,
@@ -291,6 +301,9 @@ def get_accession_list(request):
                 'synonym_type': synonym.synonym_type_id,
                 'language': synonym.language
             }
+
+        # for panel in accession.panels.all():
+        #     a['panels'].append(panel.id)
 
         accession_items.append(a)
 
