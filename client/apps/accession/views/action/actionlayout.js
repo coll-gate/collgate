@@ -52,6 +52,8 @@ let Layout = LayoutView.extend({
 
         if (this.model.isNew()) {
             this.listenTo(this.model, 'change:id', this.onActionCreate, this);
+        } else {
+            this.listenTo(this.model, 'change:data', this.onActionUpdate, this);
         }
 
         // naming options
@@ -90,6 +92,10 @@ let Layout = LayoutView.extend({
             /*trigger: true,*/
             replace: false
         });
+    },
+
+    onActionUpdate: function() {
+        this.setupAllSteps(this.actionType.attributes);
     },
 
     enableTabs: function () {

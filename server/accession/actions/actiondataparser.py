@@ -11,6 +11,8 @@
 from django.utils.translation import ugettext_lazy as _
 from openpyxl import Workbook, load_workbook
 
+from accession.actions.actionstepformat import ActionStepFormat
+
 
 class ActionDataParser(object):
 
@@ -39,11 +41,22 @@ class ActionDataParser(object):
         else:
             raise ImportError(_("Unsupported CSV format"))
 
-        self._columns = header.split(separator)
-        num_cols = len(self._columns)
+        columns = header.split(separator)
+        num_cols = len(columns)
 
         if num_cols <= 0 or num_cols > 100:
             raise ImportError(_("Number of columns must be comprised between 1 to 100"))
+
+        # map to interest of the column
+        for col in columns:
+            if col == "accession_id":
+                self._columns.append(ActionStepFormat.IO_ACCESSION_ID)
+            elif col == "batch_id":
+                self._columns.append(ActionStepFormat.IO_BATCH_ID)
+            elif col == "descriptor_id":
+                self._columns.append(ActionStepFormat.IO_DESCRIPTOR)
+            else:
+                self._columns.append(-1)
 
         row = 0
 
@@ -66,6 +79,8 @@ class ActionDataParser(object):
         ws = wb.active
         num_cols = 101
 
+        columns = []
+
         # count filled cells for the first row
         for i in range(1, 101):
             cell = ws.cell(row=1, column=i)
@@ -73,10 +88,21 @@ class ActionDataParser(object):
                 num_cols = i - 1
                 break
 
-            self._columns.append(cell.value)
+            columns.append(cell.value)
 
         if num_cols <= 0 or num_cols > 100:
             raise ImportError(_("Number of columns must be comprised between 1 to 100"))
+
+        # map to interest of the column
+        for col in columns:
+            if col == "accession_id":
+                self._columns.append(ActionStepFormat.IO_ACCESSION_ID)
+            elif col == "batch_id":
+                self._columns.append(ActionStepFormat.IO_BATCH_ID)
+            elif col == "descriptor_id":
+                self._columns.append(ActionStepFormat.IO_DESCRIPTOR)
+            else:
+                self._columns.append(-1)
 
         for row in ws.iter_rows(min_row=2, max_col=num_cols, max_row=100000):
             empty = 0

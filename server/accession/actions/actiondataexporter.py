@@ -51,6 +51,7 @@ class ActionDataExporter(object):
         cols = [[] for x in range(0, len(data_format))]
 
         if len(data_format) == 1:
+            # single column is direct
             if data_format[0] == ActionStepFormat.IO_ACCESSION_ID:
                 cols[0] = Accession.objects.filter(id__in=data).iterator()
             elif data_format[0] == ActionStepFormat.IO_BATCH_ID:
@@ -60,6 +61,7 @@ class ActionDataExporter(object):
             else:
                 cols[0] = None
         else:
+            # multiple columns, sub-array
             for f in data_format:
                 if f == ActionStepFormat.IO_ACCESSION_ID:
                     cols[f] = Accession.objects.filter(id__in=data[f]).iterator()

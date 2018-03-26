@@ -202,10 +202,10 @@ class ActionController(object):
             raise ActionError("Current action step state must be initial or setup")
 
         # validate data according to step format
-        action_step_format.validate(step_format, input_data, input_columns)
+        final_data = action_step_format.validate(step_format, input_data, input_columns)
 
         action_step['state'] = ActionController.STEP_SETUP
-        action_step['data'] = input_data
+        action_step['data'] = final_data
 
         # finally save
         self.action.save()
@@ -312,7 +312,7 @@ class ActionController(object):
 
         missing = []
 
-        self.get_missing_entities(action_step['data'], action_step_format.input_format, missing)
+        self.get_missing_entities(action_step['data'], action_step_format.data_format, missing)
 
         # now for missing entities bulk create them
         ActionToEntity.objects.bulk_create(missing)

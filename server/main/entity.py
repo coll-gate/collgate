@@ -381,6 +381,8 @@ def patch_entity_synonym_type(request, est_id):
         'name': entity_synonym_type.name
     }
 
+    # @todo check if some date to avoid changing unique/multiple_entry/has_language
+
     if name and name != entity_synonym_type.name:
         if EntitySynonymType.objects.filter(name__exact=name).exists():
             raise SuspiciousOperation(_("Name of synonym type of entity already in usage"))

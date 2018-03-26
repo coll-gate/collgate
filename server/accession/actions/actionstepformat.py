@@ -42,6 +42,7 @@ class ActionStepFormat(object):
     Action type step format base class.
     """
 
+    IO_UNDEFINED = -1
     IO_ACCESSION_ID = 0
     IO_BATCH_ID = 1
     IO_DESCRIPTOR = 2
@@ -291,7 +292,30 @@ class ActionStepAccessionList(ActionStepFormat):
         self.accept_user_data = True
 
     def validate(self, action_type_format, data, columns):
-        return None
+        p = 0
+        idx = -1
+
+        for col in columns:
+            if col == ActionStepFormat.IO_ACCESSION_ID:
+                idx = p
+                break
+
+            p += 1
+
+        if idx < 0:
+            raise ActionError(_("Data does not contains the accession_id column"))
+
+        # only keep column of ids
+        output = []
+
+        if data:
+            if isinstance(data[0], (tuple, list)):
+                for r in data:
+                    output.append(int(r[idx]))
+            else:
+                output = data
+
+        return output
 
     def check(self, action_controller, action_type_format):
         # nothing to check

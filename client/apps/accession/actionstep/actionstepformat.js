@@ -97,6 +97,10 @@ ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
         return null;
     },
 
+    stepData: function() {
+        return this.model.get('data')['steps'][this.getOption('stepIndex')];
+    },
+
     /**
      * Download the data of the step, format as csv or xlsx.
      * @param data_format

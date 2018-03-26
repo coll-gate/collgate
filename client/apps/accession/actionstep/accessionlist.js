@@ -34,13 +34,14 @@ AccessionList.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.ext
         panel_group: "div[name=panel]",
         upload_group: "div[name=upload]",
         manual_group: "div[name=manual]",
+        accession_upload: 'input[name=accession-upload]',
         panel: "select[name=accession-panel]",
-        upload: "input[name=accession-upload]",
         manual: "select[name=accession-list]"
     },
 
     events: {
-        'change @ui.list_type': 'onChangeListType'
+        'change @ui.list_type': 'onChangeListType',
+        'change @ui.accession_upload': 'onAccessionUpload'
     },
 
     initialize: function(options) {
@@ -50,131 +51,112 @@ AccessionList.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.ext
     },
 
     onRender: function() {
-        if (this.getOption('readonly')) {
-
-        } else {
-            this.ui.list_type.selectpicker({});
-        }
+        this.ui.list_type.selectpicker({});
     },
 
     onAttach: function () {
-        if (this.getOption('readonly')) {
-            // @todo can download the list of entries as CSV or XLSX
-        } else {
-            this.ui.panel.select2({
-                dropdownParent: this.$el,
-                ajax: {
-                    url: window.application.url(['accession', 'accessionpanel', 'search']),
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        params.term || (params.term = '');
+        this.ui.panel.select2({
+            dropdownParent: this.$el,
+            ajax: {
+                url: window.application.url(['accession', 'accessionpanel', 'search']),
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    params.term || (params.term = '');
 
-                        return {
-                            filters: JSON.stringify({
-                                method: 'icontains',
-                                fields: ['name'],
-                                name: params.term
-                            }),
-                            cursor: params.next
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.next = null;
-
-                        if (data.items.length >= 30) {
-                            params.next = data.next || null;
-                        }
-
-                        let results = [];
-
-                        for (let i = 0; i < data.items.length; ++i) {
-                            results.push({
-                                id: data.items[i].id,
-                                text: data.items[i].label
-                            });
-                        }
-
-                        return {
-                            results: results,
-                            pagination: {
-                                more: params.next != null
-                            }
-                        };
-                    },
-                    cache: true
+                    return {
+                        filters: JSON.stringify({
+                            method: 'icontains',
+                            fields: ['name'],
+                            name: params.term
+                        }),
+                        cursor: params.next
+                    };
                 },
-                minimumInputLength: 3,
-                placeholder: _t("Select a panel")
-            });
+                processResults: function (data, params) {
+                    params.next = null;
 
-            this.ui.manual.select2({
-                multiple: true,
-                dropdownParent: this.$el,
-                ajax: {
-                    url: window.application.url(['accession', 'accession', 'search']),
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        params.term || (params.term = '');
+                    if (data.items.length >= 30) {
+                        params.next = data.next || null;
+                    }
 
-                        return {
-                            filters: JSON.stringify({
-                                method: 'icontains',
-                                fields: ['name', 'code'],
-                                name: params.term
-                            }),
-                            cursor: params.next
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.next = null;
+                    let results = [];
 
-                        if (data.items.length >= 30) {
-                            params.next = data.next || null;
+                    for (let i = 0; i < data.items.length; ++i) {
+                        results.push({
+                            id: data.items[i].id,
+                            text: data.items[i].label
+                        });
+                    }
+
+                    return {
+                        results: results,
+                        pagination: {
+                            more: params.next != null
                         }
-
-                        let results = [];
-
-                        for (let i = 0; i < data.items.length; ++i) {
-                            results.push({
-                                id: data.items[i].id,
-                                text: data.items[i].label
-                            });
-                        }
-
-                        return {
-                            results: results,
-                            pagination: {
-                                more: params.next != null
-                            }
-                        };
-                    },
-                    cache: true
+                    };
                 },
-                width: "100%",
-                allowClear: true,
-                minimumInputLength: 1,
-                placeholder: _t("Enter a value.")
-            }).fixSelect2Position();
-        }
+                cache: true
+            },
+            minimumInputLength: 3,
+            placeholder: _t("Select a panel")
+        });
+
+        this.ui.manual.select2({
+            multiple: true,
+            dropdownParent: this.$el,
+            ajax: {
+                url: window.application.url(['accession', 'accession', 'search']),
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    params.term || (params.term = '');
+
+                    return {
+                        filters: JSON.stringify({
+                            method: 'icontains',
+                            fields: ['name', 'code'],
+                            name: params.term
+                        }),
+                        cursor: params.next
+                    };
+                },
+                processResults: function (data, params) {
+                    params.next = null;
+
+                    if (data.items.length >= 30) {
+                        params.next = data.next || null;
+                    }
+
+                    let results = [];
+
+                    for (let i = 0; i < data.items.length; ++i) {
+                        results.push({
+                            id: data.items[i].id,
+                            text: data.items[i].label
+                        });
+                    }
+
+                    return {
+                        results: results,
+                        pagination: {
+                            more: params.next != null
+                        }
+                    };
+                },
+                cache: true
+            },
+            width: "100%",
+            allowClear: true,
+            minimumInputLength: 1,
+            placeholder: _t("Enter a value.")
+        }).fixSelect2Position();
     },
 
     onBeforeDestroy: function() {
         this.ui.list_type.selectpicker('destroy');
-
-        if (!this.getOption('readonly')) {
-         //   this.ui.manual.select2('destroy');
-//            this.ui.panel.select2('destroy');
-        }
-    },
-
-    exportInput: function() {
-
-    },
-
-    importData: function() {
-
+        this.ui.manual.select2('destroy');
+        this.ui.panel.select2('destroy');
     },
 
     inputsType: function() {
@@ -187,7 +169,7 @@ AccessionList.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.ext
         if (v === "panel") {
             return parseInt(this.ui.panel.val());
         } else if (v === "upload") {
-            return {}; // @todo
+            return "upload";
         } else if (v === "list") {
             let ids = this.ui.manual.val();
 
@@ -215,6 +197,56 @@ AccessionList.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.ext
             this.ui.upload_group.css('display', 'none');
             this.ui.manual_group.css('display', 'block');
         }
+    },
+
+    onAccessionUpload: function () {
+        let file = this.ui.accession_upload[0].files[0];
+        this.uploadFile(file, 'data');
+    },
+
+    uploadFile: function (file, target) {
+        let self = this;
+
+        let formData = new FormData();
+        formData.append('file', file);
+        formData.append('target', target);
+
+        $.ajax({
+            type: "POST",
+            url: window.application.url(['accession', 'action', this.model.get('id'), 'upload']),
+            encType: "multipart/form-data",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            xhr: function () {
+                let xhr = $.ajaxSettings.xhr();
+
+                // progression
+                xhr.onprogress = function (e) {
+                    self.ui.accession_upload.prop('disabled', true);
+                };
+
+                // progression
+                xhr.upload.onprogress = function (e) {
+                    self.ui.accession_upload.prop('disabled', true);
+                };
+
+                return xhr;
+            },
+            beforeSend: function () {
+                // cancel upload button
+                // cancelButton.click(xhr.abort); @todo
+            }
+        }).done(function (data) {
+            self.ui.accession_upload.prop('disabled', false);
+            self.model.set('data', data.data);
+
+            $.alert.success(_t("Successfully uploaded !"));
+        }).fail(function () {
+            $.alert.error(_t("Error during file upload"));
+            self.ui.accession_upload.prop('disabled', false);
+        });
     }
 });
 
