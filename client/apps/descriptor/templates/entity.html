@@ -18,7 +18,7 @@
     } else if (column.query) {
         %><td name="<%- columnName %>"></td><%
     } else if (columnName.startsWith('&') && (columnName.replace(/^\&/, '') in arguments[0]['synonyms'])) {
-        %><td name="<%- columnName %>"><%- arguments[0]['synonyms'][columnName.replace(/^\&/, '')]['name'] %></td><%
+        %><td name="<%- columnName %>"><%- arguments[0]['synonyms'][columnName.replace(/^&/, '')]['name'] %></td><%
     } else if (columnName.startsWith('$') && (columnName.replace(/^\$/, '') in arguments[0])) {
         %><td name="<%- columnName %>"><%- arguments[0]['format'][columnName.replace(/^\$/, '')] %></td><%
     } else if (columnName.startsWith('@') && (columnName.replace(/^@/, '') in arguments[0])) {

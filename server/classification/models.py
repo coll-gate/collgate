@@ -342,6 +342,10 @@ class ClassificationEntry(Entity):
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             }
 
+            if synonym_type.multiple_entry:
+                columns['&' + synonym_type.name]['column_display'] = False
+                columns['&' + synonym_type.name]['search_display'] = True
+
         return columns
 
     class Meta:

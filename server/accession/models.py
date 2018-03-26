@@ -78,7 +78,7 @@ class Accession(DescribableEntity):
     def get_defaults_columns(cls):
         columns = {
             'primary_classification_entry': {
-                'label': _('Classification'),
+                'label': _('Classification principal'),
                 'field': 'name',
                 'query': True,  # False,   # could be later, for the moment LEFT JOIN into the queryset
                 'format': {
@@ -133,6 +133,24 @@ class Accession(DescribableEntity):
                 'format': {
                     'type': 'entity',
                     'model': 'accession.accessionpanel'
+                },
+                'available_operators': [
+                    'contains',
+                    'not_contains',
+                    'overlap',
+                    'not_overlap'
+                ],
+
+                'column_display': False,
+                'search_display': True
+            },
+            'classifications': {
+                'label': _('Classifications'),
+                'field': 'name',
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'entity',
+                    'model': 'classification.classificationentry',
                 },
                 'available_operators': [
                     'contains',
@@ -684,176 +702,6 @@ class AccessionPanel(Panel):
             ("get_accessionpanel", "Can get a accession panel"),
             ("list_accessionpanel", "Can list accession panel"),
         )
-
-
-# class AccessionView(Accession):
-#     # panels
-#     panels = ArrayField(models.IntegerField())
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'accession_panel_list'
-
-
-class AccessionView(models.Model):
-    """
-    Accession from accession panel list view.
-    """
-
-    # non-unique primary name of the accession
-    name = models.CharField(max_length=255, db_index=True)
-
-    # unique GRC code of the accession
-    code = models.CharField(unique=True, max_length=255, db_index=True)
-
-    # primary classification as simple FK for a simple join
-    primary_classification_entry = models.ForeignKey(
-        ClassificationEntry, on_delete=models.DO_NOTHING, related_name='primary_accessions_view', null=True)
-
-    # accession can have many classification but at least a primary
-    classifications_entries = models.ManyToManyField(ClassificationEntry)
-
-    # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
-    descriptors = JSONField(default={})
-
-    # It refers to a set of models of type of descriptors through a layout of descriptor.
-    layout = models.ForeignKey(Layout, on_delete=models.DO_NOTHING)
-
-    # content type of the entity
-    content_type = models.ForeignKey(ContentType, editable=False, on_delete=models.DO_NOTHING)
-
-    # status of the entity
-    entity_status = models.IntegerField(
-        null=False, blank=False, choices=EntityStatus.choices(), default=EntityStatus.VALID.value)
-
-    # insert date
-    created_date = models.DateTimeField(auto_now_add=True)
-    # last update date
-    modified_date = models.DateTimeField(auto_now=True)
-
-    # unique object identifier
-    uuid = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)
-
-    # panels
-    panels = ArrayField(models.IntegerField())
-
-    class Meta:
-        managed = False
-        db_table = 'accession_panel_list'
-        verbose_name = _("accession")
-
-        permissions = (
-            ("get_accession", "Can get an accession"),
-            ("list_accession", "Can list accessions"),
-            ("search_accession", "Can search for accessions")
-        )
-
-    def natural_name(self):
-        return self.name
-
-    @staticmethod
-    def details():
-        """
-        Return the details field for the specialized entity. By default return an empty dict.
-        :return: A dict of details
-        """
-        return {}
-
-    @classmethod
-    def make_search_by_name(cls, term):
-        return Q(name__istartswith=term)
-
-    @classmethod
-    def get_defaults_columns(cls):
-        columns = {
-            'primary_classification_entry': {
-                'label': _('Classification'),
-                'field': 'name',
-                'query': True,  # False,   # could be later, for the moment LEFT JOIN into the queryset
-                'format': {
-                    'type': 'entity',
-                    'model': 'classification.classificationentry',
-                    'details': True
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
-            },
-            'layout': {
-                'label': _('Layout'),
-                'field': 'name',
-                'query': True,
-                'format': {
-                    'type': 'layout',
-                    'model': 'accession.accession'
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
-            },
-            # 'synonym': {
-            #     'label': _('Synonym'),
-            #     'field': 'name',
-            #     'query': False,  # done by a prefetch related
-            #     'format': {
-            #         'type': 'string',
-            #         'model': 'accession.accessionsynonym'
-            #     },
-            #     'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            # },
-            'name': {
-                'label': _('Name'),
-                'query': False,  # done by a prefetch related
-                'format': {
-                    'type': 'string',
-                    'model': 'accession.accession'
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            },
-            'code': {
-                'label': _('Code'),
-                'query': False,  # done by a prefetch related
-                'format': {
-                    'type': 'string',
-                    'model': 'accession.accession'
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            },
-            'panels': {
-                'label': _('Linked panels'),
-                'field': 'name',
-                'query': False,  # done by a prefetch related
-                'format': {
-                    'type': 'entity',
-                    'model': 'accession.accessionpanel'
-                },
-                'available_operators': [
-                    'contains',
-                    'not_contains',
-                    'overlap',
-                    'not_overlap'
-                ],
-
-                'column_display': False,
-                'search_display': True
-            }
-        }
-
-        synonym_types = EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession))
-
-        for synonym_type in synonym_types:
-            columns['&' + synonym_type.name] = {
-                'label': synonym_type.get_label(),
-                # 'field': 'synonym',
-                'query': False,
-                'format': {
-                    'type': 'string',
-                    'model': 'accession.accessionsynonym',
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            }
-
-            if synonym_type.multiple_entry:
-                columns['&' + synonym_type.name]['column_display'] = False
-                columns['&' + synonym_type.name]['search_display'] = True
-
-        return columns
 
 
 class BatchView(models.Model):

@@ -27,7 +27,7 @@ from main.models import Language, EntitySynonymType
 from permission.utils import get_permissions_for
 from classification.models import ClassificationEntry
 
-from .models import Accession, AccessionSynonym, AccessionClassificationEntry, AccessionPanel, AccessionView
+from .models import Accession, AccessionSynonym, AccessionClassificationEntry, AccessionPanel
 from .base import RestAccession
 
 
@@ -188,26 +188,32 @@ def create_accession(request):
 def get_accession_list_count(request):
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
-    cq.set_synonym_model(AccessionSynonym)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
-
-        for criteria in search:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
-        for criteria in filters:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
         cq.filter(filters)
+
+    cq.m2m_to_array_field(
+        relationship=AccessionPanel.accessions,
+        selected_field='accessionpanel_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='panels'
+    )
+
+    cq.m2m_to_array_field(
+        relationship=Accession.classifications_entries,
+        selected_field='classification_entry_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='classifications'
+    )
+
+    cq.set_synonym_model(AccessionSynonym)
 
     count = cq.count()
 
@@ -237,20 +243,10 @@ def get_accession_list(request):
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
-        # for criteria in search:
-        #     if 'field' in criteria and criteria.get('field') == 'panels':
-        #         AccessionView._meta.model_name = "accession"
-        #         cq = CursorQuery(AccessionView)
-        #         break
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
-        # for criteria in filters:
-        #     if 'field' in criteria and criteria.get('field') == 'panels' and cq.get_model() != AccessionView:
-        #         AccessionView._meta.model_name = "accession"
-        #         cq = CursorQuery(AccessionView)
-        #         break
         cq.filter(filters)
 
     cq.m2m_to_array_field(
@@ -259,6 +255,14 @@ def get_accession_list(request):
         from_related_field='id',
         to_related_field='accession_id',
         alias='panels'
+    )
+
+    cq.m2m_to_array_field(
+        relationship=Accession.classifications_entries,
+        selected_field='classification_entry_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='classifications'
     )
 
     cq.set_synonym_model(AccessionSynonym)
@@ -284,7 +288,6 @@ def get_accession_list(request):
             'layout': accession.layout_id,
             'descriptors': accession.descriptors,
             'synonyms': {},
-            # 'panels': [],
             'primary_classification_entry_details': {
                 'id': accession.primary_classification_entry.id,
                 'name': accession.primary_classification_entry.name,
@@ -300,9 +303,6 @@ def get_accession_list(request):
                 'synonym_type': synonym.synonym_type_id,
                 'language': synonym.language
             }
-
-        # for panel in accession.panels.all():
-        #     a['panels'].append(panel.id)
 
         accession_items.append(a)
 
@@ -325,7 +325,7 @@ def get_accession_details_json(request, acc_id):
     Get the details of an accession.
     """
 
-    accession = AccessionView.objects.get(id=int(acc_id))
+    accession = Accession.objects.get(id=int(acc_id))
 
     # check permission on this object
     perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model,
@@ -344,8 +344,7 @@ def get_accession_details_json(request, acc_id):
         'panels': []
     }
 
-    for panel_id in accession.panels:
-        panel = AccessionPanel.objects.get(id=panel_id)
+    for panel in accession.panels.all():
         result['panels'].append({
             'id': panel.id,
             'name': panel.name,

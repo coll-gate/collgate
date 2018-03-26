@@ -101,6 +101,29 @@ let DescriptorsColumnsView = {
 
                         done = true;
                     }
+
+                } else if (columnName.startsWith('&')) {
+                    // if column is a synonym type
+                    for (let j = 0; j < modelList.length; ++j) {
+                            let model = modelList[j];
+                            let childView = this.children.findByModel(model);
+
+                            let value = "";
+
+                            if (model.get('synonyms')[columnName.replace(/^&/, '')]) {
+                                value = model.get('synonyms')[columnName.replace(/^&/, '')]['name'];
+                            }
+
+                            let cell = childView.$el.find('td[name="' + columnName + '"]');
+
+                            // simply replace the value
+                            cell.html(value);
+
+                            if (cellClassName) {
+                                cell.addClass(cellClassName)
+                            }
+                        }
+                        done = true;
                 }
             }
 
