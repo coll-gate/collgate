@@ -1,6 +1,6 @@
 <!--
- - @file descriptormetamodeldetail.html
- - @brief Template for the detailed view of a meta-model of descriptor (model)
+ - @file layoutdetail.html
+ - @brief Template for the detailed view of a layout of descriptors (model)
  - @author Frédéric SCHERMA (INRA UMR1095)
  - @date 2016-10-27
  - @copyright Copyright (c) 2016 INRA/CIRAD
@@ -8,17 +8,17 @@
  - @details 
 -->
 
-<div class="descriptor-meta-model-detail col-lg-offset-2 col-lg-8">
-    <div class="descriptor-mata-model-name form-group">
-        <label for="layout_name"><%- _t('Descriptor meta-model name') %></label>
+<div class="layout-detail col-lg-offset-2 col-lg-8">
+    <div class="layout-name form-group">
+        <label for="layout_name"><%- _t('Layout name') %></label>
         <input id="layout_name" class="form-control" type="text" maxlength="255" value="<%- name %>">
     </div>
     <div class="contextual-region"></div>
-    <div class="descriptor-meta-model-description form-group">
+    <div class="layout-description form-group">
         <label for="layout_description"><%- _t('Description') %></label>
         <textarea id="layout_description" class="form-control" maxlength="1024"><%- description %></textarea>
     </div>
-    <div class="descriptor-model-update form-group text-center">
+    <div class="layout-update form-group text-center">
         <button id="save" class="form-control btn btn-success"><%- _t('Update') %></button>
     </div>
 </div>

@@ -136,7 +136,9 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
             }
         }).done(function (data) {
             self.ui.accession_upload.prop('disabled', false);
-            self.render();
+
+            // update model data
+            self.model.set('data', data.data);
 
             $.alert.success(_t("Successfully uploaded !"));
         }).fail(function () {

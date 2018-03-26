@@ -20,7 +20,6 @@ from django.utils.translation import ugettext_lazy as _
 from accession import localsettings
 from accession.namebuilder import NameBuilderManager
 from descriptor.describable import DescriptorsBuilder
-# from descriptor.models import Layout, DescriptorModelType
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest

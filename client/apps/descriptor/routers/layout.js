@@ -12,7 +12,7 @@ let Marionette = require('backbone.marionette');
 let LayoutModel = require('../models/layout');
 let LayoutCollection = require('../collections/layout');
 let DescriptorPanelCollection = require('../collections/descriptorpanel');
-let LayoutAddView = require('../views/descriptormetamodeladd');
+let LayoutAddView = require('../views/layoutadd');
 let LayoutListView = require('../views/layoutlist');
 let DefaultLayout = require('../../main/views/defaultlayout');
 let TitleView = require('../../main/views/titleview');
@@ -60,7 +60,7 @@ let Router = Marionette.AppRouter.extend({
             }));
         });
 
-        let LayoutDetailsView = require('../views/descriptormetamodeldetail');
+        let LayoutDetailsView = require('../views/layoutdetail');
         let layoutDetailView = new LayoutDetailsView({
             model: layout,
         });

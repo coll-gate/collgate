@@ -49,14 +49,14 @@ let View = AdvancedTable.extend({
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
-        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
+        if (!window.application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
         if (this.dragEnterCount === 1) {
-            if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
+            if (window.application.main.dnd.get().$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'block');
-            } else if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
+            } else if (window.application.main.dnd.get().$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             }
         }
@@ -72,14 +72,14 @@ let View = AdvancedTable.extend({
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
+        if (!window.application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
         if (this.dragEnterCount === 0) {
-            if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
+            if (window.application.main.dnd.get().$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'none');
-            } else if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
+            } else if (window.application.main.dnd.get().$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'none');
             }
         }
@@ -94,14 +94,14 @@ let View = AdvancedTable.extend({
 
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
+        if (!window.application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
         if (this.dragEnterCount === 1) {
-            if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
+            if (window.application.main.dnd.get().$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'block');
-            } else if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
+            } else if (window.application.main.dnd.get().$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             }
         }
@@ -120,11 +120,11 @@ let View = AdvancedTable.extend({
         this.ui.top_placeholder.css('display', 'none');
         this.ui.bottom_placeholder.css('display', 'none');
 
-        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
+        if (!window.application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
-        let elt = application.main.dnd.get();
+        let elt = window.application.main.dnd.get();
         if (elt.$el.hasClass('descriptor-model')) {
             let DefinesLabel = Dialog.extend({
                 template: require('../templates/descriptorpanelcreate.html'),
@@ -222,14 +222,14 @@ let View = AdvancedTable.extend({
             definesLabel.render();
         } else if (elt.$el.hasClass('descriptor-panel')) {
             let collection = this.collection;
-            let metaModelId = collection.model_id;
+            let layoutId = collection.model_id;
 
             // find last position + 1
             let newPosition = collection.at(collection.models.length-1).get('position') + 1;
 
             $.ajax({
                 type: "PUT",
-                url: window.application.url(['descriptor', 'meta-model', metaModelId, 'panel', 'order']),
+                url: window.application.url(['descriptor', 'layout', layoutId, 'panel', 'order']),
                 dataType: 'json',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({

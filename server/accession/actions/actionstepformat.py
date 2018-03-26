@@ -67,6 +67,9 @@ class ActionStepFormat(object):
         # supported data format
         self.data_format = ()
 
+        # true means that the processing of the step is per row of data and not in a single processing.
+        self.sequential_processing = False
+
     def validate(self, action_type_format, data, columns):
         """
         Validate the value according the format.
@@ -441,3 +444,6 @@ class ActionStepBatchConsumerBatchModifier(ActionStepFormat):
 
         # inputs = self.inputs(action, input_array)
         # @todo
+
+
+# @todo having a sequential processing for batch modification

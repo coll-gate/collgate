@@ -10,7 +10,6 @@
 
 from descriptor.describable import DescriptorsBuilder
 from django.contrib.contenttypes.models import ContentType
-# from descriptor.models import Layout, DescriptorModelType
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest

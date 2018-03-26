@@ -1,7 +1,8 @@
 /**
- * @file descriptormetamodeldetail.js
+ * @file layoutdetail.js
  * @brief Detail for a layout of descriptor view
  * @author Frédéric SCHERMA (INRA UMR1095)
+ * @author Medhi BOULNEMOUR (INRA UMR1095)
  * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
@@ -11,8 +12,8 @@
 let Marionette = require('backbone.marionette');
 
 let View = Marionette.View.extend({
-    className: 'object descriptor-meta-model-detail',
-    template: require('../templates/descriptormetamodeldetail.html'),
+    className: 'object layout-detail',
+    template: require('../templates/layoutdetail.html'),
 
     regions: {
         'content': "div.contextual-region"
@@ -25,7 +26,7 @@ let View = Marionette.View.extend({
     },
 
     events: {
-        'click @ui.save': 'saveDescriptorMetaModel',
+        'click @ui.save': 'saveLayout',
         'input @ui.name': 'inputName',
     },
 
@@ -58,7 +59,7 @@ let View = Marionette.View.extend({
         }
     },
 
-    saveDescriptorMetaModel: function () {
+    saveLayout: function () {
         if (!$(this.ui.name.isValidField()))
             return;
 

@@ -18,7 +18,7 @@ let View = Marionette.View.extend({
     template: require('../templates/paneldescriptor.html'),
 
     ui: {
-        'delete_descriptor_model_type': '.delete-descriptor-model-type',
+        'delete_descriptor_model_type': '.delete-descriptor',
         'name': '[name="name"]',
         'label': '[name="label"]',
         'mandatory': '[name="mandatory"]',
@@ -36,7 +36,7 @@ let View = Marionette.View.extend({
         'dragenter': 'dragEnter',
         'dragleave': 'dragLeave',
         'drop': 'drop',
-        'click @ui.delete_descriptor_model_type': 'deleteDescriptorModelType',
+        'click @ui.delete_descriptor_model_type': 'deleteDescriptor',
         'click @ui.name': 'rename',
         'click @ui.label': 'editLabel',
         'click @ui.mandatory': 'toggleMandatory',
@@ -167,7 +167,7 @@ let View = Marionette.View.extend({
 
                 $.ajax({
                     type: "PUT",
-                    url: window.window.application.url(['descriptor', 'layout', this.model.collection.model_id, 'descriptor', 'order']),
+                    url: window.application.url(['descriptor', 'layout', this.model.collection.model_id, 'descriptor', 'order']),
                     dataType: 'json',
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({
@@ -227,52 +227,7 @@ let View = Marionette.View.extend({
         this.model.save({set_once: !this.model.get('set_once')}, {patch: true, wait: true});
     },
 
-    // changeIndex: function () {
-    //     let model = this.model;
-    //
-    //     let ChangeIndex = Dialog.extend({
-    //         template: require('../templates/descriptormodeltypechangeindex.html'),
-    //
-    //         attributes: {
-    //             id: "dlg_change_index"
-    //         },
-    //
-    //         ui: {
-    //             index: "select[name=index]"
-    //         },
-    //
-    //         initialize: function (options) {
-    //             ChangeIndex.__super__.initialize.apply(this, arguments);
-    //         },
-    //
-    //         onRender: function () {
-    //             ChangeIndex.__super__.onRender.apply(this);
-    //
-    //             this.ui.index.val(this.model.get('index')).selectpicker({
-    //                 style: 'btn-default',
-    //                 container: 'body'
-    //             });
-    //         },
-    //
-    //         onBeforeDestroy: function () {
-    //             this.ui.index.selectpicker('destroy');
-    //
-    //             ChangeIndex.__super__.onBeforeDestroy.apply(this);
-    //         },
-    //
-    //         onApply: function () {
-    //             let index = parseInt(this.ui.index.val());
-    //
-    //             this.model.save({index: index}, {patch: true, wait: true});
-    //             this.destroy();
-    //         }
-    //     });
-    //
-    //     let changeIndex = new ChangeIndex({model: model});
-    //     changeIndex.render();
-    // },
-
-    deleteDescriptorModelType: function () {
+    deleteDescriptor: function () {
         let collection = this.model.collection;
         let position = this.model.get('position');
 

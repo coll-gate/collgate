@@ -53,7 +53,7 @@ let Controller = Marionette.Object.extend({
                 events: {
                     'click @ui.validate': 'onContinue',
                     'input @ui.name': 'onNameInput',
-                    'change @ui.layout': 'onChangeDescriptorMetaModel',
+                    'change @ui.layout': 'onChangeLayout',
                     'change @ui.primary_classification': 'onChangePrimaryClassification'
                 },
 
@@ -100,13 +100,13 @@ let Controller = Marionette.Object.extend({
                     });
 
                     // on default descriptor layout
-                    this.onChangeDescriptorMetaModel();
+                    this.onChangeLayout();
                 },
 
-                getDescriptorMetaModelClassifications: function () {
-                    let descriptorMetaModelId = parseInt(this.ui.layout.val());
+                getLayoutClassifications: function () {
+                    let layoutId = parseInt(this.ui.layout.val());
 
-                    let value = Object.resolve(descriptorMetaModelId + ".parameters.data.primary_classification", this.layouts);
+                    let value = Object.resolve(layoutId + ".parameters.data.primary_classification", this.layouts);
                     if (value) {
                         return [value];
                     }
@@ -126,7 +126,7 @@ let Controller = Marionette.Object.extend({
                     CreateAccessionDialog.__super__.onBeforeDestroy.apply(this);
                 },
 
-                onChangeDescriptorMetaModel: function() {
+                onChangeLayout: function() {
                     let select = this.ui.primary_classification;
 
                     select.children().remove();
@@ -143,7 +143,7 @@ let Controller = Marionette.Object.extend({
                         filters: [{
                             type: 'term',
                             field: 'id',
-                            value: this.getDescriptorMetaModelClassifications(),
+                            value: this.getLayoutClassifications(),
                             op: 'in'
                         }]
                     });
@@ -293,10 +293,10 @@ let Controller = Marionette.Object.extend({
 
                 validate: function() {
                     let valid = this.validateName();
-                    let descriptorMetaModelId = parseInt(this.ui.layout.val());
+                    let layoutId = parseInt(this.ui.layout.val());
                     let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
-                    if (isNaN(descriptorMetaModelId)) {
+                    if (isNaN(layoutId)) {
                         $.alert.error(_t("The layout of descriptors must be defined"));
                         valid = false;
                     }

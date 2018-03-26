@@ -66,7 +66,7 @@ class CollGateClassification(ApplicationMain):
         ]
 
         # registers standard format type of layouts
-        from descriptor import layouttype
+        from classification import layouttype
 
         for element in dir(layouttype):
             attr = getattr(layouttype, element)

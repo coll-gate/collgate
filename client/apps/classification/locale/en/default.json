@@ -1,4 +1,5 @@
 {
+  "(Linked to layout)": "",
   "A parent must be specified": "",
   "Apply": "",
   "Are you sure you want to delete any descriptors for this classification entry ?": "",
@@ -25,7 +26,7 @@
   "Create classification": "",
   "Create rank of classification": "",
   "Defines": "",
-  "Defines a meta-model of descriptors": "",
+  "Defines a layout of descriptors": "",
   "Delete all": "",
   "Delete descriptors": "",
   "Description": "",
@@ -45,7 +46,7 @@
   "Manage ranks": "",
   "Modify": "",
   "Name": "",
-  "No descriptor meta-model is defined for this classification entry.": "",
+  "No layout is defined for this classification entry.": "",
   "Parent": "",
   "Principal name of the classification entry": "",
   "Rank": "",

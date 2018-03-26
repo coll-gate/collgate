@@ -35,7 +35,7 @@ let View = Dialog.extend({
     events: {
         'click @ui.search': 'onSearch',
         'change @ui.entity_type': 'onChangeEntityType',
-        'change @ui.layout': 'onChangeMetaModel',
+        'change @ui.layout': 'onChangeLayout',
         'click @ui.add': 'onAddSearchRow',
         'click @ui.save': 'onSave'
     },
@@ -55,7 +55,7 @@ let View = Dialog.extend({
         this.ui.layout.selectpicker({});
 
         this.getRegion('conditions').show(new ConditionCollection({
-            collection: application.accession.collections.conditionList,
+            collection: window.application.accession.collections.conditionList,
             parent: this
         }));
         this.onChangeEntityType();
@@ -63,7 +63,7 @@ let View = Dialog.extend({
     },
 
     onAddSearchRow: function () {
-        let added_model = application.accession.collections.conditionList.add({
+        let added_model = window.application.accession.collections.conditionList.add({
             row_operator: null,
             field: null,
             condition: "eq",
@@ -100,19 +100,19 @@ let View = Dialog.extend({
 
             view.ui.layout.selectpicker('refresh');
 
-            application.accession.collections.conditionList = new Backbone.Collection();
+            window.application.accession.collections.conditionList = new Backbone.Collection();
             view.getRegion('conditions').show(new ConditionCollection({
-                collection: application.accession.collections.conditionList,
+                collection: window.application.accession.collections.conditionList,
                 parent: this
             }));
             view.onAddSearchRow();
         });
     },
 
-    onChangeMetaModel: function () {
-        application.accession.collections.conditionList = new Backbone.Collection();
+    onChangeLayout: function () {
+        window.application.accession.collections.conditionList = new Backbone.Collection();
         this.getRegion('conditions').show(new ConditionCollection({
-            collection: application.accession.collections.conditionList,
+            collection: window.application.accession.collections.conditionList,
             parent: this
         }));
         this.onAddSearchRow();
@@ -120,7 +120,7 @@ let View = Dialog.extend({
 
     refreshFieldList: function (childview) {
         let entityType = this.ui.entity_type.selectpicker('val');
-        const metaModels = this.ui.layout.selectpicker('val');
+        const selectedLayouts = this.ui.layout.selectpicker('val');
         let selects = null;
 
         if (childview) {
@@ -133,13 +133,13 @@ let View = Dialog.extend({
 
         let layouts = [];
 
-        if (metaModels) {
-            for (let i = 0; i < metaModels.length; ++i) {
-                layouts.push(parseInt(metaModels[i]));
+        if (selectedLayouts) {
+            for (let i = 0; i < selectedLayouts.length; ++i) {
+                layouts.push(parseInt(selectedLayouts[i]));
             }
         }
 
-        application.main.cache.lookup({
+        window.application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: entityType, layouts: layouts, mode: 'search'}
 
@@ -183,7 +183,7 @@ let View = Dialog.extend({
             const conditions = this.getChildView('conditions').collection.models;
             const query = this.getQuery(conditions);
             const options = {search: query.result};
-            application.accession.routers.accession.getAccessionList(options);
+            window.application.accession.routers.accession.getAccessionList(options);
             Backbone.history.navigate('app/accession/accession/');
 
             this.destroy();
@@ -194,7 +194,7 @@ let View = Dialog.extend({
             const query = this.getQuery(conditions);
             const options = {search: query.result};
             console.log(options);
-            application.accession.routers.batch.getBatchList(options);
+            window.application.accession.routers.batch.getBatchList(options);
             Backbone.history.navigate('app/accession/batch/');
 
             this.destroy();

@@ -19,7 +19,7 @@ let Accession = LayoutType.extend({
 
     ui: {
         'primary_classification': 'select.primary-classification',
-        'batch_layouts_group': 'div.batch-descriptor-meta-models-group'
+        'batch_layouts_group': 'div.batch-layouts-group'
     },
 
     onRender: function () {

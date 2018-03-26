@@ -1,5 +1,5 @@
 /**
- * @file descriptormetamodeladd.js
+ * @file layoutadd.js
  * @brief Add a layout of descriptor
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-26
@@ -13,16 +13,16 @@ let Dialog = require('../../main/views/dialog');
 
 let View = Marionette.View.extend({
     tagName: 'div',
-    className: 'descriptor-meta-model-add',
-    template: require('../templates/descriptormetamodeladd.html'),
+    className: 'layout-add',
+    template: require('../templates/layoutadd.html'),
 
     ui: {
-        add: 'span.add-descriptor-meta-model',
-        name: 'input.descriptor-meta-model-name',
+        add: 'span.add-layout',
+        name: 'input.layout-name',
     },
 
     events: {
-        'click @ui.add': 'addDescriptorMetaModel',
+        'click @ui.add': 'addLayout',
         'input @ui.name': 'onNameInput',
     },
 
@@ -31,12 +31,12 @@ let View = Marionette.View.extend({
         this.collection = options.collection;
     },
 
-    addDescriptorMetaModel: function () {
-        let DescriptorModelCreate = Dialog.extend({
-           template: require('../templates/descriptormetamodelcreate.html'),
+    addLayout: function () {
+        let LayoutCreateDlg = Dialog.extend({
+           template: require('../templates/layoutcreate.html'),
 
             attributes: {
-                id: "dlg_create_descriptor_model",
+                id: "dlg_create_layout",
             },
 
             ui: {
@@ -50,18 +50,18 @@ let View = Marionette.View.extend({
             },
 
             initialize: function(options) {
-                DescriptorModelCreate.__super__.initialize.apply(this);
+                LayoutCreateDlg.__super__.initialize.apply(this);
             },
 
             onRender: function() {
-                DescriptorModelCreate.__super__.onRender.apply(this);
-                application.descriptor.views.describables.drawSelect(this.ui.layout_target);
+                LayoutCreateDlg.__super__.onRender.apply(this);
+                window.application.descriptor.views.describables.drawSelect(this.ui.layout_target);
             },
 
             onBeforeDestroy: function() {
                 $(this.ui.layout_target).selectpicker('destroy');
 
-                DescriptorModelCreate.__super__.onBeforeDestroy.apply(this);
+                LayoutCreateDlg.__super__.onBeforeDestroy.apply(this);
             },
 
             onApply: function() {
@@ -113,7 +113,7 @@ let View = Marionette.View.extend({
         });
 
         if (!this.ui.name.hasClass('invalid') && this.validateName()) {
-            let descriptorModelCreate = new DescriptorModelCreate({
+            let descriptorModelCreate = new LayoutCreateDlg({
                 collection: this.collection,
                 name: this.ui.name.val()
             });
@@ -156,7 +156,7 @@ let View = Marionette.View.extend({
                             let t = data.items[i];
 
                             if (t.name.toUpperCase() === this.el.val().toUpperCase()) {
-                                $(this.el).validateField('failed', _t('Descriptor layout name already in usage'));
+                                $(this.el).validateField('failed', _t('Layout name already in usage'));
                                 break;
                             }
                         }

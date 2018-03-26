@@ -20,7 +20,6 @@ from django.utils.translation import ugettext_lazy as _
 from classification import localsettings
 from classification.classification import RestClassificationClassificationId
 from descriptor.describable import DescriptorsBuilder
-# from descriptor.models import Layout, DescriptorModelType
 from descriptor.models import Layout
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest

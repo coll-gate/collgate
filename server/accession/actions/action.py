@@ -152,7 +152,7 @@ def update_action(request, act_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "action": {"type": "string", "enum": ['reset', 'setup', 'process']},    # action in term of API
+            "action": {"type": "string", "enum": ['reset', 'setup', 'process', 'process_one']},  # action in term of API
             "inputs_type": {"type": "string", "enum": ['none', 'panel', 'list'], "required": False},
             "panel": {"type": ["numeric", "null"], "required": False},
             "list": {"type": "array", "required": False, "minItems": 0, "maxItems": 32768, "additionalItems": {
@@ -191,6 +191,7 @@ def action_process_step(request, act_id):
             raise SuspiciousOperation(_("The current step is done"))
 
         action_controller.reset_current_step()
+
     elif action_type == "setup":
         # setup the inputs or options for the current step if not done
         action_controller = ActionController(action)
@@ -212,6 +213,7 @@ def action_process_step(request, act_id):
             raise SuspiciousOperation("Unsupported setup")
 
         action_controller.setup_data(input_data, input_columns)
+
     elif action_type == "process":
         # process the step according the previously set inputs or options and done it
         action_controller = ActionController(action)
@@ -222,7 +224,27 @@ def action_process_step(request, act_id):
         if action_controller.is_current_step_done:
             raise SuspiciousOperation(_("The current step is done"))
 
+        if action_controller.has_sequential_processing:
+            raise SuspiciousOperation(_("The current step works in sequential processing"))
+
         action_controller.process_current_step()
+
+    elif action_type == "process_one":
+        # process one more element at time
+        action_controller = ActionController(action)
+
+        if not action_controller.is_current_step_valid:
+            raise SuspiciousOperation(_("There is not current valid step to process"))
+
+        if action_controller.is_current_step_done:
+            raise SuspiciousOperation(_("The current step is done"))
+
+        if not action_controller.has_sequential_processing:
+            raise SuspiciousOperation(_("The current step does not support sequential processing"))
+
+        # @todo
+        data = []
+        action_controller.process_current_step_one(data)
 
     result['data'] = action.data
     result['completed'] = action.completed

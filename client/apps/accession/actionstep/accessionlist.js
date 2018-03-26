@@ -240,6 +240,8 @@ AccessionList.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.ext
             }
         }).done(function (data) {
             self.ui.accession_upload.prop('disabled', false);
+
+            // update model data
             self.model.set('data', data.data);
 
             $.alert.success(_t("Successfully uploaded !"));
