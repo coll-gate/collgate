@@ -68,26 +68,12 @@ let View = Marionette.View.extend({
         return properties;
     },
 
-    onRender: function () {
-    },
-
     viewDetails: function () {
         Backbone.history.navigate('app/accession/accession/' + this.model.get('id') + '/', {trigger: true});
     },
 
     viewPrimaryClassificationEntry: function () {
         Backbone.history.navigate('app/classification/classificationentry/' + this.model.get('primary_classification_entry') + '/', {trigger: true});
-    },
-
-    synonymCell: function (td) {
-        let synonyms = this.model.get('synonyms');
-
-        // @todo which one ?
-        if (synonyms.length > 2) {
-            let text = this.model.get('synonyms')[2].name;
-
-            td.html(text);
-        }
     },
 
     onDeleteAccession: function () {

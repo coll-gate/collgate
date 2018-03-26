@@ -78,7 +78,7 @@ class Accession(DescribableEntity):
     def get_defaults_columns(cls):
         columns = {
             'primary_classification_entry': {
-                'label': _('Classification'),
+                'label': _('Classification principal'),
                 'field': 'name',
                 'query': True,  # False,   # could be later, for the moment LEFT JOIN into the queryset
                 'format': {
@@ -133,6 +133,24 @@ class Accession(DescribableEntity):
                 'format': {
                     'type': 'entity',
                     'model': 'accession.accessionpanel'
+                },
+                'available_operators': [
+                    'contains',
+                    'not_contains',
+                    'overlap',
+                    'not_overlap'
+                ],
+
+                'column_display': False,
+                'search_display': True
+            },
+            'classifications': {
+                'label': _('Classifications'),
+                'field': 'name',
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'entity',
+                    'model': 'classification.classificationentry',
                 },
                 'available_operators': [
                     'contains',
