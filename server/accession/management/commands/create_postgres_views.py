@@ -18,18 +18,6 @@ class Command(BaseCommand):
     @transaction.atomic()
     def handle(self, *args, **options):
         with connection.cursor() as cursor:
-            # Accession view
-            cursor.execute(
-                """CREATE OR REPLACE VIEW accession_panel_list AS SELECT * 
-                      FROM (SELECT DISTINCT A.*,ARRAY(
-                          SELECT AP.accessionpanel_id
-                              FROM accession_accessionpanel_accessions AP
-                              WHERE AP.accession_id = A.id)
-                              AS panels
-                          FROM accession_accession A) T
-                      ORDER BY panels;"""
-            )
-
             # Batch view
             cursor.execute(
                 """CREATE OR REPLACE VIEW batch_panel_list AS SELECT * 

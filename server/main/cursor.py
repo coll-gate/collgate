@@ -1423,9 +1423,6 @@ class CursorQuery(object):
         Add array field which contains elements of the given model field.
         """
 
-        # from django.db.models.fields.related import RelatedField
-        # if not issubclass(RelatedField, type(relationship)): raise CursorQueryError('relationship')
-
         self._sub_query_array_fields[alias] = {
             'related_db_table': relationship.through._meta.db_table,
             'selected_field': selected_field,

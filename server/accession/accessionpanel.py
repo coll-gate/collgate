@@ -21,7 +21,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from main.models import EntitySynonymType
-from .models import AccessionPanel, Accession, AccessionSynonym, AccessionView
+from .models import AccessionPanel, Accession, AccessionSynonym
 from .base import RestAccession
 from .accession import RestAccessionId
 
@@ -78,11 +78,12 @@ def get_accession_panels(request, acc_id):
     else:
         order_by = sort_by
 
-    accession = AccessionView.objects.get(id=int(acc_id))
+    accession = Accession.objects.get(id=int(acc_id))
+    panels = list(accession.panels.all().values_list('id', flat=True))
 
     from main.cursor import CursorQuery
     cq = CursorQuery(AccessionPanel)
-    cq.filter(id__in=accession.panels)
+    cq.filter(id__in=panels)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -117,11 +118,12 @@ def get_accession_panels(request, acc_id):
 
 @RestAccessionPanelsCount.def_auth_request(Method.GET, Format.JSON)
 def count_accession_panels(request, acc_id):
-    accession = AccessionView.objects.get(id=int(acc_id))
+    accession = Accession.objects.get(id=int(acc_id))
+    panels = list(accession.panels.all().values_list('id', flat=True))
 
     from main.cursor import CursorQuery
     cq = CursorQuery(AccessionPanel)
-    cq.filter(id__in=accession.panels)
+    cq.filter(id__in=panels)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -195,23 +197,30 @@ def create_panel(request):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
-    cq.set_synonym_model(AccessionSynonym)
 
     if search:
-        for criteria in search:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
         cq.filter(search)
 
     if filters:
-        for criteria in filters:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
         cq.filter(filters)
+
+    cq.m2m_to_array_field(
+        relationship=AccessionPanel.accessions,
+        selected_field='accessionpanel_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='panels'
+    )
+
+    cq.m2m_to_array_field(
+        relationship=Accession.classifications_entries,
+        selected_field='classification_entry_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='classifications'
+    )
+
+    cq.set_synonym_model(AccessionSynonym)
 
     if related_entity:
         label, model = related_entity['content_type'].split('.')
@@ -467,26 +476,32 @@ def modify_panel(request, panel_id):
 def get_panel_accession_list_count(request, panel_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
-    cq.set_synonym_model(AccessionSynonym)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
-
-        for criteria in search:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
-        for criteria in filters:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
         cq.filter(filters)
+
+    cq.m2m_to_array_field(
+        relationship=AccessionPanel.accessions,
+        selected_field='accessionpanel_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='panels'
+    )
+
+    cq.m2m_to_array_field(
+        relationship=Accession.classifications_entries,
+        selected_field='classification_entry_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='classifications'
+    )
+
+    cq.set_synonym_model(AccessionSynonym)
 
     cq.inner_join(AccessionPanel, accessionpanel=int(panel_id))
 
@@ -502,13 +517,14 @@ def get_panel_accession_list_count(request, panel_id):
 })
 def get_panel_accession_list(request, panel_id):
     # check permission on this panel
-    # panel = get_object_or_404(AccessionPanel, id=int(panel_id))
-    #
-    # # check permission on this object
-    # perms = get_permissions_for(request.user, panel.content_type.app_label, panel.content_type.model,
-    #                             panel.pk)
-    # if 'accession.get_panel' not in perms:
-    #     raise PermissionDenied(_('Invalid permission to access to this panel'))
+    panel = get_object_or_404(AccessionPanel, id=int(panel_id))
+
+    # check permission on this object
+    from permission.utils import get_permissions_for
+    perms = get_permissions_for(request.user, panel.content_type.app_label, panel.content_type.model,
+                                panel.pk)
+    if 'accession.get_accessionpanel' not in perms:
+        raise PermissionDenied(_('Invalid permission to access to this panel'))
 
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
@@ -522,26 +538,32 @@ def get_panel_accession_list(request, panel_id):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
-    cq.set_synonym_model(AccessionSynonym)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
-
-        for criteria in search:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
-        for criteria in filters:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
         cq.filter(filters)
+
+    cq.m2m_to_array_field(
+        relationship=AccessionPanel.accessions,
+        selected_field='accessionpanel_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='panels'
+    )
+
+    cq.m2m_to_array_field(
+        relationship=Accession.classifications_entries,
+        selected_field='classification_entry_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='classifications'
+    )
+
+    cq.set_synonym_model(AccessionSynonym)
 
     cq.prefetch_related(Prefetch(
         "synonyms",
@@ -641,26 +663,32 @@ def modify_panel_accessions(request, panel_id):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
-    cq.set_synonym_model(AccessionSynonym)
 
     if request.data['selection'].get('search'):
         search = json.loads(request.GET['search'])
-
-        for criteria in search:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
         cq.filter(request.data['selection'].get('search'))
 
     if request.data['selection'].get('filters'):
         filters = json.loads(request.GET['filters'])
-        for criteria in filters:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = "accession"
-                cq = CursorQuery(AccessionView)
-                break
         cq.filter(request.data['selection'].get('filters'))
+
+    cq.m2m_to_array_field(
+        relationship=AccessionPanel.accessions,
+        selected_field='accessionpanel_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='panels'
+    )
+
+    cq.m2m_to_array_field(
+        relationship=Accession.classifications_entries,
+        selected_field='classification_entry_id',
+        from_related_field='id',
+        to_related_field='accession_id',
+        alias='classifications'
+    )
+
+    cq.set_synonym_model(AccessionSynonym)
 
     if request.data['selection'].get('from'):
         related_entity = request.data['selection']['from']
