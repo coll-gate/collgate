@@ -23,7 +23,7 @@ from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from permission.utils import get_permissions_for
 
-from .models import Accession, Batch, BatchView
+from .models import Accession, Batch, BatchPanel
 from .base import RestAccession
 
 from django.utils.translation import ugettext_lazy as _
@@ -93,18 +93,19 @@ def get_batch_details_json(request, bat_id):
 
 
 @RestBatch.def_auth_request(Method.POST, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            # "name": Batch.NAME_VALIDATOR,
-            "naming_options": {"type": "array", 'minItems': 0, 'maxItems': 10, 'additionalItems': {'type': 'any'}, 'items': []},
-            "layout": {"type": "number"},
-            "accession": {"type": "number"},
-            "descriptors": {"type": "object"}
-        },
-    }, perms={
-        'accession.add_accession': _("You are not allowed to create a batch")
-    }
-)
+    "type": "object",
+    "properties": {
+        # "name": Batch.NAME_VALIDATOR,
+        "naming_options": {"type": "array", 'minItems': 0, 'maxItems': 10, 'additionalItems': {'type': 'any'},
+                           'items': []},
+        "layout": {"type": "number"},
+        "accession": {"type": "number"},
+        "descriptors": {"type": "object"}
+    },
+}, perms={
+    'accession.add_accession': _("You are not allowed to create a batch")
+}
+                            )
 def create_batch(request):
     """
     This is the deprecated way of creating a batch. Creation of a batch must be supervised
@@ -201,15 +202,15 @@ def create_batch(request):
 
 
 @RestBatchId.def_auth_request(Method.PATCH, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            "entity_status": Batch.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-            "descriptors": {"type": "object", "required": False},
-        },
+    "type": "object",
+    "properties": {
+        "entity_status": Batch.ENTITY_STATUS_VALIDATOR_OPTIONAL,
+        "descriptors": {"type": "object", "required": False},
     },
-    perms={
-        'accession.change_batch': _("You are not allowed to modify a batch"),
-    })
+},
+                              perms={
+                                  'accession.change_batch': _("You are not allowed to modify a batch"),
+                              })
 def patch_batch(request, bat_id):
     batch = get_object_or_404(Batch, id=int(bat_id))
 
@@ -565,18 +566,19 @@ def get_batch_list(request):
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
-
-        for criteria in search:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                BatchView._meta.model_name = "batch"
-                cq = CursorQuery(BatchView)
-                break
-
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
         cq.filter(filters)
+
+    cq.m2m_to_array_field(
+        relationship=BatchPanel.batches,
+        selected_field='batchpanel_id',
+        from_related_field='id',
+        to_related_field='batch_id',
+        alias='panels'
+    )
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
@@ -614,18 +616,19 @@ def get_batch_list_count(request):
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
-
-        for criteria in search:
-            if 'field' in criteria and criteria.get('field') == 'panels':
-                BatchView._meta.model_name = "batch"
-                cq = CursorQuery(BatchView)
-                break
-
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
         cq.filter(filters)
+
+    cq.m2m_to_array_field(
+        relationship=BatchPanel.batches,
+        selected_field='batchpanel_id',
+        from_related_field='id',
+        to_related_field='batch_id',
+        alias='panels'
+    )
 
     count = cq.count()
 

@@ -10,17 +10,16 @@
 
 from descriptor.describable import DescriptorsBuilder
 from django.contrib.contenttypes.models import ContentType
-# from descriptor.models import Layout, DescriptorModelType
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from django.db.models import Q, Prefetch
+from django.db.models import Q
 from django.core.exceptions import SuspiciousOperation
 from django.db import transaction, IntegrityError
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from .models import BatchPanel, Batch, BatchView
+from .models import BatchPanel, Batch
 from .base import RestAccession
 from .batch import RestBatchId
 
@@ -625,11 +624,12 @@ def get_batch_panels(request, bat_id):
     else:
         order_by = sort_by
 
-    batch = BatchView.objects.get(id=int(bat_id))
+    batch = Batch.objects.get(id=int(bat_id))
+    panels = list(batch.panels.all().values_list('id', flat=True))
 
     from main.cursor import CursorQuery
     cq = CursorQuery(BatchPanel)
-    cq.filter(id__in=batch.panels)
+    cq.filter(id__in=panels)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -664,11 +664,12 @@ def get_batch_panels(request, bat_id):
 
 @RestBatchPanelsCount.def_auth_request(Method.GET, Format.JSON)
 def count_batch_panels(request, bat_id):
-    batch = BatchView.objects.get(id=int(bat_id))
+    batch = Batch.objects.get(id=int(bat_id))
+    panels = list(batch.panels.all().values_list('id', flat=True))
 
     from main.cursor import CursorQuery
     cq = CursorQuery(BatchPanel)
-    cq.filter(id__in=batch.panels)
+    cq.filter(id__in=panels)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])

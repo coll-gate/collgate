@@ -15,7 +15,7 @@ from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from permission.utils import get_permissions_for
 
-from .models import Accession, Batch, BatchView
+from .models import Accession, Batch
 from .accession import RestAccessionId
 
 from django.utils.translation import ugettext_lazy as _
