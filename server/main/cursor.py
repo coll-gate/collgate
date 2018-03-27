@@ -1626,8 +1626,6 @@ class CursorQuery(object):
         self._first_elt = None
         self._last_elt = None
 
-        print(sql)
-
         if self._prefetch_related:
             # eval before
             try:
