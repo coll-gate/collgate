@@ -608,7 +608,7 @@ class BatchPanel(Panel):
     """
 
     # list of batches
-    batches = models.ManyToManyField(Batch)
+    batches = models.ManyToManyField(Batch, related_name='panels')
 
     @classmethod
     def get_defaults_columns(cls):
@@ -703,91 +703,3 @@ class AccessionPanel(Panel):
             ("list_accessionpanel", "Can list accession panel"),
         )
 
-
-class BatchView(models.Model):
-    """
-    Batch from batch panel list view.
-    """
-
-    # unique name of the batch
-    name = models.CharField(unique=True, max_length=255, db_index=True)
-
-    # parent accession
-    accession = models.ForeignKey('Accession', related_name='batches_view', on_delete=models.DO_NOTHING)
-
-    # direct parent batches
-    batches = models.ManyToManyField('BatchView', related_name='children_view')
-
-    # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
-    descriptors = JSONField(default={})
-
-    # It refers to a set of models of type of descriptors through a layout of descriptor.
-    layout = models.ForeignKey(Layout, on_delete=models.DO_NOTHING)
-
-    # content type of the entity
-    content_type = models.ForeignKey(ContentType, editable=False, on_delete=models.DO_NOTHING)
-
-    # status of the entity
-    entity_status = models.IntegerField(
-        null=False, blank=False, choices=EntityStatus.choices(), default=EntityStatus.VALID.value)
-
-    # insert date
-    created_date = models.DateTimeField(auto_now_add=True)
-    # last update date
-    modified_date = models.DateTimeField(auto_now=True)
-
-    # unique object identifier
-    uuid = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)
-
-    # panels
-    panels = ArrayField(models.IntegerField())
-
-    @classmethod
-    def get_defaults_columns(cls):
-        return {
-            'layout': {
-                'label': _('Layout'),
-                'field': 'name',
-                'query': True,
-                'format': {
-                    'type': 'layout',
-                    'model': 'accession.batch'
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
-            },
-            'name': {
-                'label': _('Name'),
-                'query': False,  # done by a prefetch related
-                'format': {
-                    'type': 'string',
-                    'model': 'accession.batch'
-                },
-                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            }
-        }
-
-    class Meta:
-        managed = False
-        db_table = 'batch_panel_list'
-        verbose_name = _("batch")
-
-        permissions = (
-            ("get_batch", "Can get a batch"),
-            ("list_batch", "Can list batch"),
-            ("search_batch", "Can search for batches")
-        )
-
-    def natural_name(self):
-        return self.name
-
-    @staticmethod
-    def details():
-        """
-        Return the details field for the specialized entity. By default return an empty dict.
-        :return: A dict of details
-        """
-        return {}
-
-    @classmethod
-    def make_search_by_name(cls, term):
-        return Q(name__istartswith=term)
