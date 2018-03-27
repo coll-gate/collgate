@@ -255,10 +255,13 @@ let Layout = LayoutView.extend({
             let heading = $('<div class="panel-heading" data-toggle="tooltip" data-placement="left" title="' + _t('Collapse/Expand') + '">');
             if (i === currentStepIndex) {
                 heading.addClass('action-current');
+                panel.addClass('panel-warning');
             } else if (i < currentStepIndex) {
                 heading.addClass('action-done');
+                panel.addClass('panel-success');
             } else if (i > currentStepIndex) {
                 heading.addClass('action-next');
+                panel.addClass('panel-info');
             }
             panel.append(heading);
 
