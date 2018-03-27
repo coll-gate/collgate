@@ -577,6 +577,10 @@ def get_panel_accession_list(request, panel_id):
 
     accession_items = []
 
+    synonym_types = dict(
+        EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('id',
+                                                                                                                'name'))
+
     for accession in cq:
         a = {
             'id': accession.pk,
@@ -594,8 +598,8 @@ def get_panel_accession_list(request, panel_id):
         }
 
         for synonym in accession.synonyms.all():
-            synonym_type = EntitySynonymType.objects.get(id=synonym.synonym_type_id)
-            a['synonyms'][synonym_type.name] = {
+            synonym_type_name = synonym_types.get(synonym.synonym_type_id)
+            a['synonyms'][synonym_type_name] = {
                 'id': synonym.id,
                 'name': synonym.name,
                 'synonym_type': synonym.synonym_type_id,
