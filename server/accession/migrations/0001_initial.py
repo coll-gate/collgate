@@ -17,45 +17,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='AccessionView',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=255)),
-                ('code', models.CharField(db_index=True, max_length=255, unique=True)),
-                ('descriptors', django.contrib.postgres.fields.jsonb.JSONField(default={})),
-                ('entity_status', models.IntegerField(choices=[(0, 'Pending'), (1, 'Valid'), (2, 'Archived'), (3, 'Removed')], default=1)),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
-                ('modified_date', models.DateTimeField(auto_now=True)),
-                ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)),
-                ('panels', django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(), size=None)),
-            ],
-            options={
-                'verbose_name': 'accession',
-                'db_table': 'accession_panel_list',
-                'permissions': (('get_accession', 'Can get an accession'), ('list_accession', 'Can list accessions'), ('search_accession', 'Can search for accessions')),
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='BatchView',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=255, unique=True)),
-                ('descriptors', django.contrib.postgres.fields.jsonb.JSONField(default={})),
-                ('entity_status', models.IntegerField(choices=[(0, 'Pending'), (1, 'Valid'), (2, 'Archived'), (3, 'Removed')], default=1)),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
-                ('modified_date', models.DateTimeField(auto_now=True)),
-                ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)),
-                ('panels', django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(), size=None)),
-            ],
-            options={
-                'verbose_name': 'batch',
-                'db_table': 'batch_panel_list',
-                'permissions': (('get_batch', 'Can get a batch'), ('list_batch', 'Can list batch'), ('search_batch', 'Can search for batches')),
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
             name='Accession',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
