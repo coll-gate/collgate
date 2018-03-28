@@ -2,7 +2,7 @@
 #
 # @file models.py
 # @brief coll-gate accession module models.
-# @author Frédéric SCHERMA (INRA UMR1095)
+# @author Frédéric SCHERMA (INRA UMR1095), Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
@@ -11,7 +11,7 @@
 import re
 
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField, ArrayField
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import Q
 from django.utils import translation
@@ -21,8 +21,7 @@ from accession import localsettings
 from classification.models import ClassificationEntry
 from descriptor.models import DescribableEntity
 from descriptor.models import Layout
-from igdectk.common.models import ChoiceEnum, IntegerChoice
-from main.models import Entity, EntitySynonym, EntityStatus, ContentType, uuid, EntitySynonymType
+from main.models import Entity, EntitySynonym, ContentType, EntitySynonymType
 
 
 class AccessionClassificationEntry(models.Model):
@@ -98,16 +97,6 @@ class Accession(DescribableEntity):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
-            # 'synonym': {
-            #     'label': _('Synonym'),
-            #     'field': 'name',
-            #     'query': False,  # done by a prefetch related
-            #     'format': {
-            #         'type': 'string',
-            #         'model': 'accession.accessionsynonym'
-            #     },
-            #     'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
-            # },
             'name': {
                 'label': _('Name'),
                 'query': False,  # done by a prefetch related
@@ -304,6 +293,9 @@ class Batch(DescribableEntity):
     # direct parent batches
     batches = models.ManyToManyField('Batch', related_name='children')
 
+    # parent location
+    location = models.ForeignKey('StockLocation', related_name='batches', on_delete=models.PROTECT, null=True)
+
     @classmethod
     def get_defaults_columns(cls):
         return {
@@ -325,6 +317,21 @@ class Batch(DescribableEntity):
                     'model': 'accession.batch'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'location': {
+                'label': _('Stock location'),
+                'field': 'name',  # todo: return the label field
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'entity',
+                    'model': 'accession.stocklocation'
+                },
+                'available_operators': [
+                    'contains',
+                    'not_contains',
+                    'overlap',
+                    'not_overlap'
+                ],
             },
             'panels': {
                 'label': _('Linked panels'),
@@ -700,6 +707,29 @@ class AccessionPanel(Panel):
 
         permissions = (
             ("get_accessionpanel", "Can get a accession panel"),
-            ("list_accessionpanel", "Can list accession panel"),
+            ("list_accessionpanel", "Can list accession panels"),
         )
 
+
+class StockLocation(models.Model):
+    """
+    Defines stock locations of batches.
+    """
+
+    # unique name of the panel
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
+    # Customisable label of the action.
+    # It is i18nized using a JSON dict with language code as key and label as string value.
+    label = JSONField(default={})
+
+    # Parent location
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = _("stock location")
+
+        permissions = (
+            ("get_stocklocation", "Can get a stock location"),
+            ("list_stocklocation", "Can list stock locations"),
+        )
