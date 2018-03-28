@@ -1346,14 +1346,17 @@ class CursorQuery(object):
                         continue
 
                     new_model = related_model(id=getattr(instance, "%s_id" % field))
-                    setattr(instance, "_%s_cache" % field, new_model)
+
+                    # since django 2 moved to _state.fields_cache dict
+                    # setattr(instance, "_%s_cache" % field, new_model)
+                    instance._state.fields_cache[field] = new_model
 
                     for related_field in model_fields:
                         if model_fields[related_field][0] == 'FK':
                             field_name = related_field + '_id'
                             setattr(new_model, field_name, getattr(instance, "%s_%s" % (field, field_name)))
                         else:
-                            setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
+                             setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
 
                 # cache them for cursor build
                 if self._first_elt is None:

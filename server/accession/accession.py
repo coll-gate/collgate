@@ -291,9 +291,9 @@ def get_accession_list(request):
             'descriptors': accession.descriptors,
             'synonyms': {},
             'primary_classification_entry_details': {
-                'id': accession.primary_classification_entry_id,
-                'name': accession.primary_classification_entry_name,
-                'rank': accession.primary_classification_entry_rank_id,
+                'id': accession.primary_classification_entry.id,
+                'name': accession.primary_classification_entry.name,
+                'rank': accession.primary_classification_entry.rank_id,
             }
         }
 
