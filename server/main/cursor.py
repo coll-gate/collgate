@@ -167,8 +167,8 @@ class CursorQuery(object):
         'notnull': '!=',
         '=': '@>',
         'eq': '@>',
-        '!=': 'NOT @>',
-        'neq': 'NOT @>',
+        '!=': ['NOT', '@>'],
+        'neq': ['NOT', '@>'],
         'contains': 'LIKE',
         'icontains': 'ILIKE',
     }
@@ -1088,8 +1088,11 @@ class CursorQuery(object):
 
         if operator == 'ILIKE' or operator == 'LIKE':
             return 'array_to_string("%s"."%s", \'\\0\') %s %s' % (table_alias, field_alias, operator, final_value)
-        if operator == '@>' or operator == 'NOT @>':
+
+        if operator == '@>':
             return '"%s"."%s" %s \'{%s}\'' % (table_alias, field_alias, operator, value)
+        elif isinstance(operator, list) and operator[0] == 'NOT':
+            return 'NOT "%s"."%s" %s \'{%s}\'' % (table_alias, field_alias, operator[1], value)
         else:
             return '"%s"."%s" %s %s' % (table_alias, field_alias, operator, value)
 
@@ -1152,6 +1155,11 @@ class CursorQuery(object):
         return self
 
     def join_sub_query_array_field(self, cf):
+        """
+        Create array field from a subquery
+        :param cf: cursorfield
+        :return:
+        """
 
         related_db_table = self._sub_query_array_fields[cf.name]['related_db_table']
         selected_field = self._sub_query_array_fields[cf.name]['selected_field']
@@ -1165,7 +1173,6 @@ class CursorQuery(object):
                 related_db_table, selected_field, related_db_table, db_table, from_related_field, related_db_table,
                 to_related_field, alias)
         )
-        # self.query_select.append('"%s"."%s"' % (db_table, alias))
 
         self._sub_query_array_fields[cf.name]['handle'] = True
 
@@ -1179,8 +1186,6 @@ class CursorQuery(object):
 
         self._synonym_table_aliases[synonym_cf.name] = alias
 
-        # --------------- MULTI -----------------
-
         if synonym_cf.is_multiple_synonym:
 
             self.sub_query_select.append(
@@ -1189,12 +1194,6 @@ class CursorQuery(object):
                     alias))
 
             self.query_select.append('"%s"."%s" AS "%s"' % (db_table, alias, synonym_cf.name))
-
-            # _sub_query_from = '(SELECT DISTINCT %s FROM "%s") AS "%s"' % (",".join(self.sub_query_select), db_table, db_table)
-            #
-            # self.query_from[0] = _sub_query_from
-
-        # ---------------------------------------
 
         else:
             self.query_select.append('"%s"."name" AS "%s"' % (alias, synonym_cf.name))
