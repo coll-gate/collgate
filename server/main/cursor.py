@@ -416,8 +416,6 @@ class CursorQuery(object):
                         synonym_db_table = self._synonym_model._meta.db_table
                         alias = cf.name + "_" + synonym_db_table
                         lqs.append(self._cast_synonym_type(alias, cf.exclusive_operator, self._cursor[cf.index]))
-                        # final_value = self._make_value(self._cursor[cf.index], ('TEXT', 'TEXT', False))
-                        # lqs.append('"%s"."%s" %s %s' % (alias, 'name', cf.exclusive_operator, final_value))
                     else:
                         if self.FIELDS_SEP in cf.name:
                             ff = cf.name.split(self.FIELDS_SEP)
@@ -554,19 +552,6 @@ class CursorQuery(object):
                     if ff[0] in self.model_fields:
                         if self.model_fields[ff[0]][0] == 'FK':
                             select_related.append(cf.name)
-
-        # if isinstance(self._select_related, bool):
-        #     field_dict = {}
-        # else:
-        #     field_dict = self._select_related
-        # for field in select_related:
-        #     d = field_dict
-        #     for part in field.split(self.FIELDS_SEP):
-        #         if d.get(part) is not None and not d.get(part):
-        #             d = d.get(part)
-        #         else:
-        #             d = d.setdefault(part, {})
-        # self._select_related = field_dict
 
         self.add_select_related(select_related)
         return self
@@ -935,7 +920,10 @@ class CursorQuery(object):
 
                             final_value = self._make_value(self._convert_value(value, cmp), field_model)
 
-                            lqs.append('"%s"."%s" %s %s' % (db_table, cf.name, op, final_value))
+                            if field_model[0] == 'ARRAY' and isinstance(op, list) and op[0] == 'NOT':
+                                lqs.append('NOT "%s"."%s" %s %s' % (db_table, cf.name, op[1], final_value))
+                            else:
+                                lqs.append('"%s"."%s" %s %s' % (db_table, cf.name, op, final_value))
 
                         else:
                             field_model = self.model_fields[cf.name]
@@ -1398,7 +1386,7 @@ class CursorQuery(object):
 
     def set_synonym_model(self, synonym_model):
         """
-        Make link to the synonym model of the entity.
+        link entity to its synonym model.
 
         :param synonym_model: django model of the entity synonyms
         :return: self
@@ -1417,7 +1405,6 @@ class CursorQuery(object):
 
         return self
 
-    # def m2m_to_array_field(self, related_model, related_field_name, field_alias):
     def m2m_to_array_field(self, relationship, selected_field, from_related_field, to_related_field, alias):
         """
         Add array field which contains elements of the given model field.
