@@ -1,4 +1,5 @@
 {
+  "(Linked to layout)": "",
   "A parent must be specified": "Un parent doit être spécifié",
   "Apply": "Appliquer",
   "Are you sure you want to delete any descriptors for this classification entry ?": "Etes-vous sûr de vouloir supprimer tout les descripteurs pour cette entrée de classification ?",
@@ -25,7 +26,7 @@
   "Create classification": "",
   "Create rank of classification": "Créer un rang de classification",
   "Defines": "Définir",
-  "Defines a meta-model of descriptors": "Définir un méta-modèle de descripteurs",
+  "Defines a layout of descriptors": "",
   "Delete all": "Supprimer tous",
   "Delete descriptors": "Supprimer les descripteurs",
   "Description": "Description",
@@ -45,7 +46,7 @@
   "Manage ranks": "Gérer les rangs",
   "Modify": "Modifier",
   "Name": "Nom",
-  "No descriptor meta-model is defined for this classification entry.": "Auncun méta-modèle définit pour l'entrée de classification",
+  "No layout is defined for this classification entry.": "",
   "Parent": "Parent",
   "Principal name of the classification entry": "Nom principale de l'entrée de classification",
   "Rank": "Rang",

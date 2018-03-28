@@ -88,7 +88,7 @@ class CollGateAccession(ApplicationMain):
         ]
 
         # registers standard format type of descriptors layouts
-        from descriptor import layouttype
+        from accession import layouttype
 
         for element in dir(layouttype):
             attr = getattr(layouttype, element)

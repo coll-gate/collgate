@@ -1,5 +1,5 @@
 /**
- * @file descriptormetamodellist.js
+ * @file layoutlist.js
  * @brief List of layout of descriptors view
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-27

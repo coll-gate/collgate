@@ -716,12 +716,8 @@ def list_descriptor_for_panel(request, layout_id, pan_id):
         "new_panel": {"type": "number"},
     },
 }, perms={
-    'descriptor.change_layout': _(
-        'You are not allowed to modify a layout of descriptor'),
-    # 'descriptor.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
-    # 'descriptor.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
-},
-                                              staff=True)
+    'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor')
+}, staff=True)
 def reorder_descriptor_for_panel(request, layout_id):
     """
     Reorder descriptors according to the new position of one of the elements.
@@ -749,11 +745,8 @@ def reorder_descriptor_for_panel(request, layout_id):
         "position": {"type": "number"},
     },
 }, perms={
-    'descriptor.change_layout': _(
-        'You are not allowed to modify a layout of descriptor'),
-    # 'descriptor.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor'),
-},
-                                         staff=True)
+    'descriptor.change_layout': _('You are not allowed to modify a layout of descriptor'),
+}, staff=True)
 def reorder_descriptor_panels_for_model(request, layout_id):
     """
     Reorder the panels for a layout of descriptors according to the new position of one of the elements.
@@ -1049,7 +1042,7 @@ def create_condition(request, layout_id, pan_id, desc_id):
 
     if descriptor.get('mandatory'):
         raise SuspiciousOperation(_(
-            "It is not possible to define a condition on a required type of model of descriptor"))
+            "It is not possible to define a condition on a required descriptor"))
 
     # check if there is a cyclic condition
     target_position = layout.get_position_by_name(target.name)

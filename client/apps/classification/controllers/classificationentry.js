@@ -51,7 +51,7 @@ let Controller = Marionette.Object.extend({
                 events: {
                     'click @ui.create': 'onCreate',
                     'input @ui.name': 'onNameInput',
-                    'change @ui.layout': 'onChangeDescriptorMetaModel',
+                    'change @ui.layout': 'onChangeLayout',
                     'change @ui.classification': 'onChangeClassification',
                     'change @ui.rank': 'onChangeRank'
                 },
@@ -80,7 +80,7 @@ let Controller = Marionette.Object.extend({
                     this.ui.rank.selectpicker({});
 
                     // on default descriptor layout
-                    this.onChangeDescriptorMetaModel();
+                    this.onChangeLayout();
                 },
 
                 onBeforeDestroy: function () {
@@ -95,7 +95,7 @@ let Controller = Marionette.Object.extend({
                     CreateClassificationEntryDialog.__super__.onBeforeDestroy.apply(this);
                 },
 
-                getDescriptorMetaModelClassifications: function () {
+                getLayoutClassifications: function () {
                     let layoutId = parseInt(this.ui.layout.val());
 
                     let value = Object.resolve(layoutId + ".parameters.data.classification", this.layouts);
@@ -106,7 +106,7 @@ let Controller = Marionette.Object.extend({
                     return [];
                 },
 
-                onChangeDescriptorMetaModel: function() {
+                onChangeLayout: function() {
                     let select = this.ui.classification;
 
                     select.children().remove();
@@ -123,7 +123,7 @@ let Controller = Marionette.Object.extend({
                         filters: [{
                             type: 'term',
                             field: 'id',
-                            value: this.getDescriptorMetaModelClassifications(),
+                            value: this.getLayoutClassifications(),
                             op: 'in'
                         }]
                     });
@@ -294,14 +294,14 @@ let Controller = Marionette.Object.extend({
                     if (this.validate()) {
                         let name = this.ui.name.val().trim();
 
-                        let descriptorMetaModelId = parseInt(this.ui.layout.val());
+                        let layoutId = parseInt(this.ui.layout.val());
                         let rankId = parseInt(this.ui.rank.val());
                         let parentId = parseInt(this.ui.parent.val()) || null;
 
                         // create a new local model and open an edit view with this model
                         let model = new ClassificationEntryModel({
                             name: name,
-                            layout: descriptorMetaModelId,
+                            layout: layoutId,
                             parent: parentId,
                             rank: rankId,
                             language: this.ui.language.val()

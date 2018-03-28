@@ -1537,7 +1537,7 @@ let View = Marionette.CompositeView.extend({
         this.onRefreshChildren(true, this.displayedColumns.slice(-1)).done(function () {
             // save once refresh is done completely
             if (self.getUserSettingName()) {
-                application.updateUserSetting(
+                window.application.updateUserSetting(
                     self.getUserSettingName(),
                     self.selectedColumns,
                     self.getUserSettingVersion()
@@ -1547,7 +1547,7 @@ let View = Marionette.CompositeView.extend({
 
         if (save) {
             if (this.getUserSettingName()) {
-                application.updateUserSetting(
+                window.application.updateUserSetting(
                     this.getUserSettingName(),
                     this.selectedColumns,
                     this.getUserSettingVersion()
@@ -1567,7 +1567,7 @@ let View = Marionette.CompositeView.extend({
         contextMenu.hide();
 
         // destroy the glass pane
-        application.main.glassPane('destroy');
+        window.application.main.glassPane('destroy');
 
         // first remove columns
         $.each(labels, function (i, element) {

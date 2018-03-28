@@ -746,3 +746,8 @@ div.cell-context-menu ul.actions-list li a:hover {
 .tab-frame {
     margin: 15px;
 }
+
+/* don't want the underline style of url on collapsable title */
+div.panel-heading > a.accordion-toggle:hover, div.panel-heading > a.accordion-toggle:focus {
+    text-decoration: none !important;
+}

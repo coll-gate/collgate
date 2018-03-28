@@ -123,8 +123,6 @@ let View = ItemView.extend({
                 }
 
                 if (conditions) {
-                    // let target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    // let targetDescriptorModelType = this.layoutData.layout_content.panels[target.attr('panel-index')].descriptors[target.attr('index')];
                     let targetDescriptorModel = this.descriptorCollection.findWhere({'name': conditions.target_name});
                     let descriptorModel = this.descriptorCollection.findWhere({'name': layoutDescriptorModel.name});
 
@@ -171,30 +169,6 @@ let View = ItemView.extend({
                 }
             }
         }
-    },
-
-    findDescriptorModelTypeForConditionTarget: function(target) {
-        alert("BROKEN CODE!");
-        // let pi = target.attr('panel-index');
-        // let i = target.attr('index');
-        // let targetLayoutDescriptorModel = this.layoutData.layout_content.panels[pi].descriptors[i];
-        // let targetDescriptorModel = this.descriptorCollection.findWhere({'name': targetLayoutDescriptorModel.name});
-        //
-        // // find el from target
-        // let descriptorModelTypes = this.layoutData.layout_content.panels[pi].descriptors;
-        // for (let i = 0; i < descriptorModelTypes.length; ++i) {
-        //     if (descriptorModelTypes[i].condition.target_name === targetDescriptorModel.id) {
-        //         let descriptorModelType = descriptorModelTypes[i];
-        //
-        //         return {
-        //             targetDescriptorModel: targetDescriptorModel,
-        //             descriptorModel: descriptorModelType,
-        //             el: this.$el.find("tr.descriptor[descriptor-model-type=" + descriptorModelType.id + "]")
-        //         }
-        //     }
-        // }
-
-        return null;
     },
 
     prepareDescriptors: function () {

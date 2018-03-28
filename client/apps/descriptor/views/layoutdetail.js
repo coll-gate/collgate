@@ -1,31 +1,33 @@
 /**
- * @file descriptormodeldetail.js
- * @brief Detail for a model of descriptor view
+ * @file layoutdetail.js
+ * @brief Detail for a layout of descriptor view
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2016-09-28
+ * @author Medhi BOULNEMOUR (INRA UMR1095)
+ * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details 
  */
 
 let Marionette = require('backbone.marionette');
-let DescriptorModelModel = require('../models/descriptormodel');
 
 let View = Marionette.View.extend({
-    className: 'object descriptor-model-detail',
-    template: require('../templates/descriptormodeldetail.html'),
+    className: 'object layout-detail',
+    template: require('../templates/layoutdetail.html'),
+
+    regions: {
+        'content': "div.contextual-region"
+    },
 
     ui: {
-        name: '#descriptor_model_name',
-        verbose_name: '#descriptor_model_verbose_name',
-        description: '#descriptor_model_description',
+        name: '#layout_name',
+        description: '#layout_description',
         save: '#save'
     },
 
     events: {
-        'click @ui.save': 'saveDescriptorModel',
+        'click @ui.save': 'saveLayout',
         'input @ui.name': 'inputName',
-        'input @ui.verbose_name': 'inputVerboseName',
     },
 
     initialize: function() {
@@ -33,6 +35,15 @@ let View = Marionette.View.extend({
     },
 
     onRender: function() {
+        let target = this.model.get('target');
+
+        // update the contextual region according to the format
+        let Element = window.application.descriptor.layoutTypes.getElement(target);
+        if (Element) {
+            this.showChildView('content', new Element({model: this.model}));
+        } else {
+            this.getRegion('content').empty();
+        }
     },
 
     inputName: function () {
@@ -48,18 +59,23 @@ let View = Marionette.View.extend({
         }
     },
 
-    saveDescriptorModel: function () {
+    saveLayout: function () {
         if (!$(this.ui.name.isValidField()))
             return;
 
+        let target = this.model.get('target');
         let name = this.ui.name.val();
-        let verbose_name = this.ui.verbose_name.val();
         let description = this.ui.description.val();
+
+        let parameters = {
+            'type': target,
+            'data': this.getChildView('content') ? this.getChildView('content').getData() : {}
+        };
 
         this.model.save({
             name: name,
-            verbose_name: verbose_name,
             description: description,
+            parameters: parameters
         }, {wait: true}).done(function() { $.alert.success(_t("Done")); });
     }
 });

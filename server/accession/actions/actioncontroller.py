@@ -202,13 +202,23 @@ class ActionController(object):
             raise ActionError("Current action step state must be initial or setup")
 
         # validate data according to step format
-        final_data = action_step_format.validate(step_format, input_data, input_columns)
+        validated_data = action_step_format.validate(step_format, input_data, input_columns)
 
         action_step['state'] = ActionController.STEP_SETUP
-        action_step['data'] = final_data
+        action_step['data'] = validated_data
 
         # finally save
         self.action.save()
+
+    def process_current_step_one(self, data):
+        """
+        Process one more element of the current step in case of progressive step.
+
+        :param data:
+        :return:
+        """
+        # @todo
+        pass
 
     def process_current_step(self):
         if not self.is_current_step_valid:
@@ -417,3 +427,22 @@ class ActionController(object):
         action_step_format = ActionStepFormatManager.get(step_format['type'])
 
         return action_step_format.data_format
+
+    @property
+    def has_sequential_processing(self):
+        """
+        Is the current step wait for sequential processing.
+        """
+        action_steps = self.action.data.get('steps')
+        if not action_steps:
+            raise ActionError("Empty action steps")
+
+        step_index = len(action_steps) - 1
+
+        # step format
+        action_type_steps = self.action_type.format['steps']
+
+        step_format = action_type_steps[step_index]
+        action_step_format = ActionStepFormatManager.get(step_format['type'])
+
+        return action_step_format.sequential_processing

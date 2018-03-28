@@ -113,8 +113,8 @@ DescriptorModule.prototype = {
         // descriptor layout types
         //
 
-        let DescriptorMetaModelTypeManager = require('./layouttypes/layouttypemanager');
-        this.layoutTypes = new DescriptorMetaModelTypeManager();
+        let LayoutTypeManager = require('./layouttypes/layouttypemanager');
+        this.layoutTypes = new LayoutTypeManager();
 
         //
         // cache

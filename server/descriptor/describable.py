@@ -16,7 +16,6 @@ from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.descriptorformattype import DescriptorFormatTypeManager
-# from descriptor.models import DescriptorPanel, DescriptorModelTypeCondition
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 

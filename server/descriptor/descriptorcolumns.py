@@ -18,7 +18,6 @@ from igdectk.rest.response import HttpResponseRest
 from main.cache import cache_manager
 from .descriptor import RestDescriptor
 
-# from .models import Layout, DescriptorModelType, Descriptor
 from .models import Layout, Descriptor
 
 

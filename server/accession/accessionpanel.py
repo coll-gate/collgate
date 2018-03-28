@@ -10,7 +10,6 @@
 
 from descriptor.describable import DescriptorsBuilder
 from django.contrib.contenttypes.models import ContentType
-# from descriptor.models import Layout, DescriptorModelType
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from django.db.models import Q, Prefetch
@@ -591,9 +590,9 @@ def get_panel_accession_list(request, panel_id):
             'descriptors': accession.descriptors,
             'synonyms': {},
             'primary_classification_entry_details': {
-                'id': accession.primary_classification_entry.id,
-                'name': accession.primary_classification_entry.name,
-                'rank': accession.primary_classification_entry.rank_id,
+                'id': accession.primary_classification_entry_id,
+                'name': accession.primary_classification_entry_name,
+                'rank': accession.primary_classification_entry_rank_id,
             }
         }
 
