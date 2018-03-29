@@ -47,7 +47,6 @@ let View = Marionette.View.extend({
     },
 
     onRender: function () {
-        window.application.main.views.languages.drawSelect(this.ui.synonym_language, true, true);
         window.application.main.views.entitySynonymTypes.drawSelect(
             this.ui.accession_synonym_type, true, false, null, {target_model: 'accession.accession'});
 
@@ -75,8 +74,10 @@ let View = Marionette.View.extend({
 
             // enable/disable and default language
             if (synonymType.get('has_language')) {
+                window.application.main.views.languages.drawSelect(this.ui.synonym_language);
                 this.ui.synonym_language.prop('disabled', false).val(window.session.language).selectpicker('refresh');
             } else {
+                window.application.main.views.languages.drawSelect(this.ui.synonym_language, true, true);
                 this.ui.synonym_language.prop('disabled', true).val('').selectpicker('refresh');
             }
         }
