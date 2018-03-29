@@ -17,7 +17,6 @@ from django.views.decorators.cache import cache_page
 
 from django.utils.translation import ugettext_lazy as _
 
-from igdectk.common.cache import invalidate_cache
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.models import EntitySynonymType, InterfaceLanguages
@@ -280,8 +279,6 @@ def post_entity_synonym_type(request):
         'can_modify': entity_synonym_type.can_modify
     }
 
-    invalidate_cache('get_entity_synonym_types')
-
     return HttpResponseRest(request, results)
 
 
@@ -297,8 +294,6 @@ def delete_entity_synonym_type(request, est_id):
     # do we allow delete because of data consistency ?
     # it is not really a problem because the code is a standard
     entity_synonym_type.delete()
-
-    invalidate_cache('get_entity_synonym_types')
 
     return HttpResponseRest(request, {})
 
@@ -346,8 +341,6 @@ def change_language_labels(request, est_id):
     result = {
         'label': entity_synonym_type.get_label()
     }
-
-    invalidate_cache('get_entity_synonym_types')
 
     return HttpResponseRest(request, result)
 

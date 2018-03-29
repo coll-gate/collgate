@@ -42,7 +42,7 @@ Cache.prototype = {
      * Get a cache from its cache type and key.
      * @param cacheType Cache type is a first classification key.
      * @param key Key of the cache to get.
-     * @returns A cache object. It is empty at the first call.
+     * @returns {} cache object. It is empty at the first call.
      */
     get: function(cacheType, key) {
         if (cacheType in this.data) {
@@ -91,6 +91,7 @@ Cache.prototype = {
 
         if (cacheType in this.data) {
             let category = this.data[cacheType];
+            console.log(this.data, this.collection)
 
             if (values) {
                 // @todo an invalidate per value
@@ -188,8 +189,7 @@ Cache.prototype = {
 
     /**
      * Lookup for a single key and return a promise with a data object containing a reference to the key.
-     * @param cacheType Cache fetcher type
-     * @param format Cache options
+     * @param options
      * @param keys Array of keys
      * @returns A promise
      */
@@ -233,12 +233,14 @@ Cache.prototype = {
         let cacheInfo = _.isFunction(collection.cache) ? collection.cache() : collection.cache;
 
         if (cacheInfo.category in this.data) {
-            if (cacheInfo.category in this.collection) {
-                return;
+            if (!(cacheInfo.category in this.collection)) {
+                // init category into collection dict
+                this.collection[cacheInfo.category] = {};
             }
 
-            if (!(cacheInfo.category in this.collection)) {
-                this.collection[cacheInfo.category] = {};
+            if (cacheInfo.key in this.collection[cacheInfo.category]) {
+                // avoid multiples
+                return;
             }
 
             this.collection[cacheInfo.category][cacheInfo.key] = collection;

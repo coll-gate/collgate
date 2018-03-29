@@ -68,8 +68,8 @@ let View = Marionette.View.extend({
     },
 
     onRender: function() {
-        application.main.views.languages.htmlFromValue(this.el);
-        application.classification.views.classificationEntrySynonymTypes.htmlFromValue(this.el);
+        window.application.main.views.languages.htmlFromValue(this.el);
+        window.application.main.views.entitySynonymTypes.htmlFromValue(this.el);
 
         this.$el.find('span[name=details]').asyncvalue('init', {
             className: 'classification-rank',

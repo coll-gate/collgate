@@ -190,21 +190,28 @@ let Renderer = Marionette.Object.extend({
      * @param widget If true create a bootstrap select picker in front of this select
      * @param emptyValue If true prepend an empty choice value
      * @param initialValue If defined set the current value to its
+     * @param filters
      * @return A promise when select is rendered.
      */
-    drawSelect: function(sel, widget, emptyValue, initialValue) {
+    drawSelect: function(sel, widget, emptyValue, initialValue, filters) {
         widget != undefined || (widget = true);
         emptyValue != undefined || (emptyValue = false);
+        filters != undefined || (filters = null);
 
         let deferred = $.Deferred();
 
         if (this.collection.size() > 0) {
             let s = $(sel);
+            let content = this.html;
+
+            if (filters) {
+                 content = this._render(filters);
+            }
             if (emptyValue) {
                 let emptyOption = "<option value=''></option>";
-                s.html(emptyOption + this.html);
+                s.html(emptyOption + content);
             } else {
-                s.html(this.html);
+                s.html(content);
             }
 
             if (widget) {
@@ -224,11 +231,16 @@ let Renderer = Marionette.Object.extend({
 
             this.collection.on("sync", function () {
                 let s = $(sel);
+                let content = self.html;
+
+                if (filters) {
+                    content = this._render(filters);
+                }
                 if (emptyValue) {
                     let emptyOption = "<option value=''></option>";
-                    s.html(emptyOption + self.html);
+                    s.html(emptyOption + content);
                 } else {
-                    s.html(self.html);
+                    s.html(content);
                 }
 
                 if (widget) {
@@ -247,6 +259,18 @@ let Renderer = Marionette.Object.extend({
         }
 
         return deferred.promise();
+    },
+
+    _render: function(filters) {
+        let results = this.collection.where(filters);
+        let array = [];
+
+        // toJSON inconsistency in backbone, it is not possible using where so do it
+        for (let i = 0; i < results.length; ++i) {
+            array.push(results[i].attributes);
+        }
+
+        return Marionette.Renderer.render(this.template, {items: array});
     }
 });
 

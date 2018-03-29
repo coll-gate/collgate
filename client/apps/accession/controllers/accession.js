@@ -236,7 +236,7 @@ let Controller = Marionette.Object.extend({
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
                         }).done(function (data) {
-                            let accessionCodeId = window.application.accession.collections.accessionSynonymTypes.findWhere(
+                            let accessionCodeId = window.application.main.collections.entitySynonymTypes.findWhere(
                                 {name: "accession_code"}).get('id');
 
                             for (let i in data.items) {

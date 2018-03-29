@@ -21,7 +21,8 @@ ClassificationModule.prototype = {
         this.controllers = {};
 
         try {
-            i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/default.json'));
+            window.i18next.default.addResources(
+                window.session.language, 'default', require('./locale/' + window.session.language + '/default.json'));
         } catch (e) {
             console.warn("No translation found for the current language. Fallback to english language");
         }
@@ -35,22 +36,6 @@ ClassificationModule.prototype = {
             let moduleName = layoutTypes[i].replace(/_/g, '').toLowerCase();
             app.descriptor.layoutTypes.registerElement(layoutTypes[i], require('./layouttypes/' + moduleName));
         }
-
-        //
-        // main collections
-        //
-
-        let SelectOption = require('../main/renderers/selectoption');
-
-        // @todo may be a cache collection or uses a cachefetcher for classfication synonym type
-        let EntitySynonymTypeCollection = require('../main/collections/entitysynonymtype');
-        this.collections.classificationEntrySynonymTypes = new EntitySynonymTypeCollection([], {
-            target_model: 'classification.classificationentry'});
-
-        this.views.classificationEntrySynonymTypes = new SelectOption({
-            className: 'classification-entry-synonym-type',
-            collection: this.collections.classificationEntrySynonymTypes
-        });
 
         //
         // controllers
@@ -83,7 +68,7 @@ ClassificationModule.prototype = {
         //
         // add classifications to menu
         //
-        if (session.user.isAuth) {
+        if (window.session.user.isAuth) {
             let ClassificationCollection = require('./collections/classification');
             let classificationCollection = new ClassificationCollection();
 

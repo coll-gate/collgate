@@ -19,7 +19,7 @@ let View = Marionette.View.extend({
     ui: {
         "synonym_name": ".synonym-name",
         "synonym_language": ".synonym-languages",
-        "classification_entry_synonym_type": ".classification-entry-synonym-types",
+        "classification_entry_synonym_type": ".entity-synonym-types",
         "add_synonym": ".add-synonym",
         "remove_synonym": ".remove-synonym",
         "add_synonym_panel": "tr.add-synonym-panel",
@@ -37,8 +37,8 @@ let View = Marionette.View.extend({
 
     templateContext: function () {
         return {
-            classification_entry_code: application.classification.collections.classificationEntrySynonymTypes.findWhere({name: "classification_entry_code"}).get('id'),
-            classification_entry_name: application.classification.collections.classificationEntrySynonymTypes.findWhere({name: "classification_entry_name"}).get('id')
+            classification_entry_code: window.application.main.collections.entitySynonymTypes.findWhere({name: "classification_entry_code"}).get('id'),
+            classification_entry_name: window.application.main.collections.entitySynonymTypes.findWhere({name: "classification_entry_name"}).get('id')
         };
     },
 
@@ -47,15 +47,16 @@ let View = Marionette.View.extend({
     },
 
     onRender: function() {
-        application.main.views.languages.drawSelect(this.ui.synonym_language);
-        application.classification.views.classificationEntrySynonymTypes.drawSelect(this.ui.classification_entry_synonym_type);
+        window.application.main.views.languages.drawSelect(this.ui.synonym_language);
+        window.application.main.views.entitySynonymTypes.drawSelect(
+            this.ui.classification_entry_synonym_type, true, false, null, {target_model: 'classification.classificationentry'});
 
-        application.main.views.languages.htmlFromValue(this.el);
-        application.classification.views.classificationEntrySynonymTypes.htmlFromValue(this.el);
+        window.application.main.views.languages.htmlFromValue(this.el);
+        window.application.main.views.entitySynonymTypes.htmlFromValue(this.el);
 
         // disable non multiple synonym types
         for (let i = 0; i < this.model.get('synonyms').length; ++i) {
-            let st = application.classification.collections.classificationEntrySynonymTypes.get(this.model.get('synonyms')[i].synonym_type);
+            let st = window.application.main.collections.entitySynonymTypes.get(this.model.get('synonyms')[i].synonym_type);
             if (!st.get('multiple_entry')) {
                 let name = st.get('name');
                 this.ui.classification_entry_synonym_type.find('option[name=' + name + ']').prop('disabled', true);
@@ -70,11 +71,11 @@ let View = Marionette.View.extend({
     onChangeSynonymType: function () {
         let synonymTypeId = parseInt(this.ui.classification_entry_synonym_type.val());
         if (!isNaN(synonymTypeId)) {
-            let synonymType = application.classification.collections.classificationEntrySynonymTypes.get(synonymTypeId);
+            let synonymType = window.application.main.collections.entitySynonymTypes.get(synonymTypeId);
 
             // enable/disable and default language
             if (synonymType.get('has_language')) {
-                this.ui.synonym_language.prop('disabled', false).val(session.language).selectpicker('refresh');
+                this.ui.synonym_language.prop('disabled', false).val(window.session.language).selectpicker('refresh');
             } else {
                 this.ui.synonym_language.prop('disabled', true).val('').selectpicker('refresh');
             }
@@ -105,7 +106,7 @@ let View = Marionette.View.extend({
     onSynonymNameInput: function () {
         if (this.validateName()) {
             let synonymTypeId = parseInt(this.ui.classification_entry_synonym_type.val());
-            let synonymType = application.classification.collections.classificationEntrySynonymTypes.get(synonymTypeId);
+            let synonymType = window.application.main.collections.entitySynonymTypes.get(synonymTypeId);
             let language = this.ui.synonym_language.val();
 
             let self = this;
@@ -222,7 +223,7 @@ let View = Marionette.View.extend({
             onSynonymNameInput: function () {
                 if (this.validateName()) {
                     let synonymTypeId = this.getOption('synonym_type');
-                    let synonymType = application.classification.collections.classificationEntrySynonymTypes.get(synonymTypeId);
+                    let synonymType = window.application.main.collections.entitySynonymTypes.get(synonymTypeId);
 
                     let self = this;
                     let name = this.ui.synonym_name.val().trim();

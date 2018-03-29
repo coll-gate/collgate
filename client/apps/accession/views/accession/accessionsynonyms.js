@@ -19,7 +19,7 @@ let View = Marionette.View.extend({
     ui: {
         "synonym_name": ".synonym-name",
         "synonym_language": ".synonym-languages",
-        "accession_synonym_type": ".accession-synonym-types",
+        "accession_synonym_type": ".entity-synonym-types",
         "add_synonym": ".add-synonym",
         "remove_synonym": ".remove-synonym",
         "add_synonym_panel": "tr.add-synonym-panel",
@@ -37,8 +37,8 @@ let View = Marionette.View.extend({
 
     templateContext: function () {
         return {
-            accession_code: application.accession.collections.accessionSynonymTypes.findWhere({name: "accession_code"}).get('id'),
-            accession_name: application.accession.collections.accessionSynonymTypes.findWhere({name: "accession_name"}).get('id')
+            accession_code: window.application.main.collections.entitySynonymTypes.findWhere({name: "accession_code"}).get('id'),
+            accession_name: window.application.main.collections.entitySynonymTypes.findWhere({name: "accession_name"}).get('id')
         };
     },
 
@@ -47,15 +47,16 @@ let View = Marionette.View.extend({
     },
 
     onRender: function () {
-        application.main.views.languages.drawSelect(this.ui.synonym_language, true, true);
-        application.accession.views.accessionSynonymTypes.drawSelect(this.ui.accession_synonym_type);
+        window.application.main.views.languages.drawSelect(this.ui.synonym_language, true, true);
+        window.application.main.views.entitySynonymTypes.drawSelect(
+            this.ui.accession_synonym_type, true, false, null, {target_model: 'accession.accession'});
 
-        application.main.views.languages.htmlFromValue(this.el);
-        application.accession.views.accessionSynonymTypes.htmlFromValue(this.el);
+        window.application.main.views.languages.htmlFromValue(this.el);
+        window.application.main.views.entitySynonymTypes.htmlFromValue(this.el);
 
         // disable non multiple synonym types
         for (let i = 0; i < this.model.get('synonyms').length; ++i) {
-            let st = application.accession.collections.accessionSynonymTypes.get(this.model.get('synonyms')[i].synonym_type);
+            let st = window.application.main.collections.entitySynonymTypes.get(this.model.get('synonyms')[i].synonym_type);
             if (!st.get('multiple_entry')) {
                 let name = st.get('name');
                 this.ui.accession_synonym_type.find('option[name=' + name + ']').prop('disabled', true);
@@ -70,11 +71,11 @@ let View = Marionette.View.extend({
     onChangeSynonymType: function () {
         let synonymTypeId = parseInt(this.ui.accession_synonym_type.val());
         if (!isNaN(synonymTypeId)) {
-            let synonymType = application.accession.collections.accessionSynonymTypes.get(synonymTypeId);
+            let synonymType = window.application.main.collections.entitySynonymTypes.get(synonymTypeId);
 
             // enable/disable and default language
             if (synonymType.get('has_language')) {
-                this.ui.synonym_language.prop('disabled', false).val(session.language).selectpicker('refresh');
+                this.ui.synonym_language.prop('disabled', false).val(window.session.language).selectpicker('refresh');
             } else {
                 this.ui.synonym_language.prop('disabled', true).val('').selectpicker('refresh');
             }
@@ -105,7 +106,7 @@ let View = Marionette.View.extend({
     onSynonymNameInput: function () {
         if (this.validateName()) {
             let synonymTypeId = parseInt(this.ui.accession_synonym_type.val());
-            let synonymType = application.accession.collections.accessionSynonymTypes.get(synonymTypeId);
+            let synonymType = window.application.main.collections.entitySynonymTypes.get(synonymTypeId);
 
             let self = this;
             let name = this.ui.synonym_name.val().trim();
@@ -218,7 +219,7 @@ let View = Marionette.View.extend({
             onNameInput: function () {
                 if (this.validateName()) {
                     let synonymTypeId = this.getOption('synonym_type');
-                    let synonymType = application.accession.collections.accessionSynonymTypes.get(synonymTypeId);
+                    let synonymType = window.application.main.collections.entitySynonymTypes.get(synonymTypeId);
 
                     let self = this;
                     let name = this.ui.synonym_name.val().trim();

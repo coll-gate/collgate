@@ -8,9 +8,10 @@
  * @details
  */
 
+let CachedCollection = require('../collections/cachedcollection');
 let EntitySynonymTypeModel = require('../models/entitysynonymtype');
 
-let Collection = Backbone.Collection.extend({
+let Collection = CachedCollection.extend({
     url: function() {
         if (this.target_model) {
             return window.application.url(['main', 'entity-synonym-type', this.target_model, 'values']);
@@ -18,7 +19,15 @@ let Collection = Backbone.Collection.extend({
             return window.application.url(['main', 'entity-synonym-type']);
         }
     },
+
     model: EntitySynonymTypeModel,
+
+    cache: function() {
+        return {
+            category: 'main',
+            key: 'entity_synonym_types:*'
+        }
+    },
 
     initialize: function(models, options) {
         options || (options = {});

@@ -33,7 +33,7 @@ let ClassificationEntryView = Marionette.View.extend({
         "remove_classification_entry": ".remove-classification-entry",
         "synonym_name": ".synonym-name",
         "synonym_language": ".synonym-languages",
-        "classification_entry_synonym_type": ".classification-entry-synonym-types",
+        "classification_entry_synonym_type": ".entity-synonym-types",
         "classification_rank": ".classification-rank",
         "parent_details": ".view-parent-details"
     },

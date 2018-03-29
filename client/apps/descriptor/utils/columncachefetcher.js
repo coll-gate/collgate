@@ -21,6 +21,8 @@ ColumnCacheFetcher.prototype.constructor = ColumnCacheFetcher;
 
 /**
  * Fetch values.
+ * @param cacheManager
+ * @param options
  * @param keys Keys list.
  */
 ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {

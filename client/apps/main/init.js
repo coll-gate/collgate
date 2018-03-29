@@ -17,6 +17,7 @@ require('./utils/asyncvalue');
 
 let MainModule = function() {
     this.name = "main";
+    this.application = null;
 };
 
 MainModule.prototype = {
@@ -24,13 +25,16 @@ MainModule.prototype = {
         //let deferred = $.Deferred();
         //this.loaded = deferred.promise();
 
+        this.application = app;
+
         this.models = {};
         this.collections = {};
         this.views = {};
         this.routers = {};
 
         try {
-            i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/default.json'));
+            window.i18next.default.addResources(
+                window.session.language, 'default', require('./locale/' + window.session.language + '/default.json'));
         } catch (e) {
             console.warn("No translation found for the current language.");
         }
@@ -102,6 +106,14 @@ MainModule.prototype = {
             collection: this.collections.contentTypes
         });
 
+        let EntitySynonymTypeCollection = require('./collections/entitysynonymtype');
+        this.collections.entitySynonymTypes = new EntitySynonymTypeCollection();
+
+        this.views.entitySynonymTypes = new SelectOption({
+            className: 'entity-synonym-type',
+            collection: this.collections.entitySynonymTypes
+        });
+
         // @todo should be on home view only...
         let EventMessageCollection = require('./collections/eventmessage');
         this.collections.eventMessages = new EventMessageCollection();
@@ -118,13 +130,13 @@ MainModule.prototype = {
         this.menus.destroy();
 
         // and add them initiated by django server side
-        if (typeof session.initialsMenus !== "undefined") {
+        if (typeof window.session.initialsMenus !== "undefined") {
             let Menu = require('./utils/menu');
             let MenuEntry = require('./utils/menuentry');
             let MenuSeparator = require('./utils/menuseparator');
 
-            for (let i = 0; i < session.initialsMenus.length; ++i) {
-                let iMenu = session.initialsMenus[i];
+            for (let i = 0; i < window.session.initialsMenus.length; ++i) {
+                let iMenu = window.session.initialsMenus[i];
 
                 // menu
                 let menu = new Menu(iMenu.name, iMenu.label, iMenu.order, iMenu.auth);
@@ -160,7 +172,7 @@ MainModule.prototype = {
         //
         let MainView = require('./views/main');
         let mainView = new MainView();
-        application.showView(mainView);
+        app.showView(mainView);
 
         let LeftBarView = require('./views/leftbar');
         mainView.showChildView('left', new LeftBarView());
@@ -172,7 +184,7 @@ MainModule.prototype = {
         let Messenger = require('./utils/messenger');
         this.messenger = new Messenger();
 
-        if (session.user.isAuth) {
+        if (window.session.user.isAuth) {
             this.messenger.connect();
         }
     },
@@ -187,7 +199,7 @@ MainModule.prototype = {
      * Setup the default left view, meaning the left bar view.
      */
     defaultLeftView: function() {
-        let mainView = application.getView();
+        let mainView = this.application.getView();
 
         let LeftBarView = require('./views/leftbar');
         mainView.showChildView('left', new LeftBarView());
@@ -197,7 +209,7 @@ MainModule.prototype = {
      * Get current left view.
      */
     getLeftView: function() {
-        let mainView = application.getView();
+        let mainView = this.application.getView();
         return mainView.getChildView('left');
     },
 
@@ -205,7 +217,7 @@ MainModule.prototype = {
      * Setup the default right view, meaning an empty area.
      */
     defaultRightView: function() {
-        let mainView = application.getView();
+        let mainView = this.application.getView();
         mainView.getRegion('right').empty();
     },
 
@@ -213,7 +225,7 @@ MainModule.prototype = {
      * Get current right view.
      */
     getRightView: function() {
-        let mainView = application.getView();
+        let mainView = this.application.getView();
         return mainView.getChildView('right');
     },
 

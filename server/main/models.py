@@ -415,6 +415,20 @@ class EntitySynonymType(models.Model):
         """
         self.label[lang] = label
 
+    def on_client_cache_update(self):
+        return [{
+            'category': 'main',
+            'name': "entity_synonym_types:*",
+            'values': None
+        }]
+
+    def on_server_cache_update(self):
+        return [{
+            'category': 'main',
+            'name': "entity_synonym_types:*",
+            'values': None
+        }]
+
 
 class EntitySynonym(Entity):
     """

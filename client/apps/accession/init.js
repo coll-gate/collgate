@@ -8,6 +8,8 @@
  * @details
  */
 
+let Backbone = require('backbone');
+
 // style
 require('./css/accession.css');
 
@@ -25,7 +27,7 @@ AccessionModule.prototype = {
 
         try {
             window.i18next.default.addResources(
-                window.session.language, 'default', require('./locale/' + session.language + '/default.json'));
+                window.session.language, 'default', require('./locale/' + window.session.language + '/default.json'));
         } catch (e) {
             console.warn("No translation found for the current language. Fallback to english language");
         }
@@ -71,23 +73,15 @@ AccessionModule.prototype = {
 
         app.main.cache.register('action_types');
 
+        // let CollectionCacheFetcher = require('../main/utils/collectioncachefetcher');
+
         //
         // main collections
         //
 
         let SelectOption = require('../main/renderers/selectoption');
 
-        // @todo may be a cache collection or uses a cachefetcher for accession synonym type
-        let EntitySynonymTypeCollection = require('../main/collections/entitysynonymtype');
-        this.collections.accessionSynonymTypes = new EntitySynonymTypeCollection([], {
-            target_model: 'accession.accession'});
-
-        this.views.accessionSynonymTypes = new SelectOption({
-            className: 'accession-synonym-type',
-            collection: this.collections.accessionSynonymTypes
-        });
-
-        // @todo may be a cache collection or uses a cachefetcher for batch action type
+        // @todo may be a cached collection
         let ActionTypeCollection = require('./collections/actiontype');
         this.collections.actionTypes = new ActionTypeCollection();
 
@@ -98,6 +92,7 @@ AccessionModule.prototype = {
 
         this.collections.conditionList = new Backbone.Collection();
 
+        // @todo may be a cached collection
         let ActionStepFormatCollection = require('./collections/actionstepformat');
         this.collections.actionStepFormats = new ActionStepFormatCollection();
 

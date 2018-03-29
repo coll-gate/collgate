@@ -119,7 +119,7 @@ let Router = Marionette.AppRouter.extend({
         let collection = new EntitySynonymTypeCollection();
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of type of synonyms for entities")}));
 
