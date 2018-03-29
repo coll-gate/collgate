@@ -15,6 +15,13 @@ let Collection = CountableCollection.extend({
     url: window.application.url(['accession', 'actiontype']),
     model: BatchActionTypeModel,
 
+    cache: function() {
+        return {
+            category: 'accession',
+            key: 'action_types:*'
+        }
+    },
+
     initialize: function (models, options) {
         options || (options = {});
 

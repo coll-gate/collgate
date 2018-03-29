@@ -470,14 +470,14 @@ class ActionType(Entity):
     def on_client_cache_update(self):
         return [{
             'category': 'accession',
-            'name': "action_types",
+            'name': "action_types:*",
             'values': None
         }]
 
     def on_server_cache_update(self):
         return [{
             'category': 'accession',
-            'name': "action_types",
+            'name': "action_types:*",
             'values': None
         }]
 

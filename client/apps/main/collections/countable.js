@@ -9,11 +9,21 @@
  */
 
 let Collection = Backbone.Collection.extend({
+
+    cache: {
+        category: 'main',
+        key: undefined
+    },
+
     initialize: function (model, options) {
-        options || (options = {});
+        options || (options = {cacheable: false});
 
         this.filters = (options.filters || {});
         this.search = (options.search || {});
+
+        if (options.cacheable) {
+            window.application.main.cache.registerCollection(this);
+        }
     },
 
     parse: function(data) {

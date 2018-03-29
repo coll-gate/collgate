@@ -71,9 +71,7 @@ AccessionModule.prototype = {
         // cache
         //
 
-        app.main.cache.register('action_types');
-
-        // let CollectionCacheFetcher = require('../main/utils/collectioncachefetcher');
+        app.main.cache.register('accession');
 
         //
         // main collections
@@ -81,18 +79,19 @@ AccessionModule.prototype = {
 
         let SelectOption = require('../main/renderers/selectoption');
 
-        // @todo may be a cached collection
+        // cached and countable collection
         let ActionTypeCollection = require('./collections/actiontype');
-        this.collections.actionTypes = new ActionTypeCollection();
+        this.collections.actionTypes = new ActionTypeCollection([], {cacheable: true});
 
         this.views.actionTypes = new SelectOption({
             className: 'action-type',
             collection: this.collections.actionTypes
         });
 
+        // global collection, not cached, static by server
         this.collections.conditionList = new Backbone.Collection();
 
-        // @todo may be a cached collection
+        // global collection, not cached, static by server
         let ActionStepFormatCollection = require('./collections/actionstepformat');
         this.collections.actionStepFormats = new ActionStepFormatCollection();
 
