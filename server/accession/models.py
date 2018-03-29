@@ -733,3 +733,10 @@ class StockLocation(models.Model):
             ("get_stocklocation", "Can get a stock location"),
             ("list_stocklocation", "Can list stock locations"),
         )
+
+    def get_label(self):
+        """
+        Get the label for this stock location in the current regional.
+        """
+        lang = translation.get_language()
+        return self.label.get(lang, "")

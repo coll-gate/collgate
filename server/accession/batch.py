@@ -307,7 +307,8 @@ def get_batch_batches_list(request, bat_id):
             'name': batch.name,
             'accession': batch.accession_id,
             'layout': batch.layout_id,
-            'descriptors': batch.descriptors
+            'descriptors': batch.descriptors,
+            'location': batch.location
         }
 
         items_list.append(b)
@@ -404,7 +405,8 @@ def get_batch_parents_batches_list(request, bat_id):
             'name': batch.name,
             'accession': batch.accession_id,
             'layout': batch.layout_id,
-            'descriptors': batch.descriptors
+            'descriptors': batch.descriptors,
+            'location': batch.location
         }
 
         items_list.append(b)
@@ -591,7 +593,8 @@ def get_batch_list(request):
             'name': batch.name,
             'accession': batch.accession_id,
             'layout': batch.layout_id,
-            'descriptors': batch.descriptors
+            'descriptors': batch.descriptors,
+            'location': batch.location.get_label() if batch.location else None
         }
 
         batch_list.append(a)
