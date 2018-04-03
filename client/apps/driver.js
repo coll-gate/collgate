@@ -19,6 +19,15 @@ Logger = require('js-logger');
 // Font Awesome
 require("font-awesome/css/font-awesome.min.css");
 
+//Fancy Tree
+require('jquery.fancytree/dist/skin-bootstrap/ui.fancytree.min.css');
+require('jquery.fancytree');
+// require('jquery.fancytree/dist/modules/jquery.fancytree.dnd');
+require('jquery.fancytree/dist/modules/jquery.fancytree.edit');
+require('jquery.fancytree/dist/modules/jquery.fancytree.glyph');
+require('jquery.fancytree/dist/modules/jquery.fancytree.table');
+require('jquery.fancytree/dist/modules/jquery.fancytree.wide');
+
 // select2 as jquery plugin ($.select2)
 require("select2");
 require("select2/dist/css/select2.min.css");

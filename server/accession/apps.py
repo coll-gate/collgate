@@ -54,17 +54,19 @@ class CollGateAccession(ApplicationMain):
 
         # create a module accession
         accession_module = Module('accession', base_url='coll-gate')
-        accession_module.include_urls((
-            'base',
-            'accessionsynonym',
-            'actions.actiontype',
-            'actions.action',
-            'accession',
-            'accessionbatch',
-            'batch',
-            'accessionpanel',
-            'batchpanel',
-            'accessionclassificationentry',
+        accession_module.include_urls(
+            (
+                'base',
+                'accessionsynonym',
+                'actions.actiontype',
+                'actions.action',
+                'accession',
+                'accessionbatch',
+                'batch',
+                'accessionpanel',
+                'batchpanel',
+                'accessionclassificationentry',
+                'stocklocation'
             )
         )
 
@@ -186,7 +188,8 @@ class CollGateAccession(ApplicationMain):
         localsettings.max_file_size = self.get_setting('max_file_size')
 
         if not isinstance(localsettings.max_file_size, int):
-            configuration.wrong("accession", "Accession action upload data max file size", "Max file size must be an integer.")
+            configuration.wrong("accession", "Accession action upload data max file size",
+                                "Max file size must be an integer.")
 
         if localsettings.max_file_size <= 1024:
             configuration.wrong("accession",

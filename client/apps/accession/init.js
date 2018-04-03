@@ -132,14 +132,18 @@ AccessionModule.prototype = {
         let AccessionPanelRouter = require('./routers/accessionpanel');
         this.routers.accessionpanel = new AccessionPanelRouter();
 
+        let BatchPanelRouter = require('./routers/batchpanel');
+        this.routers.batchpanel = new BatchPanelRouter();
+
         let ActionTypeRouter = require('./routers/actiontype');
         this.routers.actiontype = new ActionTypeRouter();
 
         let ActionRouter = require('./routers/action');
         this.routers.action = new ActionRouter();
 
-        let BatchPanelRouter = require('./routers/batchpanel');
-        this.routers.batchpanel = new BatchPanelRouter();
+        let StockLocationRouter = require('./routers/stocklocation');
+        this.routers.stocklocation = new StockLocationRouter();
+
     },
 
     start: function (app, options) {

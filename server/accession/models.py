@@ -320,7 +320,7 @@ class Batch(DescribableEntity):
             },
             'location': {
                 'label': _('Stock location'),
-                'field': 'name',  # todo: return the label field
+                'field': 'name',
                 'query': False,  # done by a prefetch related
                 'format': {
                     'type': 'entity',

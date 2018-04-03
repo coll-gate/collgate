@@ -15,6 +15,12 @@ module.exports = function (env) {
         module: {
             rules: [
                 {
+                    test: /\.(jpe?g|png|gif|svg)$/i,
+                    use: [{
+                        loader: "url-loader"
+                    }]
+                },
+                {
                     test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                     use: [{
                         loader: "url-loader",
