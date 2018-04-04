@@ -141,8 +141,8 @@ AccessionModule.prototype = {
         let ActionRouter = require('./routers/action');
         this.routers.action = new ActionRouter();
 
-        let StockLocationRouter = require('./routers/stocklocation');
-        this.routers.stocklocation = new StockLocationRouter();
+        let StorageLocationRouter = require('./routers/storagelocation');
+        this.routers.storagelocation = new StorageLocationRouter();
 
     },
 

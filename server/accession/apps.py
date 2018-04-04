@@ -66,7 +66,7 @@ class CollGateAccession(ApplicationMain):
                 'accessionpanel',
                 'batchpanel',
                 'accessionclassificationentry',
-                'stocklocation'
+                'storagelocation'
             )
         )
 
@@ -169,6 +169,11 @@ class CollGateAccession(ApplicationMain):
 
         # accession administration menu
         menu_administration = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
+
+        # storage location menu
+        menu_administration.add_entry(
+            MenuEntry('list-location', _('Storage locations'), "#accession/storagelocation/",
+                      icon=FaGlyph('archive'), order=-196, auth=AUTH_STAFF))
 
         # descriptor related menus
         menu_administration.add_entry(MenuSeparator(500))

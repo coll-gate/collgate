@@ -1,7 +1,7 @@
 # -*- coding: utf-8;-*-
 #
-# @file stocklocation.py
-# @brief coll-gate stock location rest handler
+# @file storagelocation.py
+# @brief coll-gate storage location rest handler
 # @author Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2018-03-29
 # @copyright Copyright (c) 2016 INRA/CIRAD
@@ -12,33 +12,33 @@ from accession.base import RestAccession
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
-from accession.models import StockLocation
+from accession.models import StorageLocation
 from permission.utils import get_permissions_for
 from django.utils.translation import ugettext_lazy as _
 
 
-class RestStockLocation(RestAccession):
-    regex = r'^stocklocation/$'
-    name = 'stocklocation'
+class RestStorageLocation(RestAccession):
+    regex = r'^storagelocation/$'
+    name = 'storagelocation'
 
 
-class RestStockLocationId(RestStockLocation):
+class RestStorageLocationId(RestStorageLocation):
     regex = r'^(?P<location_id>[0-9]+)/$'
     suffix = 'id'
 
 
-@RestStockLocationId.def_auth_request(Method.GET, Format.JSON)
+@RestStorageLocationId.def_auth_request(Method.GET, Format.JSON)
 def get_location_details_json(request, location_id):
     """
-    Get the details of a stock location.
+    Get the details of a storage location.
     """
 
-    location = StockLocation.objects.get(id=location_id)
+    location = StorageLocation.objects.get(id=location_id)
 
     # check permission on this object
     perms = get_permissions_for(request.user, location.content_type.app_label, location.content_type.model, location.pk)
     if 'accession.get_location' not in perms:
-        raise PermissionDenied(_('Invalid permission to access to this stock location'))
+        raise PermissionDenied(_('Invalid permission to access to this storage location'))
 
     # todo: check if we need to return the complete list of children or if we prefere to return them by another REST method
 
@@ -66,7 +66,7 @@ def get_location_details_json(request, location_id):
     return HttpResponseRest(request, result)
 
 
-@RestStockLocation.def_auth_request(Method.GET, Format.JSON, perms={
+@RestStorageLocation.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_location': _("You are not allowed to list the locations")
 })
 def get_location_list(request):
@@ -74,10 +74,10 @@ def get_location_list(request):
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
     sort_by = json.loads(request.GET.get('sort_by', '[]'))
-    container_location = request.GET.get('container_location', None)
+    parent_location = request.GET.get('parent', None)
 
-    if container_location is not None:
-        container_location = int(container_location)
+    if parent_location is not None:
+        parent_location = int(parent_location)
 
     if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
         order_by = sort_by + ['id']
@@ -85,8 +85,8 @@ def get_location_list(request):
         order_by = sort_by
 
     from main.cursor import CursorQuery
-    cq = CursorQuery(StockLocation)
-    cq.filter(parent_id=container_location)
+    cq = CursorQuery(StorageLocation)
+    cq.filter(parent_id=parent_location)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -101,11 +101,11 @@ def get_location_list(request):
 
     location_list = []
 
-    for stock_location in cq:
+    for storage_location in cq:
         sl = {
-            'id': stock_location.id,
-            'name': stock_location.name,
-            'label': stock_location.get_label(),
+            'id': storage_location.id,
+            'name': storage_location.name,
+            'label': storage_location.get_label(),
         }
 
         location_list.append(sl)

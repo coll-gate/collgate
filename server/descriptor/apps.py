@@ -118,11 +118,6 @@ class CollGateDescriptor(ApplicationMain):
             MenuEntry('list-index', _('Index management'), "#descriptor/index/",
                       icon=FaGlyph('list-ol'), order=-195, auth=AUTH_STAFF))
 
-        # stock location menu
-        menu_descriptor.add_entry(
-            MenuEntry('list-location', _('Stock locations'), "#accession/stocklocation/",
-                      icon=FaGlyph('archive'), order=-196, auth=AUTH_STAFF))
-
         # descriptor related menus
         menu_descriptor.add_entry(MenuSeparator(300))
         menu_descriptor.add_entry(

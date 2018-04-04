@@ -294,7 +294,7 @@ class Batch(DescribableEntity):
     batches = models.ManyToManyField('Batch', related_name='children')
 
     # parent location
-    location = models.ForeignKey('StockLocation', related_name='batches', on_delete=models.PROTECT, null=True)
+    location = models.ForeignKey('StorageLocation', related_name='batches', on_delete=models.PROTECT, null=True)
 
     @classmethod
     def get_defaults_columns(cls):
@@ -319,12 +319,12 @@ class Batch(DescribableEntity):
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
             'location': {
-                'label': _('Stock location'),
+                'label': _('Storage location'),
                 'field': 'name',
                 'query': False,  # done by a prefetch related
                 'format': {
                     'type': 'entity',
-                    'model': 'accession.stocklocation'
+                    'model': 'accession.storagelocation'
                 },
                 'available_operators': [
                     'contains',
@@ -711,9 +711,9 @@ class AccessionPanel(Panel):
         )
 
 
-class StockLocation(models.Model):
+class StorageLocation(models.Model):
     """
-    Defines stock locations of batches.
+    Defines storage locations of batches.
     """
 
     # unique name of the panel
@@ -727,16 +727,16 @@ class StockLocation(models.Model):
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.PROTECT)
 
     class Meta:
-        verbose_name = _("stock location")
+        verbose_name = _("storage location")
 
         permissions = (
-            ("get_stocklocation", "Can get a stock location"),
-            ("list_stocklocation", "Can list stock locations"),
+            ("get_storagelocation", "Can get a storage location"),
+            ("list_storagelocation", "Can list storage locations"),
         )
 
     def get_label(self):
         """
-        Get the label for this stock location in the current regional.
+        Get the label for this storage location in the current regional.
         """
         lang = translation.get_language()
         return self.label.get(lang, "")
