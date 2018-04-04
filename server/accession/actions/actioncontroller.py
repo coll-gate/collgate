@@ -107,7 +107,7 @@ class ActionController(object):
         if not data:
             return None
 
-        batch_layouts = data.get('batch_layout')
+        batch_layouts = data.get('batch_layouts')
 
         if not batch_layouts:
             return None
@@ -169,7 +169,8 @@ class ActionController(object):
             'state': ActionController.STEP_INIT,
             'index': len(self.action.data['steps']),
             'options': None,
-            'data': None
+            'data': None,
+            'output': None
         }
 
         self.action.data['steps'].append(step_data)
@@ -191,7 +192,7 @@ class ActionController(object):
         step_format = action_type_steps[step_index]
         action_step_format = ActionStepFormatManager.get(step_format['type'])
 
-        if not action_step_format.accept_user_data:
+        if not action_step_format.accept_user_data and input_data is not None:
             raise ActionError("Current step does not accept data from user")
 
         action_step = action_steps[step_index]
@@ -210,7 +211,7 @@ class ActionController(object):
         # finally save
         self.action.save()
 
-    def process_current_step_one(self, data):
+    def process_current_step_once(self, data):
         """
         Process one more element of the current step in case of progressive step.
 
@@ -243,25 +244,38 @@ class ActionController(object):
         if action_step_state != ActionController.STEP_SETUP:
             raise ActionError("Current action step state must be setup")
 
+        # current step data set
+        data_array = action_step['data']
+
         if step_index > 0:
-            input_array = action_step[step_index-1]['data']
+            # output of the previous state if not initial step
+            prev_output_array = action_steps[step_index - 1]['output']
         else:
-            input_array = None
+            prev_output_array = None
 
-        action_step_format.process(self.action, action_step, input_array)
-        action_step['state'] = ActionController.STEP_DONE
-
-        # and init the next one
-        if self.has_more_steps:
-            self.add_step_data()
-
-        # save and make associations
+        # process, save and make associations
         try:
             with transaction.atomic():
+                output_data = action_step_format.process(
+                    self,
+                    self.action,
+                    step_format,
+                    action_step,
+                    prev_output_array,
+                    data_array)
+
+                action_step['state'] = ActionController.STEP_DONE
+                action_step['output'] = output_data
+
+                # and init the next one
+                if self.has_more_steps:
+                    self.add_step_data()
+
                 self.action.save()
 
                 # and add the related refs
                 self.update_related_entities(step_index)
+
         except IntegrityError as e:
             raise ActionError(e)
 
@@ -285,7 +299,8 @@ class ActionController(object):
             'state': ActionController.STEP_INIT,
             'index': step_index,
             'options': None,
-            'data': None
+            'data': None,
+            'output': None
         }
 
         action_steps[step_index] = step_data
@@ -322,7 +337,7 @@ class ActionController(object):
 
         missing = []
 
-        self.get_missing_entities(action_step['data'], action_step_format.data_format, missing)
+        self.get_missing_entities(action_step['output'], action_step_format.data_format, missing)
 
         # now for missing entities bulk create them
         ActionToEntity.objects.bulk_create(missing)

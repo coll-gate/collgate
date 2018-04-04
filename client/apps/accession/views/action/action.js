@@ -29,7 +29,7 @@ let View = Marionette.View.extend({
     },
 
     ui: {
-        details: 'td.view-action-details'
+        details: 'td.view-action-details',
     },
 
     events: {
@@ -42,7 +42,7 @@ let View = Marionette.View.extend({
             actions: {
                 edit: {display: false},
                 manage: {display: true, event: 'viewDetails'},
-                remove: {display: true, event: 'onDeleteBatchAction'}
+                remove: {display: true, event: 'onDeleteAction'}
             }
         }
     },
@@ -74,7 +74,9 @@ let View = Marionette.View.extend({
     },
 
     onDeleteAction: function () {
-        alert("@todo");
+        this.model.destroy({wait: true, success: function() {
+            $.alert.success(_t("Done !"));
+        }});
     }
 });
 

@@ -294,7 +294,7 @@ class Batch(DescribableEntity):
     batches = models.ManyToManyField('Batch', related_name='children')
 
     # parent location
-    location = models.ForeignKey('StorageLocation', related_name='batches', on_delete=models.PROTECT, null=True)
+    # location = models.ForeignKey('StorageLocation', related_name='batches', on_delete=models.PROTECT, null=True)
 
     @classmethod
     def get_defaults_columns(cls):
