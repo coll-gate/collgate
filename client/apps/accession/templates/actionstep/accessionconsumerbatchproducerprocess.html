@@ -8,6 +8,19 @@
  - @details
 -->
 
-<div class="well well-sm">
-TODO
+<div class="row">
+    <div class="col-lg-6 form-group">
+        <label class="control-label"><%- _t('Accessions original list') %></label>
+        <select name="get-accession-list" class="form-control" title="<%- _t('Download as...') %>">
+            <option value="original-csv"><%- _t("Accession list as CSV") %></option>
+            <option value="original-xlsx"><%- _t("Accession list as XLSX") %></option>
+            <option value="original-panel"><%- _t("Display list") %></option>
+        </select>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6 form-group" name="batch-details">
+        <label class="control-label"><%- _t('Batch generation') %></label>
+        <input name="batch-detail" type="text" class="form-control" readonly />
+    </div>
 </div>

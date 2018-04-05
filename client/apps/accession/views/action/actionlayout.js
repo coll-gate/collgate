@@ -156,7 +156,7 @@ let Layout = LayoutView.extend({
                 continueBtn.prop('disabled', true).removeClass('btn-success');
             } else if (step.state === this.STEP_SETUP) {
                 resetBtn.prop('disabled', false).addClass('btn-warning').on('click', $.proxy(this.onResetStepData, this));
-                setupBtn.prop('disabled', false).addClass('btn-info').on('click', $.proxy(this.onSetupStepData, this));
+                setupBtn.prop('disabled', true).removeClass('btn-info');
                 continueBtn.prop('disabled', false).addClass('btn-success').on('click', $.proxy(this.onProcessStep, this));
             } else if (step.state === this.STEP_DONE) {
                 resetBtn.prop('disabled', true).removeClass('btn-warning');

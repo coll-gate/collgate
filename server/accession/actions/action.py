@@ -209,6 +209,9 @@ def action_process_step(request, act_id):
         elif inputs_type == "panel":
             input_columns = []  # @todo detect available columns from the panel
             input_data = []     # @todo and take columns of interest
+        elif inputs_type == "none":
+            input_columns = []
+            input_data = None
         else:
             raise SuspiciousOperation("Unsupported setup")
 
@@ -244,12 +247,26 @@ def action_process_step(request, act_id):
 
         # @todo
         data = []
-        action_controller.process_current_step_one(data)
+        action_controller.process_current_step_once(data)
 
     result['data'] = action.data
     result['completed'] = action.completed
 
     return HttpResponseRest(request, result)
+
+
+@RestActionId.def_auth_request(Method.DELETE, Format.JSON, perms={
+        'accession.delete_action': _("You are not allowed to delete an action")
+    })
+def action_delete(request, act_id):
+    action = get_object_or_404(Action, pk=int(act_id))
+
+    if ActionToEntity.objects.filter(action=action).exists():
+        raise SuspiciousOperation(_("Cannot delete an action already referring to some entities"))
+
+    action.delete()
+
+    return HttpResponseRest(request, {})
 
 
 @RestAction.def_auth_request(Method.GET, Format.JSON, perms={

@@ -28,9 +28,18 @@ _.extend(Format.prototype, ActionStepFormat.prototype, {
     }
 });
 
-Format.ActionStepProcessView = Marionette.View.extend({
+Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     className: 'action-step-process',
     template: require('../templates/actionstep/accessionconsumerbatchproducerprocess.html'),
+
+    ui: {
+        accession_list: 'select[name=get-accession-list]',
+        batch_group: 'div[name=batch-details]'
+    },
+
+    events: {
+        'change @ui.accession_list': 'onGetAccessionList'
+    },
 
     initialize: function(options) {
         options || (options = {readonly: true});
@@ -39,24 +48,17 @@ Format.ActionStepProcessView = Marionette.View.extend({
     },
 
     onRender: function() {
-        if (this.getOption('readonly')) {
+        this.ui.batch_group.css('display', 'none');
+        this.ui.accession_list.selectpicker({});
 
-        } else {
-
+        // get accession list from the previous step
+        if (this.getOption("stepIndex") < 1) {
+            this.ui.accession_list.prop('disabled', true);
         }
     },
 
     onBeforeDestroy: function() {
-        if (!this.getOption('readonly')) {
-        }
-    },
-
-    exportInput: function() {
-
-    },
-
-    importData: function() {
-
+        this.ui.accession_list.selectpicker('destroy');
     },
 
     inputsType: function() {
@@ -65,7 +67,29 @@ Format.ActionStepProcessView = Marionette.View.extend({
 
     inputsData: function() {
         return null;
+    },
+
+    onGetAccessionList: function () {
+        let type = this.ui.accession_list.val();
+
+        if (this.getOption("stepIndex") < 1) {
+            return;
+        }
+
+        if (type === 'original-csv') {
+            this.downloadData('csv', this.getOption("stepIndex")-1);
+        } else if (type === 'original-xlsx') {
+            this.downloadData('xlsx', this.getOption("stepIndex")-1);
+        } else if (type === 'original-panel') {
+            // @todo a dialog to name the panel
+            alert("todo");
+        }
+
+        this.ui.accession_list.val("").selectpicker('refresh');
     }
+});
+
+Format.ActionStepFormatDetailsView = ActionStepFormat.ActionStepReadView.extend({
 });
 
 Format.ActionStepFormatDetailsView = Marionette.View.extend({
