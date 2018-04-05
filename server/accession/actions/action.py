@@ -520,6 +520,7 @@ def get_action_list_for_entity_id(request, ent_id):
             'entity_type': action.entity_type_id,
             'type': action.type_id,
             'data': action.data,
+            'completed': action.completed,
             'created_date': action.created_date.strftime("%Y-%m-%d %H:%M:%S")
         }
 

@@ -106,6 +106,12 @@ let Layout = LayoutView.extend({
         this.ui.steps_tab.parent().addClass('disabled');
     },
 
+    collapseStep: function (stepIndex, collapsed) {
+        if (stepIndex < this.actionType.attributes['format']['steps'].length) {
+            this.$el.find('#action_step' + stepIndex).collapse(collapsed ? 'hide' : 'show');
+        }
+    },
+
     setupStepData: function(stepIndex, stepFormat, readOnly) {
         if (stepFormat === null) {
             return;
@@ -234,12 +240,15 @@ let Layout = LayoutView.extend({
 
                     // collapse and style
                     let prev = self.ui.steps_group.find('div.panel[panel-id=' + self.currentStepIndex + ']').children('div.panel-heading');
-                    prev.removeClass('action-current').addClass('action-done').parent().collapse('hide');
+                    prev.removeClass('action-current').addClass('action-done').parent().removeClass('panel-warning').addClass('panel-success');
 
+                    self.collapseStep(self.currentStepIndex, true);
                     ++self.currentStepIndex;
 
                     let next = self.ui.steps_group.find('div.panel[panel-id=' + self.currentStepIndex + ']').children('div.panel-heading');
-                    next.removeClass('action-next').addClass('action-current').parent().collapse('show').collapse('show');
+                    next.removeClass('action-next').addClass('action-current').parent().removeClass('panel-info').addClass('panel-warning');
+
+                    self.collapseStep(self.currentStepIndex, false);
                 });
             }
         }
@@ -253,10 +262,10 @@ let Layout = LayoutView.extend({
             panel.attr('panel-id', i);
 
             let heading = $('<div class="panel-heading" data-toggle="tooltip" data-placement="left" title="' + _t('Collapse/Expand') + '">');
-            if (i === currentStepIndex) {
+            if (i === currentStepIndex && !this.model.get('completed')) {
                 heading.addClass('action-current');
                 panel.addClass('panel-warning');
-            } else if (i < currentStepIndex) {
+            } else if (i < currentStepIndex || this.model.get('completed')) {
                 heading.addClass('action-done');
                 panel.addClass('panel-success');
             } else if (i > currentStepIndex) {

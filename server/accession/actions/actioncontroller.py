@@ -270,6 +270,8 @@ class ActionController(object):
                 # and init the next one
                 if self.has_more_steps:
                     self.add_step_data()
+                else:
+                    self.action.completed = True
 
                 self.action.save()
 

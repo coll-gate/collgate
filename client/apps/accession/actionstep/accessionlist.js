@@ -50,11 +50,9 @@ AccessionList.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.ext
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function() {
+    onRender: function () {
         this.ui.list_type.selectpicker({});
-    },
 
-    onAttach: function () {
         this.ui.panel.select2({
             dropdownParent: this.$el,
             ajax: {
