@@ -24,6 +24,7 @@ let Layout = LayoutView.extend({
     ui: {
         general_tab: 'a[aria-controls=general]',
         steps_tab: 'a[aria-controls=steps]',
+        progression_tab: 'a[aria-controls=progression]',
         description: 'textarea[name=description]',
         action_type: 'input[name=action-type]',
         name: 'input[name=name]',
@@ -35,7 +36,8 @@ let Layout = LayoutView.extend({
     regions: {
         'general': "div.tab-pane[name=general]",
         'steps': "div.tab-pane[name=steps]",
-        'steps-group': 'div[name=steps-group]'
+        'steps-group': 'div[name=steps-group]',
+        'progression': 'div[name=progression]'
     },
 
     events: {
@@ -100,10 +102,15 @@ let Layout = LayoutView.extend({
 
     enableTabs: function () {
         this.ui.steps_tab.parent().removeClass('disabled');
+        this.ui.progression_tab.parent().removeClass('disabled');
     },
 
     disableStepsTab: function () {
         this.ui.steps_tab.parent().addClass('disabled');
+    },
+
+    disableProgressionTab: function () {
+        this.ui.progression_tab.parent().addClass('disabled');
     },
 
     collapseStep: function (stepIndex, collapsed) {
@@ -336,6 +343,7 @@ let Layout = LayoutView.extend({
 
             // not available tabs
             this.disableStepsTab();
+            this.disableProgressionTab();
         } else {
             this.actionTypePromise.then(function (data) {
                 actionLayout.ui.action_type.val(data.label);
