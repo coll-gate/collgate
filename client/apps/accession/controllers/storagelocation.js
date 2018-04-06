@@ -46,6 +46,8 @@ let Controller = Marionette.Object.extend({
 
                 events: {
                     'click @ui.validate': 'onCreate',
+                    'input @ui.name': 'onNameInput',
+                    'input @ui.label': 'onLabelInput',
                 },
 
                 onRender: function () {
@@ -62,7 +64,7 @@ let Controller = Marionette.Object.extend({
                             };
                         }, {
                             minimumInputLength: 1,
-                            placeholder: _t("Enter a storage location name.")
+                            placeholder: _t("Enter a storage location name or leave blank to set a root location.")
                         })
                     ).fixSelect2Position();
                 },
@@ -72,27 +74,64 @@ let Controller = Marionette.Object.extend({
                     CreateStorageLocationView.__super__.onBeforeDestroy.apply(this);
                 },
 
-                // validateAccession: function () {
-                //     let accessionId = 0;
-                //
-                //     if (this.ui.accession.val())
-                //         accessionId = parseInt(this.ui.accession.val());
-                //
-                //     if (accessionId === 0 || isNaN(accessionId)) {
-                //         $(this.ui.accession).validateField('failed', _t('The accession must be defined'));
-                //         return false;
-                //     } else {
-                //         $(this.ui.accession).validateField('ok');
-                //         return true;
-                //     }
-                // },
+                onNameInput: function () {
+                    let name = this.ui.name.val().trim();
+                    let self = this;
+
+                    if (this.validateName()) {
+                        let filters = {
+                            method: 'ieq',
+                            fields: ['name'],
+                            'name': name
+                        };
+
+                        $.ajax({
+                            type: "GET",
+                            url: window.application.url(['accession', 'storagelocation', 'search']),
+                            dataType: 'json',
+                            contentType: 'application/json; charset=utf8',
+                            data: {filters: JSON.stringify(filters)},
+                        }).done(function (data) {
+                            for (let i in data.items) {
+                                let t = data.items[i];
+                                if (t.name.toUpperCase() === name.toUpperCase()) {
+                                    self.ui.name.validateField('failed', _t('The name of the storage location is already used'));
+                                    return;
+                                }
+                            }
+
+                            self.ui.name.validateField('ok');
+                        });
+                    }
+                },
+
+                onLabelInput: function () {
+                    let label = this.ui.label.val().trim();
+                    this.ui.name.val(label.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s/g, "_").toUpperCase());
+                    this.ui.name.trigger('input')
+                },
+
+                validateName: function () {
+                    let name_value = this.ui.name.val().trim();
+
+                    if (name_value.length > 128) {
+                        this.ui.name.validateField('failed', _t('characters_max', {count: 128}));
+                        return false;
+                    } else if (name_value.length < 1) {
+                        this.ui.name.validateField('failed', _t('characters_min', {count: 1}));
+                        return false;
+                    }
+                    return true;
+                },
 
                 validate: function () {
-                    // let valid_accession = this.validateAccession();
-                    // return valid_accession;
+                    let valid = this.validateName();
 
-                    // todo!
-                    return 1
+                    if (this.ui.name.hasClass('invalid')) {
+                        valid = false;
+                    }
+
+                    return valid;
                 },
 
                 onCreate: function () {
@@ -102,9 +141,6 @@ let Controller = Marionette.Object.extend({
                         let parent_storage_location = parseInt(this.ui.storagelocation.val());
                         let name = this.ui.name.val();
                         let label = this.ui.label.val();
-
-                        // let label_json = {en:'', fr:''};
-                        // label_json[window.session.language] = label;
 
                         let model = new StorageLocationModel({
                             name: name,

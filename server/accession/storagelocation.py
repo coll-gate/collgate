@@ -246,7 +246,12 @@ def search_accession(request):
         qs = StorageLocation.objects.all()
 
     name_method = filters.get('method', 'ieq')
-    if 'label' in filters['fields']:
+    if 'name' in filters['fields']:
+        if name_method == 'ieq':
+            qs = qs.filter(name__iexact=filters['name'])
+        elif name_method == 'icontains':
+            qs = qs.filter(name__icontains=filters['name'])
+    elif 'label' in filters['fields']:
         if name_method == 'ieq':
             qs = qs.filter(
                 Q(label__fr__iexact=filters['label']) | Q(label__en__iexact=filters['label']))  # more languages... ?
@@ -260,6 +265,7 @@ def search_accession(request):
     for storage_location in qs:
         a = {
             'id': storage_location.id,
+            'name': storage_location.name,
             'label': storage_location.get_label(),
             'value': storage_location.id
         }
