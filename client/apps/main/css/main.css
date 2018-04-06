@@ -238,8 +238,8 @@ li[draggable=true]:active {
 }
 
 [draggable=true]:hover {
-    -webkit-box-shadow: inset 0px 0px 20px 3px rgba(0,0,0,.075), 0 0 6px #a9a9a9;
-    box-shadow: inset 0px 0px 20px 3px rgba(0,0,0,.075), 0 0 6px #a9a9a9;
+    -webkit-box-shadow: inset 0px 0px 20px 3px rgba(0, 0, 0, .075), 0 0 6px #a9a9a9;
+    box-shadow: inset 0px 0px 20px 3px rgba(0, 0, 0, .075), 0 0 6px #a9a9a9;
 }
 
 [draggable] {
@@ -711,36 +711,36 @@ div.cell-context-menu ul.actions-list li a:hover {
 /* VERTICAL ANIMATION */
 
 @-webkit-keyframes vertical {
-  0% {
-    -webkit-transform: translate(0,-3px);
-    transform: translate(0,-3px);
-  }
+    0% {
+        -webkit-transform: translate(0, -3px);
+        transform: translate(0, -3px);
+    }
 
-  30% {
-    -webkit-transform: translate(0,3px);
-    transform: translate(0,3px);
-  }
+    30% {
+        -webkit-transform: translate(0, 3px);
+        transform: translate(0, 3px);
+    }
 }
 
 @keyframes vertical {
-  0% {
-    -webkit-transform: translate(0,-3px);
-    -ms-transform: translate(0,-3px);
-    transform: translate(0,-3px);
-  }
+    0% {
+        -webkit-transform: translate(0, -3px);
+        -ms-transform: translate(0, -3px);
+        transform: translate(0, -3px);
+    }
 
-  30% {
-    -webkit-transform: translate(0,3px);
-    -ms-transform: translate(0,3px);
-    transform: translate(0,3px);
-  }
+    30% {
+        -webkit-transform: translate(0, 3px);
+        -ms-transform: translate(0, 3px);
+        transform: translate(0, 3px);
+    }
 }
 
 .faa-vertical.animated,
 .faa-vertical.animated-hover:hover,
 .faa-parent.animated-hover:hover > .faa-vertical {
-  -webkit-animation: vertical 0.30s ease infinite;
-  animation: vertical 0.30s ease infinite;
+    -webkit-animation: vertical 0.30s ease infinite;
+    animation: vertical 0.30s ease infinite;
 }
 
 .tab-frame {
@@ -750,4 +750,9 @@ div.cell-context-menu ul.actions-list li a:hover {
 /* don't want the underline style of url on collapsable title */
 div.panel-heading > a.accordion-toggle:hover, div.panel-heading > a.accordion-toggle:focus {
     text-decoration: none !important;
+}
+
+ul.fancytree-container {
+    border: none;
+    font-size: 17px;
 }
