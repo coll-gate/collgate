@@ -142,7 +142,21 @@ class ActionStepFormat(object):
         :param input_data Input data of the current step or None
         :return:
         """
-        pass
+        return []
+
+    def process_once(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+        """
+        Process once more entity of the specialized action step to the given action, using input array,
+        and complete the step data structure.
+        :param action_controller: Action controller.
+        :param action: Valid and already existing action in DB.
+        :param step_format: Current step format.
+        :param step_data: Initialized step data structure to be filled during process.
+        :param prev_output_data: Data generated at the previous step or None
+        :param input_data Input data of the current step or None
+        :return:
+        """
+        return []
 
 
 class ActionStepFormatManager(object):
@@ -229,8 +243,8 @@ class ActionFormatStepGroupStandard(ActionStepFormatGroup):
 class ActionStepAccessionConsumerBatchProducer(ActionStepFormat):
     """
     Action step that take accession in input and generate one ore more batches in output.
-    - Input : Accession(s)
-    - Output : One or many batche(s)
+     - data : Accession(s)
+     - output : Batche(s)
     """
 
     def __init__(self):
@@ -301,7 +315,7 @@ class ActionStepAccessionConsumerBatchProducer(ActionStepFormat):
 
                         batches.append(batch)
 
-            # @todo bulk insert
+            # bulk create
             results = Batch.objects.bulk_create(batches)
 
             # take id from insert
@@ -312,12 +326,15 @@ class ActionStepAccessionConsumerBatchProducer(ActionStepFormat):
 
         return output
 
+    def process_once(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+        return []  # @todo
+
 
 class ActionStepAccessionList(ActionStepFormat):
     """
     Wait for a simple list of accession (0, 1 or more accession in the input array).
-    - Input :
-    - Output : Copy of the array of accessions
+     - data : none
+     - output : Accession(s)
     """
 
     def __init__(self):
@@ -376,8 +393,8 @@ class ActionStepAccessionList(ActionStepFormat):
 class ActionStepAccessionRefinement(ActionStepFormat):
     """
     Refine the collection of accession in input. The input is updated.
-    - Input : Accession(s)
-    - Output : Accessions(s)
+     - data : Accession(s)
+     - output : Accessions(s)
     """
 
     def __init__(self):
@@ -445,8 +462,8 @@ class ActionStepAccessionRefinement(ActionStepFormat):
 class ActionStepBatchConsumerBatchProducer(ActionStepFormat):
     """
     Action step taking batches in input, and produce batches in output.
-    - Input : Batche(s)
-    - Output : Batche(s)
+     - data : Batche(s)
+     - output : Batche(s)
     """
 
     def __init__(self):
@@ -499,12 +516,15 @@ class ActionStepBatchConsumerBatchProducer(ActionStepFormat):
 
         return output
 
+    def process_once(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+        return []  # @todo
+
 
 class ActionStepBatchConsumerBatchModifier(ActionStepFormat):
     """
     Action step taking batches in input, and modifying them.
-    - Input : Batche(s)
-    - Output : Batche(s)
+     - data : Batche(s)
+     - output : Batche(s)
     """
 
     def __init__(self):
@@ -529,5 +549,7 @@ class ActionStepBatchConsumerBatchModifier(ActionStepFormat):
         # @todo
         return None
 
+    def process_once(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+        return []  # @todo
 
 # @todo having a sequential processing for batch modification

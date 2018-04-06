@@ -27,7 +27,8 @@ class ActionController(object):
 
     STEP_INIT = 0
     STEP_SETUP = 1
-    STEP_DONE = 2
+    STEP_PROCESS = 2
+    STEP_DONE = 3
 
     def __init__(self, action_type_or_action, user=None):
         if type(action_type_or_action) is ActionType:
@@ -166,11 +167,12 @@ class ActionController(object):
             raise ActionError(_("No more action steps"))
 
         step_data = {
-            'state': ActionController.STEP_INIT,
-            'index': len(self.action.data['steps']),
-            'options': None,
-            'data': None,
-            'output': None
+            'state': ActionController.STEP_INIT,       # state of the step (init, setup, process, done)
+            'index': len(self.action.data['steps']),   # index of the step [0..n]
+            'options': None,                           # user defined step options (not for all formats)
+            'data': None,                              # user data defined at setup
+            'output': None,                            # produced data at process
+            'progress': 0                              # some formats proceed data one by one, indicate the progression
         }
 
         self.action.data['steps'].append(step_data)
@@ -237,13 +239,51 @@ class ActionController(object):
 
         # check step state
         action_step_state = action_step.get('state', ActionController.STEP_INIT)
-        if action_step_state != ActionController.STEP_SETUP:
-            raise ActionError("Current action step state must be setup")
+        if action_step_state != ActionController.STEP_SETUP or action_step_state != ActionController.STEP_PROCESS:
+            raise ActionError("Current action step state must be setup or process")
 
         # current step data set
         data_array = action_step['data']
 
         # @todo
+
+        if step_index > 0:
+            # output of the previous state if not initial step
+            prev_output_array = action_steps[step_index - 1]['output']
+        else:
+            prev_output_array = None
+
+        # process, save and make associations
+        try:
+            with transaction.atomic():
+                output_data = action_step_format.process_once(
+                    self,
+                    self.action,
+                    step_format,
+                    action_step,
+                    prev_output_array,
+                    data_array)
+
+                action_step['output'] += output_data
+                action_step['process'] += 1  # @todo stride
+
+                # done once process reach end of data
+                if action_step['process'] == len(action_step['data']):
+                    action_step['state'] = ActionController.STEP_DONE
+
+                    # and init the next one
+                    if self.has_more_steps:
+                        self.add_step_data()
+                    else:
+                        self.action.completed = True
+
+                self.action.save()
+
+                # and add the related refs
+                self.update_related_entities(step_index)
+
+        except IntegrityError as e:
+            raise ActionError(e)
 
     def process_current_step(self):
         if not self.is_current_step_valid:
