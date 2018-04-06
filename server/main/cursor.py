@@ -682,6 +682,8 @@ class CursorQuery(object):
                             self._prev_cursor.append(getattr(first_entity, cf.name + '_id'))
                         elif cf.is_count:
                             self._prev_cursor.append(getattr(first_entity, cf.name + '__count'))
+                        elif self.model_fields[cf.name][0] == 'DATETIME':
+                            self._prev_cursor.append(getattr(first_entity, cf.name).strftime('%Y-%m-%d %H:%M:%S'))
                         else:
                             self._prev_cursor.append(getattr(first_entity, cf.name))
 
@@ -707,6 +709,8 @@ class CursorQuery(object):
                             self._next_cursor.append(getattr(last_entity, cf.name + '_id'))
                         elif cf.is_count:
                             self._next_cursor.append(getattr(last_entity, cf.name + '__count'))
+                        elif self.model_fields[cf.name][0] == 'DATETIME':
+                            self._next_cursor.append(getattr(last_entity, cf.name).strftime('%Y-%m-%d %H:%M:%S'))
                         else:
                             self._next_cursor.append(getattr(last_entity, cf.name))
 
@@ -1343,7 +1347,7 @@ class CursorQuery(object):
                             field_name = related_field + '_id'
                             setattr(new_model, field_name, getattr(instance, "%s_%s" % (field, field_name)))
                         else:
-                             setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
+                            setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
 
                 # cache them for cursor build
                 if self._first_elt is None:

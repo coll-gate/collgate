@@ -218,8 +218,32 @@ class ActionController(object):
         :param data:
         :return:
         """
+        if not self.is_current_step_valid:
+            raise ActionError("Invalid current action step")
+
+        if self.is_current_step_done:
+            raise ActionError("Current action step is already done")
+
+        # step format
+        action_type_steps = self.action_type.format['steps']
+
+        action_steps = self.action.data['steps']
+        step_index = len(action_steps) - 1
+
+        step_format = action_type_steps[step_index]
+        action_step_format = ActionStepFormatManager.get(step_format['type'])
+
+        action_step = action_steps[step_index]
+
+        # check step state
+        action_step_state = action_step.get('state', ActionController.STEP_INIT)
+        if action_step_state != ActionController.STEP_SETUP:
+            raise ActionError("Current action step state must be setup")
+
+        # current step data set
+        data_array = action_step['data']
+
         # @todo
-        pass
 
     def process_current_step(self):
         if not self.is_current_step_valid:
@@ -270,6 +294,8 @@ class ActionController(object):
                 # and init the next one
                 if self.has_more_steps:
                     self.add_step_data()
+                else:
+                    self.action.completed = True
 
                 self.action.save()
 

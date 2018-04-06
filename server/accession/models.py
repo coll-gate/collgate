@@ -568,6 +568,9 @@ class Action(Entity):
             },
         }
 
+    def natural_name(self):
+        return self.name
+
 
 class ActionToEntity(models.Model):
     """

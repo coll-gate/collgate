@@ -1156,6 +1156,10 @@ class DescriptorIndex(models.Model):
 
         return count
 
+    def natural_name(self):
+        table = self.target.model_class()._meta.db_table
+        return self._make_index_name(table)
+
 
 class DescriptorValue(Entity):
     """
