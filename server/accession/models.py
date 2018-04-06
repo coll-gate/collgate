@@ -719,6 +719,12 @@ class StorageLocation(models.Model):
     Defines storage locations of batches.
     """
 
+    # default name validator
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 32, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+
+    # label validator
+    LABEL_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^[^\s]+(\s+[^\s]+)*$"}
+
     # unique name of the panel
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
@@ -743,3 +749,13 @@ class StorageLocation(models.Model):
         """
         lang = translation.get_language()
         return self.label.get(lang, "")
+
+    def set_label(self, lang, label):
+        """
+        Set the label for a specific language.
+        :param str lang: language code string
+        :param str label: Localized label
+        :note Model instance save() is not called.
+        """
+        self.label[lang] = label
+

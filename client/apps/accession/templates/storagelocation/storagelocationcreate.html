@@ -1,0 +1,47 @@
+<!--
+ - @file storagelocationcreate.html
+ - @brief 
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2018-04-05
+ - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details 
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%- title %></h4>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="form-group">
+                    <label class="control-label" for="name"><%- _t("Name") %></label>
+                    <input class="form-control name" id="name" type="text" name="name" value=""
+                           maxlength="128" autocomplete="off" style="width:100%;">
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="language-label"><%- _t("Label for current language") %></label>
+                    <input class="form-control language-label" id="language-label" type="text" name="label" value=""
+                           maxlength="128" autocomplete="off" style="width:100%;" autofocus="">
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="storagelocation"><%- _t("Parent storage location") %></label>
+                    <select id="storagelocation" style="width:100%;" class="form-control">
+                        <!--<% _.each(storagelocations, function(storagelocation) { %>-->
+                        <!--<option value="<%- storagelocation.id %>"><%- storagelocation.label %></option>-->
+                        <!--<% }) %>-->
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %>
+            </button>
+            <button type="button" class="btn btn-success create"><%- _t("Create") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
