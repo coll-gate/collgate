@@ -12,7 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import transaction, IntegrityError
 from django.utils.translation import ugettext_lazy as _
 
-from accession.models import Layout, ActionType, ActionToEntity
+from accession.models import Layout, ActionType, ActionToEntity, ActionData, ActionDataType
 from accession.namebuilder import NameBuilderManager
 
 from accession.actions.actionstepformat import ActionStepFormatManager, ActionStepFormat, ActionError
@@ -170,8 +170,6 @@ class ActionController(object):
             'state': ActionController.STEP_INIT,       # state of the step (init, setup, process, done)
             'index': len(self.action.data['steps']),   # index of the step [0..n]
             'options': None,                           # user defined step options (not for all formats)
-            'data': None,                              # user data defined at setup
-            'output': None,                            # produced data at process
             'progress': 0                              # some formats proceed data one by one, indicate the progression
         }
 
@@ -208,10 +206,21 @@ class ActionController(object):
         validated_data = action_step_format.validate(step_format, input_data, input_columns)
 
         action_step['state'] = ActionController.STEP_SETUP
-        action_step['data'] = validated_data
 
-        # finally save
-        self.action.save()
+        action_data = ActionData()
+        action_data.action = self.action
+        action_data.data_type = ActionDataType.INPUT.value
+        action_data.step_index = step_index
+        action_data.data = validated_data
+
+        try:
+            # finally save
+            with transaction.atomic():
+                self.action.save()
+                action_data.save()
+
+        except IntegrityError as e:
+            raise ActionError(e)
 
     def process_current_step_once(self, data):
         """
@@ -243,13 +252,23 @@ class ActionController(object):
             raise ActionError("Current action step state must be setup or process")
 
         # current step data set
-        data_array = action_step['data']
-
-        # @todo
+        try:
+            data_array = ActionData.objects.get(
+                action=self.action,
+                step_index=step_index,
+                data_type=ActionDataType.INPUT).data
+        except ActionData.DoesNotExist:
+            data_array = None
 
         if step_index > 0:
             # output of the previous state if not initial step
-            prev_output_array = action_steps[step_index - 1]['output']
+            try:
+                prev_output_array = ActionData.objects.get(
+                                        action=self.action,
+                                        step_index=step_index-1,
+                                        data_type=ActionDataType.OUTPUT).data
+            except ActionData.DoesNotExist:
+                prev_output_array = None
         else:
             prev_output_array = None
 
@@ -264,7 +283,22 @@ class ActionController(object):
                     prev_output_array,
                     data_array)
 
-                action_step['output'] += output_data
+                # first time create the action data
+                try:
+                    action_data = ActionData.objects.get(
+                            action=self.action,
+                            step_index=step_index,
+                            data_type=ActionDataType.OUTPUT)
+                except ActionData.DoesNotExist:
+                    action_data = ActionData()
+                    action_data.action = self.action
+                    action_data.data_type = ActionDataType.OUTPUT.value
+                    action_data.step_index = step_index
+
+                # @todo to be finished and tested
+
+                # aggregate the results
+                action_data.data += output_data
                 action_step['process'] += 1  # @todo stride
 
                 # done once process reach end of data
@@ -278,9 +312,10 @@ class ActionController(object):
                         self.action.completed = True
 
                 self.action.save()
+                action_data.save()
 
                 # and add the related refs
-                self.update_related_entities(step_index)
+                self.update_related_entities(step_index, output_data)
 
         except IntegrityError as e:
             raise ActionError(e)
@@ -309,11 +344,20 @@ class ActionController(object):
             raise ActionError("Current action step state must be setup")
 
         # current step data set
-        data_array = action_step['data']
+        try:
+            data_array = ActionData.objects.get(
+                action=self.action,
+                step_index=step_index,
+                data_type=ActionDataType.INPUT).data
+        except ActionData.DoesNotExist:
+            data_array = None
 
         if step_index > 0:
             # output of the previous state if not initial step
-            prev_output_array = action_steps[step_index - 1]['output']
+            prev_output_array = ActionData.objects.get(
+                action=self.action,
+                step_index=step_index-1,
+                data_type=ActionDataType.OUTPUT).data
         else:
             prev_output_array = None
 
@@ -328,8 +372,13 @@ class ActionController(object):
                     prev_output_array,
                     data_array)
 
+                action_data = ActionData()
+                action_data.action = self.action
+                action_data.data_type = ActionDataType.OUTPUT.value
+                action_data.step_index = step_index
+                action_data.data = output_data
+
                 action_step['state'] = ActionController.STEP_DONE
-                action_step['output'] = output_data
 
                 # and init the next one
                 if self.has_more_steps:
@@ -338,9 +387,10 @@ class ActionController(object):
                     self.action.completed = True
 
                 self.action.save()
+                action_data.save()
 
                 # and add the related refs
-                self.update_related_entities(step_index)
+                self.update_related_entities(step_index, output_data)
 
         except IntegrityError as e:
             raise ActionError(e)
@@ -364,9 +414,7 @@ class ActionController(object):
         step_data = {
             'state': ActionController.STEP_INIT,
             'index': step_index,
-            'options': None,
-            'data': None,
-            'output': None
+            'options': None
         }
 
         action_steps[step_index] = step_data
@@ -374,11 +422,14 @@ class ActionController(object):
         # finally save
         self.action.save()
 
-    def update_related_entities(self, step_index):
+    def update_related_entities(self, step_index, data_array):
         """
         After processing a step, the related table of entities must be updated to easily lookup for which entities
         an action is related to.
         """
+        if not data_array:
+            return
+
         action_steps = self.action.data.get('steps')
         if not action_steps:
             raise ActionError("Empty action steps")
@@ -403,7 +454,7 @@ class ActionController(object):
 
         missing = []
 
-        self.get_missing_entities(action_step['output'], action_step_format.data_format, missing)
+        self.get_missing_entities(data_array, action_step_format.data_format, missing)
 
         # now for missing entities bulk create them
         ActionToEntity.objects.bulk_create(missing)
@@ -460,7 +511,10 @@ class ActionController(object):
         if action_step_state == ActionController.STEP_INIT:
             return False
 
-        return action_step.get('data') is not None
+        return ActionData.objects.filter(
+                    action=self.action,
+                    step_index=step_index,
+                    data_type=ActionDataType.OUTPUT.value).exists()
 
     def get_step_data(self, step_index):
         """
@@ -480,8 +534,15 @@ class ActionController(object):
         # if action_step_state != ActionController.STEP_DONE:
         #     raise ActionError("Current action step state must be done")
 
-        action_step = action_steps[step_index]
-        return action_step.get('data')
+        try:
+            action_data = ActionData.objects.get(
+                        action=self.action,
+                        step_index=step_index,
+                        data_type=ActionDataType.OUTPUT.value)
+        except ActionData.DoesNotExist:
+            raise ActionError("Action data does not exists")
+
+        return action_data.data
 
     def get_step_data_format(self, step_index):
         """
@@ -510,9 +571,9 @@ class ActionController(object):
         return action_step_format.data_format
 
     @property
-    def has_sequential_processing(self):
+    def has_iterative_processing(self):
         """
-        Is the current step wait for sequential processing.
+        Is the current step wait for iterative processing.
         """
         action_steps = self.action.data.get('steps')
         if not action_steps:
@@ -526,4 +587,4 @@ class ActionController(object):
         step_format = action_type_steps[step_index]
         action_step_format = ActionStepFormatManager.get(step_format['type'])
 
-        return action_step_format.sequential_processing
+        return action_step_format.iterative_processing

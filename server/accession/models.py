@@ -16,6 +16,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
+from igdectk.common.models import ChoiceEnum, IntegerChoice
 
 from accession import localsettings
 from classification.models import ClassificationEntry
@@ -572,14 +573,49 @@ class Action(Entity):
         return self.name
 
 
+class ActionDataType(ChoiceEnum):
+    """
+    Type of a action data.
+    """
+
+    INPUT = IntegerChoice(0, _('Input'))
+    OUTPUT = IntegerChoice(1, _('Output'))
+
+
+class ActionData(models.Model):
+    """
+    Purely the data (input or output) for each step of each action.
+    Input can be not defined.
+    """
+
+    # related action
+    action = models.ForeignKey(Action, on_delete=models.CASCADE)
+
+    # step 0 based index
+    step_index = models.IntegerField(default=0)
+
+    # data array, empty by default
+    data = JSONField(default=[])
+
+    # type of data (False : input,
+    data_type = models.IntegerField(choices=ActionDataType.choices(), default=ActionDataType.INPUT.value)
+
+    class Meta:
+        unique_together = (('action', 'step_index', 'data_type'),)
+
+
 class ActionToEntity(models.Model):
     """
     List of managed entities per action.
     """
 
+    # related action
     action = models.ForeignKey(Action, on_delete=models.CASCADE)
 
+    # content type of the target
     entity_type = models.ForeignKey(ContentType, on_delete=models.DO_NOTHING)
+
+    # target entity id
     entity_id = models.IntegerField(null=False, blank=False)
 
     class Meta:

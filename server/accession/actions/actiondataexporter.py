@@ -15,7 +15,7 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
 from accession.actions.actionstepformat import ActionStepFormat
-from accession.models import Accession, Batch
+from accession.models import Accession, Batch, ActionData, ActionDataType
 from descriptor.models import Descriptor
 
 

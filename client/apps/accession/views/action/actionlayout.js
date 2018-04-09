@@ -156,6 +156,7 @@ let Layout = LayoutView.extend({
         // according to the state of the step adapts the view
         let step = this.stepData(stepIndex);
         if (step && !readOnly) {
+            // @todo according to the profile of the step adapts the displayed buttons
             let btnGroup = $('<div class="form-group text-center btn-group" role="group">');
             let resetBtn = $('<button type="button" name="step-reset" class="btn btn-warning btn-secondary"><span class="fa fa-eraser">&nbsp;</span>' + _t('Clear selections') + '</button>');
             let setupBtn = $('<button type="button" name="step-setup" class="btn btn-info btn-secondary"><span class="fa fa-upload">&nbsp;</span>' + _t('Setup selections') + '</button>');

@@ -24,7 +24,7 @@ from accession.actions.actionstepformat import ActionStepFormatManager
 from accession.actions.actiondataparser import ActionDataParser
 from accession.base import RestAccession
 from accession.batch import RestBatchId
-from accession.models import Action, Accession, ActionType, Batch, ActionToEntity
+from accession.models import Action, Accession, ActionType, Batch, ActionToEntity, ActionData, ActionDataType
 
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Method, Format
@@ -75,6 +75,11 @@ class RestActionIdUpload(RestActionId):
 class RestActionIdDownload(RestActionId):
     regex = r'^download/$'
     suffix = 'download'
+
+
+class RestActionIdData(RestActionId):
+    regex = r'^data/^(?P<step_idx>[0-9]+)/$'
+    suffix = 'data/step-idx'
 
 
 @RestAction.def_auth_request(
@@ -227,7 +232,7 @@ def action_process_step(request, act_id):
         if action_controller.is_current_step_done:
             raise SuspiciousOperation(_("The current step is done"))
 
-        if action_controller.has_sequential_processing:
+        if action_controller.has_iterative_processing:
             raise SuspiciousOperation(_("The current step works in sequential processing"))
 
         action_controller.process_current_step()
@@ -242,7 +247,7 @@ def action_process_step(request, act_id):
         if action_controller.is_current_step_done:
             raise SuspiciousOperation(_("The current step is done"))
 
-        if not action_controller.has_sequential_processing:
+        if not action_controller.has_iterative_processing:
             raise SuspiciousOperation(_("The current step does not support sequential processing"))
 
         # @todo
@@ -566,6 +571,25 @@ def get_action_list_for_entity_id_count(request, ent_id):
 
     results = {
         'count': count
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestActionIdData.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_action': _("You are not allowed to get an action")
+})
+def get_action_id_data_for_step(request, act_id, step_idx):
+    action = get_object_or_404(Action, pk=int(act_id))
+    step_index = int_arg(step_idx)
+
+    action_data = get_object_or_404(ActionData, action=action, step_index=step_idx)
+
+    results = {
+        'action': action.id,
+        'step': step_index,
+        'data': action_data.data,
+        'type': action_data.data_type
     }
 
     return HttpResponseRest(request, results)

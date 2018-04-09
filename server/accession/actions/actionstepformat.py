@@ -70,7 +70,7 @@ class ActionStepFormat(object):
         self.data_format = ()
 
         # true means that the processing of the step is per row of data and not in a single processing.
-        self.sequential_processing = False
+        self.iterative_processing = False
 
     def validate(self, action_type_format, data, columns):
         """
