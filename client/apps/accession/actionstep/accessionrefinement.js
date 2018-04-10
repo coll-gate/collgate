@@ -27,7 +27,7 @@ _.extend(Format.prototype, ActionStepFormat.prototype, {
 
 Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     className: 'action-step-process',
-    template: require('../templates/actionstep/accessionrefinementprocess.html'),
+    template: require('../templates/actionstep/process/accessionrefinement.html'),
 
     ui: {
         accession_list: 'select[name=get-accession-list]',
@@ -153,7 +153,7 @@ Format.ActionStepReadView = ActionStepFormat.ActionStepReadView.extend({
 
 Format.ActionStepFormatDetailsView = ActionStepFormat.ActionStepFormatDetailsView.extend({
     className: 'action-step-format-details',
-    template: require('../templates/actionstep/accessionrefinement.html'),
+    template: require('../templates/actionstep/type/accessionrefinement.html'),
 
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);

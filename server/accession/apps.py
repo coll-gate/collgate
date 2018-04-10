@@ -105,7 +105,7 @@ class CollGateAccession(ApplicationMain):
 
         for element in dir(actionstepformat):
             attr = getattr(actionstepformat, element)
-            if type(attr) is type and actionstepformat.ActionStepFormat in attr.__bases__:
+            if type(attr) is type and attr is not actionstepformat.ActionStepFormat and issubclass(attr, actionstepformat.ActionStepFormat):
                 self.action_step_formats.append(attr())
 
         from accession.actions.actionstepformat import ActionStepFormatManager

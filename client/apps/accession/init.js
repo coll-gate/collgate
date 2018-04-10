@@ -58,8 +58,10 @@ AccessionModule.prototype = {
             'accession_list',
             'accession_refinement',
             'accessionconsumer_batchproducer',
+            'accessionconsumer_batchproducer_it',
             'batchconsumer_batchmodifier',
-            'batchconsumer_batchproducer'
+            'batchconsumer_batchproducer',
+            'batch_weighting'
         ];
 
         for (let i = 0; i < actions.length; ++i) {

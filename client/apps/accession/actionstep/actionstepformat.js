@@ -11,9 +11,10 @@
 let Marionette = require('backbone.marionette');
 
 let ActionStepFormat = function() {
-    this.name = "";         // format name
-    this.group = "";        // related informal group name
-    this.description = "";  // description of the step used during configuration and processing
+    this.name = "";          //!< format name
+    this.group = "";         //!< related informal group name
+    this.description = "";   //!< description of the step used during configuration and processing
+    this.iterative = false;  //!< means the process is iterative
 };
 
 ActionStepFormat.prototype = {
@@ -113,7 +114,7 @@ ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
  */
 ActionStepFormat.ActionStepReadView = Marionette.View.extend({
     className: 'action-step-read',
-    template: require('../templates/actionstep/actionstepread.html'),
+    template: require('../templates/actionstep/read/actionstepread.html'),
 
     ui: {
         get_data: 'select[name=get-data]',

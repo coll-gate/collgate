@@ -170,7 +170,7 @@ class ActionController(object):
             'state': ActionController.STEP_INIT,       # state of the step (init, setup, process, done)
             'index': len(self.action.data['steps']),   # index of the step [0..n]
             'options': None,                           # user defined step options (not for all formats)
-            'progress': 0                              # some formats proceed data one by one, indicate the progression
+            'progression': [0, 0]                      # some formats proceed data one by one, indicate the progression
         }
 
         self.action.data['steps'].append(step_data)
@@ -211,7 +211,7 @@ class ActionController(object):
         action_data.action = self.action
         action_data.data_type = ActionDataType.INPUT.value
         action_data.step_index = step_index
-        action_data.data = validated_data
+        action_data.data = validated_data or []   # never null
 
         try:
             # finally save
@@ -275,7 +275,7 @@ class ActionController(object):
         # process, save and make associations
         try:
             with transaction.atomic():
-                output_data = action_step_format.process_once(
+                output_data = action_step_format.process_iteration(
                     self,
                     self.action,
                     step_format,
@@ -299,10 +299,10 @@ class ActionController(object):
 
                 # aggregate the results
                 action_data.data += output_data
-                action_step['process'] += 1  # @todo stride
+                action_step['progression'][0] += 1  # and one more iteration
 
-                # done once process reach end of data
-                if action_step['process'] == len(action_step['data']):
+                # done once process reach end
+                if action_step['progression'][1] == action_step['progression'][2]:
                     action_step['state'] = ActionController.STEP_DONE
 
                     # and init the next one
@@ -361,12 +361,39 @@ class ActionController(object):
         else:
             prev_output_array = None
 
+        # for iterative step only set the flag to process and returns
+        if action_step_format.iterative:
+            # process, save and make associations
+            try:
+                with transaction.atomic():
+                    action_step_format.prepare_iterative_process(
+                        self,
+                        step_format,
+                        action_step,
+                        prev_output_array,
+                        data_array)
+
+                    action_data = ActionData()
+                    action_data.action = self.action
+                    action_data.data_type = ActionDataType.OUTPUT.value
+                    action_data.step_index = step_index
+                    action_data.data = []  # empty array initially
+
+                    action_step['state'] = ActionController.STEP_PROCESS
+
+                    self.action.save()
+                    action_data.save()
+
+            except IntegrityError as e:
+                raise ActionError(e)
+
+            return
+
         # process, save and make associations
         try:
             with transaction.atomic():
                 output_data = action_step_format.process(
                     self,
-                    self.action,
                     step_format,
                     action_step,
                     prev_output_array,
@@ -411,16 +438,30 @@ class ActionController(object):
         if action_step_state != ActionController.STEP_SETUP:
             raise ActionError("Current action step state must be setup")
 
+        # step action data
+        try:
+            action_data = ActionData.objects.get(
+                action=self.action,
+                step_index=step_index,
+                data_type=ActionDataType.INPUT)
+        except ActionData.DoesNotExist:
+            raise ActionError("Missing action data")
+
         step_data = {
             'state': ActionController.STEP_INIT,
             'index': step_index,
-            'options': None
+            'options': None,
+            'progression': [0, 0]  # some formats proceed data one by one, indicate the progression
         }
 
         action_steps[step_index] = step_data
 
-        # finally save
-        self.action.save()
+        try:
+            with transaction.atomic():
+                self.action.save()
+                action_data.delete()
+        except IntegrityError as e:
+            raise ActionError(e)
 
     def update_related_entities(self, step_index, data_array):
         """

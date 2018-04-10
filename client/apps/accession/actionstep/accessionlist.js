@@ -26,7 +26,7 @@ _.extend(AccessionList.prototype, ActionStepFormat.prototype, {
 
 AccessionList.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     className: 'action-step-process',
-    template: require('../templates/actionstep/accessionlistprocess.html'),
+    template: require('../templates/actionstep/process/accessionlist.html'),
 
     ui: {
         list_type: "select[name=accession-list-type]",
@@ -254,7 +254,7 @@ AccessionList.ActionStepReadView = ActionStepFormat.ActionStepReadView.extend({
 
 AccessionList.ActionStepFormatDetailsView = ActionStepFormat.ActionStepFormatDetailsView.extend({
     className: 'action-step-format-details',
-    template: require('../templates/actionstep/accessionlist.html'),
+    template: require('../templates/actionstep/type/accessionlist.html'),
 
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);

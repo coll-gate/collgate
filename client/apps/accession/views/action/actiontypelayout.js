@@ -290,8 +290,10 @@ let Layout = LayoutView.extend({
                 window.application.accession.views.actionStepFormats.drawSelect(this.ui.step_format, true, false);
             },
 
-            onBeforeDetach: function () {
+            onBeforeDestroy: function () {
                 this.ui.step_format.selectpicker('destroy');
+
+                ChangeStepDialog.__super__.onBeforeDestroy.apply(this);
             },
 
             onChange: function () {

@@ -26,9 +26,9 @@ _.extend(Format.prototype, ActionStepFormat.prototype, {
 });
 
 
-Format.ActionStepProcessView = Marionette.View.extend({
+Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     className: 'action-step-process',
-    template: require('../templates/actionstep/batchconsumerbatchmodifierprocess.html'),
+    template: require('../templates/actionstep/process/batchconsumerbatchmodifier.html'),
 
     initialize: function(options) {
         options || (options = {readonly: true});
@@ -66,9 +66,12 @@ Format.ActionStepProcessView = Marionette.View.extend({
     }
 });
 
-Format.ActionStepFormatDetailsView = Marionette.View.extend({
+Format.ActionStepReadView = ActionStepFormat.ActionStepReadView.extend({
+});
+
+Format.ActionStepFormatDetailsView = ActionStepFormat.ActionStepFormatDetailsView.extend({
     className: 'action-step-format-details',
-    template: require('../templates/actionstep/batchconsumerbatchmodifier.html'),
+    template: require('../templates/actionstep/type/batchconsumerbatchmodifier.html'),
 
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);

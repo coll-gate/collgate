@@ -30,7 +30,7 @@ _.extend(Format.prototype, ActionStepFormat.prototype, {
 
 Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     className: 'action-step-process',
-    template: require('../templates/actionstep/accessionconsumerbatchproducerprocess.html'),
+    template: require('../templates/actionstep/process/accessionconsumerbatchproducer.html'),
 
     ui: {
         accession_list: 'select[name=get-accession-list]',
@@ -89,12 +89,12 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     }
 });
 
-Format.ActionStepFormatDetailsView = ActionStepFormat.ActionStepReadView.extend({
+Format.ActionStepReadView = ActionStepFormat.ActionStepReadView.extend({
 });
 
-Format.ActionStepFormatDetailsView = Marionette.View.extend({
+Format.ActionStepFormatDetailsView = ActionStepFormat.ActionStepFormatDetailsView.extend({
     className: 'action-step-format-details',
-    template: require('../templates/actionstep/accessionconsumerbatchproducer.html'),
+    template: require('../templates/actionstep/type/accessionconsumerbatchproducer.html'),
 
     regions: {
         'options': 'div[name=options]',

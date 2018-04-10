@@ -47,7 +47,8 @@ let Layout = LayoutView.extend({
     // steps states consts
     STEP_INIT: 0,
     STEP_SETUP: 1,
-    STEP_DONE: 2,
+    STEP_PROCESS: 2,
+    STEP_DONE: 3,
 
     initialize: function (model, options) {
         Layout.__super__.initialize.apply(this, arguments);
@@ -148,34 +149,65 @@ let Layout = LayoutView.extend({
             }));
         }
 
+        let iterative = false;
+
         if (Element) {
-            let descr = $('<div><p class="well well-sm" name="step-description">' + new Element().description + '</p></div>');
+            let element = new Element();
+            iterative = element.iterative;
+
+            let descr = $('<div><p class="well well-sm" name="step-description">' + element.description + '</p></div>');
             region.$el.prepend(descr);
         }
 
         // according to the state of the step adapts the view
         let step = this.stepData(stepIndex);
         if (step && !readOnly) {
-            // @todo according to the profile of the step adapts the displayed buttons
             let btnGroup = $('<div class="form-group text-center btn-group" role="group">');
             let resetBtn = $('<button type="button" name="step-reset" class="btn btn-warning btn-secondary"><span class="fa fa-eraser">&nbsp;</span>' + _t('Clear selections') + '</button>');
             let setupBtn = $('<button type="button" name="step-setup" class="btn btn-info btn-secondary"><span class="fa fa-upload">&nbsp;</span>' + _t('Setup selections') + '</button>');
-            let continueBtn = $('<button type="button" name="step-continue" class="btn btn-success btn-secondary">' + _t('Continue') + '&nbsp;<span class="fa fa-step-forward"></span></button>');
+            let iterateBtn = $('<button type="button" name="step-iterate" class="btn btn-success btn-secondary"><span class="fa fa-tasks">&nbsp;</span>' + _t('Progression') + '</button>');
+            let processBtn = $('<button type="button" name="step-process" class="btn btn-success btn-secondary">' + _t('Realize') + '&nbsp;<span class="fa fa-step-forward"></span></button>');
 
-            btnGroup.append(resetBtn).append(setupBtn).append(continueBtn);
+            btnGroup.append(resetBtn).append(setupBtn);
+
+            if (iterative) {
+                btnGroup.append(iterateBtn);
+            } else {
+                btnGroup.append(processBtn);
+            }
 
             if (step.state === this.STEP_INIT) {
                 resetBtn.prop('disabled', true).removeClass('btn-warning');
                 setupBtn.prop('disabled', false).addClass('btn-info').on('click', $.proxy(this.onSetupStepData, this));
-                continueBtn.prop('disabled', true).removeClass('btn-success');
+                if (iterative) {
+                    iterateBtn.prop('disabled', true).removeClass('btn-success');
+                } else {
+                    processBtn.prop('disabled', true).removeClass('btn-success');
+                }
             } else if (step.state === this.STEP_SETUP) {
                 resetBtn.prop('disabled', false).addClass('btn-warning').on('click', $.proxy(this.onResetStepData, this));
                 setupBtn.prop('disabled', true).removeClass('btn-info');
-                continueBtn.prop('disabled', false).addClass('btn-success').on('click', $.proxy(this.onProcessStep, this));
+                if (iterative) {
+                    iterateBtn.prop('disabled', false).addClass('btn-success').on('click', $.proxy(this.onProcessIteration, this));
+                } else {
+                    processBtn.prop('disabled', false).addClass('btn-success').on('click', $.proxy(this.onProcessStep, this));
+                }
+            } else if (step.state === this.STEP_PROCESS) {
+                resetBtn.prop('disabled', true).removeClass('btn-warning');
+                setupBtn.prop('disabled', true).removeClass('btn-info');
+                if (iterative) {
+                    iterateBtn.prop('disabled', false).addClass('btn-success').on('click', $.proxy(this.onProcessIteration, this));
+                } else {
+                    processBtn.prop('disabled', false).addClass('btn-success').on('click', $.proxy(this.onProcessStep, this));
+                }
             } else if (step.state === this.STEP_DONE) {
                 resetBtn.prop('disabled', true).removeClass('btn-warning');
                 setupBtn.prop('disabled', true).removeClass('btn-info');
-                continueBtn.prop('disabled', true).removeClass('btn-success');
+                if (iterative) {
+                    iterateBtn.prop('disabled', true).removeClass('btn-success');
+                } else {
+                    processBtn.prop('disabled', true).removeClass('btn-success');
+                }
             }
 
             region.$el.append(btnGroup);
@@ -260,6 +292,10 @@ let Layout = LayoutView.extend({
                 });
             }
         }
+    },
+
+    onProcessIteration: function() {
+        // @todo
     },
 
     setupStructure: function(data) {

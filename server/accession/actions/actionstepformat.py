@@ -70,7 +70,7 @@ class ActionStepFormat(object):
         self.data_format = ()
 
         # true means that the processing of the step is per row of data and not in a single processing.
-        self.iterative_processing = False
+        self.iterative = False
 
     def validate(self, action_type_format, data, columns):
         """
@@ -130,12 +130,11 @@ class ActionStepFormat(object):
 
         return step_data.get('data')
 
-    def process(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+    def process(self, action_controller, step_format, step_data, prev_output_data, input_data):
         """
         Process the specialized action step to the given action, using input array,
         and complete the step data structure.
         :param action_controller: Action controller.
-        :param action: Valid and already existing action in DB.
         :param step_format: Current step format.
         :param step_data: Initialized step data structure to be filled during process.
         :param prev_output_data: Data generated at the previous step or None
@@ -144,12 +143,23 @@ class ActionStepFormat(object):
         """
         return []
 
-    def process_once(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+    def prepare_iterative_process(self, action_controller, step_format, step_data, prev_output_data, input_data):
+        """
+        Prepare the action step data before process iteratively the data array.
+        :param action_controller: Action controller.
+        :param step_format: Current step format.
+        :param step_data: Initialized step data structure to be filled during process.
+        :param prev_output_data: Data generated at the previous step or None
+        :param input_data Input data of the current step or None
+        :return:
+        """
+        return
+
+    def process_iteration(self, action_controller, step_format, step_data, prev_output_data, input_data):
         """
         Process once more entity of the specialized action step to the given action, using input array,
         and complete the step data structure.
         :param action_controller: Action controller.
-        :param action: Valid and already existing action in DB.
         :param step_format: Current step format.
         :param step_data: Initialized step data structure to be filled during process.
         :param prev_output_data: Data generated at the previous step or None
@@ -283,7 +293,7 @@ class ActionStepAccessionConsumerBatchProducer(ActionStepFormat):
 
         return None
 
-    def process(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+    def process(self, action_controller, step_format, step_data, prev_output_data, input_data):
         name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
 
         accessions = Accession.objects.filter(id__in=prev_output_data)
@@ -325,9 +335,6 @@ class ActionStepAccessionConsumerBatchProducer(ActionStepFormat):
             raise ActionError(e)
 
         return output
-
-    def process_once(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
-        return []  # @todo
 
 
 class ActionStepAccessionList(ActionStepFormat):
@@ -376,7 +383,7 @@ class ActionStepAccessionList(ActionStepFormat):
         # nothing to check
         return None
 
-    def process(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+    def process(self, action_controller, step_format, step_data, prev_output_data, input_data):
         """
         Check the data array and the existences of the accessions.
         """
@@ -436,7 +443,7 @@ class ActionStepAccessionRefinement(ActionStepFormat):
     def check(self, action_controller, action_type_format):
         return None
 
-    def process(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+    def process(self, action_controller, step_format, step_data, prev_output_data, input_data):
         """
         Check the data array and the existences of the accessions, and compare if there is no foreign accessions.
         """
@@ -481,42 +488,49 @@ class ActionStepBatchConsumerBatchProducer(ActionStepFormat):
     def check(self, action_controller, action_type_format):
         return None
 
-    def process(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+    def process(self, action_controller, step_format, step_data, prev_output_data, input_data):
         name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
 
-        accessions = Accession.objects.filter(id__in=prev_output_data)
-        output = []
+        batches = Batch.objects.filter(id__in=prev_output_data).prefetch_related('accession')
+        producers = step_format['producers']
+
+        # find related descriptors
+        descriptors = {}
 
         try:
             with transaction.atomic():
-                batches = []
+                output_batches = []
 
-                for accession in accessions:
-                    batch_layout = action_controller.batch_layout(accession)
+                for batch in batches:
+                    batch_layout = action_controller.batch_layout(batch.accession)
 
-                    naming_constants = self.naming_constants(
-                        name_builder.num_constants,
-                        action.action_type.data('naming_options'))
+                    for producer in producers:
+                        naming_constants = self.naming_constants(
+                            name_builder.num_constants,
+                            producer['naming_options'])
 
-                    batch = Batch()
-                    batch.name = name_builder.pick(self.naming_variables(accession), naming_constants)
-                    batch.layout = batch_layout
+                        out_batch = Batch()
+                        out_batch.content_type = out_batch._get_content_type()  # because save method is not used in bulk
+                        out_batch.name = name_builder.pick(self.naming_variables(batch.accession), naming_constants)
+                        out_batch.layout = batch_layout
 
-                    batches.append(batch)
+                        # defined descriptors
+                        # @todo creation date... how to ?
 
-                # @todo bulk insert
+                        output_batches.append(out_batch)
 
-                # @todo take id from insert
-                # output.append(batch.id)
+                # bulk create
+                results = Batch.objects.bulk_create(output_batches)
 
-                # @todo update related entities
+                # take id from insert
+                output = [x.pk for x in results]
 
         except IntegrityError as e:
             raise ActionError(e)
 
         return output
 
-    def process_once(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
+    def process_iteration(self, action_controller, step_format, step_data, prev_output_data, input_data):
         return []  # @todo
 
 
@@ -542,14 +556,115 @@ class ActionStepBatchConsumerBatchModifier(ActionStepFormat):
     def check(self, action_controller, action_type_format):
         return None
 
-    def process(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
-        steps_data = action.data.get('steps', [])
+    def process(self, action_controller, step_format, step_data, prev_output_data, input_data):
+        name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
 
-        # inputs = self.inputs(action, input_array)
-        # @todo
-        return None
+        batches = Batch.objects.filter(id__in=prev_output_data).prefetch_related('accession')
+        producers = step_format['producers']
 
-    def process_once(self, action_controller, action, step_format, step_data, prev_output_data, input_data):
-        return []  # @todo
+        # find related descriptors
+        descriptors = {}
+
+        try:
+            with transaction.atomic():
+                output_batches = []
+
+                for batch in batches:
+                    batch_layout = action_controller.batch_layout(batch.accession)
+
+                    for producer in producers:
+                        naming_constants = self.naming_constants(
+                            name_builder.num_constants,
+                            producer['naming_options'])
+
+                        out_batch = Batch()
+                        out_batch.content_type = out_batch._get_content_type()  # because save method is not used in bulk
+                        out_batch.name = name_builder.pick(self.naming_variables(batch.accession), naming_constants)
+                        out_batch.layout = batch_layout
+
+                        # defined descriptors
+                        # @todo creation date... how to ?
+
+                        output_batches.append(out_batch)
+
+                # bulk create
+                results = Batch.objects.bulk_create(output_batches)
+
+                # take id from insert
+                output = [x.pk for x in results]
+
+        except IntegrityError as e:
+            raise ActionError(e)
+
+        return output
+
 
 # @todo having a sequential processing for batch modification
+
+
+class ActionStepAccessionConsumerBatchProducerIt(ActionStepAccessionConsumerBatchProducer):
+    """
+    Similar as accession consumer batch producer but generate output batch one by one.
+     - data : Accession(s)
+     - output : Batche(s)
+    """
+
+    def __init__(self):
+        super().__init__()
+
+        self.name = "accessionconsumer_batchproducer_it"
+        self.verbose_name = _("Accession Consumer - Batch Producer iterative")
+        self.iterative_processing = True
+
+    def prepare_iterative_process(self, action_controller, step_format, step_data, prev_output_data, input_data):
+        limit = len(input_data) / len(self.accept_format)
+        step_data['progression'] = [0, limit]
+
+    def process_iteration(self, action_controller, step_format, step_data, prev_output_data, input_data):
+        name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
+
+        accessions = Accession.objects.filter(id__in=prev_output_data)
+        producers = step_format['producers']
+
+        # find related descriptors
+        descriptors = {}
+
+        offset = step_format['progression'][0]
+        limit = step_format['progression'][0]
+        stride = len(self.accept_format)
+
+        # @todo one by one and use of progression counter
+
+        try:
+            with transaction.atomic():
+                batches = []
+
+                for accession in accessions:
+                    batch_layout = action_controller.batch_layout(accession)
+
+                    for producer in producers:
+                        naming_constants = self.naming_constants(
+                            name_builder.num_constants,
+                            producer['naming_options'])
+
+                        batch = Batch()
+                        batch.content_type = batch._get_content_type()  # because save method is not used in bulk
+                        batch.name = name_builder.pick(self.naming_variables(accession), naming_constants)
+                        batch.layout = batch_layout
+                        batch.accession = accession
+
+                        # defined descriptors
+                        # @todo creation date... how to ?
+
+                        batches.append(batch)
+
+            # bulk create
+            results = Batch.objects.bulk_create(batches)
+
+            # take id from insert
+            output = [x.pk for x in results]
+
+        except IntegrityError as e:
+            raise ActionError(e)
+
+        return output
