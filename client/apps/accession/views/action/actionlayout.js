@@ -275,7 +275,46 @@ let Layout = LayoutView.extend({
             let step = this.stepData(this.currentStepIndex);
             if (step && step.state === this.STEP_SETUP) {
                 this.model.save({action: 'process'}, {wait: true, patch: true}).then(function () {
-                    $.alert.success(_t("Successfully processed !"));
+                    self.setupAllSteps(self.actionType.attributes);
+
+                    if (step.state === this.STEP_DONE) {
+                        $.alert.success(_t("Successfully processed !"));
+
+                        // collapse and style
+                        let prev = self.ui.steps_group.find('div.panel[panel-id=' + self.currentStepIndex + ']').children('div.panel-heading');
+                        prev.removeClass('action-current').addClass('action-done').parent().removeClass('panel-warning').addClass('panel-success');
+
+                        self.collapseStep(self.currentStepIndex, true);
+                        ++self.currentStepIndex;
+
+                        let next = self.ui.steps_group.find('div.panel[panel-id=' + self.currentStepIndex + ']').children('div.panel-heading');
+                        next.removeClass('action-next').addClass('action-current').parent().removeClass('panel-info').addClass('panel-warning');
+
+                        self.collapseStep(self.currentStepIndex, false);
+                    }
+                });
+            }
+        }
+    },
+
+    onProcessIteration: function() {
+        // store current step before changes to new current one
+        if (this.currentStepIndex >= 0) {
+            let self = this;
+
+            let step = this.stepData(this.currentStepIndex);
+            if (step && step.state === this.STEP_SETUP) {
+                this.model.save({action: 'process'}, {wait: true, patch: true}).then(function () {
+                    // show progression tab
+                    self.setActiveTab("progression");
+                    self.setupAllSteps(self.actionType.attributes);
+                });
+            } else if (step && step.state === this.STEP_PROCESS) {
+                if (step.progression[0] < step.progression[1]) {
+                    // show progression tab
+                    self.setActiveTab("progression");
+                } else {
+                    // step is terminated
                     self.setupAllSteps(self.actionType.attributes);
 
                     // collapse and style
@@ -289,12 +328,15 @@ let Layout = LayoutView.extend({
                     next.removeClass('action-next').addClass('action-current').parent().removeClass('panel-info').addClass('panel-warning');
 
                     self.collapseStep(self.currentStepIndex, false);
-                });
+                }
             }
         }
     },
 
-    onProcessIteration: function() {
+    onProcessIterationItem: function() {
+        // process one entry of the iteration
+
+
         // @todo
     },
 

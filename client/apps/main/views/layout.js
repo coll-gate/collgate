@@ -37,8 +37,8 @@ let Layout = Marionette.View.extend({
 
                 if (view.onShowTab) {
                     view.onShowTab(region);
-                } else if (application.main.getRightView()) {
-                    application.main.defaultRightView();
+                } else if (window.application.main.getRightView()) {
+                    window.application.main.defaultRightView();
                 }
             }
         }
@@ -128,8 +128,8 @@ let Layout = Marionette.View.extend({
         if (region) {
             if (region.currentView && region.currentView.onShowTab) {
                 region.currentView.onShowTab(this);
-            } else if (application.main.getRightView()) {
-                application.main.defaultRightView();
+            } else if (window.application.main.getRightView()) {
+                window.application.main.defaultRightView();
             }
 
             // initial trigger for parents
@@ -138,7 +138,9 @@ let Layout = Marionette.View.extend({
     },
 
     setActiveTab: function(tab) {
-        this.activeTab = this.ui.initial_pane.attr('name');
+        if (!this.activeTab) {
+            this.activeTab = this.ui.initial_pane.attr('name');
+        }
 
         let tabExits = this.ui.tabs_buttons.filter('[aria-controls="' + tab + '"]').length > 0;
         if (this.activeTab !== tab && tabExits) {
@@ -157,8 +159,8 @@ let Layout = Marionette.View.extend({
             if (region) {
                 if (region.currentView && region.currentView.onShowTab) {
                     region.currentView.onShowTab(this);
-                } else if (application.main.getRightView()) {
-                   application.main.defaultRightView();
+                } else if (window.application.main.getRightView()) {
+                   window.application.main.defaultRightView();
                 }
 
                 // trigger for parents
@@ -189,8 +191,8 @@ let Layout = Marionette.View.extend({
         if (region) {
             if (region.currentView && region.currentView.onShowTab) {
                 region.currentView.onShowTab(this);
-            } else if (application.main.getRightView()) {
-                application.main.defaultRightView();
+            } else if (window.application.main.getRightView()) {
+                window.application.main.defaultRightView();
             }
 
             // trigger for parents
@@ -220,11 +222,11 @@ let Layout = Marionette.View.extend({
             view.onHideTab(this);
         }
 
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },
 
     onDestroy: function() {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },
 
     onResize: function() {

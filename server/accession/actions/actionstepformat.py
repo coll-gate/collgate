@@ -614,10 +614,10 @@ class ActionStepAccessionConsumerBatchProducerIt(ActionStepAccessionConsumerBatc
 
         self.name = "accessionconsumer_batchproducer_it"
         self.verbose_name = _("Accession Consumer - Batch Producer iterative")
-        self.iterative_processing = True
+        self.iterative = True
 
     def prepare_iterative_process(self, action_controller, step_format, step_data, prev_output_data, input_data):
-        limit = len(input_data) / len(self.accept_format)
+        limit = len(prev_output_data) // len(self.accept_format)
         step_data['progression'] = [0, limit]
 
     def process_iteration(self, action_controller, step_format, step_data, prev_output_data, input_data):
