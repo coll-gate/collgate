@@ -76,6 +76,10 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
         return null;
     },
 
+    inputsColumns: function() {
+        return ['accession_id'];
+    },
+
     onGetAccessionList: function () {
         let type = this.ui.accession_list.val();
 

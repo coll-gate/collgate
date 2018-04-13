@@ -98,6 +98,14 @@ ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
         return null;
     },
 
+    /**
+     * Array of string of defined columns for the related inputs data.
+     * Only if the action is in 'list' mode.
+     */
+    inputsColumns: function() {
+        return null;
+    },
+
     stepData: function() {
         return this.model.get('data')['steps'][this.getOption('stepIndex')];
     },

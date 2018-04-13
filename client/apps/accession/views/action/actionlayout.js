@@ -250,9 +250,12 @@ let Layout = LayoutView.extend({
 
                 let inputsType = child.inputsType();
                 let inputsData = child.inputsData();
+                let inputsColumns = child.inputsColumns();
+
                 let data = {action: 'setup', inputs_type: inputsType};
 
                 if (inputsType === "list") {
+                    data.columns = inputsColumns;
                     data.list = inputsData;
                 } else if (inputsType === "panel") {
                     data.panel = inputsData;
@@ -274,10 +277,10 @@ let Layout = LayoutView.extend({
 
             let step = this.stepData(this.currentStepIndex);
             if (step && step.state === this.STEP_SETUP) {
-                this.model.save({action: 'process'}, {wait: true, patch: true}).then(function () {
+                this.model.save({action: 'process'}, {wait: true, patch: true}).then(function (data) {
                     self.setupAllSteps(self.actionType.attributes);
 
-                    if (step.state === this.STEP_DONE) {
+                    if (data.data.steps[self.currentStepIndex].state === self.STEP_DONE) {
                         $.alert.success(_t("Successfully processed !"));
 
                         // collapse and style

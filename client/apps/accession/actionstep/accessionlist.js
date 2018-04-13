@@ -178,6 +178,10 @@ AccessionList.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.ext
         return null;
     },
 
+    inputsColumns: function() {
+        return ['accession_id'];
+    },
+
     onChangeListType: function() {
         let v = this.ui.list_type.val();
 

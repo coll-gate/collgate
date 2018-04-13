@@ -20,7 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 from accession import localsettings
 from accession.actions.actioncontroller import ActionController
 from accession.actions.actiondataexporter import ActionDataExporter
-from accession.actions.actionstepformat import ActionStepFormatManager
+from accession.actions.actionstepformat import ActionStepFormatManager, ActionStepFormat
 from accession.actions.actiondataparser import ActionDataParser
 from accession.base import RestAccession
 from accession.batch import RestBatchId
@@ -78,8 +78,8 @@ class RestActionIdDownload(RestActionId):
 
 
 class RestActionIdData(RestActionId):
-    regex = r'^data/^(?P<step_idx>[0-9]+)/$'
-    suffix = 'data/step-idx'
+    regex = r'^data/(?P<step_idx>[0-9]+)/(?P<type_num>[0-9]+)/$'
+    suffix = 'data/step-idx/type-num'
 
 
 @RestAction.def_auth_request(
@@ -207,9 +207,21 @@ def action_process_step(request, act_id):
         if action_controller.is_current_step_done:
             raise SuspiciousOperation(_("The current step is done"))
 
-        # @todo columns list...
         if inputs_type == "list":
-            input_columns = []  # @todo might be sent with the request
+            columns = request.data.get('columns', [])
+
+            input_columns = []
+
+            for col in columns:
+                if col == 'accession_id':
+                    input_columns.append(ActionStepFormat.IO_ACCESSION_ID)
+                elif col == 'batch_id':
+                    input_columns.append(ActionStepFormat.IO_BATCH_ID)
+                elif col == 'descriptor_id':
+                    input_columns.append(ActionStepFormat.IO_DESCRIPTOR)
+                else:
+                    input_columns.append(ActionStepFormat.IO_UNDEFINED)
+
             input_data = request.data.get('list', [])
         elif inputs_type == "panel":
             input_columns = []  # @todo detect available columns from the panel
@@ -579,15 +591,15 @@ def get_action_list_for_entity_id_count(request, ent_id):
 @RestActionIdData.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.get_action': _("You are not allowed to get an action")
 })
-def get_action_id_data_for_step(request, act_id, step_idx):
+def get_action_id_data_for_step(request, act_id, step_idx, type_num):
     action = get_object_or_404(Action, pk=int(act_id))
-    step_index = int_arg(step_idx)
 
-    action_data = get_object_or_404(ActionData, action=action, step_index=step_idx)
+    # any elements of the array are returnedZ
+    action_data = get_object_or_404(ActionData, action=action, step_index=step_idx, type=ActionDataType(type_num).value)
 
     results = {
         'action': action.id,
-        'step': step_index,
+        'step': action_data.step_index,
         'data': action_data.data,
         'type': action_data.data_type
     }

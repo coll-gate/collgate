@@ -9,7 +9,6 @@
  */
 
 let ActionStepFormat = require('./actionstepformat');
-let Marionette = require('backbone.marionette');
 
 let Format = function() {
     ActionStepFormat.call(this);
