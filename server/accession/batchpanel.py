@@ -19,7 +19,7 @@ from django.db import transaction, IntegrityError
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from .models import BatchPanel, Batch
+from .models import BatchPanel, Batch, PanelType
 from .base import RestAccession
 from .batch import RestBatchId
 
@@ -44,22 +44,22 @@ class RestBatchPanelId(RestBatchPanel):
     suffix = 'id'
 
 
-class RestBatchPanelBatches(RestBatchPanelId):
+class RestBatchPanelIdBatches(RestBatchPanelId):
     regex = r'^batches/$'
     name = "batches"
 
 
-class RestBatchPanelBatchesCount(RestBatchPanelBatches):
+class RestBatchPanelIdBatchesCount(RestBatchPanelIdBatches):
     regex = r'^count/$'
     name = "count"
 
 
-class RestBatchPanels(RestBatchId):
+class RestBatchIdPanels(RestBatchId):
     regex = r'^panels/$'
     suffix = 'panels'
 
 
-class RestBatchPanelsCount(RestBatchPanels):
+class RestBatchIdPanelsCount(RestBatchIdPanels):
     regex = r'^count/$'
     name = "count"
 
@@ -68,6 +68,9 @@ class RestBatchPanelsCount(RestBatchPanels):
     'accession.list_batchpanel': _("You are not allowed to list the batch panels")
 })
 def get_panel_list(request):
+    """
+    List the persistent panels
+    """
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
@@ -80,6 +83,9 @@ def get_panel_list(request):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(BatchPanel)
+
+    # only persistent panels
+    cq.filter(panel_type=PanelType.PERSISTENT.value)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -189,6 +195,7 @@ def create_batch_panel(request):
     try:
         with transaction.atomic():
             batch_panel = BatchPanel(name=name)
+            batch_panel.panel_type = PanelType.PERSISTENT.value
             batch_panel.layout = layout
             batch_panel.count = 0
 
@@ -349,8 +356,14 @@ def modify_panel(request, panel_id):
     'accession.list_batchpanel': _("You are not allowed to list the batch panels")
 })
 def get_panel_list_count(request):
+    """
+    Count the list of persistent panels
+    """
     from main.cursor import CursorQuery
     cq = CursorQuery(BatchPanel)
+
+    # only persistent panels
+    cq.filter(panel_type=PanelType.PERSISTENT.value)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -368,7 +381,7 @@ def get_panel_list_count(request):
 @RestBatchPanelSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
 def search_batch_panel(request):
     """
-    Quick search for an batch panel...
+    Quick search for a persistent batch panel.
     """
     filters = json.loads(request.GET['filters'])
 
@@ -381,6 +394,9 @@ def search_batch_panel(request):
         qs = BatchPanel.objects.filter(Q(id__gt=int_arg(cursor)))
     else:
         qs = BatchPanel.objects.all()
+
+    # only for persistent panels
+    qs = qs.filter(panel_type=PanelType.PERSISTENT.value)
 
     name_method = filters.get('method', 'ieq')
     if 'layout' in filters['fields']:
@@ -435,10 +451,10 @@ def search_batch_panel(request):
     return HttpResponseRest(request, results)
 
 
-@RestBatchPanelBatches.def_auth_request(Method.GET, Format.JSON, perms={
+@RestBatchPanelIdBatches.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_batch': _("You are not allowed to list the batches")
 })
-def get_panel_batch_list(request, panel_id):
+def get_panel_id_batch_list(request, panel_id):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
@@ -451,6 +467,9 @@ def get_panel_batch_list(request, panel_id):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Batch)
+
+    # only for persistent panels
+    cq.filter(panel_type=PanelType.PERSISTENT.value)
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -488,7 +507,7 @@ def get_panel_batch_list(request, panel_id):
     return HttpResponseRest(request, results)
 
 
-@RestBatchPanelBatches.def_auth_request(Method.PATCH, Format.JSON, content={
+@RestBatchPanelIdBatches.def_auth_request(Method.PATCH, Format.JSON, content={
     "type": "object",
     "properties": {
         "action": {"type": "string", "enum": ['add', 'remove']},
@@ -592,12 +611,15 @@ def modify_panel_batches(request, panel_id):
 
 
 # todo: set correct permissions... maybe list_panel_accession???
-@RestBatchPanelBatchesCount.def_auth_request(Method.GET, Format.JSON, perms={
+@RestBatchPanelIdBatchesCount.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_batch': _("You are not allowed to list the batches")
 })
-def get_panel_batch_list_count(request, panel_id):
+def get_panel_id_batch_list_count(request, panel_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(Batch)
+
+    # only for persistent panels
+    cq.filter(panel_type=PanelType.PERSISTENT.value)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -612,8 +634,8 @@ def get_panel_batch_list_count(request, panel_id):
     return HttpResponseRest(request, results)
 
 
-@RestBatchPanels.def_auth_request(Method.GET, Format.JSON)
-def get_batch_panels(request, bat_id):
+@RestBatchIdPanels.def_auth_request(Method.GET, Format.JSON)
+def get_batch_id_panels(request, bat_id):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
@@ -630,6 +652,9 @@ def get_batch_panels(request, bat_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(BatchPanel)
     cq.filter(id__in=panels)
+
+    # only for persistent panels
+    cq.filter(panel_type=PanelType.PERSISTENT.value)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -662,14 +687,17 @@ def get_batch_panels(request, bat_id):
     return HttpResponseRest(request, results)
 
 
-@RestBatchPanelsCount.def_auth_request(Method.GET, Format.JSON)
-def count_batch_panels(request, bat_id):
+@RestBatchIdPanelsCount.def_auth_request(Method.GET, Format.JSON)
+def count_batch_id_panels(request, bat_id):
     batch = Batch.objects.get(id=int(bat_id))
     panels = list(batch.panels.all().values_list('id', flat=True))
 
     from main.cursor import CursorQuery
     cq = CursorQuery(BatchPanel)
     cq.filter(id__in=panels)
+
+    # only for persistent panels
+    cq.filter(panel_type=PanelType.PERSISTENT.value)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])

@@ -166,4 +166,9 @@ ActionStepFormat.ActionStepReadView = Marionette.View.extend({
     downloadData: downloadData
 });
 
+/**
+ * Default view to manage the progression of the action. Default there is no view.
+ */
+ActionStepFormat.ActionSteProgressView = null;
+
 module.exports = ActionStepFormat;

@@ -517,6 +517,9 @@ class Action(Entity):
     # informative description.
     description = models.TextField(blank=True, default="")
 
+    # format of the action, it is a replication of the format field of the action type to keep consistency for audit
+    format = JSONField(default={"steps": []})
+
     class Meta:
         verbose_name = _("action")
         default_permissions = list()
@@ -622,6 +625,15 @@ class ActionToEntity(models.Model):
         index_together = (("entity_type", "entity_id"),)
 
 
+class PanelType(ChoiceEnum):
+    """
+    Type of a panel.
+    """
+
+    PERSISTENT = IntegerChoice(0, _('Persistent'))
+    WORKING = IntegerChoice(1, _('Working'))
+
+
 class Panel(Entity):
     """
     Panel abstract model
@@ -629,6 +641,9 @@ class Panel(Entity):
 
     # unique name of the panel
     name = models.CharField(unique=True, max_length=255, db_index=True)
+
+    # panel type (persistent, working...)
+    panel_type = models.IntegerField(default=PanelType.PERSISTENT.value)
 
     # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
     descriptors = JSONField(default={})
@@ -794,4 +809,3 @@ class StorageLocation(models.Model):
         :note Model instance save() is not called.
         """
         self.label[lang] = label
-

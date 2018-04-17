@@ -896,7 +896,7 @@ class CursorQuery(object):
 
                         if not self._synonym_model:
                             raise CursorQueryError(
-                                'Synonym model is not define, use CursorQuery.set_synonym_model() method')
+                                'Synonym model is not defined, use CursorQuery.set_synonym_model() method')
                         elif cf.name not in self._synonym_table_aliases:
                             self.join_synonym(cf)
 
@@ -1173,7 +1173,7 @@ class CursorQuery(object):
         db_table = self._model._meta.db_table
 
         self.sub_query_select.append(
-            'ARRAY(SELECT "%s"."%s" FROM "%s" WHERE "%s"."%s" = "%s"."%s" ) AS "%s"' % (
+            'ARRAY(SELECT "%s"."%s" FROM "%s" WHERE "%s"."%s" = "%s"."%s") AS "%s"' % (
                 related_db_table, selected_field, related_db_table, db_table, from_related_field, related_db_table,
                 to_related_field, alias)
         )

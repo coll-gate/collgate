@@ -138,7 +138,7 @@ let View = Marionette.CompositeView.extend({
 
         // empty, mean generated at dom refresh
         if (this.getUserSettingName()) {
-            this.selectedColumns = application.getUserSetting(
+            this.selectedColumns = window.application.getUserSetting(
                 this.getUserSettingName(),
                 this.getUserSettingVersion(),
                 this.defaultColumns || []);
@@ -330,7 +330,7 @@ let View = Marionette.CompositeView.extend({
 
             this.ui.add_column_menu.children('div.btn-group').children('span.select-cancel').on('click', function () {
                 // destroy the glass pane
-                application.main.glassPane('destroy');
+                window.application.main.glassPane('destroy');
                 self.ui.add_column_menu.hide(false);
             });
 
@@ -711,7 +711,7 @@ let View = Marionette.CompositeView.extend({
             $(element).children('th,td').eq(i1).css('opacity', '0.4');
         });
 
-        application.main.dnd.set(target, 'advanced-table-column');
+        window.application.main.dnd.set(target, 'advanced-table-column');
         this.targetDropElement = null;
     },
 
@@ -752,7 +752,7 @@ let View = Marionette.CompositeView.extend({
             });
         }
 
-        application.main.dnd.unset();
+        window.application.main.dnd.unset();
         this.targetDropElement = null;
     },
 
@@ -782,11 +782,11 @@ let View = Marionette.CompositeView.extend({
             this.targetDropElement = null;
         }
 
-        if (!application.main.dnd.isSelector('advanced-table-column')) {
+        if (!window.application.main.dnd.isSelector('advanced-table-column')) {
             return false;
         }
 
-        if (e.currentTarget === application.main.dnd.get()[0]) {
+        if (e.currentTarget === window.application.main.dnd.get()[0]) {
             return false;
         }
 
@@ -1051,7 +1051,7 @@ let View = Marionette.CompositeView.extend({
 
             // save user settings
             if (this.getUserSettingName()) {
-                application.updateUserSetting(
+                window.application.updateUserSetting(
                     this.getUserSettingName(),
                     this.selectedColumns,
                     this.getUserSettingVersion());
@@ -1228,7 +1228,7 @@ let View = Marionette.CompositeView.extend({
         let hasScroll = (this.ui.tbody[0].scrollHeight - this.ui.tbody[0].parentNode.parentNode.clientHeight) > 0;
 
         // let scrollLeft = this.ui.tbody.parent().parent().scrollLeft();
-        let leftMargin = application.IS_FIREFOX ? 7 : 8;
+        let leftMargin = window.application.IS_FIREFOX ? 7 : 8;
         let rightMargin = this.ui.add_column.length > 0 ? this.ui.add_column.parent().width() : 0;
         let leftClip = this.ui.table.position().left;
         // let rightClip = this.ui.add_column.length > 0 ? this.ui.add_column.parent().width() : 0;
@@ -1400,7 +1400,7 @@ let View = Marionette.CompositeView.extend({
                 }
 
                 // hide the context menu when click on the glass pane
-                application.main.glassPane('show').on('click', function (e) {
+                window.application.main.glassPane('show').on('click', function (e) {
                     contextMenu.hide();
                     return true;
                 });
@@ -1446,7 +1446,7 @@ let View = Marionette.CompositeView.extend({
 
         if (save) {
             if (this.getUserSettingName()) {
-                application.updateUserSetting(
+                window.application.updateUserSetting(
                     this.getUserSettingName(),
                     this.selectedColumns,
                     this.getUserSettingVersion()
@@ -1593,7 +1593,7 @@ let View = Marionette.CompositeView.extend({
         this.updateColumnsWidth(true);
 
         if (this.getUserSettingName()) {
-            application.updateUserSetting(
+            window.application.updateUserSetting(
                 this.getUserSettingName(),
                 this.selectedColumns,
                 this.getUserSettingVersion()
@@ -1753,7 +1753,7 @@ let View = Marionette.CompositeView.extend({
 
         // and save them
         if (this.getUserSettingName()) {
-            application.updateUserSetting(
+            window.application.updateUserSetting(
                 this.getUserSettingName(),
                 this.selectedColumns,
                 this.getUserSettingVersion());
@@ -1775,7 +1775,7 @@ let View = Marionette.CompositeView.extend({
 
     onKeyDown: function (e) {
         if (e.key === 'Control') {
-            if (!application.main.isForeground(this)) {
+            if (!window.application.main.isForeground(this)) {
                 return false;
             }
 
@@ -1785,7 +1785,7 @@ let View = Marionette.CompositeView.extend({
             }
         } else if (e.key === 'Escape') {
             // hide the context menu on ESCAPE key (and the glass-pane)
-            application.main.glassPane('destroy');
+            window.application.main.glassPane('destroy');
             this.ui.add_column_menu.hide();
         }
     },
@@ -1891,7 +1891,7 @@ let View = Marionette.CompositeView.extend({
                 }
 
                 if (columns[columnName].autoSelect) {
-                    columns[columnName].selection.list.deleteModel(id);
+                    columns[columnName].selection.list.delete(id);
                 } else {
                     columns[columnName].selection.list.add(id);
                 }
@@ -1913,7 +1913,7 @@ let View = Marionette.CompositeView.extend({
                 if (columns[columnName].autoSelect) {
                     columns[columnName].selection.list.add(id);
                 } else {
-                    columns[columnName].selection.list.deleteModel(id);
+                    columns[columnName].selection.list.delete(id);
                 }
 
                 if (columns[columnName].selection.list.size === 0) {

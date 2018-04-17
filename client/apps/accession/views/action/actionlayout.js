@@ -14,6 +14,7 @@ let ActionTypeModel = require('../../models/actiontype');
 let ScrollingMoreView = require('../../../main/views/scrollingmore');
 let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
 
+ActionSteProgressView = undefined;
 let Layout = LayoutView.extend({
     template: require("../../templates/action/actionlayout.html"),
 
@@ -30,18 +31,20 @@ let Layout = LayoutView.extend({
         name: 'input[name=name]',
         username: 'input[name=username]',
         save: 'button[name=save]',
-        steps_group: 'div[name=steps-group]'
+        steps_group: 'div[name=steps-group]',
+        play_pause: 'button[name=toggle-auto]'
     },
 
     regions: {
         'general': "div.tab-pane[name=general]",
         'steps': "div.tab-pane[name=steps]",
         'steps-group': 'div[name=steps-group]',
-        'progression': 'div[name=progression]'
+        'progression': 'div[name=progression-content]'
     },
 
     events: {
         'click @ui.save': 'onSaveAction',
+        'click @ui.play_pause': 'onTogglePlayPause'
     },
 
     // steps states consts
@@ -120,6 +123,10 @@ let Layout = LayoutView.extend({
         }
     },
 
+    setupProgression: function() {
+        // @todo
+    },
+
     setupStepData: function(stepIndex, stepFormat, readOnly) {
         if (stepFormat === null) {
             return;
@@ -149,6 +156,22 @@ let Layout = LayoutView.extend({
             }));
         }
 
+        // progression tab if view available and writing mode
+        if (Element && Element.ActionStepProgressView && !readOnly) {
+            let progressView = new Element.ActionStepProgressView({
+                model: this.model,
+                action_id: this.model.get('id'),
+                action_step_idx: stepIndex
+            });
+
+            this.showChildView('progression', progressView);
+
+            // query collection
+            progressView.query();
+        } else {
+            this.getRegion('progression').empty();
+        }
+
         let iterative = false;
 
         if (Element) {
@@ -161,6 +184,7 @@ let Layout = LayoutView.extend({
 
         // according to the state of the step adapts the view
         let step = this.stepData(stepIndex);
+
         if (step && !readOnly) {
             let btnGroup = $('<div class="form-group text-center btn-group" role="group">');
             let resetBtn = $('<button type="button" name="step-reset" class="btn btn-warning btn-secondary"><span class="fa fa-eraser">&nbsp;</span>' + _t('Clear selections') + '</button>');

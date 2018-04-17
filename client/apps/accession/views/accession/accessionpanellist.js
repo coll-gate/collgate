@@ -17,7 +17,7 @@ let View = AdvancedTable.extend({
     className: "panel-list advanced-table-container",
     childView: AccessionPanelView,
     childViewContainer: 'tbody.entity-list',
-    userSettingName: 'panel_list_columns',
+    userSettingName: 'accessionpanel_list_columns',
     userSettingVersion: '1.0',
 
     defaultColumns: [

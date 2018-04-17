@@ -20,7 +20,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from main.models import EntitySynonymType
-from .models import AccessionPanel, Accession, AccessionSynonym
+from .models import AccessionPanel, Accession, AccessionSynonym, PanelType
 from .base import RestAccession
 from .accession import RestAccessionId
 
@@ -30,12 +30,12 @@ class RestAccessionPanel(RestAccession):
     name = "accessionpanel"
 
 
-class RestAccessionPanels(RestAccessionId):
+class RestAccessionIdPanels(RestAccessionId):
     regex = r'^panels/$'
     suffix = 'panels'
 
 
-class RestAccessionPanelsCount(RestAccessionPanels):
+class RestAccessionIdPanelsCount(RestAccessionIdPanels):
     regex = r'^count/$'
     name = "count"
 
@@ -55,17 +55,17 @@ class RestAccessionPanelId(RestAccessionPanel):
     suffix = 'id'
 
 
-class RestAccessionPanelAccessions(RestAccessionPanelId):
+class RestAccessionPanelIdAccessions(RestAccessionPanelId):
     regex = r'^accessions/$'
     name = "accessions"
 
 
-class RestAccessionPanelAccessionsCount(RestAccessionPanelAccessions):
+class RestAccessionPanelIdAccessionsCount(RestAccessionPanelIdAccessions):
     regex = r'^count/$'
     name = "count"
 
 
-@RestAccessionPanels.def_auth_request(Method.GET, Format.JSON)
+@RestAccessionIdPanels.def_auth_request(Method.GET, Format.JSON)
 def get_accession_panels(request, acc_id):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
@@ -83,6 +83,9 @@ def get_accession_panels(request, acc_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(AccessionPanel)
     cq.filter(id__in=panels)
+
+    # only persistent panels
+    cq.filter(panel_type=PanelType.PERSISTENT.value)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -115,7 +118,7 @@ def get_accession_panels(request, acc_id):
     return HttpResponseRest(request, results)
 
 
-@RestAccessionPanelsCount.def_auth_request(Method.GET, Format.JSON)
+@RestAccessionIdPanelsCount.def_auth_request(Method.GET, Format.JSON)
 def count_accession_panels(request, acc_id):
     accession = Accession.objects.get(id=int(acc_id))
     panels = list(accession.panels.all().values_list('id', flat=True))
@@ -123,6 +126,9 @@ def count_accession_panels(request, acc_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(AccessionPanel)
     cq.filter(id__in=panels)
+
+    # only persistent panels
+    cq.filter(panel_type=PanelType.PERSISTENT.value)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -230,6 +236,7 @@ def create_panel(request):
     try:
         with transaction.atomic():
             acc_panel = AccessionPanel(name=name)
+            acc_panel.panel_type = PanelType.PERSISTENT.value
             acc_panel.layout = layout
             acc_panel.count = 0
 
@@ -294,6 +301,9 @@ def get_panel_list_count(request):
     from main.cursor import CursorQuery
     cq = CursorQuery(AccessionPanel)
 
+    # only persistent panels
+    cq.filter(panel_type=PanelType.PERSISTENT.value)
+
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
         cq.filter(filters)
@@ -323,6 +333,9 @@ def get_panel_list(request):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(AccessionPanel)
+
+    # only persistent panels
+    cq.filter(panel_type=PanelType.PERSISTENT.value)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -367,19 +380,17 @@ def delete_panel(request, panel_id):
 
 @RestAccessionPanelId.def_auth_request(Method.PATCH, Format.JSON, perms={
     'accession.change_accessionpanel': _("You are not allowed to modify accession panel")
-},
-                                       content={
-                                           "type": "object",
-                                           "properties": {
-                                               # "entity_status": AccessionPanel.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-                                               "layout": {"type": ["integer", "null"],
-                                                                         'required': False},
-                                               "descriptors": {"type": "object", "required": False},
-                                           },
-                                           "additionalProperties": {
-                                               "name": AccessionPanel.NAME_VALIDATOR
-                                           }
-                                       })
+}, content={
+   "type": "object",
+   "properties": {
+       # "entity_status": AccessionPanel.ENTITY_STATUS_VALIDATOR_OPTIONAL,
+       "layout": {"type": ["integer", "null"], 'required': False},
+       "descriptors": {"type": "object", "required": False},
+   },
+   "additionalProperties": {
+       "name": AccessionPanel.NAME_VALIDATOR
+   }
+})
 def modify_panel(request, panel_id):
     acc_panel = get_object_or_404(AccessionPanel, id=int(panel_id))
     # entity_status = request.data.get("entity_status")
@@ -469,10 +480,10 @@ def modify_panel(request, panel_id):
 
 
 # todo: set correct permissions... maybe list_panel_accession???
-@RestAccessionPanelAccessionsCount.def_auth_request(Method.GET, Format.JSON, perms={
+@RestAccessionPanelIdAccessionsCount.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
-def get_panel_accession_list_count(request, panel_id):
+def get_panel_id_accession_list_count(request, panel_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
 
@@ -511,17 +522,16 @@ def get_panel_accession_list_count(request, panel_id):
     return HttpResponseRest(request, results)
 
 
-@RestAccessionPanelAccessions.def_auth_request(Method.GET, Format.JSON, perms={
+@RestAccessionPanelIdAccessions.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
-def get_panel_accession_list(request, panel_id):
+def get_panel_id_accession_list(request, panel_id):
     # check permission on this panel
     panel = get_object_or_404(AccessionPanel, id=int(panel_id))
 
     # check permission on this object
     from permission.utils import get_permissions_for
-    perms = get_permissions_for(request.user, panel.content_type.app_label, panel.content_type.model,
-                                panel.pk)
+    perms = get_permissions_for(request.user, panel.content_type.app_label, panel.content_type.model, panel.pk)
     if 'accession.get_accessionpanel' not in perms:
         raise PermissionDenied(_('Invalid permission to access to this panel'))
 
@@ -618,7 +628,7 @@ def get_panel_accession_list(request, panel_id):
     return HttpResponseRest(request, results)
 
 
-@RestAccessionPanelAccessions.def_auth_request(Method.PATCH, Format.JSON, content={
+@RestAccessionPanelIdAccessions.def_auth_request(Method.PATCH, Format.JSON, content={
     "type": "object",
     "properties": {
         "action": {"type": "string", "enum": ['add', 'remove']},
@@ -757,6 +767,9 @@ def search_accession_panel(request):
         qs = AccessionPanel.objects.filter(Q(id__gt=int_arg(cursor)))
     else:
         qs = AccessionPanel.objects.all()
+
+    # only for persistent panels
+    qs = qs.filter(panel_type=PanelType.PERSISTENT.value)
 
     name_method = filters.get('method', 'ieq')
     if 'layout' in filters['fields']:

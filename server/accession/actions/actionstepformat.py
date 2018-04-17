@@ -620,6 +620,9 @@ class ActionStepAccessionConsumerBatchProducerIt(ActionStepAccessionConsumerBatc
         limit = len(prev_output_data) // len(self.accept_format)
         step_data['progression'] = [0, limit]
 
+        # and store the process list of items into a working panel
+        # @todo
+
     def process_iteration(self, action_controller, step_format, step_data, prev_output_data, input_data):
         name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)
 

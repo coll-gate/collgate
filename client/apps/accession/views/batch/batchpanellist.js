@@ -17,7 +17,7 @@ let View = AdvancedTable.extend({
     className: "panel-list advanced-table-container",
     childView: BatchPanelView,
     childViewContainer: 'tbody.entity-list',
-    userSettingName: 'panel_list_columns',
+    userSettingName: 'batchpanel_list_columns',
     userSettingVersion: '1.0',
 
     defaultColumns: [

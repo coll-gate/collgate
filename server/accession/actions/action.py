@@ -82,6 +82,11 @@ class RestActionIdData(RestActionId):
     suffix = 'data/step-idx/type-num'
 
 
+class RestActionIdStepIdx(RestActionId):
+    regex = r'^step/(?P<step_idx>[0-9]+)/$'
+    suffix = 'step/step-idx'
+
+
 @RestAction.def_auth_request(
     Method.POST, Format.JSON, content={
         "type": "object",
