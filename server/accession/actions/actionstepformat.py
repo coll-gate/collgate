@@ -12,7 +12,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.db import transaction, IntegrityError
 
-from accession.models import Accession, Batch
+from accession.models import Accession, Batch, AccessionPanel, PanelType
 from accession.namebuilder import NameBuilderManager
 
 
@@ -616,12 +616,21 @@ class ActionStepAccessionConsumerBatchProducerIt(ActionStepAccessionConsumerBatc
         self.verbose_name = _("Accession Consumer - Batch Producer iterative")
         self.iterative = True
 
+        # @todo prepare descriptors
+        # for now descriptor are defined into options but are not editable by users
+
     def prepare_iterative_process(self, action_controller, step_format, step_data, prev_output_data, input_data):
         limit = len(prev_output_data) // len(self.accept_format)
         step_data['progression'] = [0, limit]
 
         # and store the process list of items into a working panel
-        # @todo
+        accession_panel = AccessionPanel()
+        accession_panel.name = '__%s.$tmp' % action_controller.action.name
+        accession_panel.panel_type = PanelType.WORKING.value
+        accession_panel.save()
+
+        # previous input data is an array of accession ids
+        accession_panel.accessions.add(prev_output_data)
 
     def process_iteration(self, action_controller, step_format, step_data, prev_output_data, input_data):
         name_builder = NameBuilderManager.get(NameBuilderManager.GLOBAL_BATCH)

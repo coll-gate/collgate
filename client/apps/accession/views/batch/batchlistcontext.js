@@ -46,58 +46,61 @@ let View = Marionette.View.extend({
     onRender: function () {
         let self = this;
 
-        let createAction = $('<select name="action-type" data-width="100%" data-style="btn-success" title="' + _t('Create an action') + '"></select>');
-        let BatchActionTypeCollection = require('../../collections/actiontype');
-
-        let batchActionTypeCollection = new BatchActionTypeCollection();
-        batchActionTypeCollection.fetch({}).done(function (data) {
-            for (let i = 0; i < data.items.length; ++i) {
-                createAction.append($('<option value="' + data.items[i].id + '">' + data.items[i].label + '</option>'));
-            }
-
-            self.$el.find("div.describable-header").children("div.btn-group-vertical").prepend(createAction);
-
-            createAction.selectpicker({
-                style: 'btn-default',
-                container: 'body'
-            }).on('change', $.proxy(self.onCreateAction, self));
-
-            self.$el.find("span.filter-option.pull-left").css("text-align", "center");
-        });
+        // let createAction = $('<select name="action-type" data-width="100%" data-style="btn-success" title="' + _t('Create an action') + '"></select>');
+        // let BatchActionTypeCollection = require('../../collections/actiontype');
+        //
+        // let batchActionTypeCollection = new BatchActionTypeCollection();
+        // batchActionTypeCollection.fetch({}).done(function (data) {
+        //     for (let i = 0; i < data.items.length; ++i) {
+        //         createAction.append($('<option value="' + data.items[i].id + '">' + data.items[i].label + '</option>'));
+        //     }
+        //
+        //     self.$el.find("div.describable-header").children("div.btn-group-vertical").prepend(createAction);
+        //
+        //     createAction.selectpicker({
+        //         style: 'btn-default',
+        //         container: 'body'
+        //     }).on('change', $.proxy(self.onCreateAction, self));
+        //
+        //     self.$el.find("span.filter-option.pull-left").css("text-align", "center");
+        // });
     },
 
+    onBeforeDestroy: function() {
+        // this.$el.find('select').selectpicker('destroy');
+    },
 
-    onCreateAction: function(e) {
-        let val = parseInt($(e.target).selectpicker().val());
-        let accessionId = this.getOption("accessionId");
-        let inputBatches = false;
-
-        if (this.advancedTable && this.advancedTable.getSelection) {
-            let selection = this.advancedTable.getSelection('select');
-            if (typeof selection === "boolean") {
-                if (selection) {
-                    // how to support that, need many input collection on server side ...
-                    // inputBatches = advancedTable.collection.models
-                }
-            } else {
-                inputBatches = selection;
-            }
-        }
-
-        $.ajax({
-            type: "POST",
-            url: window.application.url(['accession', 'action']),
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({
-                "accession": accessionId,
-                "type": val,
-                "batches": inputBatches
-            })
-        }).done(function(data) {
-            // @todo
-        });
-    }
+    // onCreateAction: function(e) {
+    //     let val = parseInt($(e.target).selectpicker().val());
+    //     let accessionId = this.getOption("accessionId");
+    //     let inputBatches = false;
+    //
+    //     if (this.advancedTable && this.advancedTable.getSelection) {
+    //         let selection = this.advancedTable.getSelection('select');
+    //         if (typeof selection === "boolean") {
+    //             if (selection) {
+    //                 // how to support that, need many input collection on server side ...
+    //                 // inputBatches = advancedTable.collection.models
+    //             }
+    //         } else {
+    //             inputBatches = selection;
+    //         }
+    //     }
+    //
+    //     $.ajax({
+    //         type: "POST",
+    //         url: window.application.url(['accession', 'action']),
+    //         dataType: 'json',
+    //         contentType: "application/json; charset=utf-8",
+    //         data: JSON.stringify({
+    //             "accession": accessionId,
+    //             "type": val,
+    //             "batches": inputBatches
+    //         })
+    //     }).done(function(data) {
+    //         // @todo
+    //     });
+    // }
 });
 
 module.exports = View;

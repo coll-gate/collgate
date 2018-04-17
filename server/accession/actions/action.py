@@ -24,7 +24,8 @@ from accession.actions.actionstepformat import ActionStepFormatManager, ActionSt
 from accession.actions.actiondataparser import ActionDataParser
 from accession.base import RestAccession
 from accession.batch import RestBatchId
-from accession.models import Action, Accession, ActionType, Batch, ActionToEntity, ActionData, ActionDataType
+from accession.models import Action, Accession, ActionType, Batch, ActionToEntity, ActionData, ActionDataType, \
+    AccessionPanel, BatchPanel
 
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Method, Format
@@ -164,7 +165,7 @@ def update_action(request, act_id):
         "properties": {
             "action": {"type": "string", "enum": ['reset', 'setup', 'process', 'iterate']},  # action in term of API
             "inputs_type": {"type": "string", "enum": ['none', 'panel', 'list'], "required": False},
-            "panel": {"type": ["numeric", "null"], "required": False},
+            "panel": {"type": ["integer", "null"], "required": False},
             "list": {"type": "array", "required": False, "minItems": 0, "maxItems": 32768, "additionalItems": {
                     "type": "number"
                 }, "items": []},
@@ -213,6 +214,7 @@ def action_process_step(request, act_id):
             raise SuspiciousOperation(_("The current step is done"))
 
         if inputs_type == "list":
+            # input from a user defined list
             columns = request.data.get('columns', [])
 
             input_columns = []
@@ -229,9 +231,32 @@ def action_process_step(request, act_id):
 
             input_data = request.data.get('list', [])
         elif inputs_type == "panel":
-            input_columns = []  # @todo detect available columns from the panel
-            input_data = []     # @todo and take columns of interest
+            # input given a panel
+            panel_id = request.data.get('panel')
+            panel = None
+
+            input_data = []
+            input_columns = []
+
+            try:
+                panel = AccessionPanel.objects.get(id=panel_id)
+                input_columns.append(ActionStepFormat.IO_ACCESSION_ID)
+                input_data = list(panel.accessions.values_list('id', flat=True))
+            except AccessionPanel.DoesNotExist:
+                pass
+
+            try:
+                panel = BatchPanel.objects.get(id=panel_id)
+                input_columns.append(ActionStepFormat.IO_BATCH_ID)
+                input_data = list(panel.batches.values_list('id', flat=True))
+            except BatchPanel.DoesNotExist:
+                pass
+
+            if panel is None:
+                raise SuspiciousOperation("Panel does not exists")
+
         elif inputs_type == "none":
+            # input none
             input_columns = []
             input_data = None
         else:
