@@ -240,6 +240,27 @@ class ActionStepFormatManager(object):
         if res is not None:
             raise ValueError(str(res))
 
+    @classmethod
+    def data_consistency(cls, action_step_format, prev_action_step_format):
+        """
+        Check the consistency of the output data of the previous step and the input data of the step.
+        :param action_step_format: Format of the type of descriptor as python object
+        :param prev_action_step_format: Previous step format of the type of descriptor as python object
+        :return: True if check success.
+        """
+        step_format = action_step_format['type']
+        prev_step_format = prev_action_step_format['type']
+
+        act = cls.action_steps.get(step_format)
+        if act is None:
+            raise ValueError("Unsupported format of action step %s" % step_format)
+
+        prev_act = cls.action_steps.get(prev_step_format)
+        if prev_act is None:
+            raise ValueError("Unsupported format of action step %s" % step_format)
+
+        return act.accept_format == prev_act.data_format
+
 
 class ActionFormatStepGroupStandard(ActionStepFormatGroup):
     """

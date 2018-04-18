@@ -309,11 +309,21 @@ def patch_action_type(request, act_id):
             raise SuspiciousOperation(_("Invalid format"))
 
         action_type.format['steps'] = []
+        step_index = 0
 
         for step in format_data['steps']:
             # step format validation
             ActionStepFormatManager.check(action_controller, step)
+
+            # validate data consistency from previous and this step
+            if step_index > 0:
+                prev_step = action_type.format['steps'][step_index-1]
+                if not ActionStepFormatManager.data_consistency(step, prev_step):
+                    raise SuspiciousOperation(_("Inconsistency between the output format of the previous step and the input format of this step"))
+
             action_type.format['steps'].append(step)
+
+            step_index += 1
 
         result['format'] = action_type.format
         action_type.update_field('format')

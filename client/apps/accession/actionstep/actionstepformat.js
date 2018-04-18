@@ -14,6 +14,9 @@ let ActionStepFormat = function() {
     this.name = "";          //!< format name
     this.group = "";         //!< related informal group name
     this.description = "";   //!< description of the step used during configuration and processing
+
+    this.acceptFormat = [];
+    this.dataFormat = [];
     this.iterative = false;  //!< means the process is iterative
 };
 

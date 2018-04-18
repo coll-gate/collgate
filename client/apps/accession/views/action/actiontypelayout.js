@@ -198,17 +198,42 @@ let Layout = LayoutView.extend({
         this.addRegion('step' + i, '#action_step' + i + ' > div');
     },
 
+    checkFormatConsistency(prevStepFormat, stepFormat) {
+        let element = window.application.accession.actions.newElement(stepFormat);
+        let prevElement = window.application.accession.actions.newElement(prevStepFormat);
+
+        if (element.acceptFormat.length !== prevElement.dataFormat.length) {
+            return false;
+        } else {
+            for (let i = 0; i < element.acceptFormat.length; ++i) {
+                if (prevElement.dataFormat[i] !== element.acceptFormat[i]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    },
+
     addStepData: function(stepFormat) {
         if (stepFormat) {
             let i = this.model.get('format').steps.length;
-            this.appendStepStructure(false);
-
             let stepData = {};
 
             let element = window.application.accession.actions.newElement(stepFormat);
             if (element) {
                 stepData = element.defaultFormat();
             }
+
+            if (i > 0) {
+                let prevStepFormat = this.model.get('format').steps[i-1].type;
+                if (!this.checkFormatConsistency(prevStepFormat, stepFormat)) {
+                    $.alert.warning(_t("The input data format is not consistent with the output data format of the previous step"));
+                    return;
+                }
+            }
+
+            this.appendStepStructure(false);
 
             stepData.index = i;
             stepData.type = stepFormat;
@@ -314,6 +339,15 @@ let Layout = LayoutView.extend({
 
     changeStepFormat: function(stepIndex, stepFormat) {
         let stepData = {};
+        let i = this.model.get('format').steps.length;
+
+        if (i > 0) {
+            let prevStepFormat = this.model.get('format').steps[i-1].type;
+            if (!this.checkFormatConsistency(prevStepFormat, stepFormat)) {
+                $.alert.warning(_t("The input data format is not consistent with the output data format of the previous step"));
+                return;
+            }
+        }
 
         let element = window.application.accession.actions.newElement(stepFormat);
         if (element) {

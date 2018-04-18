@@ -18,6 +18,9 @@ let Format = function() {
     this.group = "standard";
     this.description = _t("Take a list of batches in input, and iteratively weight each.");
     this.iterative = true;
+
+    this.acceptFormat = ['batch_id'];
+    this.dataFormat = ['batch_id'];
 };
 
 _.extend(Format.prototype, ActionStepFormat.prototype, {

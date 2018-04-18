@@ -16,6 +16,9 @@ let Format = function() {
     this.name = "accessionconsumer_batchproducer";
     this.group = "standard";
     this.description = _t("Take a list of accession in input and generate one or many batch in output.");
+
+    this.acceptFormat = ['accession_id'];
+    this.dataFormat = ['batch_id'];
 };
 
 _.extend(Format.prototype, ActionStepFormat.prototype, {
@@ -112,7 +115,6 @@ Format.ActionStepFormatDetailsView = ActionStepFormat.ActionStepFormatDetailsVie
         'click @ui.add_producer': 'onAddProducer',
         'click @ui.delete_producer': 'onDeleteCurrentProducer'
     },
-
 
     initialize: function(options) {
         Format.ActionStepFormatDetailsView.__super__.initialize.apply(this, arguments);

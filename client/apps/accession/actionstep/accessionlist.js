@@ -16,6 +16,9 @@ let AccessionList = function() {
     this.name = "accession_list";
     this.group = "standard";
     this.description = _t("Take a list of accession in input and dispose this same list as output for the next step.");
+
+    this.acceptFormat = ['accession_id'];
+    this.dataFormat = ['accession_id'];
 };
 
 _.extend(AccessionList.prototype, ActionStepFormat.prototype, {
