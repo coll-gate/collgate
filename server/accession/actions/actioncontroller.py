@@ -295,21 +295,11 @@ class ActionController(object):
                     action_data.data_type = ActionDataType.OUTPUT.value
                     action_data.step_index = step_index
 
-                # @todo to be finished and tested
-
                 # aggregate the results
                 action_data.data += output_data
-                action_step['progression'][0] += 1  # and one more iteration
 
-                # done once process reach end
-                if action_step['progression'][1] == action_step['progression'][2]:
-                    action_step['state'] = ActionController.STEP_DONE
-
-                    # and init the next one
-                    if self.has_more_steps:
-                        self.add_step_data()
-                    else:
-                        self.action.completed = True
+                # and one more element
+                action_step['progression'][0] += len(action_step_format.accept_format)
 
                 self.action.save()
                 action_data.save()
@@ -379,6 +369,7 @@ class ActionController(object):
                     action_data.step_index = step_index
                     action_data.data = []  # empty array initially
 
+                    # wait for iterative processing and a finalization
                     action_step['state'] = ActionController.STEP_PROCESS
 
                     self.action.save()
@@ -387,23 +378,70 @@ class ActionController(object):
             except IntegrityError as e:
                 raise ActionError(e)
 
-            return
+        else:
+            # process, save and make associations
+            try:
+                with transaction.atomic():
+                    action_step['state'] = ActionController.STEP_PROCESS
 
-        # process, save and make associations
+                    output_data = action_step_format.process(
+                        self,
+                        step_format,
+                        action_step,
+                        prev_output_array,
+                        data_array)
+
+                    action_data = ActionData()
+                    action_data.action = self.action
+                    action_data.data_type = ActionDataType.OUTPUT.value
+                    action_data.step_index = step_index
+                    action_data.data = output_data
+
+                    # auto finalize
+                    action_step['state'] = ActionController.STEP_DONE
+
+                    # and init the next one
+                    if self.has_more_steps:
+                        self.add_step_data()
+                    else:
+                        self.action.completed = True
+
+                    self.action.save()
+                    action_data.save()
+
+                    # and add the related refs
+                    self.update_related_entities(step_index, output_data)
+
+            except IntegrityError as e:
+                raise ActionError(e)
+
+    def finalize_current_step(self):
+        if not self.is_current_step_valid:
+            raise ActionError("Invalid current action step")
+
+        # step format
+        action_type_steps = self.action_type.format['steps']
+
+        action_steps = self.action.data['steps']
+        step_index = len(action_steps) - 1
+
+        step_format = action_type_steps[step_index]
+        action_step_format = ActionStepFormatManager.get(step_format['type'])
+
+        action_step = action_steps[step_index]
+
+        # check step state
+        action_step_state = action_step.get('state', ActionController.STEP_INIT)
+        if action_step_state != ActionController.STEP_PROCESS:
+            raise ActionError("Current action step state must be process")
+
+        # done and save
         try:
             with transaction.atomic():
-                output_data = action_step_format.process(
+                action_step_format.terminate_iterative_process(
                     self,
                     step_format,
-                    action_step,
-                    prev_output_array,
-                    data_array)
-
-                action_data = ActionData()
-                action_data.action = self.action
-                action_data.data_type = ActionDataType.OUTPUT.value
-                action_data.step_index = step_index
-                action_data.data = output_data
+                    action_step)
 
                 action_step['state'] = ActionController.STEP_DONE
 
@@ -414,11 +452,6 @@ class ActionController(object):
                     self.action.completed = True
 
                 self.action.save()
-                action_data.save()
-
-                # and add the related refs
-                self.update_related_entities(step_index, output_data)
-
         except IntegrityError as e:
             raise ActionError(e)
 

@@ -29,7 +29,7 @@ class ActionDataParser(object):
         return self._columns
 
     def parse_csv(self, buffer):
-        header = buffer.readline().decode('utf-8')
+        header = buffer.readline().decode('utf-8').rstrip('\n')
 
         # detect separator
         if ',' in header:

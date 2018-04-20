@@ -163,7 +163,7 @@ def update_action(request, act_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "action": {"type": "string", "enum": ['reset', 'setup', 'process', 'iterate']},  # action in term of API
+            "action": {"type": "string", "enum": ['reset', 'setup', 'process', 'iterate', 'finalize']},  # action of API
             "inputs_type": {"type": "string", "enum": ['none', 'panel', 'list'], "required": False},
             "panel": {"type": ["integer", "null"], "required": False},
             "list": {"type": "array", "required": False, "minItems": 0, "maxItems": 32768, "additionalItems": {
@@ -277,6 +277,7 @@ def action_process_step(request, act_id):
         # if action_controller.has_iterative_processing:
         #     raise SuspiciousOperation(_("The current step works in sequential processing"))
 
+        # process and finalize if not iterative
         action_controller.process_current_step()
 
     elif action_type == "iterate":
@@ -292,9 +293,22 @@ def action_process_step(request, act_id):
         if not action_controller.has_iterative_processing:
             raise SuspiciousOperation(_("The current step does not support sequential processing"))
 
-        # @todo
+        # @todo which element to process
         data = []
         action_controller.process_current_step_once(data)
+
+    elif action_type == "finalize":
+        # finalize an iterative step
+        action_controller = ActionController(action)
+
+        if not action_controller.is_current_step_valid:
+            raise SuspiciousOperation(_("There is not current valid step to process"))
+
+        if action_controller.is_current_step_done:
+            raise SuspiciousOperation(_("The current step is done"))
+
+        # @todo which element to process
+        action_controller.finalize_current_step()
 
     result['data'] = action.data
     result['completed'] = action.completed
