@@ -351,8 +351,9 @@ class ActionController(object):
         else:
             prev_output_array = None
 
-        # for iterative step only set the flag to process and returns
-        if action_step_format.iterative:
+        # for iterative or user type step set the flag to process and returns
+        if (action_step_format.type == ActionStepFormat.TYPE_ITERATIVE or
+                action_step_format.type == ActionStepFormat.TYPE_USER):
             # process, save and make associations
             try:
                 with transaction.atomic():
@@ -377,7 +378,6 @@ class ActionController(object):
 
             except IntegrityError as e:
                 raise ActionError(e)
-
         else:
             # process, save and make associations
             try:
@@ -661,4 +661,55 @@ class ActionController(object):
         step_format = action_type_steps[step_index]
         action_step_format = ActionStepFormatManager.get(step_format['type'])
 
-        return action_step_format.iterative_processing
+        return action_step_format.type == ActionStepFormat.TYPE_ITERATIVE
+
+    @property
+    def current_step_index(self):
+        """
+        Get the current step integer index
+        """
+        action_steps = self.action.data.get('steps')
+        if not action_steps:
+            raise ActionError("Empty action steps")
+
+        return len(action_steps) - 1
+
+    def done_panel_id_and_type(self):
+        """
+        For current action step get the working done panel id
+        """
+        action_steps = self.action.data.get('steps')
+        if not action_steps:
+            raise ActionError("Empty action steps")
+
+        step_index = len(action_steps) - 1
+
+        panels = action_steps[step_index].get('panels')
+        if not panels:
+            raise ActionError("Missing action panels")
+
+        done_panel = panels.get('done')
+        if not panels:
+            raise ActionError("Missing action done panel")
+
+        return done_panel['id'], done_panel['type']
+
+    def todo_panel_id_and_type(self):
+        """
+        For current action step get the working to do panel id
+        """
+        action_steps = self.action.data.get('steps')
+        if not action_steps:
+            raise ActionError("Empty action steps")
+
+        step_index = len(action_steps) - 1
+
+        panels = action_steps[step_index].get('panels')
+        if not panels:
+            raise ActionError("Missing action panels")
+
+        todo_panel = panels.get('todo')
+        if not panels:
+            raise ActionError("Missing action todo panel")
+
+        return todo_panel['id'], todo_panel['type']

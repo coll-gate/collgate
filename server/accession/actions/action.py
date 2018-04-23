@@ -88,6 +88,16 @@ class RestActionIdStepIdx(RestActionId):
     suffix = 'step/step-idx'
 
 
+class RestActionIdDone(RestActionId):
+    regex = r'^done/$'
+    suffix = 'done'
+
+
+class RestActionIdTodo(RestActionId):
+    regex = r'^todo/$'
+    suffix = 'todo'
+
+
 @RestAction.def_auth_request(
     Method.POST, Format.JSON, content={
         "type": "object",

@@ -16,49 +16,55 @@ from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from accession.actions.actioncontroller import ActionController
 from accession.models import Accession, AccessionSynonym, Action, ActionData, ActionDataType, AccessionPanel
 from igdectk.rest.response import HttpResponseRest
 from main.models import EntitySynonymType
 
-from .action import RestActionIdStepIdx
+from .action import RestActionIdTodo, RestActionIdDone
 
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Method, Format
 from igdectk.rest.response import HttpResponseRest
 
 
-class RestActionIdStepIdxAccession(RestActionIdStepIdx):
+class RestActionIdTodoAccession(RestActionIdTodo):
     regex = r'^accession/$'
     suffix = 'accession'
 
 
-class RestActionIdStepIdxAccessionCount(RestActionIdStepIdx):
-    regex = r'^accession/count/$'
-    suffix = 'accession/count/'
-
-
-class RestActionIdStepIdxData(RestActionIdStepIdx):
-    regex = r'^data/$'
-    suffix = 'data'
-
-
-class RestActionIdStepIdxDataAccession(RestActionIdStepIdxData):
+class RestActionIdDoneAccession(RestActionIdDone):
     regex = r'^accession/$'
     suffix = 'accession'
 
 
-class RestActionIdStepIdxDataAccessionCount(RestActionIdStepIdxData):
-    regex = r'^accession/count/$'
-    suffix = 'accession/count/'
+class RestActionIdTodoAccessionCount(RestActionIdTodoAccession):
+    regex = r'^count/$'
+    suffix = 'count'
 
 
-@RestActionIdStepIdxAccessionCount.def_auth_request(Method.GET, Format.JSON, perms={
+class RestActionIdDoneAccessionCount(RestActionIdDoneAccession):
+    regex = r'^count/$'
+    suffix = 'count'
+
+
+@RestActionIdTodoAccessionCount.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.get_action': _("You are not allowed to get an action"),
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
-def get_action_id_step_idx_accession_list_count(request, act_id, step_idx):
-    # action = get_object_or_404(Action, pk=int(act_id))
+def get_action_id_todo_accession_list_count(request, act_id):
+    action = get_object_or_404(Action, pk=int(act_id))
     # @todo check permission on the action
+
+    action_controller = ActionController(action)
+
+    if not action_controller.is_current_step_valid:
+        raise SuspiciousOperation("Invalid current action step")
+
+    panel_id, panel_type = action_controller.todo_panel_id_and_type()
+
+    if panel_type != 'accessionpanel':
+        raise SuspiciousOperation("Trying to access to a panel of accessions but the format does not match")
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
@@ -89,6 +95,7 @@ def get_action_id_step_idx_accession_list_count(request, act_id, step_idx):
     )
 
     cq.set_synonym_model(AccessionSynonym)
+    cq.inner_join(AccessionPanel, accessionpanel=int(panel_id))
 
     results = {
         'count': cq.count()
@@ -97,11 +104,11 @@ def get_action_id_step_idx_accession_list_count(request, act_id, step_idx):
     return HttpResponseRest(request, results)
 
 
-@RestActionIdStepIdxAccession.def_auth_request(Method.GET, Format.JSON, perms={
+@RestActionIdTodoAccession.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.get_action': _("You are not allowed to get an action"),
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
-def get_action_id_step_idx_accession_list(request, act_id, step_idx):
+def get_action_id_accession_list(request, act_id):
     action = get_object_or_404(Action, pk=int(act_id))
     # @todo check permission on the action
 
@@ -114,6 +121,16 @@ def get_action_id_step_idx_accession_list(request, act_id, step_idx):
         order_by = sort_by + ['id']
     else:
         order_by = sort_by
+
+    action_controller = ActionController(action)
+
+    if not action_controller.is_current_step_valid:
+        raise SuspiciousOperation("Invalid current action step")
+
+    panel_id, panel_type = action_controller.todo_panel_id_and_type()
+
+    if panel_type != 'accessionpanel':
+        raise SuspiciousOperation("Trying to access to a panel of accessions but the format does not match")
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
@@ -198,17 +215,23 @@ def get_action_id_step_idx_accession_list(request, act_id, step_idx):
     return HttpResponseRest(request, results)
 
 
-@RestActionIdStepIdxDataAccessionCount.def_auth_request(Method.GET, Format.JSON, perms={
+@RestActionIdDoneAccessionCount.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.get_action': _("You are not allowed to get an action"),
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
-def get_action_id_step_idx_accession_list_count(request, act_id, step_idx):
+def get_action_id_done_accession_list_count(request, act_id):
     action = get_object_or_404(Action, pk=int(act_id))
     # @todo check permission on the action
 
-    # any elements of the array are returned
-    # in_action_data = get_object_or_404(ActionData, action=action, step_index=step_idx, type=ActionDataType.INPUT.value)
-    # out_action_data = get_object_or_404(ActionData, action=action, step_index=step_idx, type=ActionDataType.OUTPUT.value)
+    action_controller = ActionController(action)
+
+    if not action_controller.is_current_step_valid:
+        raise SuspiciousOperation("Invalid current action step")
+
+    panel_id, panel_type = action_controller.done_panel_id_and_type()
+
+    if panel_type != 'accessionpanel':
+        raise SuspiciousOperation("Trying to access to a panel of accessions but the format does not match")
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
@@ -239,6 +262,7 @@ def get_action_id_step_idx_accession_list_count(request, act_id, step_idx):
     )
 
     cq.set_synonym_model(AccessionSynonym)
+    cq.inner_join(AccessionPanel, accessionpanel=int(panel_id))
 
     results = {
         'count': cq.count()
@@ -247,11 +271,11 @@ def get_action_id_step_idx_accession_list_count(request, act_id, step_idx):
     return HttpResponseRest(request, results)
 
 
-@RestActionIdStepIdxDataAccession.def_auth_request(Method.GET, Format.JSON, perms={
+@RestActionIdDoneAccession.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.get_action': _("You are not allowed to get an action"),
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
-def get_action_id_step_idx_accession_list(request, act_id, step_idx):
+def get_action_id_accession_list(request, act_id):
     action = get_object_or_404(Action, pk=int(act_id))
     # @todo check permission on the action
 
@@ -264,6 +288,16 @@ def get_action_id_step_idx_accession_list(request, act_id, step_idx):
         order_by = sort_by + ['id']
     else:
         order_by = sort_by
+
+    action_controller = ActionController(action)
+
+    if not action_controller.is_current_step_valid:
+        raise SuspiciousOperation("Invalid current action step")
+
+    panel_id, panel_type = action_controller.done_panel_id_and_type()
+
+    if panel_type != 'accessionpanel':
+        raise SuspiciousOperation("Trying to access to a panel of accessions but the format does not match")
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
@@ -301,6 +335,7 @@ def get_action_id_step_idx_accession_list(request, act_id, step_idx):
     cq.select_related('primary_classification_entry->name', 'primary_classification_entry->rank')
 
     cq.cursor(cursor, order_by)
+    cq.inner_join(AccessionPanel, accessionpanel=int(panel_id))
     cq.order_by(order_by).limit(limit)
 
     accession_items = []

@@ -18,6 +18,7 @@ let Format = function() {
     this.group = "standard";
     this.description = _t("Take a list of accession in input and generate a filtered list of accession based on the input.");
 
+    this.type = this.ACTION_TYPE_USER;
     this.acceptFormat = ['accession_id'];
     this.dataFormat = ['accession_id'];
 };
@@ -28,6 +29,7 @@ _.extend(Format.prototype, ActionStepFormat.prototype, {
     }
 });
 
+// @todo user action processing (using a file upload or using the panel of accession with a validation)
 Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     className: 'action-step-process',
     template: require('../templates/actionstep/process/accessionrefinement.html'),

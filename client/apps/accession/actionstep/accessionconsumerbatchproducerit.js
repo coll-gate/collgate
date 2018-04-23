@@ -20,7 +20,7 @@ let Format = function() {
     this.group = "standard";
     this.description = _t("Take a list of accession in input and generate one or many batch in output.");
 
-    this.iterative = true;
+    this.type = this.ACTION_TYPE_ITERATIVE;
     this.acceptFormat = ['accession_id'];
     this.dataFormat = ['batch_id'];
 };

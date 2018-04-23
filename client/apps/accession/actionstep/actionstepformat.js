@@ -11,13 +11,17 @@
 let Marionette = require('backbone.marionette');
 
 let ActionStepFormat = function() {
+    this.ACTION_TYPE_STANDARD = 0;
+    this.ACTION_TYPE_ITERATIVE = 1;
+    this.ACTION_TYPE_USER = 2;
+
     this.name = "";          //!< format name
     this.group = "";         //!< related informal group name
     this.description = "";   //!< description of the step used during configuration and processing
 
     this.acceptFormat = [];
     this.dataFormat = [];
-    this.iterative = false;  //!< means the process is iterative
+    this.type = this.ACTION_TYPE_STANDARD;
 };
 
 ActionStepFormat.prototype = {

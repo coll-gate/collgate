@@ -49,6 +49,10 @@ class ActionStepFormat(object):
     IO_DESCRIPTOR = 2
     NUM_IO_TYPES = 3
 
+    TYPE_STANDARD = 0     # processed in one shoot after the setup
+    TYPE_ITERATIVE = 1    # processed by user element by element after the setup
+    TYPE_USER = 2         # processed by user only on interesting element, no progression counter, after the setup
+
     def __init__(self):
         # name referred as a code, stored in format.type.
         self.name = ''
@@ -69,7 +73,7 @@ class ActionStepFormat(object):
         self.data_format = ()
 
         # true means that the processing of the step is per row of data and not in a single processing.
-        self.iterative = False
+        self.type = ActionStepFormat.TYPE_STANDARD
 
     def validate(self, action_type_format, data, columns):
         """
@@ -439,6 +443,7 @@ class ActionStepAccessionRefinement(ActionStepFormat):
         self.accept_format = (ActionStepFormat.IO_ACCESSION_ID,)
         self.data_format = (ActionStepFormat.IO_ACCESSION_ID,)
         self.accept_user_data = True
+        self.type = ActionStepFormat.TYPE_USER
 
     def validate(self, action_type_format, data, columns):
         p = 0
@@ -625,7 +630,7 @@ class ActionStepAccessionConsumerBatchProducerIt(ActionStepAccessionConsumerBatc
 
         self.name = "accessionconsumer_batchproducer_it"
         self.verbose_name = _("Accession Consumer - Batch Producer iterative")
-        self.iterative = True
+        self.type = ActionStepFormat.TYPE_ITERATIVE
 
         # @todo prepare descriptors
         # for now descriptor are defined into options but are not editable by users
