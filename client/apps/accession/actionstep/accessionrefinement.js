@@ -11,6 +11,10 @@
 let ActionStepFormat = require('./actionstepformat');
 let Marionette = require('backbone.marionette');
 
+let ScrollingMoreView = require('../../main/views/scrollingmore');
+let ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
+let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
+
 let Format = function() {
     ActionStepFormat.call(this);
 
@@ -154,6 +158,56 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
             $.alert.error(_t("Error during file upload"));
             self.ui.accession_upload.prop('disabled', false);
         });
+    },
+
+    showWorkingPanel: function(region) {
+        let self = this;
+        let panelId = 1; // @todo
+
+        let AccessionCollection = require('../collections/accession');
+        let accessionPanelAccessions = new AccessionCollection([], {panel_id: panelId});
+
+        let columns = window.application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: 'accession.accession'}
+        });
+
+        columns.done(function (data) {
+            let AccessionListView = require('../actionstep/accessionrefinementlist');
+            let accessionListView = new AccessionListView({
+                collection: accessionPanelAccessions,
+                model: this.model,
+                columns: data[0].value,
+                collectionEvents: {
+                    // 'update': 'updateAmount'
+                },
+                /// layoutView: region,
+                relatedEntity: {
+                    'content_type': 'accession.accessionpanel',
+                    'id': self.model.get('id')
+                }
+            });
+
+            let contentBottomFooterLayout = new ContentBottomFooterLayout();
+            region.show(contentBottomFooterLayout);
+
+            contentBottomFooterLayout.showChildView('content', accessionListView);
+            contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                collection: accessionPanelAccessions,
+                targetView: accessionListView
+            }));
+
+            contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
+                collection: accessionPanelAccessions,
+                columns: data[0].value
+            }));
+
+            accessionListView.query();
+        });
+    },
+
+    showDonePanel: function(region) {
+
     }
 });
 

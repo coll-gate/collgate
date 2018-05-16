@@ -69,11 +69,11 @@ let View = AdvancedTable.extend({
     },
 
     onCreatePanel: function () {
-        application.accession.controllers.accessionpanel.create();
+        window.application.accession.controllers.accessionpanel.create();
     },
 
     onBeforeDetach: function () {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },
 
     onShowTab: function () {
@@ -81,7 +81,7 @@ let View = AdvancedTable.extend({
 
         let DefaultLayout = require('../../../../main/views/defaultlayout');
         let contextLayout = new DefaultLayout();
-        application.getView().showChildView('right', contextLayout);
+        window.application.getView().showChildView('right', contextLayout);
 
         let actions = [
             'create-panel',

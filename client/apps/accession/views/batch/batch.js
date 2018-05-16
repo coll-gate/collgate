@@ -66,7 +66,7 @@ let View = Marionette.View.extend({
 
     onDeleteBatch: function() {
         // @todo remove? or may be archives? fate of sub-batches?
-        application.accession.controllers.batch.destroy(this.model)
+        window.application.accession.controllers.batch.destroy(this.model)
     },
 
     selectBatch: function () {

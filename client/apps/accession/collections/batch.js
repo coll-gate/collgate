@@ -13,7 +13,9 @@ let CountableCollection = require('../../main/collections/countable');
 
 let Collection = CountableCollection.extend({
     url: function() {
-        if (this.panel_id) {
+        if (this.action_id) {
+            return window.application.url(['accession', 'action', this.action_id, this.action_todo_or_done ? 'todo' : 'done', 'batch']);
+        }  if (this.panel_id) {
             return window.application.url(['accession', 'batchpanel', this.panel_id, 'batches']);
         } else if (this.accession_id) {
             return window.application.url(['accession', 'accession', this.accession_id, 'batch']);
@@ -40,6 +42,8 @@ let Collection = CountableCollection.extend({
         this.accession_id = options.accession_id;
         this.batch_id = options.batch_id;
         this.panel_id = options.panel_id;
+        this.action_id = options.action_id;
+        this.action_todo_or_done = options.action_todo_or_done;
     }
 });
 

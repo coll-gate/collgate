@@ -10,7 +10,6 @@
 
 let ActionStepFormat = require('./actionstepformat');
 let AccessionConsumerBatchProducer = require('./accessionconsumerbatchproducer');
-let ProgressActionList = require('../views/action/progressaccessionlist');
 let AccessionCollection = require('../collections/accession');
 
 let Format = function() {
@@ -44,16 +43,16 @@ Format.ActionStepFormatDetailsView = AccessionConsumerBatchProducer.ActionStepFo
 Format.ActionStepFormatDetailsView = AccessionConsumerBatchProducer.ActionStepFormatDetailsView.extend({
 });
 
-Format.ActionStepProgressView = ProgressActionList.extend({
-
-    initialize: function (options) {
-        this.collection = new AccessionCollection([], {
-            action_id: this.model.get('id'),
-            action_step_idx: options.action_step_idx
-        });
-
-        ProgressActionList.__super__.initialize.apply(this, arguments);
-    }
-});
+// Format.ActionStepProgressView = ProgressActionList.extend({
+//
+//     initialize: function (options) {
+//         this.collection = new AccessionCollection([], {
+//             action_id: this.model.get('id'),
+//             action_step_idx: options.action_step_idx
+//         });
+//
+//         ProgressActionList.__super__.initialize.apply(this, arguments);
+//     }
+// });
 
 module.exports = Format;

@@ -60,7 +60,7 @@ let ClassificationEntryRouter = Marionette.AppRouter.extend({
         let classificationEntry = new ClassificationEntryModel({id: id});
 
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         let classificationEntryLayout = new ClassificationEntryLayout({model: classificationEntry, initialTab: tab.replace('/', '')});
 
@@ -74,12 +74,12 @@ let ClassificationEntryRouter = Marionette.AppRouter.extend({
         let classification = new ClassificationModel({id: id});
 
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         let collection = new ClassificationEntryCollection([], {classification_id: id});
 
         // get available columns
-        let columns = application.main.cache.lookup({
+        let columns = window.application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'classification.classificationentry'}
         });
@@ -107,6 +107,9 @@ let ClassificationEntryRouter = Marionette.AppRouter.extend({
 
             defaultLayout.showChildView('bottom', new EntityListFilterView({
                 collection: collection, columns: data[0].value}));
+
+            // to force display of the context menu
+            classificationEntryListView.onShowTab();
         });
     }
 });

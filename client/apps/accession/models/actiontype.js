@@ -23,7 +23,7 @@ let Model = Backbone.Model.extend({
         id: null,
         name: "",
         label: "",
-        format: {type: 'undefined'},
+        format: {type: 'undefined', steps: []},
         description: ""
     },
 

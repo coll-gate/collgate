@@ -80,11 +80,11 @@ let View = AdvancedTable.extend({
     onShowTab: function () {
         let view = this;
 
-        let contextLayout = application.getView().getChildView('right');
+        let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().showChildView('right', contextLayout);
+            window.application.getView().showChildView('right', contextLayout);
         }
 
         let TitleView = require('../../../../main/views/titleview');
@@ -96,7 +96,9 @@ let View = AdvancedTable.extend({
         let actions = [
             'create-panel',
             'link-to-panel',
-            'unlink-accessions'
+            'unlink-accessions',
+            'export-list',
+            'import-list'
         ];
 
         let PanelAccessionListContextView = require('../accessionlistcontext');
@@ -117,7 +119,7 @@ let View = AdvancedTable.extend({
     },
 
     onBeforeDetach: function () {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },
 
     onUnlinkAccessions: function () {
@@ -181,12 +183,14 @@ let View = AdvancedTable.extend({
         if (!this.getSelection('select')) {
             $.alert.warning(_t("No accession selected"));
         } else {
-            application.accession.controllers.accessionpanel.create(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+            window.application.accession.controllers.accessionpanel.create(
+                this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
         }
     },
 
     onLinkToPanel: function () {
-        application.accession.controllers.accessionpanel.linkAccessions(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+        window.application.accession.controllers.accessionpanel.linkAccessions(
+            this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
     }
 });
 

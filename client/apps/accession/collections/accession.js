@@ -15,8 +15,8 @@ let Collection = CountableCollection.extend({
     model: AccessionModel,
 
     url: function() {
-        if (this.action_id && this.action_step_idx !== null) {
-            return window.application.url(['accession', 'action', this.action_id, 'step', this.action_step_idx, 'accessions']);
+        if (this.action_id) {
+            return window.application.url(['accession', 'action', this.action_id, this.action_todo_or_done ? 'todo' : 'done', 'accession']);
         } else if (this.panel_id) {
             return window.application.url(['accession', 'accessionpanel', this.panel_id, 'accessions']);
         } else {
@@ -31,7 +31,7 @@ let Collection = CountableCollection.extend({
 
         this.panel_id = options.panel_id;
         this.action_id = options.action_id;
-        this.action_step_idx = options.action_step_idx;
+        this.action_todo_or_done = options.action_todo_or_done;
     },
 });
 

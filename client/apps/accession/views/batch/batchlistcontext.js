@@ -21,7 +21,9 @@ let View = Marionette.View.extend({
             options: {
                 'create-panel': {className: 'btn-default', label: _t('Create new panel')},
                 'link-to-panel': {className: 'btn-default', label: _t('Link to existing panel')},
-                'unlink-batches': {className: 'btn-danger', label: _t('Unlink batches')}
+                'unlink-batches': {className: 'btn-danger', label: _t('Unlink batches')},
+                'export-list': {className: 'btn-success', label: _t('Export as...')},
+                'import-list': {className: 'btn-success', label: _t('Import from...')}
             }
         }
     },
@@ -29,13 +31,17 @@ let View = Marionette.View.extend({
     ui: {
         'create-panel': 'button[name="create-panel"]',
         'link-to-panel': 'button[name="link-to-panel"]',
-        'unlink-batches': 'button[name="unlink-batches"]'
+        'unlink-batches': 'button[name="unlink-batches"]',
+        'export-list': 'button[name="export-list"]',
+        'import-list': 'button[name="import-list"]'
     },
 
     triggers: {
         "click @ui.create-panel": "panel:create",
         "click @ui.link-to-panel": "panel:link-batches",
-        "click @ui.unlink-batches": "batches:unlink"
+        "click @ui.unlink-batches": "batches:unlink",
+        "click @ui.export": "batches:export-list",
+        "click @ui.import": "batches:import-list"
     },
 
     initialize: function (options) {

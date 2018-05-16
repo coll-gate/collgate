@@ -17,8 +17,8 @@
         <li role="presentation"><a href="div.tab-pane[name=progression]" aria-controls="progression" role="tab" data-toggle="tab"><%- _t("Progression") %></a></li>
     </ul>
     <!-- Tab panes -->
-    <div class="tab-content" style="height: calc(100% - 42px - 10px - 34px - 5px);">
-        <div role="tabpanel" class="tab-pane active col-lg-offset-2 col-lg-8" name="general" style="height: 100%; overflow-y: auto;">
+    <div class="tab-content" style="height: calc(100% - 10px - 34px - 5px);">
+        <div role="tabpanel" class="tab-pane active col-lg-offset-2 col-lg-8" name="general" style="height: calc(100% - 5px); overflow-y: auto;">
             <div class="tab-frame">
                 <div class="row">
                     <div class="col-lg-6 action-type-group form-group">
@@ -57,10 +57,7 @@
             </div>
         </div>
         <div role="tabpanel" class="tab-pane" name="progression" style="height: 100%; overflow-y: auto;">
-            <div class="tab-frame" name="progression-content"></div>
-            <div class="form-group btn-group" role="group">
-                <button type="button" name="toggle-auto" class="btn btn-warning btn-primary"><span class="fa fa-play">&nbsp;</span><%- _t('Toggle auto/manual') %></button>
-            </div>
+            <div class="tab-frame" name="progression-content" style="height: calc(100% - 30px); overflow-y: hidden;"></div>
         </div>
     </div>
 </div>

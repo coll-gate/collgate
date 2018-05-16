@@ -137,7 +137,7 @@ let Layout = LayoutView.extend({
             });
 
             // get available columns
-            let columns = application.main.cache.lookup({
+            let columns = window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'classification.classificationentry'}
             });

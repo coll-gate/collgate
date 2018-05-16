@@ -335,6 +335,10 @@ let View = Marionette.View.extend({
 
         changeSynonym.render();
         changeSynonym.ui.synonym_name.val(name);
+    },
+
+    onShowTab: function() {
+        window.application.main.defaultRightView();
     }
 });
 

@@ -121,7 +121,21 @@ ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
      * Download the data of the step, format as csv or xlsx.
      * @param data_format
      */
-    downloadData: downloadData
+    downloadData: downloadData,
+
+    /**
+     * Get the working list view when available (related to its panel).
+     */
+    showWorkingPanel: function(region) {
+        region.empty();
+    },
+
+    /**
+     * Show the done list view when available (related to its panel).
+     */
+    showDonePanel: function(region) {
+        region.empty();
+    }
 });
 
 /**
@@ -172,10 +186,5 @@ ActionStepFormat.ActionStepReadView = Marionette.View.extend({
      */
     downloadData: downloadData
 });
-
-/**
- * Default view to manage the progression of the action. Default there is no view.
- */
-ActionStepFormat.ActionSteProgressView = null;
 
 module.exports = ActionStepFormat;

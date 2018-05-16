@@ -14,7 +14,6 @@ let ActionTypeModel = require('../../models/actiontype');
 let ScrollingMoreView = require('../../../main/views/scrollingmore');
 let ContentBottomLayout = require('../../../main/views/contentbottomlayout');
 
-ActionSteProgressView = undefined;
 let Layout = LayoutView.extend({
     template: require("../../templates/action/actionlayout.html"),
 
@@ -148,28 +147,17 @@ let Layout = LayoutView.extend({
                 stepIndex: stepIndex
             }));
         } else if (Element && Element.ActionStepProcessView && !readOnly) {
-            this.showChildView('step' + stepIndex, new Element.ActionStepProcessView({
+            let processView = new Element.ActionStepProcessView({
                 model: this.model,
                 namingOptions: this.namingOptions,
                 namingFormat: this.namingFormat,
                 stepIndex: stepIndex
-            }));
-        }
-
-        // progression tab if view available and writing mode
-        if (Element && Element.ActionStepProgressView && !readOnly) {
-            let progressView = new Element.ActionStepProgressView({
-                model: this.model,
-                action_id: this.model.get('id'),
-                action_step_idx: stepIndex
             });
 
-            this.showChildView('progression', progressView);
-
-            // query collection
-            progressView.query();
+            this.showChildView('step' + stepIndex, processView);
+            processView.showWorkingPanel(this.getRegion('progression'));
         } else {
-            this.getRegion('progression').empty();
+            this.getRegion('progression').empty()
         }
 
         let iterative = false;

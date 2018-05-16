@@ -74,6 +74,44 @@ let View = AdvancedTable.extend({
         View.__super__.initialize.apply(this, arguments);
 
         // this.listenTo(this.collection, 'reset', this.render, this);
+    },
+
+    onShowTab: function() {
+        let view = this;
+
+        let contextLayout = window.application.getView().getChildView('right');
+        if (!contextLayout) {
+            let DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            window.application.getView().showChildView('right', contextLayout);
+        }
+
+        let TitleView = require('../../main/views/titleview');
+        contextLayout.showChildView('title', new TitleView({
+            title: _t("Panel actions"),
+            glyphicon: 'fa-wrench'
+        }));
+
+        let actions = [
+            'export-list',
+            'import-list'
+        ];
+
+        let ClassificationEntryListContextView = require('./classificationentrylistcontext');
+        let contextView = new ClassificationEntryListContextView({actions: actions});
+        contextLayout.showChildView('content', contextView);
+
+        contextView.on("classifications:import-list", function () {
+            // view.onImportList();
+        });
+
+        contextView.on("classifications:import-list", function () {
+            // view.onExportList();
+        });
+    },
+
+    onBeforeDetach: function() {
+        window.application.main.defaultRightView();
     }
 });
 

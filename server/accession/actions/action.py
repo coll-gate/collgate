@@ -12,6 +12,7 @@ import io
 import json
 import mimetypes
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404
@@ -20,13 +21,11 @@ from django.utils.translation import ugettext_lazy as _
 from accession import localsettings
 from accession.actions.actioncontroller import ActionController
 from accession.actions.actiondataexporter import ActionDataExporter
-from accession.actions.actionstepformat import ActionStepFormatManager, ActionStepFormat
 from accession.actions.actiondataparser import ActionDataParser
+from accession.actions.actionstepformat import ActionStepFormat
 from accession.base import RestAccession
-from accession.batch import RestBatchId
-from accession.models import Action, Accession, ActionType, Batch, ActionToEntity, ActionData, ActionDataType, \
+from accession.models import Action, ActionType, ActionToEntity, ActionData, ActionDataType, \
     AccessionPanel, BatchPanel
-
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Method, Format
 from igdectk.rest.response import HttpResponseRest
@@ -59,7 +58,7 @@ class RestActionEntity(RestAction):
 
 
 class RestActionEntityId(RestActionEntity):
-    regex = r'^(?P<ent_id>[0-9]+)/$'
+    regex = r'^(?P<ent_id>[0-9]+)/(?P<content_type_name>[a-zA-Z\.-]+)/$'
     suffix = 'id'
 
 
@@ -548,14 +547,18 @@ def download_action_id_content(request, act_id):
     'accession.get_action': _("You are not allowed to get an action"),
     'accession.list_action': _("You are not allowed to list actions")
 })
-def get_action_list_for_entity_id(request, ent_id):
-    # @todo
+def get_action_list_for_entity_id(request, ent_id, content_type_name):
+    """
+    Get the list of action for a specific entity and content type
+    """
+    # @todo how to manage permission to list only auth actions
+    app_label, model = content_type_name.split('.')
+    content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
     sort_by = json.loads(request.GET.get('sort_by', '[]'))
-
-    # @todo how to manage permission to list only auth actions
 
     if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
         order_by = sort_by + ['id']
@@ -565,11 +568,11 @@ def get_action_list_for_entity_id(request, ent_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(ActionToEntity)
 
-    # cq = ActionToEntity.objects.filter(entity_id=int(ent_id))
+    # first filter on content type and entity id
+    cq.filter(entity_type=content_type.id)
+    cq.filter(entity_id=int_arg(ent_id))
 
-    # @todo filter for action relating
     cq.inner_join(Action, related_name='id', to_related_name='action_id', entity=int(ent_id))
-    cq.filter(entity=int(ent_id))
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -581,7 +584,7 @@ def get_action_list_for_entity_id(request, ent_id):
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
-    # print(cq.sql())
+
     action_list = []
 
     for action in cq:
@@ -611,16 +614,22 @@ def get_action_list_for_entity_id(request, ent_id):
 @RestActionEntityIdCount.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_action': _("You are not allowed to list the actions")
 })
-def get_action_list_for_entity_id_count(request, ent_id):
-    # @todo
+def get_action_list_for_entity_id_count(request, ent_id, content_type_name):
+    """
+    Count the list of action for a specific entity and content type
+    """
+    # @todo how to manage permission to count only auth actions
+    app_label, model = content_type_name.split('.')
+    content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+
     from main.cursor import CursorQuery
     cq = CursorQuery(ActionToEntity)
 
-    # cq = ActionToEntity.objects.filter(entity_id=int(ent_id))
+    # first filter on content type and entity id
+    cq.filter(entity_type=content_type.id)
+    cq.filter(entity_id=int_arg(ent_id))
 
-    # @todo filter for action relating
     cq.inner_join(Action, related_name='id', to_related_name='action_id', entity=int(ent_id))
-    cq.filter(entity=int(ent_id))
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
@@ -630,10 +639,7 @@ def get_action_list_for_entity_id_count(request, ent_id):
         filters = json.loads(request.GET['filters'])
         cq.filter(filters)
 
-    # print(cq.sql())
-
     count = cq.count()
-    # cq.filter(input_batches__in=int(bat_id))
 
     results = {
         'count': count

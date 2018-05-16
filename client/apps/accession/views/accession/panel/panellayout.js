@@ -122,8 +122,7 @@ let Layout = LayoutView.extend({
         let AccessionCollection = require('../../../collections/accession');
         let accessionPanelAccessions = new AccessionCollection([], {panel_id: this.model.get('id')});
 
-
-        let columns = application.main.cache.lookup({
+        let columns = window.application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.accession'}
         });

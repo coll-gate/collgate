@@ -243,6 +243,10 @@ let Layout = LayoutView.extend({
         }
     },
 
+    disableStepsTab: function () {
+        this.ui.steps_tab.parent().addClass('disabled');
+    },
+
     onRender: function () {
         let actionTypeLayout = this;
 

@@ -2,6 +2,7 @@
  * @file accessionlistcontext.js
  * @brief Accession list context menu
  * @author Medhi BOULNEMOUR (INRA UMR1095)
+ * @author Frederic SCHERMA (INRA UMR1095)
  * @date 2017-09-08
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
@@ -20,9 +21,10 @@ let View = Marionette.View.extend({
             options: {
                 'create-panel': {className: 'btn-default', label: _t('Create new panel')},
                 'link-to-panel': {className: 'btn-default', label: _t('Link to existing panel')},
-                'unlink-accessions': {className: 'btn-danger', label: _t('Unlink accessions')}
-                // 'xxx': {className: 'btn-success', label: _t('XXxx')},
-                // 'yyy': {className: 'btn-default', label: _t('YYyy')}
+                'unlink-accessions': {className: 'btn-danger', label: _t('Unlink accessions')},
+                'action-toggle-mode': {className: 'btn-warning', label: _t('Toggle auto/manual')},
+                'export-list': {className: 'btn-success', label: _t('Export as...')},
+                'import-list': {className: 'btn-success', label: _t('Import from...')}
             }
         }
     },
@@ -30,17 +32,19 @@ let View = Marionette.View.extend({
     ui: {
         'create-panel': 'button[name="create-panel"]',
         'link-to-panel': 'button[name="link-to-panel"]',
-        'unlink-accessions': 'button[name="unlink-accessions"]'
-        // 'apply': 'button[name="apply"]',
-        // 'cancel': 'button[name="cancel"]'
+        'unlink-accessions': 'button[name="unlink-accessions"]',
+        'action-toggle-mode': 'button[name="action-toggle-mode"]',
+        'export-list': 'button[name="export-list"]',
+        'import-list': 'button[name="import-list"]'
     },
 
     triggers: {
         "click @ui.create-panel": "panel:create",
         "click @ui.link-to-panel": "panel:link-accessions",
-        "click @ui.unlink-accessions": "accessions:unlink"
-        // "click @ui.apply": "describable:apply",
-        // "click @ui.cancel": "describable:cancel"
+        "click @ui.unlink-accessions": "accessions:unlink",
+        "click @ui.action-toggle-mode": "action:toggle-mode",
+        "click @ui.export": "accessions:export-list",
+        "click @ui.import": "accessions:import-list"
     },
 
     initialize: function(options) {

@@ -1,40 +1,37 @@
 /**
- * @file accessionlist.js
- * @brief Accession list view
+ * @file accessionrefinementlist.js
+ * @brief Accession list view for refinement selection during refinement step
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2016-12-19
- * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @date 2018-04-28
+ * @copyright Copyright (c) 2018 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details
  */
 
-let AccessionView = require('./accession');
-let AdvancedTable = require('../../../main/views/advancedtable');
-let DescriptorsColumnsView = require('../../../descriptor/mixins/descriptorscolumns');
+let AccessionView = require('./accessionaction');
+let AdvancedTable = require('../../main/views/advancedtable');
+let DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
 let View = AdvancedTable.extend({
-    className: 'accession-list advanced-table-container',
+    className: 'accession-refinement-list advanced-table-container',
     childView: AccessionView,
-    userSettingName: 'accessions_list_columns',
-    userSettingVersion: '1.2',
+    userSettingName: 'accessions_refinement_list_columns',
+    userSettingVersion: '0.1',
 
     defaultColumns: [
-        {name: 'select', width: 'auto', sort_by: null},
+        {name: 'remove', width: 'auto', sort_by: null},
         {name: 'code', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
         {name: 'primary_classification_entry', width: 'auto', sort_by: null},
-        {name: 'layout', width: 'auto', sort_by: null},
-        // {name: 'synonym', width: 'auto', sort_by: null}
+        {name: 'layout', width: 'auto', sort_by: null}
     ],
 
     columnsOptions: {
-        'select': {
+        'remove': {
             label: '',
             width: 'auto',
-            type: 'checkbox',
-            glyphicon: ['fa-square-o', 'fa-square-o'],
-            event: 'accession-select',
-            fixed: true
+            minWidth: true,
+            custom: 'removeAccessionFromStep',
         },
         'code': {label: _t('Code'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-accession-details'},
@@ -46,14 +43,7 @@ let View = AdvancedTable.extend({
             custom: 'primaryClassificationEntryCell',
             field: 'name'
         },
-        'layout': {label: _t('Layout'), width: 'auto', minWidth: true},
-        // 'synonym': {
-        //     label: _t('Synonym'),
-        //     width: 'auto',
-        //     minWidth: true,
-        //     custom: 'synonymCell',
-        //     field: 'name'
-        // }
+        'layout': {label: _t('Layout'), width: 'auto', minWidth: true}
     },
 
     initialize: function (options) {
@@ -68,22 +58,22 @@ let View = AdvancedTable.extend({
 
         let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
-            let DefaultLayout = require('../../../main/views/defaultlayout');
+            let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
             window.application.getView().showChildView('right', contextLayout);
         }
 
-        let TitleView = require('../../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Accession actions"), glyphicon: 'fa-wrench'}));
 
         let actions = [
             'create-panel',
-            'link-to-panel',
+            'action-toggle-mode',
             'export-list',
             'import-list'
         ];
 
-        let AccessionListContextView = require('./accessionlistcontext');
+        let AccessionListContextView = require('../views/accession/accessionlistcontext');
         let contextView = new AccessionListContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
@@ -91,8 +81,8 @@ let View = AdvancedTable.extend({
             view.onCreatePanel();
         });
 
-        contextView.on("panel:link-accessions", function () {
-            view.onLinkToPanel();
+        contextView.on("action:toggle-mode", function () {
+            // view.onActionToggleMode();
         });
 
         View.__super__.onShowTab.apply(this, arguments);

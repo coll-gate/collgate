@@ -75,7 +75,9 @@ let ClassificationEntryView = Marionette.View.extend({
     },
 
     onRender: function() {
-        application.main.views.languages.htmlFromValue(this.el);
+        window.application.main.views.languages.htmlFromValue(this.el);
+
+
     },
 
     onClassificationEntryDetails: function() {

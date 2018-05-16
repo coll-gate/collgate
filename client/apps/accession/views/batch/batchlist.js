@@ -81,7 +81,9 @@ let View = AdvancedTable.extend({
 
         let actions = [
             'create-panel',
-            'link-to-panel'
+            'link-to-panel',
+            'export-list',
+            'import-list'
         ];
 
         let BatchListContextView = require('./batchlistcontext');
