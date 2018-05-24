@@ -226,7 +226,7 @@ class ActionController(object):
         """
         Process one more element of the current step in case of progressive step.
 
-        :param data:
+        :param data: Array of elements to process, can be a singleton or many elements
         :return:
         """
         if not self.is_current_step_valid:
@@ -253,12 +253,12 @@ class ActionController(object):
 
         # current step data set
         try:
-            data_array = ActionData.objects.get(
+            input_data_array = ActionData.objects.get(
                 action=self.action,
                 step_index=step_index,
                 data_type=ActionDataType.INPUT).data
         except ActionData.DoesNotExist:
-            data_array = None
+            input_data_array = None
 
         if step_index > 0:
             # output of the previous state if not initial step
@@ -272,6 +272,14 @@ class ActionController(object):
         else:
             prev_output_array = None
 
+        # check if element(s) to process are included into the input data array
+        for elt in data:
+            if elt not in input_data_array:
+                raise ActionError("Element(s) not allowed into the step")
+
+        # @todo could need to be adapted
+        to_process_data_array = data
+
         # process, save and make associations
         try:
             with transaction.atomic():
@@ -281,7 +289,7 @@ class ActionController(object):
                     step_format,
                     action_step,
                     prev_output_array,
-                    data_array)
+                    to_process_data_array)
 
                 # first time create the action data
                 try:

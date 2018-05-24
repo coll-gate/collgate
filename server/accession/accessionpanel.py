@@ -233,6 +233,8 @@ def create_panel(request):
         model_class = content_type.model_class()
         cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
 
+    acc_panel = None
+
     try:
         with transaction.atomic():
             acc_panel = AccessionPanel(name=name)
@@ -587,8 +589,7 @@ def get_panel_id_accession_list(request, panel_id):
     accession_items = []
 
     synonym_types = dict(
-        EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('id',
-                                                                                                                'name'))
+        EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('id', 'name'))
 
     for accession in cq:
         a = {
@@ -665,7 +666,6 @@ def get_panel_id_accession_list(request, panel_id):
             }
         }
     }
-
 }, perms={
     'accession.change_accessionpanel': _("You are not allowed to modify accession panel")
 })

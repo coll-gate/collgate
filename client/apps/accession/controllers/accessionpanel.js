@@ -147,7 +147,7 @@ let Controller = Marionette.Object.extend({
                     view.destroy();
 
                     let defaultLayout = new DefaultLayout();
-                    application.main.showContent(defaultLayout);
+                    window.application.main.showContent(defaultLayout);
 
                     defaultLayout.showChildView('title', new TitleView({
                         title: _t("Panel"),
@@ -164,8 +164,8 @@ let Controller = Marionette.Object.extend({
         createPanelDialog.render();
     },
 
-    linkAccessions: function (selection, related_entity, filters, search, collection) {
-        related_entity || (related_entity = null);
+    linkAccessions: function (selection, relatedEntity, filters, search, collection) {
+        relatedEntity || (relatedEntity = null);
         filters || (filters = {});
         search || (search = {});
 
@@ -206,19 +206,19 @@ let Controller = Marionette.Object.extend({
 
                 onLinkToPanel: function (ev) {
                     let view = this;
-                    let panel_id = this.ui.panel.val();
-                    let go_to_panel = $(ev.currentTarget).data('gotopanel');
+                    let panelId = this.ui.panel.val();
+                    let goToPanel = $(ev.currentTarget).data('gotopanel');
 
                     $.ajax({
                         type: 'PATCH',
-                        url: window.application.url(['accession', 'accessionpanel', panel_id, 'accessions']),
+                        url: window.application.url(['accession', 'accessionpanel', panelId, 'accessions']),
                         dataType: 'json',
                         contentType: "application/json; charset=utf-8",
                         data: JSON.stringify({
                             'action': 'add',
                             'selection': {
                                 'select': selection,
-                                'from': related_entity,
+                                'from': relatedEntity,
                                 'filters': filters,
                                 'search': search
                             }
@@ -228,8 +228,8 @@ let Controller = Marionette.Object.extend({
                            collection.fetch();
                         }
                         view.destroy();
-                        if (go_to_panel) {
-                            Backbone.history.navigate('app/accession/accessionpanel/' + panel_id + '/accessions/', {trigger: true});
+                        if (goToPanel) {
+                            Backbone.history.navigate('app/accession/accessionpanel/' + panelId + '/accessions/', {trigger: true});
                         }
                     });
                 }

@@ -14,7 +14,8 @@
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="div.tab-pane[name=general]" aria-controls="general" role="tab" data-toggle="tab"><%- _t("General") %></a></li>
         <li role="presentation"><a href="div.tab-pane[name=steps]" aria-controls="steps" role="tab" data-toggle="tab"><%- _t("Steps") %></a></li>
-        <li role="presentation"><a href="div.tab-pane[name=progression]" aria-controls="progression" role="tab" data-toggle="tab"><%- _t("Progression") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=todo-entities]" aria-controls="todo-entities" role="tab" data-toggle="tab"><%- _t("To Do") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=done-entities]" aria-controls="done-entities" role="tab" data-toggle="tab"><%- _t("Done") %></a></li>
     </ul>
     <!-- Tab panes -->
     <div class="tab-content" style="height: calc(100% - 10px - 34px - 5px);">
@@ -56,8 +57,11 @@
                 <div class="panels panel-group" name="steps-group" style="margin-top: 10px;"></div>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane" name="progression" style="height: 100%; overflow-y: auto;">
-            <div class="tab-frame" name="progression-content" style="height: calc(100% - 30px); overflow-y: hidden;"></div>
+        <div role="tabpanel" class="tab-pane" name="todo-entities" style="height: 100%; overflow-y: auto;">
+            <div class="tab-frame" name="todo-content" style="height: calc(100% - 30px); overflow-y: hidden;"></div>
+        </div>
+        <div role="tabpanel" class="tab-pane" name="done-entities" style="height: 100%; overflow-y: auto;">
+            <div class="tab-frame" name="done-content" style="height: calc(100% - 30px); overflow-y: hidden;"></div>
         </div>
     </div>
 </div>

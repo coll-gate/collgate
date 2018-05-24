@@ -496,6 +496,9 @@ class ActionStepAccessionRefinement(ActionStepFormat):
         # output as input
         return input_data
 
+    def process_iteration(self, action_controller, step_format, step_data, prev_output_data, input_data, element):
+        return []  # @todo
+
 
 class ActionStepBatchConsumerBatchProducer(ActionStepFormat):
     """

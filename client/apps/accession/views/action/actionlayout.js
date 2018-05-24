@@ -24,26 +24,26 @@ let Layout = LayoutView.extend({
     ui: {
         general_tab: 'a[aria-controls=general]',
         steps_tab: 'a[aria-controls=steps]',
-        progression_tab: 'a[aria-controls=progression]',
+        todo_tab: 'a[aria-controls=todo-entities]',
+        done_tab: 'a[aria-controls=done-entities]',
         description: 'textarea[name=description]',
         action_type: 'input[name=action-type]',
         name: 'input[name=name]',
         username: 'input[name=username]',
         save: 'button[name=save]',
-        steps_group: 'div[name=steps-group]',
-        play_pause: 'button[name=toggle-auto]'
+        steps_group: 'div[name=steps-group]'
     },
 
     regions: {
         'general': "div.tab-pane[name=general]",
         'steps': "div.tab-pane[name=steps]",
         'steps-group': 'div[name=steps-group]',
-        'progression': 'div[name=progression-content]'
+        'todo-entities': 'div[name=todo-content]',
+        'done-entities': 'div[name=done-content]'
     },
 
     events: {
-        'click @ui.save': 'onSaveAction',
-        'click @ui.play_pause': 'onTogglePlayPause'
+        'click @ui.save': 'onSaveAction'
     },
 
     // steps states consts
@@ -105,15 +105,26 @@ let Layout = LayoutView.extend({
 
     enableTabs: function () {
         this.ui.steps_tab.parent().removeClass('disabled');
-        this.ui.progression_tab.parent().removeClass('disabled');
     },
 
     disableStepsTab: function () {
         this.ui.steps_tab.parent().addClass('disabled');
     },
 
-    disableProgressionTab: function () {
-        this.ui.progression_tab.parent().addClass('disabled');
+    disableTodoTab: function () {
+        this.ui.todo_tab.parent().addClass('disabled');
+    },
+
+    disableDoneTab: function () {
+        this.ui.done_tab.parent().addClass('disabled');
+    },
+
+    enableTodoTab: function () {
+        this.ui.todo_tab.parent().removeClass('disabled');
+    },
+
+    enableDoneTab: function () {
+        this.ui.done_tab.parent().removeClass('disabled');
     },
 
     collapseStep: function (stepIndex, collapsed) {
@@ -138,6 +149,12 @@ let Layout = LayoutView.extend({
 
         region.$el.empty();
 
+        // default no working tabs
+        this.disableTodoTab();
+        this.disableDoneTab();
+
+        let stepData = this.stepData(stepIndex);
+
         let Element = window.application.accession.actions.getElement(stepFormat.id);
         if (Element && Element.ActionStepReadView && readOnly) {
             this.showChildView('step' + stepIndex, new Element.ActionStepReadView({
@@ -147,7 +164,7 @@ let Layout = LayoutView.extend({
                 stepIndex: stepIndex
             }));
         } else if (Element && Element.ActionStepProcessView && !readOnly) {
-            let processView = new Element.ActionStepProcessView({
+           let processView = new Element.ActionStepProcessView({
                 model: this.model,
                 namingOptions: this.namingOptions,
                 namingFormat: this.namingFormat,
@@ -155,16 +172,25 @@ let Layout = LayoutView.extend({
             });
 
             this.showChildView('step' + stepIndex, processView);
-            processView.showWorkingPanel(this.getRegion('progression'));
+
+            // accessible working tabs for iterative or user action step type and only from at least setup step state
+            if (stepData.state >= this.STEP_SETUP && Element.type === Element.ACTION_TYPE_ITERATIVE || Element.type === Element.ACTION_TYPE_USER) {
+                this.enableTodoTab();
+                this.enableDoneTab();
+
+                processView.showTodoPanel(this.getRegion('todo-entities'));
+                processView.showDonePanel(this.getRegion('done-entities'));
+            }
         } else {
-            this.getRegion('progression').empty()
+            this.getRegion('todo-entities').empty();
+            this.getRegion('done-entities').empty()
         }
 
         let iterative = false;
 
         if (Element) {
             let element = new Element();
-            iterative = element.iterative;
+            iterative = element.type === Element.ACTION_TYPE_ITERATIVE;
 
             let descr = $('<div><p class="well well-sm" name="step-description">' + element.description + '</p></div>');
             region.$el.prepend(descr);
@@ -321,13 +347,13 @@ let Layout = LayoutView.extend({
             if (step && step.state === this.STEP_SETUP) {
                 this.model.save({action: 'process'}, {wait: true, patch: true}).then(function () {
                     // show progression tab
-                    self.setActiveTab("progression");
+                    self.setActiveTab("todo-entities");
                     self.setupAllSteps(self.actionType.attributes);
                 });
             } else if (step && step.state === this.STEP_PROCESS) {
                 if (step.progression[0] < step.progression[1]) {
                     // show progression tab
-                    self.setActiveTab("progression");
+                    self.setActiveTab("todo-entities");
                 } else {
                     // step is terminated
                     self.setupAllSteps(self.actionType.attributes);
@@ -437,7 +463,7 @@ let Layout = LayoutView.extend({
 
             // not available tabs
             this.disableStepsTab();
-            this.disableProgressionTab();
+            this.disableTodoTab();
         } else {
             this.actionTypePromise.then(function (data) {
                 actionLayout.ui.action_type.val(data.label);

@@ -126,7 +126,7 @@ ActionStepFormat.ActionStepProcessView = Marionette.View.extend({
     /**
      * Get the working list view when available (related to its panel).
      */
-    showWorkingPanel: function(region) {
+    showTodoPanel: function(region) {
         region.empty();
     },
 

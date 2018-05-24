@@ -173,14 +173,14 @@ def update_action(request, act_id):
         "type": "object",
         "properties": {
             "action": {"type": "string", "enum": ['reset', 'setup', 'process', 'iterate', 'finalize']},  # action of API
-            "inputs_type": {"type": "string", "enum": ['none', 'panel', 'list'], "required": False},
+            "inputs_type": {"type": "string", "enum": ['none', 'panel', 'list', 'single'], "required": False},
             "panel": {"type": ["integer", "null"], "required": False},
             "list": {"type": "array", "required": False, "minItems": 0, "maxItems": 32768, "additionalItems": {
                     "type": "number"
                 }, "items": []},
             "columns": {"type": "array", "required": False, "minItems": 0, "maxItems": 100, "additionalItems": {
                     "type": "string"
-                }, "items": []},
+                }, "items": []}
         },
     }, perms={
         'accession.change_action': _("You are not allowed to modify an action")
@@ -283,9 +283,6 @@ def action_process_step(request, act_id):
         if action_controller.is_current_step_done:
             raise SuspiciousOperation(_("The current step is done"))
 
-        # if action_controller.has_iterative_processing:
-        #     raise SuspiciousOperation(_("The current step works in sequential processing"))
-
         # process and finalize if not iterative
         action_controller.process_current_step()
 
@@ -302,8 +299,13 @@ def action_process_step(request, act_id):
         if not action_controller.has_iterative_processing:
             raise SuspiciousOperation(_("The current step does not support sequential processing"))
 
-        # @todo which element to process
-        data = []
+        # which element to process
+        element_id = request.data.get('element')
+
+        if not element_id:
+            raise SuspiciousOperation(_("The element identifier must be specified"))
+
+        data = [element_id]
         action_controller.process_current_step_once(data)
 
     elif action_type == "finalize":
@@ -316,7 +318,6 @@ def action_process_step(request, act_id):
         if action_controller.is_current_step_done:
             raise SuspiciousOperation(_("The current step is done"))
 
-        # @todo which element to process
         action_controller.finalize_current_step()
 
     result['data'] = action.data

@@ -160,9 +160,14 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
         });
     },
 
-    showWorkingPanel: function(region) {
+    showTodoPanel: function(region) {
         let self = this;
-        let panelId = 1; // @todo
+
+        if (!this.stepData().panels || !this.stepData().panels.todo) {
+            return;
+        }
+
+        let panelId = this.stepData().panels.todo.id;
 
         let AccessionCollection = require('../collections/accession');
         let accessionPanelAccessions = new AccessionCollection([], {panel_id: panelId});
@@ -176,7 +181,7 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
             let AccessionListView = require('../actionstep/accessionrefinementlist');
             let accessionListView = new AccessionListView({
                 collection: accessionPanelAccessions,
-                model: this.model,
+                model: self.model,
                 columns: data[0].value,
                 collectionEvents: {
                     // 'update': 'updateAmount'
@@ -207,7 +212,13 @@ Format.ActionStepProcessView = ActionStepFormat.ActionStepProcessView.extend({
     },
 
     showDonePanel: function(region) {
+        let self = this;
 
+        if (!this.stepData().panels || !this.stepData().panels.done) {
+            return;
+        }
+
+        let panelId = this.stepData().panels.done.id;
     }
 });
 

@@ -16,22 +16,25 @@ let View = AdvancedTable.extend({
     className: 'accession-refinement-list advanced-table-container',
     childView: AccessionView,
     userSettingName: 'accessions_refinement_list_columns',
-    userSettingVersion: '0.1',
+    userSettingVersion: '0.2',
 
     defaultColumns: [
-        {name: 'remove', width: 'auto', sort_by: null},
+        {name: 'select', width: 'auto', sort_by: null},
         {name: 'code', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
+        {name: 'remove', width: 'auto', sort_by: null},
         {name: 'primary_classification_entry', width: 'auto', sort_by: null},
         {name: 'layout', width: 'auto', sort_by: null}
     ],
 
     columnsOptions: {
-        'remove': {
+        'select': {
             label: '',
             width: 'auto',
-            minWidth: true,
-            custom: 'removeAccessionFromStep',
+            type: 'checkbox',
+            glyphicon: ['fa-square-o', 'fa-square-o'],
+            event: 'accession-select',
+            fixed: true
         },
         'code': {label: _t('Code'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-accession-details'},
@@ -43,7 +46,13 @@ let View = AdvancedTable.extend({
             custom: 'primaryClassificationEntryCell',
             field: 'name'
         },
-        'layout': {label: _t('Layout'), width: 'auto', minWidth: true}
+        'layout': {label: _t('Layout'), width: 'auto', minWidth: true},
+        'remove': {
+            label: 'Remove',
+            width: 'auto',
+            minWidth: true,
+            custom: 'removeAccessionFromStep',
+        }
     },
 
     initialize: function (options) {
@@ -51,6 +60,7 @@ let View = AdvancedTable.extend({
 
         this.relatedEntity = this.getOption('relatedEntity');
         this.filters = this.getOption('filters');
+        this.processingMode = 'auto';
     },
 
     onShowTab: function () {
@@ -82,7 +92,7 @@ let View = AdvancedTable.extend({
         });
 
         contextView.on("action:toggle-mode", function () {
-            // view.onActionToggleMode();
+            view.onActionToggleMode();
         });
 
         View.__super__.onShowTab.apply(this, arguments);
@@ -104,6 +114,17 @@ let View = AdvancedTable.extend({
     onLinkToPanel: function () {
         window.application.accession.controllers.accessionpanel.linkAccessions(
             this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+    },
+
+    onActionToggleMode: function() {
+        this.processingMode = 'auto';
+
+        if (this.processingMode === 'auto') {
+            this.processingMode = 'manual';
+//            this.ui.
+        } else {
+            this.processingMode = 'auto';
+        }
     }
 });
 
