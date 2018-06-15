@@ -28,7 +28,7 @@ let Router = Marionette.AppRouter.extend({
         let establishment = new EstablishmentModel({id: id});
 
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         let establishmentLayout = new EstablishmentLayout({model: establishment, initialTab: tab.replace('/', '')});
 

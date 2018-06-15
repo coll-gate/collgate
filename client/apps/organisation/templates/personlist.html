@@ -1,0 +1,34 @@
+<!--
+ - @file personlist.html
+ - @brief Template for a list of person (model)
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2018-06-01
+ - @copyright Copyright (c) 2018 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div class="table-advanced-head">
+    <table class="table table-striped table-advanced">
+        <thead>
+            <tr scope="row">
+                <% for (var i = 0; i < columnsList.length; ++i) { %>
+                    <% var columnName = columnsList[i]; %>
+                    <% var column = columnsOptions[columnName]; %>
+                    <% var classes = "unselectable"; %>
+                    <% if (column.minWidth != undefined) classes += " title-column"; %>
+                    <% if (column.action != undefined) classes += " column-action"; %>
+                    <th name="<%- columnName %>" class="unselectable descriptor-column">
+                        <span class="fa fa-sort action sortby-asc-column column-action"></span>
+                        <span class="column-label" draggable="true"><%- column.label %></span>
+                    </th>
+                <% } %>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="table-advanced-body">
+    <table class="table table-striped table-advanced">
+        <tbody class="person-list"></tbody>
+    </table>
+</div>

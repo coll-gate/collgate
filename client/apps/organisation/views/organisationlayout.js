@@ -96,7 +96,7 @@ let Layout = LayoutView.extend({
             let establishments = new EstablishmentCollection([], {organisation_id: this.model.get('id')});
 
             // get available columns
-            let columns = application.main.cache.lookup({
+            let columns = window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'organisation.establishment'}
             });

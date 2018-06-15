@@ -1,10 +1,10 @@
 # -*- coding: utf-8; -*-
 #
-# @file establishment.py
-# @brief coll-gate organisation establishment model REST API
+# @file person
+# @brief collgate 
 # @author Frédéric SCHERMA (INRA UMR1095)
-# @date 2017-01-03
-# @copyright Copyright (c) 2017 INRA/CIRAD
+# @date 2018-06-07
+# @copyright Copyright (c) 2018 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
@@ -20,41 +20,41 @@ from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cursor import CursorQuery
-from organisation.models import Organisation, Establishment
+from organisation.models import Organisation, Establishment, Person
 
 from .base import RestOrganisationModule
-from .organisation import RestOrganisationId
+from .establishment import RestEstablishmentId
 
 
-class RestEstablishment(RestOrganisationModule):
-    regex = r'^establishment/$'
-    name = 'establishment'
+class RestPerson(RestOrganisationModule):
+    regex = r'^person/$'
+    name = 'person'
 
 
-class RestEstablishmentSearch(RestEstablishment):
+class RestPersonSearch(RestPerson):
     regex = r'^search/$'
     suffix = 'search'
 
 
-class RestEstablishmentId(RestEstablishment):
-    regex = r'^(?P<est_id>[0-9]+)/$'
+class RestPersonId(RestPerson):
+    regex = r'^(?P<per_id>[0-9]+)/$'
     suffix = 'id'
 
 
-class RestOrganisationIdEstablishment(RestOrganisationId):
-    regex = r'^establishment/$'
-    suffix = 'establishment'
+class RestEstablishmentIdPerson(RestEstablishmentId):
+    regex = r'^person/$'
+    suffix = 'person'
 
 
-class RestOrganisationIdEstablishmentCount(RestOrganisationIdEstablishment):
+class RestEstablishmentIdPersonCount(RestEstablishmentIdPerson):
     regex = r'^count/$'
     name = 'count'
 
 
-@RestOrganisationIdEstablishment.def_auth_request(Method.GET, Format.JSON)
-def get_establishment_list_for_organisation(request, org_id):
+@RestEstablishmentIdPerson.def_auth_request(Method.GET, Format.JSON)
+def get_person_list_for_establishment(request, est_id):
     """
-    List all establishments for a specific organisation.
+    List all persons for a specific establishment.
     """
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
@@ -66,8 +66,8 @@ def get_establishment_list_for_organisation(request, org_id):
     else:
         order_by = sort_by
 
-    cq = CursorQuery(Establishment)
-    cq.filter(organisation=int(org_id))
+    cq = CursorQuery(Person)
+    cq.filter(establishment=int(est_id))
 
     if request.GET.get('search'):
         cq.filter(json.loads(request.GET['search']))
@@ -77,28 +77,27 @@ def get_establishment_list_for_organisation(request, org_id):
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
-    cq.select_related('organisation->id', 'organisation->name')
+    cq.select_related('establishment->id', 'establishment->name')
 
-    establishment_items = []
+    person_items = []
 
-    for establishment in cq:
+    for person in cq:
         t = {
-            'id': establishment.pk,
-            'name': establishment.name,
-            'descriptors': establishment.descriptors,
-            'layout': establishment.layout,
-            'organisation': establishment.organisation_id,
-            'organisation_details': {
-                'id': establishment.organisation.id,
-                'name': establishment.organisation.name
+            'id': person.pk,
+            'descriptors': person.descriptors,
+            'layout': person.layout,
+            'establishment': person.establishment_id,
+            'establishment_details': {
+                'id': person.establishment.id,
+                'name': person.establishment.name
             }
         }
 
-        establishment_items.append(t)
+        person_items.append(t)
 
     results = {
         'perms': [],
-        'items': establishment_items,
+        'items': person_items,
         'prev': cq.prev_cursor,
         'cursor': cursor,
         'next': cq.next_cursor
@@ -107,13 +106,13 @@ def get_establishment_list_for_organisation(request, org_id):
     return HttpResponseRest(request, results)
 
 
-@RestOrganisationIdEstablishmentCount.def_auth_request(Method.GET, Format.JSON)
-def get_count_establishment_list_for_organisation(request, org_id):
+@RestEstablishmentIdPersonCount.def_auth_request(Method.GET, Format.JSON)
+def get_count_person_list_for_establishment(request, est_id):
     """
-    Count establishment for an organisation.
+    Count persons for an establishment.
     """
-    cq = CursorQuery(Establishment)
-    cq.filter(organisation=int(org_id))
+    cq = CursorQuery(Person)
+    cq.filter(establishment=int(est_id))
 
     if request.GET.get('search'):
         cq.filter(json.loads(request.GET['search']))
@@ -129,10 +128,10 @@ def get_count_establishment_list_for_organisation(request, org_id):
     return HttpResponseRest(request, results)
 
 
-@RestEstablishmentSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
-def search_establishment(request):
+@RestPersonSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
+def search_person(request):
     """
-    Quick search for an establishment with a exact or partial name.
+    Quick search for a person with a exact or partial first name, last name, surname, name.
     """
     filters = json.loads(request.GET['filters'])
 
@@ -143,9 +142,9 @@ def search_establishment(request):
     if cursor:
         cursor = json.loads(cursor)
         cursor_name, cursor_id = cursor
-        qs = Establishment.objects.filter(Q(name__gt=cursor_name))
+        qs = Person.objects.filter(Q(name__gt=cursor_name))
     else:
-        qs = Establishment.objects.all()
+        qs = Person.objects.all()
 
     if 'name' in filters['fields']:
         name_method = filters.get('method', 'ieq')
@@ -159,13 +158,26 @@ def search_establishment(request):
 
     items_list = []
 
-    for establishment in qs:
-        label = "%s (%s)" % (establishment.name, establishment.descriptors['establishment_code'])
+    # need to use data from descriptors
+    for person in qs:
+        first_name = person.descriptors.get('first_name', '')
+        last_name = person.descriptors.get('last_name', '')
+        surname = person.descriptors.get('surname', '')
+
+        label = ''
+
+        if first_name and last_name:
+            if surname:
+                label = "%s %s (%s)" % (first_name, last_name, surname)
+            else:
+                label = "%s %s" % (first_name, last_name)
+        elif surname:
+            label = surname
 
         a = {
-            'id': establishment.id,
+            'id': person.id,
             'label': label,
-            'value': establishment.name
+            'value': person.id
         }
 
         items_list.append(a)
@@ -193,85 +205,81 @@ def search_establishment(request):
     return HttpResponseRest(request, results)
 
 
-@RestEstablishment.def_auth_request(Method.POST, Format.JSON, content={
+@RestPerson.def_auth_request(Method.POST, Format.JSON, content={
     "type": "object",
     "properties": {
-        "name": Establishment.NAME_VALIDATOR,
-        "organisation": {"type": "number"},
+        # "first_name": Person.NAME_VALIDATOR,
+        # "last_name": Person.NAME_VALIDATOR,
+        # "surname": Person.NAME_VALIDATOR,
+        "establishment": {"type": "number"},
         "descriptors": {"type": "object"}
     },
 }, perms={
-    'organisation.change_organisation': _('You are not allowed to modify an organisation'),
-    'organisation.add_establishment': _('You are not allowed to create an establishment')
+    'organisation.add_person': _('You are not allowed to create a person/contact'),
+    'organisation.change_establishment': _('You are not allowed to modify an establishment')
 })
-def create_establishment(request):
+def create_person(request):
     """
-    Create a new establishment.
+    Create a new person.
     """
-    name = request.data['name']
     descriptors = request.data['descriptors']
-    org_id = request.data['organisation']
+    est_id = request.data['establishment']
 
-    # check existence of the organisation
-    organisation = get_object_or_404(Organisation, id=int(org_id))
+    # check existence of the establishment
+    establishment = get_object_or_404(Establishment, id=int(est_id))
 
-    # check uniqueness of the name
-    if Establishment.objects.filter(name=name).exists():
-        raise SuspiciousOperation(_("The name of the establishment is already used"))
+    content_type = get_object_or_404(ContentType, app_label="organisation", model="person")
+    layout = get_object_or_404(Layout, name="person", target=content_type)
 
-    content_type = get_object_or_404(ContentType, app_label="organisation", model="establishment")
-    layout = get_object_or_404(Layout, name="establishment", target=content_type)
+    person = None
 
-    establishment = None
+    # @todo what about first_name... (how to
 
     try:
         with transaction.atomic():
             # common properties
-            establishment = Establishment()
-            establishment.name = request.data['name']
-            establishment.layout = layout
-            establishment.organisation = organisation
+            person = Person()
+            person.layout = layout
+            person.establishment = establishment
 
             # descriptors
-            descriptors_builder = DescriptorsBuilder(establishment)
+            descriptors_builder = DescriptorsBuilder(person)
 
             descriptors_builder.check_and_update(layout, descriptors)
-            establishment.descriptors = descriptors_builder.descriptors
+            person.descriptors = descriptors_builder.descriptors
 
-            establishment.save()
+            person.save()
 
             # update owner on external descriptors
             descriptors_builder.update_associations()
     except IntegrityError as e:
-        Descriptor.integrity_except(Establishment, e)
+        Descriptor.integrity_except(Person, e)
 
     response = {
-        'id': establishment.id,
-        'name': establishment.name,
-        'organisation': organisation.id,
+        'id': person.id,
+        'establishment': establishment.id,
         'layout': layout.id,
-        'descriptors': establishment.descriptors
+        'descriptors': person.descriptors
     }
 
     return HttpResponseRest(request, response)
 
 
-@RestEstablishmentId.def_auth_request(Method.GET, Format.JSON)
-def get_establishment_details(request, est_id):
-    establishment = Establishment.objects.get(id=int(est_id))
+@RestPersonId.def_auth_request(Method.GET, Format.JSON)
+def get_person_details(request, per_id):
+    person = Person.objects.get(id=int(per_id))
 
     result = {
-        'id': establishment.id,
-        'name': establishment.name,
-        'organisation': establishment.organisation_id,
-        'layout': establishment.layout_id,
-        'descriptors': establishment.descriptors
+        'id': person.id,
+        'establishment': person.establishment_id,
+        'layout': person.layout_id,
+        'descriptors': person.descriptors
     }
 
     return HttpResponseRest(request, result)
 
 
-@RestEstablishmentId.def_auth_request(Method.PATCH, Format.JSON, content={
+@RestPersonId.def_auth_request(Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
             "name": Establishment.NAME_VALIDATOR_OPTIONAL,
@@ -321,17 +329,17 @@ def patch_establishment(request, est_id):
 
             establishment.save()
     except IntegrityError as e:
-        Descriptor.integrity_except(Establishment, e)
+        Descriptor.integrity_except(Organisation, e)
 
     return HttpResponseRest(request, result)
 
 
-@RestEstablishmentId.def_auth_request(Method.DELETE, Format.JSON, perms={
-    'organisation.delete_establishment': _("You are not allowed to delete an establishment"),
+@RestPersonId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'organisation.delete_person': _("You are not allowed to delete a person/contact"),
 })
-def delete_establishment(request, est_id):
-    establishment = get_object_or_404(Establishment, id=int(est_id))
+def delete_person(request, per_id):
+    person = get_object_or_404(Person, id=int(per_id))
 
-    establishment.delete()
+    person.delete()
 
     return HttpResponseRest(request, {})

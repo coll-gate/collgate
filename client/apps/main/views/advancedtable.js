@@ -59,10 +59,14 @@ let View = Marionette.CompositeView.extend({
         'click @ui.add_column_column': 'onAddColumn'
     },
 
-    behaviors: {
-        ActionBtnEvents: {
-            behaviorClass: require('../../main/behaviors/cellcontextmenu'),
-        }
+    behaviors: function() {
+        return {
+            ActionBtnEvents: {
+                behaviorClass: require('../../main/behaviors/cellcontextmenu'),
+                collection: this.getOption('collection'),
+                table: this
+            }
+        };
     },
 
     templateContext: function () {
@@ -142,8 +146,16 @@ let View = Marionette.CompositeView.extend({
                 this.getUserSettingName(),
                 this.getUserSettingVersion(),
                 this.defaultColumns || []);
+
+            // last element position used after sync collection
+            if (history.state) {
+                this.initialScrollTop = history.state.scrollPos ? history.state.scrollPos : null;
+                this.initialMore = history.state.numElt ? history.state.numElt : null;
+            }
         } else {
             this.selectedColumns = this.defaultColumns || [];
+            this.initialScrollTop = null;
+            this.initialMore = null;
         }
 
         // process columns
@@ -1085,21 +1097,21 @@ let View = Marionette.CompositeView.extend({
             // and body
             $(body[this.resizingColumnIndex - 1]).width(leftWidth);
             $(body[this.resizingColumnIndex]).width(rightWidth);
-            /*
-                        // and auto-adjust all columns from body constraints
-                        $.each(body, function(i, element) {
-                            let el = $(element);
-                            let headEl = $(head[i]);
-                            let label = headEl.children('div.table-advanced-label');
 
-                            if (!el.hasClass('glyph-fixed-column')) {
-                                headEl.width(el.width());
+            // // and auto-adjust all columns from body constraints
+            // $.each(body, function(i, element) {
+            //     let el = $(element);
+            //     let headEl = $(head[i]);
+            //     let label = headEl.children('div.table-advanced-label');
+            //
+            //     if (!el.hasClass('glyph-fixed-column')) {
+            //         headEl.width(el.width());
+            //
+            //         // adjust the label div (minus border left width)
+            //         label.width(el.width() - (i === 0 ? 0 : 1));
+            //     }
+            // });
 
-                                // adjust the label div (minus border left width)
-                                label.width(el.width() - (i === 0 ? 0 : 1));
-                            }
-                        });
-            */
             this.computeClipping();
         }
     },
@@ -1116,6 +1128,18 @@ let View = Marionette.CompositeView.extend({
 
         // less than one page in buffer (minus margin height)
         return diff - (scrollElement.outerHeight(true) - scrollElement.height()) <= clientHeight;
+    },
+
+    updateScroll: function(topScroll) {
+        // locally save scroll position in user settings
+        if (this.getUserSettingName()) {
+            // last element position
+            let state = history.state || {};
+            state.scrollPos = topScroll;
+            state.numElt =  this.collection.models.length;
+
+            history.replaceState(state, this.getUserSettingName() + '_scrollPos', window.location.pathname);
+        }
     },
 
     scrollOnePage: function (direction) {
@@ -1193,6 +1217,17 @@ let View = Marionette.CompositeView.extend({
             this.onRefreshChildren();
         } else {
             this.updateColumnsWidth();
+        }
+
+        if (this.initialScrollTop && this.initialMore) {
+            // only once reached the minimum content height
+            let height = this.getScrollElement().prop('scrollHeight');
+            this.moreResults(this.initialMore - this.collection.models.length);
+
+            if (this.initialScrollTop < height) {
+                this.getScrollElement().scrollTop(this.initialScrollTop);
+                this.initialScrollTop = null;
+            }
         }
     },
 

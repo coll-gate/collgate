@@ -51,6 +51,9 @@ OrganisationModule.prototype = {
         let EstablishmentController = require('./controllers/establishment');
         this.controllers.establishment = new EstablishmentController();
 
+        let PersonController = require('./controllers/person');
+        this.controllers.person = new PersonController();
+
         //
         // routers
         //
@@ -72,4 +75,3 @@ OrganisationModule.prototype = {
 };
 
 module.exports = OrganisationModule;
-

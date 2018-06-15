@@ -1,0 +1,27 @@
+<!--
+ - @file person.html
+ - @brief Template for a person (model)
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2018-06-01
+ - @copyright Copyright (c) 2018 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<% for (var i = 0; i < columnsList.length; ++i) {
+    var columnName = columnsList[i];
+    var column = columnsOptions[columnName];
+    if (column.custom) {
+        %><td name="<%- columnName %>"></td><%
+    } else if (column.glyphicon != undefined) {
+        %><td name="<%- columnName %>" class="glyph-fixed-column"><span class="fa <%- column.glyphicon[1] %>"></span></td><%
+    } else if (!columnName.startsWith('#') && (columnName in arguments[0])) {
+        %><td name="<%- columnName %>"><%- arguments[0][columnName] %></td><%
+    } else if (column.query) {
+        %><td name="<%- columnName %>"></td><%
+    } else if (columnName.startsWith('#') && (columnName.replace(/^#/, '') in descriptors)) {
+        %><td name="<%- columnName %>"><%- descriptors[columnName.replace(/^#/, '')] || "" %></td><%
+    } else {
+        %><td name="<%- columnName %>"></td><%
+    }
+} %>

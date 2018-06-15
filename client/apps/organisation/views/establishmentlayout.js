@@ -9,6 +9,7 @@
  */
 
 let LayoutView = require('../../main/views/layout');
+let ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
 let EstablishmentDetailsView = require('../views/establishmentdetails');
 let DescriptorEditView = require('../views/descriptoredit');
 let OrganisationModel = require('../models/organisation');
@@ -19,14 +20,14 @@ let Layout = LayoutView.extend({
 
     ui: {
         conservatories_tab: 'a[aria-controls=conservatories]',
-        contacts_tab: 'a[aria-controls=contacts]'
+        persons_tab: 'a[aria-controls=persons]'
     },
 
     regions: {
         'details': "div[name=details]",
         'descriptors': "div.tab-pane[name=descriptors]",
         'conservatories': 'div.tab-pane[name=conservatories]',
-        'contacts': "div.tab-pane[name=contacts]"
+        'persons': "div.tab-pane[name=persons]"
     },
 
     initialize: function(options) {
@@ -83,7 +84,7 @@ let Layout = LayoutView.extend({
     },
 
     disableContactsTab: function () {
-        this.ui.contacts_tab.parent().addClass('disabled');
+        this.ui.persons_tab.parent().addClass('disabled');
     },
 
     onRender: function() {
@@ -100,32 +101,64 @@ let Layout = LayoutView.extend({
                 }));
             });
 
-            /*// conservatories tab
-            let ConservatoriesCollection = require('../collections/conservatories');
-            let conservatories = new ConservatoriesCollection([], {establishment_id: this.model.get('id')});
+            /*// conservatories tab (@todo put 'storage' into accession module is this correct ?)
+            let StorageCollection = require('../collections/storage');
+            let storages = new StorageCollection([], {establishment_id: this.model.get('id')});
 
-            conservatories.fetch().then(function() {
-                let EstablishmentListView = require('../views/establishmentlist');
-                let establishmentListView  = new EstablishmentListView({collection: establishments, model: organisationLayout.model});
+            storages.fetch().then(function() {
+                let StorageListView = require('../views/storagelist');
+                let storageListView  = new StorageListView({collection: storage, model: establishmentLayout.model});
 
                 let contentBottomFooterLayout = new ContentBottomFooterLayout();
-                organisationLayout.showChildView('establishments', contentBottomFooterLayout);
+                establishmentLayout.showChildView('storage', contentBottomFooterLayout);
 
-                contentBottomFooterLayout.showChildView('content', establishmentListView);
-                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: establishmentListView}));
+                contentBottomFooterLayout.showChildView('content', storageListView);
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: storageListView}));
 
-                let EstablishmentListFilterView = require('./establishmentlistfilter');
-                contentBottomFooterLayout.showChildView('footer', new EstablishmentListFilterView({
-                    organisation: organisationLayout.model,
-                    collection: establishments
+                let StorageListFilterView = require('./storagelistfilter');
+                contentBottomFooterLayout.showChildView('footer', new StorageListFilterView({
+                    establishment: establishmentLayout.model,
+                    collection: storages
+                }));
+            });*/
+
+            // person/contact tab
+            let PersonCollection = require('../collections/person');
+            let persons = new PersonCollection([], {establishment_id: this.model.get('id')});
+
+            // get available columns
+            let columns = window.application.main.cache.lookup({
+                type: 'entity_columns',
+                format: {model: 'organisation.person'}
+            });
+
+            $.when(columns, persons.fetch()).then(function (data) {
+                if (!establishmentLayout.isRendered()) {
+                    return;
+                }
+
+                let PersonListView = require('../views/personlist');
+                let personListView = new PersonListView({
+                    collection: persons, columns: data[0].value, model: establishmentLayout.model
+                });
+
+                let contentBottomFooterLayout = new ContentBottomFooterLayout();
+                establishmentLayout.showChildView('persons', contentBottomFooterLayout);
+
+                contentBottomFooterLayout.showChildView('content', personListView);
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                    collection: persons,
+                    targetView: personListView
                 }));
 
-                // @todo contacts
-            });*/
+                contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
+                    collection: persons, columns: data[0].value
+                }));
+            });
 
             // if necessary enable tabs
             this.ui.conservatories_tab.parent().removeClass('disabled');
-            this.ui.contacts_tab.parent().removeClass('disabled');
+            this.ui.persons_tab.parent().removeClass('disabled');
         } else {
             // organisation parent
             let organisation = new OrganisationModel({id: this.model.get('organisation')});

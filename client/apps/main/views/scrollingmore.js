@@ -152,6 +152,16 @@ let View = Marionette.View.extend({
         let last = i;
 
         this.ui.collection_position.html(first + " - " + last);
+
+        // save position for later usage
+        let scrollElement = this.targetView.$el.parent();
+        if (this.targetView && this.targetView.getScrollElement) {
+            scrollElement = this.targetView.getScrollElement();
+        }
+
+        if (this.targetView && this.targetView.updateScroll) {
+            this.targetView.updateScroll(scrollElement.scrollTop());
+        }
     },
 
     onUpdateCount: function(count) {

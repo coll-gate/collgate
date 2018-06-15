@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from igdectk.common.models import ChoiceEnum, IntegerChoice
 
 from descriptor.models import DescribableEntity, Descriptor
 
@@ -279,3 +280,42 @@ class GRC(models.Model):
 
 # @todo Contact for an establishment
 # @todo Conservatory for an establishment
+
+
+class PersonType(ChoiceEnum):
+    """
+    Type of a person.
+    """
+
+    PHYSICAL_PERSON = IntegerChoice(0, _('Physical person'))
+    MORAL_PERSON = IntegerChoice(1, _('Moral person'))
+    CONTACT = IntegerChoice(2, _('Contact'))
+
+
+class ContactType(ChoiceEnum):
+    """
+    Type of a contact person.
+    """
+
+    CONTACT = IntegerChoice(0, _('Contact'))
+    DONOR = IntegerChoice(1, _('Donor'))
+    SELECTOR = IntegerChoice(1, _('Selector'))
+
+
+class Person(DescribableEntity):
+    """
+    Can be a physical person or moral person, used as a contact or as a donor/selector
+    As a describable entity details are in json field.
+    """
+
+    # type of person
+    person_type = models.IntegerField(choices=PersonType.choices(), default=PersonType.PHYSICAL_PERSON.value)
+
+    # type of contact
+    contact_type = models.IntegerField(choices=ContactType.choices(), default=ContactType.CONTACT.value)
+
+    # related establishment
+    establishment = models.ForeignKey(Establishment, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        verbose_name = _("Person")

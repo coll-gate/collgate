@@ -1,0 +1,20 @@
+<!--
+ - @file persondetails.html
+ - @brief
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2018-06-04
+ - @copyright Copyright (c) 2018 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<span style="font-weight:bold; font-size:18px; margin-bottom: 15px;">
+    <span>
+        <span class="action view-establishment" data-establishment-id="<%- establishment.get('id') %>"><%- establishment.get('name') %></span>
+    </span>
+    <span class="fa fa-chevron-right"></span>
+    <span>
+        <!-- @todo first and last name <span class="person-firstname" data-establishment-id="<%- id %>"><%- firstname %></span> -->
+    </span>&nbsp;
+    <span class="fa fa-pencil-square-o action change-name"></span>
+</span>

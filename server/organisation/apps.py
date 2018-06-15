@@ -38,7 +38,9 @@ class CollGateOrganisation(ApplicationMain):
             'organisationtype',
             'grc',
             'organisation',
-            'establishment'
+            'establishment',
+            'person',
+            #'convervatory'
             )
         )
 
