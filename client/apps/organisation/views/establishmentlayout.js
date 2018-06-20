@@ -14,6 +14,7 @@ let EstablishmentDetailsView = require('../views/establishmentdetails');
 let DescriptorEditView = require('../views/descriptoredit');
 let OrganisationModel = require('../models/organisation');
 let DescriptorCollection = require('../../descriptor/collections/layoutdescriptor');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
 
 let Layout = LayoutView.extend({
     template: require("../templates/establishmentlayout.html"),

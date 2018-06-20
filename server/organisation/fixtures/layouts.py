@@ -86,6 +86,174 @@ LAYOUTS = {
                 }
             ]
         }
+    },
+    'contact': {
+        'id': None,
+        'name': 'contact',
+        'target': 'organisation.person',
+        'label': {'en': 'Person/contact', 'fr': 'Personne/contact'},
+        'description': "Unique layout for a person/contact of an establishment entity.",
+        'layout_content': {
+            'panels': [
+                {
+                    'label': {'en': 'Common', 'fr': 'Commun'},
+                    'descriptors': [
+                        {
+                            'name': 'person_title',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'first_name',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'last_name',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'address',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'zipcode',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'city',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'email_address',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'phone_number',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'fax_number',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'mobile_number',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'comment',
+                            'mandatory': False,
+                            'set_once': False
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    'donor_selector_breeder': {
+        'id': None,
+        'name': 'donor_selector_breeder',
+        'target': 'organisation.person',
+        'label': {'en': 'Donor/Selector/Breeder', 'fr': 'Donneur/Selectionneur/Obtenteur'},
+        'description': "Unique layout for a donor of an establishment entity.",
+        'layout_content': {
+            'panels': [
+                {
+                    'label': {'en': 'Common', 'fr': 'Commun'},
+                    'descriptors': [
+                        {
+                            'name': 'full_name',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'address',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'zipcode',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'city',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'email_address',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'phone_number',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'fax_number',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'mobile_number',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'comment',
+                            'mandatory': False,
+                            'set_once': False
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    'conservatory': {
+        'id': None,
+        'name': 'conservatory',
+        'target': 'organisation.conservatory',
+        'label': {'en': 'Conservatory', 'fr': 'Conservatoire'},
+        'description': "Unique layout for a conservatory of an establishment entity.",
+        'layout_content': {
+            'panels': [
+                {
+                    'label': {'en': 'Common', 'fr': 'Commun'},
+                    'descriptors': [
+                        {
+                            'name': 'address',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'zipcode',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'city',
+                            'mandatory': False,
+                            'set_once': False
+                        },
+                        {
+                            'name': 'code_16',
+                            'mandatory': False,
+                            'set_once': False
+                        }
+                    ]
+                }
+            ]
+        }
     }
 }
 

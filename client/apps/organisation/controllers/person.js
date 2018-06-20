@@ -21,12 +21,13 @@ let Dialog = require('../../main/views/dialog');
 
 let Controller = Marionette.Object.extend({
 
-    // create: function(organisation, collection) {
-    //     $.ajax({
-    //         type: "GET",
-    //         url: window.application.url(['descriptor', 'layout', 'for-describable', 'organisation.establishment']),
-    //         dataType: 'json'
-    //     }).done(function(data) {
+    create: function(organisation, collection) {
+        $.ajax({
+            type: "GET",
+            url: window.application.url(['descriptor', 'layout', 'for-describable', 'organisation.person']),
+            dataType: 'json'
+        }).done(function(data) {
+            // @todo
     //         let CreateEstablishmentView = Dialog.extend({
     //             attributes: {
     //                 'id': 'dlg_create_establishment'
@@ -151,8 +152,8 @@ let Controller = Marionette.Object.extend({
     //         });
     //
     //         dialog.render();
-    //     });
-    // }
+         });
+    }
 });
 
 module.exports = Controller;

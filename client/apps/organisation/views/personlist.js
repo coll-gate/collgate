@@ -16,7 +16,7 @@ let View = AdvancedTable.extend({
     className: "person-list advanced-table-container",
     childView: PersonView,
 
-    userSettingName: '_person_list_columns',
+    userSettingName: 'person_list_columns',
     userSettingVersion: '1.0',
 
     templateContext: function () {
@@ -34,13 +34,17 @@ let View = AdvancedTable.extend({
     },
 
     defaultColumns: [
-        {name: '#firstname', width: 'auto', sort_by: '+0'},
-        {name: '#lastname', width: 'auto', sort_by: null}
+        {name: 'code', width: 'auto', sort_by: null},
+        {name: '#ORG_FULL_NAME', width: 'auto', sort_by: '+0'},
+        {name: '#ORG_FIRST_NAME', width: 'auto', sort_by: '+0'},
+        {name: '#ORG_LAST_NAME', width: 'auto', sort_by: null}
     ],
 
     columnsOptions: {
-        '#firstname': {label: _t('First name'), minWidth: true, event: 'view-person', format: {type: 'string'}},
-        '#lastname': {label: _t('Last name'), minWidth: true, format: {type: 'string'}}
+        'code': {label: _t('Code'), minWidth: true, event: 'view-person', format: {type: 'string'}},
+        '#ORG_FULL_NAME': {label: _t('Full name'), minWidth: true, event: 'view-person', format: {type: 'string'}},
+        '#ORG_FIRST_NAME': {label: _t('First name'), minWidth: true, event: 'view-person', format: {type: 'string'}},
+        '#ORG_LAST_NAME': {label: _t('Last name'), minWidth: true, format: {type: 'string'}}
     },
 
     initialize: function(options) {

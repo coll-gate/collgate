@@ -6,7 +6,8 @@
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details
+import re
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -278,8 +279,89 @@ class GRC(models.Model):
 
     objects = GRCManager()
 
-# @todo Contact for an establishment
-# @todo Conservatory for an establishment
+
+class Conservatory(DescribableEntity):
+    """
+    A physical or logical conservatory for storage.
+    """
+
+    # name validator, used with content validation, to avoid any whitespace before and after
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 255, "pattern": r"^\S+.+\S+$"}
+
+    # name validator
+    NAME_VALIDATOR_OPTIONAL = {"type": "string", "minLength": 1, "maxLength": 255, "pattern": "^\S+.+\S+$", "required": False}
+
+    # unique client code
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
+    # related establishment
+    establishment = models.ForeignKey(Establishment, null=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = _("Conservatory")
+
+    def natural_name(self):
+        return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'name': {
+                'label': _('Name'),
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'organisation.conservatory'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'layout': {
+                'label': _('Layout'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'layout',
+                    'model': 'organisation.conservatory'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            }
+        }
+
+    def audit_create(self, user):
+        return {
+            'code': self.name,
+            'layout': self.layout_id,
+            'descriptors': self.descriptors
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'code' in self.updated_fields:
+                result['code'] = self.name
+
+            if 'descriptors' in self.updated_fields:
+                if hasattr(self, 'updated_descriptors'):
+                    result['descriptors'] = self.updated_descriptors
+                else:
+                    result['descriptors'] = self.descriptors
+
+            return result
+        else:
+            return {
+                'code': self.name,
+                'descriptors': self.descriptors
+            }
+
+    def audit_delete(self, user):
+        return {
+            'code': self.name
+        }
 
 
 class PersonType(ChoiceEnum):
@@ -308,6 +390,18 @@ class Person(DescribableEntity):
     As a describable entity details are in json field.
     """
 
+    # code pattern
+    CODE_RE = re.compile(r"^\S+.+\S+$", re.IGNORECASE)
+
+    # code validator
+    CODE_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 255, "pattern": "^\S+.+\S+$"}
+
+    # code validator
+    CODE_VALIDATOR_OPTIONAL = {"type": "string", "minLength": 1, "maxLength": 255, "pattern": "^\S+.+\S+$", "required": False}
+
+    # unique client code
+    code = models.CharField(unique=True, max_length=255, db_index=True)
+
     # type of person
     person_type = models.IntegerField(choices=PersonType.choices(), default=PersonType.PHYSICAL_PERSON.value)
 
@@ -319,3 +413,66 @@ class Person(DescribableEntity):
 
     class Meta:
         verbose_name = _("Person")
+
+    def natural_name(self):
+        return self.code
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(code__istartswith=term)
+
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'code': {
+                'label': _('Code'),
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'organisation.person'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'layout': {
+                'label': _('Layout'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'layout',
+                    'model': 'organisation.establishment'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            }
+        }
+
+    def audit_create(self, user):
+        return {
+            'code': self.code,
+            'layout': self.layout_id,
+            'descriptors': self.descriptors
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'code' in self.updated_fields:
+                result['code'] = self.code
+
+            if 'descriptors' in self.updated_fields:
+                if hasattr(self, 'updated_descriptors'):
+                    result['descriptors'] = self.updated_descriptors
+                else:
+                    result['descriptors'] = self.descriptors
+
+            return result
+        else:
+            return {
+                'code': self.code,
+                'descriptors': self.descriptors
+            }
+
+    def audit_delete(self, user):
+        return {
+            'code': self.code
+        }

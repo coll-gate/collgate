@@ -1222,9 +1222,12 @@ let View = Marionette.CompositeView.extend({
         if (this.initialScrollTop && this.initialMore) {
             // only once reached the minimum content height
             let height = this.getScrollElement().prop('scrollHeight');
-            this.moreResults(this.initialMore - this.collection.models.length);
 
-            if (this.initialScrollTop < height) {
+            if (this.initialMore - this.collection.models.length > 0) {
+                this.moreResults(this.initialMore - this.collection.models.length);
+            }
+
+            if (this.initialScrollTop < height && this.initialMore <= this.collection.models.length) {
                 this.getScrollElement().scrollTop(this.initialScrollTop);
                 this.initialScrollTop = null;
             }

@@ -1,0 +1,12 @@
+{
+  "en": {
+    "ORG_PERSON_TYPE:01": "Undefined",
+    "ORG_PERSON_TYPE:02": "Mr",
+    "ORG_PERSON_TYPE:03": "Mrs"
+  },
+  "fr": {
+    "ORG_PERSON_TYPE:01": "Indéfini",
+    "ORG_PERSON_TYPE:02": "Mr",
+    "ORG_PERSON_TYPE:03": "Mme"
+  }
+}

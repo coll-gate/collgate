@@ -16,7 +16,7 @@ let View = AdvancedTable.extend({
     className: "establishment-list advanced-table-container",
     childView: EstablishmentView,
 
-    userSettingName: '_establishment_list_columns',
+    userSettingName: 'establishment_list_columns',
     userSettingVersion: '1.0',
 
     templateContext: function () {
@@ -35,16 +35,16 @@ let View = AdvancedTable.extend({
 
     defaultColumns: [
         {name: 'name', width: 'auto', sort_by: '+0'},
-        {name: '#establishment_code', width: 'auto', sort_by: null},
-        {name: '#establishment_zipcode', width: 'auto', sort_by: null},
-        {name: '#establishment_geolocation', width: 'auto', sort_by: null},
+        {name: '#DE_002', width: 'auto', sort_by: null},
+        {name: '#DE_004', width: 'auto', sort_by: null},
+        {name: '#GE_003', width: 'auto', sort_by: null},
     ],
 
     columnsOptions: {
         'name': {label: _t('Name'), minWidth: true, event: 'view-establishment'},
-        '#establishment_code': {label: _t('Code'), minWidth: true, format: {type: 'string'}},
-        '#establishment_zipcode': {label: _t('Zipcode'), minWidth: true, format: {type: 'string'}},
-        '#establishment_geolocation': {
+        '#DE_002': {label: _t('Code'), minWidth: true, format: {type: 'string'}},
+        '#DE_004': {label: _t('Zipcode'), minWidth: true, format: {type: 'string'}},
+        '#GE_003': {
             label: _t('Location'), minWidth: true, event: 'view-establishments', query: true}
     },
 
@@ -57,11 +57,11 @@ let View = AdvancedTable.extend({
     onShowTab: function() {
         let view = this;
 
-        let contextLayout = application.getView().getChildView('right');
+        let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().showChildView('right', contextLayout);
+            window.application.getView().showChildView('right', contextLayout);
         }
 
         let TitleView = require('../../main/views/titleview');
@@ -80,7 +80,7 @@ let View = AdvancedTable.extend({
     },
 
     onHideTab: function() {
-        application.main.defaultRightView();
+        window.application.main.defaultRightView();
     },    
 });
 
