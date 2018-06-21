@@ -416,10 +416,8 @@ let View = Marionette.CompositeView.extend({
 
     onShowTab: function (tabView) {
         if (this.isDisplayed()) {
-            console.log("tdidd")
             this.updateColumnsWidth();
         }
-        console.log("4545454")
     },
 
     initHeaders: function () {

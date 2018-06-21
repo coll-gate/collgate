@@ -102,45 +102,59 @@ let Layout = LayoutView.extend({
                 }));
             });
 
-            /*// conservatories tab (@todo put 'storage' into accession module is this correct ?)
-            let StorageCollection = require('../collections/storage');
-            let storages = new StorageCollection([], {establishment_id: this.model.get('id')});
+            // conservatories tab (@todo how to list storage because medhi put them into accession module)
+            let ConservatoryCollection = require('../collections/conservatory');
+            let conservatories = new ConservatoryCollection([], {establishment_id: this.model.get('id')});
 
-            storages.fetch().then(function() {
-                let StorageListView = require('../views/storagelist');
-                let storageListView  = new StorageListView({collection: storage, model: establishmentLayout.model});
+            // get available columns
+            let columns1 = window.application.main.cache.lookup({
+                type: 'entity_columns',
+                format: {model: 'organisation.conservatory'}
+            });
+
+            $.when(columns1, conservatories.fetch()).then(function (data) {
+                let ConservatoryListView = require('./conservatorylist');
+                let conservatoryListView  = new ConservatoryListView({
+                    collection: conservatories,
+                    columns: data[0].value,
+                    model: establishmentLayout.model});
 
                 let contentBottomFooterLayout = new ContentBottomFooterLayout();
-                establishmentLayout.showChildView('storage', contentBottomFooterLayout);
+                establishmentLayout.showChildView('conservatories', contentBottomFooterLayout);
 
-                contentBottomFooterLayout.showChildView('content', storageListView);
-                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: storageListView}));
-
-                let StorageListFilterView = require('./storagelistfilter');
-                contentBottomFooterLayout.showChildView('footer', new StorageListFilterView({
-                    establishment: establishmentLayout.model,
-                    collection: storages
+                contentBottomFooterLayout.showChildView('content', conservatoryListView);
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                    collection: conservatories,
+                    targetView: conservatoryListView
                 }));
-            });*/
+
+                let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
+                contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
+                    collection: conservatories,
+                    columns: data[0].value
+                }));
+            });
 
             // person/contact tab
             let PersonCollection = require('../collections/person');
             let persons = new PersonCollection([], {establishment_id: this.model.get('id')});
 
             // get available columns
-            let columns = window.application.main.cache.lookup({
+            let columns2 = window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'organisation.person'}
             });
 
-            $.when(columns, persons.fetch()).then(function (data) {
+            $.when(columns2, persons.fetch()).then(function (data) {
                 if (!establishmentLayout.isRendered()) {
                     return;
                 }
 
                 let PersonListView = require('../views/personlist');
                 let personListView = new PersonListView({
-                    collection: persons, columns: data[0].value, model: establishmentLayout.model
+                    collection: persons,
+                    columns: data[0].value,
+                    model: establishmentLayout.model
                 });
 
                 let contentBottomFooterLayout = new ContentBottomFooterLayout();
@@ -152,8 +166,11 @@ let Layout = LayoutView.extend({
                     targetView: personListView
                 }));
 
+
+                let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
                 contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
-                    collection: persons, columns: data[0].value
+                    collection: persons,
+                    columns: data[0].value
                 }));
             });
 

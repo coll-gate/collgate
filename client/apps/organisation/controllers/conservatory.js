@@ -1,8 +1,8 @@
 /**
- * @file person.js
- * @brief Person controller
+ * @file conservatory.js
+ * @brief Conservatory controller
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2018-06-04
+ * @date 2018-06-21
  * @copyright Copyright (c) 2018 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details
@@ -11,12 +11,12 @@
 let Marionette = require('backbone.marionette');
 
 let EstablishmentModel = require('../models/establishment');
-let PersonModel = require('../models/person');
+let ConservatoryModel = require('../models/conservatory');
 
 let DefaultLayout = require('../../main/views/defaultlayout');
 let TitleView = require('../../main/views/titleview');
 let Dialog = require('../../main/views/dialog');
-// let PersonLayout = require('../views/personlayout');
+// let ConservatoryLayout = require('../views/conservatorylayout');
 
 
 let Controller = Marionette.Object.extend({
@@ -24,7 +24,7 @@ let Controller = Marionette.Object.extend({
     create: function(organisation, collection) {
         $.ajax({
             type: "GET",
-            url: window.application.url(['descriptor', 'layout', 'for-describable', 'organisation.person']),
+            url: window.application.url(['descriptor', 'layout', 'for-describable', 'organisation.conservatory']),
             dataType: 'json'
         }).done(function(data) {
             // @todo
@@ -32,7 +32,7 @@ let Controller = Marionette.Object.extend({
     //             attributes: {
     //                 'id': 'dlg_create_establishment'
     //             },
-    //             template: require('../templates/personcreate.html'),
+    //             template: require('../templates/conservatorycreate.html'),
     //
     //             ui: {
     //                 create: "button.create",

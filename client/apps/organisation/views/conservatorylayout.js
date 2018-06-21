@@ -1,21 +1,21 @@
 /**
- * @file personlayout.js
- * @brief Optimized layout for person details
+ * @file conservatorylayout.js
+ * @brief Optimized layout for persoconservatory details
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2018-06-14
+ * @date 2018-06-21
  * @copyright Copyright (c) 2018 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details
  */
 
 let LayoutView = require('../../main/views/layout');
-let PersonDetailsView = require('../views/persondetails');
+let ConservatoryDetailsView = require('../views/conservatorydetails');
 let DescriptorEditView = require('../views/descriptoredit');
 let EstablishmentModel = require('../models/establishment');
 let DescriptorCollection = require('../../descriptor/collections/layoutdescriptor');
 
 let Layout = LayoutView.extend({
-    template: require("../templates/personlayout.html"),
+    template: require("../templates/conservatorylayout.html"),
 
     ui: {
         general_tab: 'a[aria-controls=general]'
@@ -40,7 +40,7 @@ let Layout = LayoutView.extend({
         this.render();
 
         // and update history
-        Backbone.history.navigate('app/organisation/person/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
+        Backbone.history.navigate('app/organisation/conservatory/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
     },
 
     onLayoutChange: function(model, value) {
@@ -74,24 +74,20 @@ let Layout = LayoutView.extend({
         }
     },
 
-    // disableConservatoriesTab: function () {
-    //     this.ui.conservatories_tab.parent().addClass('disabled');
-    // },
-    //
     // disableContactsTab: function () {
     //     this.ui.persons_tab.parent().addClass('disabled');
     // },
 
     onRender: function() {
-        let personLayout = this;
+        let conservatoryLayout = this;
 
         // details view
         if (!this.model.isNew()) {
             // establishment parent
             let establishment = new EstablishmentModel({id: this.model.get('establishment')});
             establishment.fetch().then(function () {
-                personLayout.showChildView('details', new PersonDetailsView({
-                    model: personLayout.model,
+                conservatoryLayout.showChildView('details', new ConservatoryDetailsView({
+                    model: conservatoryLayout.model,
                     establishment: establishment
                 }));
             });
@@ -101,8 +97,8 @@ let Layout = LayoutView.extend({
             // establishment parent
             let establishment = new EstablishmentModel({id: this.model.get('establishment')});
             establishment.fetch().then(function () {
-                personLayout.showChildView('details', new PersonDetailsView({
-                    model: personLayout.model,
+                conservatoryLayout.showChildView('details', new ConservatoryDetailsView({
+                    model: conservatoryLayout.model,
                     establishment: establishment,
                     noLink: true
                 }));
@@ -121,11 +117,11 @@ let Layout = LayoutView.extend({
 
                 descriptorCollection.fetch().then(function () {
                     let descriptorView = new DescriptorEditView({
-                        model: personLayout.model,
+                        model: conservatoryLayout.model,
                         layoutData: data,
                         descriptorCollection: descriptorCollection
                     });
-                    personLayout.showChildView('descriptors', descriptorView);
+                    conservatoryLayout.showChildView('descriptors', descriptorView);
                 });
             });
 

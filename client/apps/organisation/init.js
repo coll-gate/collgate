@@ -54,6 +54,9 @@ OrganisationModule.prototype = {
         let PersonController = require('./controllers/person');
         this.controllers.person = new PersonController();
 
+        let ConservatoryController = require('./controllers/conservatory');
+        this.controllers.conservatory = new ConservatoryController();
+
         //
         // routers
         //
@@ -63,6 +66,12 @@ OrganisationModule.prototype = {
 
         let EstablishmentRouter = require('./routers/establishment');
         this.routers.establishment = new EstablishmentRouter();
+
+        let PersonRouter = require('./routers/person');
+        this.routers.person = new PersonRouter();
+
+        let ConservatoryRouter = require('./routers/conservatory');
+        this.routers.conservatory = new ConservatoryRouter();
     },
 
     start: function(app, options) {

@@ -1,22 +1,22 @@
 /**
- * @file personlist.js
- * @brief Person list view
+ * @file conservatorylist.js
+ * @brief Conservatory list view
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2018-06-04
+ * @date 2018-06-21
  * @copyright Copyright (c) 2018 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details
  */
 
 let AdvancedTable = require('../../main/views/advancedtable');
-let PersonView = require('./person');
+let ConservatoryView = require('./conservatory');
 let DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
 let View = AdvancedTable.extend({
-    className: "person-list advanced-table-container",
-    childView: PersonView,
+    className: "conservatory-list advanced-table-container",
+    childView: ConservatoryView,
 
-    userSettingName: 'person_list_columns',
+    userSettingName: 'conservatory_list_columns',
     userSettingVersion: '1.0',
 
     templateContext: function () {
@@ -34,17 +34,12 @@ let View = AdvancedTable.extend({
     },
 
     defaultColumns: [
-        {name: 'code', width: 'auto', sort_by: null},
-        {name: '#ORG_FULL_NAME', width: 'auto', sort_by: '+0'},
-        {name: '#ORG_FIRST_NAME', width: 'auto', sort_by: '+0'},
-        {name: '#ORG_LAST_NAME', width: 'auto', sort_by: null}
+        {name: 'name', width: 'auto', sort_by: '+0'},
+        {name: '#code_16', width: 'auto', sort_by: null},
     ],
 
     columnsOptions: {
-        'code': {label: _t('Code'), minWidth: true, event: 'view-person', format: {type: 'string'}},
-        '#ORG_FULL_NAME': {label: _t('Full name'), minWidth: true, event: 'view-person', format: {type: 'string'}},
-        '#ORG_FIRST_NAME': {label: _t('First name'), minWidth: true, event: 'view-person', format: {type: 'string'}},
-        '#ORG_LAST_NAME': {label: _t('Last name'), minWidth: true, format: {type: 'string'}}
+        'name': {label: _t('Name'), minWidth: true, event: 'view-conservatory', format: {type: 'string'}},
     },
 
     initialize: function(options) {
@@ -64,16 +59,16 @@ let View = AdvancedTable.extend({
         }
 
         let TitleView = require('../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: _t("Person/Contact")}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Conservatory")}));
 
         let actions = ['add'];
 
-        let PersonListContextView = require('./personlistcontext');
-        let contextView = new PersonListContextView({actions: actions});
+        let ConservatoryListContextView = require('./conservatorylistcontext');
+        let contextView = new ConservatoryListContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
-        contextView.on("person:add", function () {
-            window.application.organisation.controllers.person.create(
+        contextView.on("conservatory:add", function () {
+            window.application.organisation.controllers.conservatory.create(
                 view.getOption('model'), view.collection);
         });
     },

@@ -1,8 +1,8 @@
 /**
  * @file person.js
- * @brief Establishment router
+ * @brief Person router
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2018-06-01
+ * @date 2018-06-14
  * @copyright Copyright (c) 2018 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details
