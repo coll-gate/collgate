@@ -44,8 +44,7 @@ let View = AdvancedTable.extend({
         'name': {label: _t('Name'), minWidth: true, event: 'view-establishment'},
         '#DE_002': {label: _t('Code'), minWidth: true, format: {type: 'string'}},
         '#DE_004': {label: _t('Zipcode'), minWidth: true, format: {type: 'string'}},
-        '#GE_003': {
-            label: _t('Location'), minWidth: true, event: 'view-establishments', query: true}
+        '#GE_003': {label: _t('Location'), minWidth: true, event: 'view-establishments', query: true}
     },
 
     initialize: function(options) {
@@ -77,6 +76,8 @@ let View = AdvancedTable.extend({
             window.application.organisation.controllers.establishment.create(
                 view.getOption('model'), view.collection);
         });
+
+        View.__super__.onShowTab.apply(this, arguments);
     },
 
     onHideTab: function() {

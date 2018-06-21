@@ -160,7 +160,7 @@ def get_organisation_list(request):
             'descriptors': organisation.descriptors,
             'layout': organisation.layout_id,
             'num_establishments': organisation.establishments__count,
-            'grc': organisation.grcs__count  # [x for x in organisation.grcs.all().values_list('id', flat=True)]
+            'grc': organisation.grcs__count > 0  # [x for x in organisation.grcs.all().values_list('id', flat=True)]
         }
 
         organisation_items.append(t)
@@ -279,7 +279,8 @@ def get_organisation_details(request, org_id):
         'name': organisation.name,
         'type': organisation.type,
         'layout': organisation.layout_id,
-        'descriptors': organisation.descriptors
+        'descriptors': organisation.descriptors,
+        'grc': organisation.grcs.exists()
     }
 
     return HttpResponseRest(request, result)
@@ -292,6 +293,7 @@ def get_organisation_details(request, org_id):
             "type": Organisation.TYPE_VALIDATOR_OPTIONAL,
             "entity_status": Organisation.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
+            "grc": {"type": "boolean", "required": False}
         },
     },
     perms={
@@ -304,6 +306,7 @@ def patch_organisation(request, org_id):
     organisation_type = request.data.get("type")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
+    grc = request.data.get("grc")
 
     result = {
         'id': organisation.id
@@ -341,7 +344,29 @@ def patch_organisation(request, org_id):
                 organisation.update_descriptors(descriptors_builder.changed_descriptors())
                 organisation.update_field('descriptors')
 
+            if grc is not None:
+                # update GRC partner status
+                grcs = organisation.grcs.all()
+                in_grc = grcs.exists()
+
+                main_grc = GRC.objects.get_unique_grc()
+
+                if grc and not in_grc:
+                    # was not partner, now it is
+                    organisation.grcs.add(main_grc)
+
+                    result['grc'] = True
+                    organisation.update_field('grc')
+
+                elif not grc and in_grc:
+                    # was partner, no longer is
+                    main_grc.organisations.remove(organisation)
+
+                    result['grc'] = False
+                    organisation.update_field('grc')
+
             organisation.save()
+
     except IntegrityError as e:
         Descriptor.integrity_except(Organisation, e)
 
@@ -355,11 +380,11 @@ def delete_organisation(request, org_id):
     organisation = get_object_or_404(Organisation, id=int(org_id))
 
     # remove the manager link if exists
-    grc = GRC.objects.get_unique_grc()
-    qs = grc.organisations.filter(organisation_id=org_id)
+    main_grc = GRC.objects.get_unique_grc()
+    # qs = main_grc.organisations.filter(id=org_id)
 
-    if qs.exists():
-        qs[0].delete()
+    #if qs.exists():
+    #    qs.remove()
 
     organisation.delete()
 

@@ -33,7 +33,7 @@ let View = Marionette.View.extend({
     },
 
     onRender: function() {
-       application.organisation.views.organisationTypes.htmlFromValue(this.el);
+       window.application.organisation.views.organisationTypes.htmlFromValue(this.el);
     },
 
     onChangeType: function () {
@@ -46,7 +46,8 @@ let View = Marionette.View.extend({
 
             ui: {
                 name: "#organisation_name",
-                type: "#organisation_type"
+                type: "#organisation_type",
+                grc: "#organisation_grc"
             },
 
             events: {
@@ -61,14 +62,16 @@ let View = Marionette.View.extend({
             onRender: function () {
                 EditOrganisation.__super__.onRender.apply(this);
 
-                application.organisation.views.organisationTypes.drawSelect(this.ui.type);
+                window.application.organisation.views.organisationTypes.drawSelect(this.ui.type);
 
                 this.ui.name.val(this.getOption('model').get('name'));
                 this.ui.type.selectpicker('val', this.getOption('model').get('type'));
+                this.ui.grc.selectpicker({}).selectpicker('val', this.getOption('model').get('grc') > 0 ? '1' : '0');
             },
 
             onBeforeDestroy: function () {
                 this.ui.type.selectpicker('destroy');
+                this.ui.grc.selectpicker('destroy');
 
                 EditOrganisation.__super__.onBeforeDestroy.apply(this);
             },
@@ -135,6 +138,7 @@ let View = Marionette.View.extend({
                 let model = this.getOption('model');
                 let name = this.ui.name.val().trim();
                 let type = this.ui.type.val();
+                let grc = this.ui.grc.val() > 0;
 
                 let data = {};
 
@@ -146,6 +150,10 @@ let View = Marionette.View.extend({
                     data.type = type;
                 }
 
+                if (grc !== model.get('grc')) {
+                    data.grc = grc;
+                }
+
                 if (model.isNew()) {
                     if (name !== model.get('name')) {
                         model.set('name', name);
@@ -153,6 +161,10 @@ let View = Marionette.View.extend({
 
                     if (type !== model.get('type')) {
                         model.set('type', type);
+                    }
+
+                    if (grc !== model.get('grc')) {
+                        model.set('grc', grc);
                     }
                 } else {
                     model.save(data, {patch: true, wait: true});

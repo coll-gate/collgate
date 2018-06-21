@@ -7,6 +7,7 @@
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details
+
 import re
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -106,11 +107,11 @@ class Organisation(DescribableEntity):
         verbose_name = _("Organisation")
 
     def natural_name(self):
-        return self.descriptors["organisation_acronym"]
+        return self.name
 
     @classmethod
     def make_search_by_name(cls, term):
-        return Q(name__istartswith=term) | Q(descriptors__organisation_acronym=term)
+        return Q(name__istartswith=term) | Q(descriptors__DE_001__istartswith=term)
 
     def audit_create(self, user):
         return {
@@ -249,7 +250,7 @@ class Establishment(DescribableEntity):
 class GRCManager(models.Manager):
 
     def get_unique_grc(self):
-        return self.all()[0]
+        return self.all().first()
 
 
 class GRC(models.Model):

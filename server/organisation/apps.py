@@ -31,6 +31,19 @@ class CollGateOrganisation(ApplicationMain):
     def ready(self):
         super().ready()
 
+        # register descriptor cache category
+        from main.cache import cache_manager
+        cache_manager.register('organisation')
+
+        from messenger.cache import client_cache_manager
+        client_cache_manager.register('organisation')
+
+        from main.models import main_register_models
+        main_register_models(CollGateOrganisation.name)
+
+        from audit.models import audit_register_models
+        audit_register_models(CollGateOrganisation.name)
+
         # create a module organisation
         organisation_module = Module('organisation', base_url='coll-gate')
         organisation_module.include_urls((
@@ -40,19 +53,21 @@ class CollGateOrganisation(ApplicationMain):
             'organisation',
             'establishment',
             'person',
-            #'convervatory'
+            'conservatory'
             )
         )
 
         # add the describable entities models
-        from .models import Organisation, Establishment
+        from .models import Organisation, Establishment, Person, Conservatory
 
         # descriptor_module
         from django.apps import apps
         descriptor_app = apps.get_app_config('descriptor')
         descriptor_app.describable_entities += [
             Organisation,
-            Establishment
+            Establishment,
+            Person,
+            Conservatory
         ]
 
         # organisation menu

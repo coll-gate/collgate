@@ -101,14 +101,16 @@ let Layout = LayoutView.extend({
                 format: {model: 'organisation.establishment'}
             });
 
-            $.when(columns, establishments.fetch()).then(function (data) {
+            columns.then(function (data) {
                 if (!organisationLayout.isRendered()) {
                     return;
                 }
 
                 let EstablishmentListView = require('../views/establishmentlist');
                 let establishmentListView = new EstablishmentListView({
-                    collection: establishments, columns: data[0].value, model: organisationLayout.model
+                    collection: establishments,
+                    model: organisationLayout.model,
+                    columns: data[0].value
                 });
 
                 let contentBottomFooterLayout = new ContentBottomFooterLayout();
@@ -123,6 +125,8 @@ let Layout = LayoutView.extend({
                 contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
                     collection: establishments, columns: data[0].value
                 }));
+
+                establishmentListView.query();
             });
 
             // if necessary enable tabs

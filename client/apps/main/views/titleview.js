@@ -31,6 +31,11 @@ let TitleView = Marionette.View.extend({
         this.listenTo(this.model, 'change', this.render, this);
 
         this.parentRoute = null;
+
+        TitleView.__super__.initialize.apply(this);
+    },
+
+    updateParentRoute: function() {
         if (this.model) {
             if (this.model.parentUrl) {
                 this.parentRoute = this.model.parentUrl().replace(window.application.BASE_URL, "app/");
@@ -50,12 +55,12 @@ let TitleView = Marionette.View.extend({
                 }
             }
         }
-
-        TitleView.__super__.initialize.apply(this);
     },
 
     onRender: function() {
         this.ui.title.html(this.getOption('title'));
+
+        this.updateParentRoute();
 
         if (!this.parentRoute) {
             this.ui.up.css("display", "none");

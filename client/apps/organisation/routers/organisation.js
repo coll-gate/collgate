@@ -34,7 +34,7 @@ let Router = Marionette.AppRouter.extend({
         let grc = new GRCModel();
 
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         let GRCDetailsView = require('../views/grcdetails');
         let grcDetails = new GRCDetailsView({model: grc});
@@ -54,12 +54,12 @@ let Router = Marionette.AppRouter.extend({
         });
 
         let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of organisations")}));
 
         // get available columns
-        let columns = application.main.cache.lookup({
+        let columns = window.application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'organisation.organisation'}
         });
@@ -89,7 +89,7 @@ let Router = Marionette.AppRouter.extend({
         let organisation = new OrganisationModel({id: id});
 
         let defaultLayout = new DefaultLayout();
-        application.main.showContent(defaultLayout);
+        window.application.main.showContent(defaultLayout);
 
         let organisationLayout = new OrganisationLayout({model: organisation, initialTab: tab.replace('/', '')});
 

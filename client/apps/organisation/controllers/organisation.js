@@ -47,7 +47,7 @@ let Controller = Marionette.Object.extend({
                 onRender: function () {
                     CreateOrganisationView.__super__.onRender.apply(this);
 
-                    application.organisation.views.organisationTypes.drawSelect(this.ui.type);
+                    window.application.organisation.views.organisationTypes.drawSelect(this.ui.type);
 
                     this.ui.grc.selectpicker({
                         style: 'btn-default',
@@ -135,12 +135,9 @@ let Controller = Marionette.Object.extend({
                         this.destroy();
 
                         let defaultLayout = new DefaultLayout();
-                        application.main.showContent(defaultLayout);
+                        window.application.main.showContent(defaultLayout);
 
-                        defaultLayout.showChildView('title', new TitleView({
-                            title: _t("Organisation"),
-                            model: model
-                        }));
+                        defaultLayout.showChildView('title', new TitleView({title: _t("Organisation"), model: model}));
 
                         let organisationLayout = new OrganisationLayout({model: model});
                         defaultLayout.showChildView('content', organisationLayout);
