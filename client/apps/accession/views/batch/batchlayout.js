@@ -28,7 +28,8 @@ let Layout = LayoutView.extend({
         parents_tab: 'a[aria-controls=parents]',
         batches_tab: 'a[aria-controls=batches]',
         actions_tab: 'a[aria-controls=actions]',
-        panels_tab: 'a[aria-controls=panels]'
+        panels_tab: 'a[aria-controls=panels]',
+        comments_tab: 'a[aria-controls=comments]'
     },
 
     regions: {
@@ -37,7 +38,8 @@ let Layout = LayoutView.extend({
         'parents': "div.tab-pane[name=parents]",
         'batches': "div.tab-pane[name=batches]",
         'actions': "div.tab-pane[name=actions]",
-        'panels': "div.tab-pane[name=panels]"
+        'panels': "div.tab-pane[name=panels]",
+        'comments': "div.tab-pane[name=comments]"
     },
 
     initialize: function (model, options) {
@@ -77,11 +79,16 @@ let Layout = LayoutView.extend({
         this.ui.panels_tab.parent().addClass('disabled');
     },
 
+    disableCommentsTab: function () {
+        this.ui.comments_tab.parent().addClass('disabled');
+    },
+
     enableTabs: function () {
         this.ui.parents_tab.parent().removeClass('disabled');
         this.ui.batches_tab.parent().removeClass('disabled');
         this.ui.actions_tab.parent().removeClass('disabled');
         this.ui.panels_tab.parent().removeClass('disabled');
+        this.ui.comments_tab.parent().removeClass('disabled');
     },
 
     onLayoutChange: function (model, value) {
@@ -321,6 +328,7 @@ let Layout = LayoutView.extend({
             this.disableParentsTab();
             this.disableBatchesTab();
             this.disableActionsTab();
+            this.disableCommentsTab();
         }
     }
 });

@@ -24,7 +24,8 @@ let Model = Backbone.Model.extend({
         type: "",
         grc: null,
         layout: null,
-        descriptors: {}
+        descriptors: {},
+        comments: []
     }
 });
 

@@ -24,7 +24,8 @@ let Model = Backbone.Model.extend({
         name: '',
         accession: undefined,
         layout: undefined,
-        descriptors: {}
+        descriptors: {},
+        comments: []
     },
 
     parse: function(data) {

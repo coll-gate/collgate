@@ -26,6 +26,7 @@ let Model = Backbone.Model.extend({
         primary_classification_entry: undefined,
         layout: undefined,
         descriptors: {},
+        comments: [],
         synonyms: []
     },
 

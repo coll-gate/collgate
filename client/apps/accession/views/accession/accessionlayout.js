@@ -27,6 +27,7 @@ let Layout = LayoutView.extend({
         batches_tab: 'a[aria-controls=batches]',
         classifications_entries_tab: 'a[aria-controls=classifications-entries]',
         panels_tab: 'a[aria-controls=panels]',
+        comments_tab: 'a[aria-controls=comments]'
     },
 
     regions: {
@@ -36,6 +37,7 @@ let Layout = LayoutView.extend({
         'batches': "div.tab-pane[name=batches]",
         'classifications-entries': "div.tab-pane[name=classifications-entries]",
         'panels': "div.tab-pane[name=panels]",
+        'comments': "div.tab-pane[name=comments]"
     },
 
     initialize: function (options) {
@@ -75,11 +77,16 @@ let Layout = LayoutView.extend({
         this.ui.panels_tab.parent().addClass('disabled');
     },
 
+    disableCommentsTab: function () {
+        this.ui.comments_tab.parent().addClass('disabled');
+    },
+
     enableTabs: function () {
         this.ui.synonyms_tab.parent().removeClass('disabled');
         this.ui.batches_tab.parent().removeClass('disabled');
         this.ui.classifications_entries_tab.parent().removeClass('disabled');
         this.ui.panels_tab.parent().removeClass('disabled');
+        this.ui.comments_tab.parent().removeClass('disabled');
     },
 
     onLayoutChange: function (model, value) {
@@ -237,6 +244,13 @@ let Layout = LayoutView.extend({
             });
 
             this.onLayoutChange(this.model, this.model.get('layout'));
+
+            // comments
+            let CommentList = require('../../../descriptor/views/commentlist');
+            let commentList = new CommentList({model: this.model});
+
+            accessionLayout.showChildView('comments', commentList);
+
             this.enableTabs();
         } else {
             // details
@@ -285,6 +299,7 @@ let Layout = LayoutView.extend({
             this.disableBatchesTab();
             this.disableClassificationsEntriesTab();
             this.disablePanelsTab();
+            this.disableCommentsTab();
         }
     }
 });

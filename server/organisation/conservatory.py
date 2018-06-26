@@ -86,6 +86,7 @@ def get_conservatory_list_for_establishment(request, est_id):
             'id': conservatory.pk,
             'name': conservatory.name,
             'descriptors': conservatory.descriptors,
+            'comments': conservatory.comments,
             'layout': conservatory.layout,
             'establishment': conservatory.establishment_id,
             'establishment_details': {
@@ -199,7 +200,8 @@ def search_person(request):
     "properties": {
         "name": Conservatory.NAME_VALIDATOR,
         "establishment": {"type": "number"},
-        "descriptors": {"type": "object"}
+        "descriptors": {"type": "object"},
+        "comments": Conservatory.COMMENT_VALIDATOR
     },
 }, perms={
     'organisation.add_conservatory': _('You are not allowed to create a conservatory'),
@@ -211,6 +213,7 @@ def create_conservatory(request):
     Create a new conservatory.
     """
     descriptors = request.data['descriptors']
+    comments = request.data['comments']
     est_id = request.data['establishment']
     name = request.data['name']
 
@@ -236,6 +239,9 @@ def create_conservatory(request):
             descriptors_builder.check_and_update(layout, descriptors)
             conservatory.descriptors = descriptors_builder.descriptors
 
+            # comments
+            conservatory.comments = comments
+
             conservatory.save()
 
             # update owner on external descriptors
@@ -248,7 +254,8 @@ def create_conservatory(request):
         'name': conservatory.name,
         'establishment': establishment.id,
         'layout': layout.id,
-        'descriptors': conservatory.descriptors
+        'descriptors': conservatory.descriptors,
+        'comments': conservatory.comments
     }
 
     return HttpResponseRest(request, response)
@@ -263,7 +270,8 @@ def get_conservatory_details(request, con_id):
         'name': conservatory.name,
         'establishment': conservatory.establishment_id,
         'layout': conservatory.layout_id,
-        'descriptors': conservatory.descriptors
+        'descriptors': conservatory.descriptors,
+        'comments': conservatory.comments
     }
 
     return HttpResponseRest(request, result)
@@ -275,6 +283,7 @@ def get_conservatory_details(request, con_id):
             "code": Conservatory.NAME_VALIDATOR_OPTIONAL,
             "entity_status": Conservatory.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
+            "comments": Conservatory.COMMENT_VALIDATOR_OPTIONAL
         },
     },
     perms={
@@ -288,6 +297,7 @@ def patch_conservatory(request, con_id):
     conservatory_name = request.data.get("name")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
+    comments = request.data.get("comments")
 
     result = {
         'id': conservatory.id
@@ -318,6 +328,13 @@ def patch_conservatory(request, con_id):
 
                 conservatory.update_descriptors(descriptors_builder.changed_descriptors())
                 conservatory.update_field('descriptors')
+
+            if comments is not None:
+                # update comments
+                conservatory.comments = comments
+                result['comments'] = conservatory.comments
+
+                conservatory.update_field('comments')
 
                 conservatory.save()
     except IntegrityError as e:

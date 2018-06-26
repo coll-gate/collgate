@@ -1470,6 +1470,9 @@ class TransformMeta(type):
 
 
 class AsTransform(Transform, metaclass=TransformMeta):
+    """
+    Deprecated JSON transform to text helper (with JsonAsText).
+    """
     type = None
     lookup_type = None
     field_type = None
@@ -1487,6 +1490,10 @@ class AsTransform(Transform, metaclass=TransformMeta):
 
 # Fixture to support the as_text operator on JSON field, in way to perform any text operator like icontains...
 class JsonAsText(AsTransform):
+    """
+    Deprecated JSON transform helper. CursorQuery allow to do most of the queries on json data.
+    """
+
     type = "text"
     field_type = models.CharField
 
@@ -1496,8 +1503,17 @@ class DescribableEntity(Entity):
     Base entity than have descriptor values and uses of a layout of descriptor.
     """
 
+    COMMENT_VALIDATOR = {"type": "array", "minItems": 0, "maxItems": 100, "additionalItems": {
+                         "type": "string"}, "items": []},
+
+    COMMENT_VALIDATOR_OPTIONAL = {"type": "array", "required": False, "minItems": 0, "maxItems": 100,
+                                  "additionalItems": {"type": "string"}, "items": []},
+
     # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
     descriptors = JSONField(default={})
+
+    # comments fields container. its an array of pair (name:value).
+    comments = JSONField(default=[])
 
     # It refers to a set of models of type of descriptors through a layout of descriptor.
     layout = models.ForeignKey(Layout, on_delete=models.CASCADE)

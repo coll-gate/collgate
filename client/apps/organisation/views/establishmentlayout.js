@@ -21,14 +21,16 @@ let Layout = LayoutView.extend({
 
     ui: {
         conservatories_tab: 'a[aria-controls=conservatories]',
-        persons_tab: 'a[aria-controls=persons]'
+        persons_tab: 'a[aria-controls=persons]',
+        comments_tab: 'a[aria-controls=comments]',
     },
 
     regions: {
         'details': "div[name=details]",
         'descriptors': "div.tab-pane[name=descriptors]",
         'conservatories': 'div.tab-pane[name=conservatories]',
-        'persons': "div.tab-pane[name=persons]"
+        'persons': "div.tab-pane[name=persons]",
+        'comments': "div.tab-pane[name=comments]"
     },
 
     initialize: function(options) {
@@ -86,6 +88,10 @@ let Layout = LayoutView.extend({
 
     disableContactsTab: function () {
         this.ui.persons_tab.parent().addClass('disabled');
+    },
+
+    disableCommentsTab: function () {
+        this.ui.comments_tab.parent().addClass('disabled');
     },
 
     onRender: function() {
@@ -177,6 +183,7 @@ let Layout = LayoutView.extend({
             // if necessary enable tabs
             this.ui.conservatories_tab.parent().removeClass('disabled');
             this.ui.persons_tab.parent().removeClass('disabled');
+            this.ui.comments_tab.parent().removeClass('disabled');
         } else {
             // organisation parent
             let organisation = new OrganisationModel({id: this.model.get('organisation')});
@@ -212,6 +219,7 @@ let Layout = LayoutView.extend({
             // not available tabs
             this.disableConservatoriesTab();
             this.disableContactsTab();
+            this.disableCommentsTab();
         }
     }
 });

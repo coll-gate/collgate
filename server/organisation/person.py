@@ -86,6 +86,7 @@ def get_person_list_for_establishment(request, est_id):
             'id': person.pk,
             'code': person.code,
             'descriptors': person.descriptors,
+            'comments': person.comments,
             'layout': person.layout,
             'establishment': person.establishment_id,
             'establishment_details': {
@@ -207,7 +208,8 @@ def search_person(request):
         # "last_name": Person.NAME_VALIDATOR,
         "code": Person.CODE_VALIDATOR,
         "establishment": {"type": "number"},
-        "descriptors": {"type": "object"}
+        "descriptors": {"type": "object"},
+        "comments": Person.COMMENT_VALIDATOR
     },
 }, perms={
     'organisation.add_person': _('You are not allowed to create a person/contact'),
@@ -219,6 +221,7 @@ def create_person(request):
     Create a new person.
     """
     descriptors = request.data['descriptors']
+    comments = request.data['comments']
     est_id = request.data['establishment']
     code = request.data['code']
 
@@ -244,6 +247,9 @@ def create_person(request):
             descriptors_builder.check_and_update(layout, descriptors)
             person.descriptors = descriptors_builder.descriptors
 
+            # comments
+            person.comments = comments
+
             person.save()
 
             # update owner on external descriptors
@@ -256,7 +262,8 @@ def create_person(request):
         'code': person.code,
         'establishment': establishment.id,
         'layout': layout.id,
-        'descriptors': person.descriptors
+        'descriptors': person.descriptors,
+        'comments': person.comments
     }
 
     return HttpResponseRest(request, response)
@@ -271,7 +278,8 @@ def get_person_details(request, per_id):
         'code': person.code,
         'establishment': person.establishment_id,
         'layout': person.layout_id,
-        'descriptors': person.descriptors
+        'descriptors': person.descriptors,
+        'comments': person.comments
     }
 
     return HttpResponseRest(request, result)
@@ -283,12 +291,12 @@ def get_person_details(request, per_id):
             "code": Person.CODE_VALIDATOR_OPTIONAL,
             "entity_status": Person.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
+            "comments": Person.COMMENT_VALIDATOR_OPTIONAL
         },
-    },
-    perms={
+    }, perms={
         'organisation.change_person': _("You are not allowed to modify a person/contact"),
-    'organisation.change_establishment': _("You are not allowed to modify an establishment"),
-    'organisation.change_organisation': _("You are not allowed to modify an organisation")
+        'organisation.change_establishment': _("You are not allowed to modify an establishment"),
+        'organisation.change_organisation': _("You are not allowed to modify an organisation")
     })
 def patch_person(request, per_id):
     person = get_object_or_404(Person, id=int(per_id))
@@ -296,6 +304,7 @@ def patch_person(request, per_id):
     person_code = request.data.get("code")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
+    comments = request.data.get("comments")
 
     result = {
         'id': person.id
@@ -327,7 +336,14 @@ def patch_person(request, per_id):
                 person.update_descriptors(descriptors_builder.changed_descriptors())
                 person.update_field('descriptors')
 
-                person.save()
+            if comments is not None:
+                # update comments
+                person.comments = comments
+                result['comments'] = person.comments
+
+                person.update_field('comments')
+
+            person.save()
     except IntegrityError as e:
         Descriptor.integrity_except(Person, e)
 

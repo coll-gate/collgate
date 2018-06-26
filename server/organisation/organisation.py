@@ -48,14 +48,15 @@ class RestOrganisationSearch(RestOrganisation):
 
 
 @RestOrganisation.def_auth_request(Method.POST, Format.JSON, content={
-    "type": "object",
-    "properties": {
-        "name": Organisation.NAME_VALIDATOR,
-        "type": Organisation.TYPE_VALIDATOR,
-        "descriptors": {"type": "object"},
-        "grc": {"type": "boolean"}
-    },
-}, perms={'organisation.add_organisation': _('You are not allowed to create an organisation')}
+        "type": "object",
+        "properties": {
+            "name": Organisation.NAME_VALIDATOR,
+            "type": Organisation.TYPE_VALIDATOR,
+            "descriptors": {"type": "object"},
+            "grc": {"type": "boolean"},
+            "comments": Organisation.COMMENT_VALIDATOR
+        },
+    }, perms={'organisation.add_organisation': _('You are not allowed to create an organisation')}
 )
 def create_organisation(request):
     """
@@ -64,6 +65,7 @@ def create_organisation(request):
     name = request.data['name']
     organisation_type = request.data['type']
     descriptors = request.data['descriptors']
+    comments = request.data['comment']
 
     # check uniqueness of the name
     if Organisation.objects.filter(name=name).exists():
@@ -90,6 +92,9 @@ def create_organisation(request):
             descriptors_builder.check_and_update(layout, descriptors)
             organisation.descriptors = descriptors_builder.descriptors
 
+            # comments
+            organisation.comments = comments
+
             organisation.save()
 
             # update owner on external descriptors
@@ -109,7 +114,8 @@ def create_organisation(request):
         'type': organisation.type,
         'grc': request.data['grc'],
         'layout': layout.id,
-        'descriptors': organisation.descriptors
+        'descriptors': organisation.descriptors,
+        'comments': organisation.comments
     }
 
     return HttpResponseRest(request, response)
@@ -158,6 +164,7 @@ def get_organisation_list(request):
             'name': organisation.name,
             'type': organisation.type,
             'descriptors': organisation.descriptors,
+            'comments': organisation.comments,
             'layout': organisation.layout_id,
             'num_establishments': organisation.establishments__count,
             'grc': organisation.grcs__count > 0  # [x for x in organisation.grcs.all().values_list('id', flat=True)]
@@ -280,6 +287,7 @@ def get_organisation_details(request, org_id):
         'type': organisation.type,
         'layout': organisation.layout_id,
         'descriptors': organisation.descriptors,
+        'comments': organisation.comments,
         'grc': organisation.grcs.exists()
     }
 
@@ -293,6 +301,7 @@ def get_organisation_details(request, org_id):
             "type": Organisation.TYPE_VALIDATOR_OPTIONAL,
             "entity_status": Organisation.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
+            "comments": Organisation.COMMENT_VALIDATOR_OPTIONAL,
             "grc": {"type": "boolean", "required": False}
         },
     },
@@ -306,6 +315,7 @@ def patch_organisation(request, org_id):
     organisation_type = request.data.get("type")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
+    comments = request.data.get("comments")
     grc = request.data.get("grc")
 
     result = {
@@ -343,6 +353,13 @@ def patch_organisation(request, org_id):
 
                 organisation.update_descriptors(descriptors_builder.changed_descriptors())
                 organisation.update_field('descriptors')
+
+            if comments is not None:
+                # update comments
+                organisation.comments = comments
+                result['comments'] = organisation.comments
+
+                organisation.update_field('comments')
 
             if grc is not None:
                 # update GRC partner status

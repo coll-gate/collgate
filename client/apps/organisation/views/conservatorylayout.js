@@ -18,11 +18,15 @@ let Layout = LayoutView.extend({
     template: require("../templates/conservatorylayout.html"),
 
     ui: {
-        general_tab: 'a[aria-controls=general]'
+        descriptors_tab: 'a[aria-controls=descriptors]',
+        storage_tab: 'a[aria-controls=storage]',
+        comments_tab: 'a[aria-controls=comments]'
     },
 
     regions: {
-        'details': "div[name=details]"
+        'descriptors': "div[name=descriptors]",
+        'storage': "div[name=storage]",
+        'comments': "div[name=comments]"
     },
 
     initialize: function(options) {

@@ -86,6 +86,7 @@ def get_establishment_list_for_organisation(request, org_id):
             'id': establishment.pk,
             'name': establishment.name,
             'descriptors': establishment.descriptors,
+            'comments': establishment.comments,
             'layout': establishment.layout,
             'organisation': establishment.organisation_id,
             'organisation_details': {
@@ -198,7 +199,8 @@ def search_establishment(request):
     "properties": {
         "name": Establishment.NAME_VALIDATOR,
         "organisation": {"type": "number"},
-        "descriptors": {"type": "object"}
+        "descriptors": {"type": "object"},
+        "comments": Establishment.COMMENT_VALIDATOR
     },
 }, perms={
     'organisation.change_organisation': _('You are not allowed to modify an organisation'),
@@ -210,6 +212,7 @@ def create_establishment(request):
     """
     name = request.data['name']
     descriptors = request.data['descriptors']
+    comments = request.data['comments']
     org_id = request.data['organisation']
 
     # check existence of the organisation
@@ -238,6 +241,9 @@ def create_establishment(request):
             descriptors_builder.check_and_update(layout, descriptors)
             establishment.descriptors = descriptors_builder.descriptors
 
+            # comments
+            establishment.comments = comments
+
             establishment.save()
 
             # update owner on external descriptors
@@ -250,7 +256,8 @@ def create_establishment(request):
         'name': establishment.name,
         'organisation': organisation.id,
         'layout': layout.id,
-        'descriptors': establishment.descriptors
+        'descriptors': establishment.descriptors,
+        'comments': establishment.comments
     }
 
     return HttpResponseRest(request, response)
@@ -265,7 +272,8 @@ def get_establishment_details(request, est_id):
         'name': establishment.name,
         'organisation': establishment.organisation_id,
         'layout': establishment.layout_id,
-        'descriptors': establishment.descriptors
+        'descriptors': establishment.descriptors,
+        'comments': establishment.comments
     }
 
     return HttpResponseRest(request, result)
@@ -277,9 +285,9 @@ def get_establishment_details(request, est_id):
             "name": Establishment.NAME_VALIDATOR_OPTIONAL,
             "entity_status": Establishment.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
+            "comments": Establishment.COMMENT_VALIDATOR_OPTIONAL
         },
-    },
-    perms={
+    }, perms={
         'organisation.change_establishment': _("You are not allowed to modify an establishment"),
     })
 def patch_establishment(request, est_id):
@@ -288,6 +296,7 @@ def patch_establishment(request, est_id):
     organisation_name = request.data.get("name")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
+    comments = request.data.get("comments")
 
     result = {
         'id': establishment.id
@@ -318,6 +327,13 @@ def patch_establishment(request, est_id):
 
                 establishment.update_descriptors(descriptors_builder.changed_descriptors())
                 establishment.update_field('descriptors')
+
+            if comments is not None:
+                # update comments
+                establishment.comments = comments
+                result['comments'] = establishment.comments
+
+                establishment.update_field('comments')
 
             establishment.save()
     except IntegrityError as e:

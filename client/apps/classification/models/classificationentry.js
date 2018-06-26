@@ -31,7 +31,8 @@ let ClassificationEntryModel = Backbone.Model.extend({
         parent_details: [],
         synonyms: [],
         layout: null,
-        descriptors: {}
+        descriptors: {},
+        comments: []
     },
 
     parse: function(data) {

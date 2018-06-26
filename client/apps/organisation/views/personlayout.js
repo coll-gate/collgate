@@ -18,11 +18,15 @@ let Layout = LayoutView.extend({
     template: require("../templates/personlayout.html"),
 
     ui: {
-        general_tab: 'a[aria-controls=general]'
+        general_tab: 'a[aria-controls=general]',
+        commands_tab: 'a[aria-controls=commands]',
+        comments_tab: 'a[aria-controls=comments]',
     },
 
     regions: {
-        'details': "div[name=details]"
+        'descriptors': "div[name=descriptors]",
+        'commands': "div[name=commands]",
+        'comments': "div[name=comments]"
     },
 
     initialize: function(options) {

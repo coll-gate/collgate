@@ -45,7 +45,7 @@ class ClassificationEntryManager(object):
 
     @classmethod
     @transaction.atomic
-    def create_classification_entry(cls, name, rank_id, parent, language, layout=None, descriptors=None):
+    def create_classification_entry(cls, name, rank_id, parent, language, layout=None, descriptors=None, comments=None):
         """
         Create a new classification entry with a unique name. The level must be
         greater than its parent level.
@@ -55,6 +55,7 @@ class ClassificationEntryManager(object):
         :param language: Language code of the primary synonym created with name.
         :param layout: Layout instance or None.
         :param descriptors: Descriptors values or None if no layout.
+        :param comments: Array of comments.
         :return: None or new Classification entry instance.
         """
         if ClassificationEntry.objects.filter(name=name).exists():
@@ -92,6 +93,10 @@ class ClassificationEntryManager(object):
 
             descriptors_builder.check_and_update(layout, descriptors)
             classification_entry.descriptors = descriptors_builder.descriptors
+
+        if comments is not None:
+            # @todo could process here a comments validation (array=>object=>title_as_string_and_max_len:value_as_string_and_max_len)
+            classification_entry.comments = comments
 
         classification_entry.save()
 
@@ -165,7 +170,7 @@ class ClassificationEntryManager(object):
         if not synonym['language']:
             raise SuspiciousOperation(_('Undefined synonym language'))
 
-        # check that type is in the values of descriptor
+        # check that type is in the values of descriptor (@todo fix me)
         if not ClassificationEntrySynonym.is_synonym_type(synonym['type']):
             raise SuspiciousOperation(_("Unsupported type of synonym"))
 

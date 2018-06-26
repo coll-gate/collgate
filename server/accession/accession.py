@@ -60,6 +60,7 @@ class RestAccessionId(RestAccessionAccession):
         "layout": {"type": "number"},
         "primary_classification_entry": {"type": "number"},
         "descriptors": {"type": "object"},
+        "comments": Accession.COMMENT_VALIDATOR,
         "language": AccessionSynonym.LANGUAGE_VALIDATOR
     },
 }, perms={
@@ -72,6 +73,7 @@ def create_accession(request):
     layout_id = int_arg(request.data['layout'])
     primary_classification_entry_id = int_arg(request.data['primary_classification_entry'])
     descriptors = request.data['descriptors']
+    comments = request.data['comments']
     language = request.data['language']
 
     if not Language.objects.filter(code=language).exists():
@@ -111,6 +113,9 @@ def create_accession(request):
 
             descriptors_builder.check_and_update(layout, descriptors)
             accession.descriptors = descriptors_builder.descriptors
+
+            # comments
+            accession.comments = comments
 
             accession.save()
 
@@ -163,6 +168,7 @@ def create_accession(request):
         'layout': layout.id,
         'primary_classification_entry': primary_classification_entry.id,
         'descriptors': accession.descriptors,
+        'comments': accession.comments,
         'synonyms': [
             {
                 'id': grc_code.id,
@@ -289,6 +295,7 @@ def get_accession_list(request):
             'primary_classification_entry': accession.primary_classification_entry_id,
             'layout': accession.layout_id,
             'descriptors': accession.descriptors,
+            'comments': accession.comments,
             'synonyms': {},
             'primary_classification_entry_details': {
                 'id': accession.primary_classification_entry.id,
@@ -343,6 +350,7 @@ def get_accession_details_json(request, acc_id):
         'synonyms': [],
         'layout': accession.layout_id,
         'descriptors': accession.descriptors,
+        'comments': accession.comments,
         'panels': []
     }
 
@@ -468,6 +476,7 @@ def search_accession(request):
             "primary_classification_entry": {"type": "integer", "required": False},
             "entity_status": Accession.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
+            "comments": Accession.COMMENT_VALIDATOR_OPTIONAL
         },
     },
     perms={
@@ -478,6 +487,7 @@ def patch_accession(request, acc_id):
 
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
+    comments = request.data.get("comments")
 
     result = {
         'id': accession.id
@@ -487,8 +497,7 @@ def patch_accession(request, acc_id):
         with transaction.atomic():
             if 'primary_classification_entry' in request.data:
                 primary_classification_entry_id = int(request.data['primary_classification_entry'])
-                primary_classification_entry = get_object_or_404(ClassificationEntry,
-                                                                 id=primary_classification_entry_id)
+                primary_classification_entry = get_object_or_404(ClassificationEntry, id=primary_classification_entry_id)
 
                 # update FK
                 accession.primary_classification_entry = primary_classification_entry
@@ -521,6 +530,13 @@ def patch_accession(request, acc_id):
 
                 accession.update_descriptors(descriptors_builder.changed_descriptors())
                 accession.update_field('descriptors')
+
+            if comments is not None:
+                # update comments
+                accession.comments = comments
+                result['comments'] = accession.comments
+
+                accession.update_field('comments')
 
             accession.save()
     except IntegrityError as e:

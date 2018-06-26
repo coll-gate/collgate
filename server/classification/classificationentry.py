@@ -86,7 +86,8 @@ class RestClassificationClassificationIdClassificationEntryCount(RestClassificat
         "parent": {"type": ["number", "null"], "required": False},
         "descriptors": {"type": "object"},
         # "descriptors": {"type": "object", "required": False}
-        "language": ClassificationEntrySynonym.LANGUAGE_VALIDATOR
+        "language": ClassificationEntrySynonym.LANGUAGE_VALIDATOR,
+        "comments": ClassificationEntry.COMMENT_VALIDATOR
     },
 }, perms={'classification.add_classificationentry': _('You are not allowed to create a classification entry')}
                                           )
@@ -105,6 +106,7 @@ def create_classification_entry(request):
     language = parameters['language']
     layout = request.data.get('layout')
     descriptors = request.data.get('descriptors')
+    comments = request.data.get('comments')
 
     if not Language.objects.filter(code=language).exists():
         raise SuspiciousOperation(_("The language is not supported"))
@@ -128,7 +130,9 @@ def create_classification_entry(request):
                 parent,
                 language,
                 layout,
-                descriptors)
+                descriptors,
+                comments)
+
     except IntegrityError as e:
         Descriptor.integrity_except(ClassificationEntry, e)
 
@@ -140,7 +144,8 @@ def create_classification_entry(request):
         'parent_list': classification_entry.parent_list,
         'synonyms': [],
         'layout': classification_entry.layout_id if layout else None,
-        'descriptors': classification_entry.descriptors
+        'descriptors': classification_entry.descriptors,
+        'comments': classification_entry.comments
     }
 
     for s in classification_entry.synonyms.all():
@@ -290,6 +295,7 @@ def get_classification_entry_details_json(request, cls_id):
         'synonyms': [],
         'layout': classification_entry.layout_id,
         'descriptors': classification_entry.descriptors,
+        'comments': classification_entry.comments
     }
 
     for s in classification_entry.synonyms.all().order_by('synonym_type', 'language'):
@@ -408,7 +414,8 @@ def search_classification_entry(request):
         "properties": {
             "parent": {"type": ["number", "null"], 'required': False},
             "layout": {"type": ["integer", "null"], 'required': False},
-            "descriptors": {"type": "object", 'required': False}
+            "descriptors": {"type": "object", 'required': False},
+            "comments": ClassificationEntry.COMMENT_VALIDATOR_OPTIONAL
         },
     },
     perms={
@@ -524,6 +531,15 @@ def patch_classification_entry(request, cls_id):
                 classification_entry.update_descriptors(descriptors_builder.changed_descriptors())
                 classification_entry.update_field('descriptors')
 
+            # update comments
+            if 'comments' in request.data:
+                comments = request.data["comments"]
+
+                classification_entry.comments = comments
+
+                result['comments'] = classification_entry.comments
+                classification_entry.update_field('comments')
+
             classification_entry.save()
 
     except IntegrityError as e:
@@ -603,6 +619,7 @@ def get_classification_entry_children(request, cls_id):
             'rank': classification.rank_id,
             'layout': classification.layout_id,
             'descriptors': classification.descriptors,
+            'comments': classification.comments,
             'parent_list': classification.parent_list,
             'parent_details': None,
             'synonyms': []
@@ -809,6 +826,7 @@ def get_classification_id_entry_list(request, cls_id):
             'rank': classification_entry.rank_id,
             'layout': classification_entry.layout_id,
             'descriptors': classification_entry.descriptors,
+            'comments': classification_entry.comments,
             'parent_list': classification_entry.parent_list,
             # 'parent_details': None,
             'synonyms': {}

@@ -20,13 +20,15 @@ let Layout = LayoutView.extend({
     template: require("../templates/organisationlayout.html"),
 
     ui: {
-        establishments_tab: 'a[aria-controls=establishments]'
+        establishments_tab: 'a[aria-controls=establishments]',
+        comments_tab: 'a[aria-controls=comments]'
     },
 
     regions: {
         'details': "div[name=details]",
         'descriptors': "div.tab-pane[name=descriptors]",
-        'establishments': 'div.tab-pane[name=establishments]'
+        'establishments': 'div.tab-pane[name=establishments]',
+        'comments': 'div.tab-pane[name=comments]'
     },
 
     initialize: function (options) {
@@ -83,6 +85,10 @@ let Layout = LayoutView.extend({
         this.ui.establishments_tab.parent().addClass('disabled');
     },
 
+    disableCommentsTab: function () {
+        this.ui.comments_tab.parent().addClass('disabled');
+    },
+
     onRender: function () {
         let organisationLayout = this;
 
@@ -131,6 +137,7 @@ let Layout = LayoutView.extend({
 
             // if necessary enable tabs
             this.ui.establishments_tab.parent().removeClass('disabled');
+            this.ui.comments_tab.parent().removeClass('disabled');
         } else {
             // details
             organisationLayout.showChildView('details', new OrganisationDetailsView({model: this.model}));
@@ -159,6 +166,7 @@ let Layout = LayoutView.extend({
 
                 // not available tabs
                 view.disableEstablishmentTab();
+                view.disableCommentsTab();
             });
 
         }

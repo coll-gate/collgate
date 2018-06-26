@@ -23,7 +23,8 @@ let Layout = LayoutView.extend({
         synonyms_tab: 'a[aria-controls=synonyms]',
         children_tab: 'a[aria-controls=children]',
         entities_tab: 'a[aria-controls=entities]',
-        related_tab: 'a[aria-controls=related]'
+        related_tab: 'a[aria-controls=related]',
+        comments_tab: 'a[aria-controls=comments]'
     },
 
     regions: {
@@ -32,7 +33,8 @@ let Layout = LayoutView.extend({
         'descriptors': 'div.tab-pane[name=descriptors]',
         'children': 'div.tab-pane[name=children]',
         'entities': 'div.tab-pane[name=entities]',
-        'related': 'div.tab-pane[name=related]'
+        'related': 'div.tab-pane[name=related]',
+        'comments': 'div.tab-pane[name=comments]'
     },
 
     initialize: function (options) {
@@ -72,11 +74,16 @@ let Layout = LayoutView.extend({
         this.ui.related_tab.parent().addClass('disabled');
     },
 
+    disableCommentsTab: function () {
+        this.ui.comments_tab.parent().addClass('disabled');
+    },
+
     enableTabs: function () {
         this.ui.synonyms_tab.parent().removeClass('disabled');
         this.ui.children_tab.parent().removeClass('disabled');
         this.ui.entities_tab.parent().removeClass('disabled');
         this.ui.related_tab.parent().removeClass('disabled');
+        this.ui.comments_tab.parent().removeClass('disabled');
     },
 
     onLayoutChange: function (model, value) {
@@ -276,6 +283,7 @@ let Layout = LayoutView.extend({
             this.disableChildrenTab();
             this.disableEntitiesTab();
             this.disableRelatedTab();
+            this.disableCommentsTab();
         }
     },
 

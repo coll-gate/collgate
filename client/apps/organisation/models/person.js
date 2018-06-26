@@ -23,7 +23,8 @@ let Model = Backbone.Model.extend({
         code: "",
         establishment: null,
         layout: null,
-        descriptors: {}
+        descriptors: {},
+        comments: []
     }
 });
 

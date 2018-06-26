@@ -86,7 +86,8 @@ def get_batch_details_json(request, bat_id):
         'name': batch.name,
         'accession': batch.accession_id,
         'layout': batch.layout_id,
-        'descriptors': batch.descriptors
+        'descriptors': batch.descriptors,
+        'comments': batch.comments
     }
 
     return HttpResponseRest(request, result)
@@ -100,7 +101,8 @@ def get_batch_details_json(request, bat_id):
                            'items': []},
         "layout": {"type": "number"},
         "accession": {"type": "number"},
-        "descriptors": {"type": "object"}
+        "descriptors": {"type": "object"},
+        "comments": Batch.COMMENT_VALIDATOR
     },
 }, perms={
     'accession.add_accession': _("You are not allowed to create a batch")
@@ -117,6 +119,7 @@ def create_batch(request):
     accession_id = int_arg(request.data['accession'])
     layout_id = int_arg(request.data['layout'])
     descriptors = request.data['descriptors']
+    comments = request.data['comments']
 
     # batch selection
     selection = request.data['selection']['select']
@@ -171,6 +174,9 @@ def create_batch(request):
             descriptors_builder.check_and_update(layout, descriptors)
             batch.descriptors = descriptors_builder.descriptors
 
+            # comments
+            batch.comments = comments
+
             batch.save()
 
             # parent batches
@@ -195,22 +201,23 @@ def create_batch(request):
         'name': batch.name,
         'layout': layout.id,
         'accession': accession.id,
-        'descriptors': descriptors
+        'descriptors': descriptors,
+        'comments': comments
     }
 
     return HttpResponseRest(request, response)
 
 
 @RestBatchId.def_auth_request(Method.PATCH, Format.JSON, content={
-    "type": "object",
-    "properties": {
-        "entity_status": Batch.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-        "descriptors": {"type": "object", "required": False},
-    },
-},
-                              perms={
-                                  'accession.change_batch': _("You are not allowed to modify a batch"),
-                              })
+        "type": "object",
+        "properties": {
+            "entity_status": Batch.ENTITY_STATUS_VALIDATOR_OPTIONAL,
+            "descriptors": {"type": "object", "required": False},
+            "comments": Batch.COMMENT_VALIDATOR_OPTIONAL
+        },
+    }, perms={
+      'accession.change_batch': _("You are not allowed to modify a batch"),
+})
 def patch_batch(request, bat_id):
     batch = get_object_or_404(Batch, id=int(bat_id))
 
@@ -220,11 +227,13 @@ def patch_batch(request, bat_id):
         batch.accession.content_type.app_label,
         batch.accession.content_type.model,
         batch.accession.pk)
+
     if 'accession.change_accession' not in perms:
         raise PermissionDenied(_('Invalid permission to modify this accession'))
 
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
+    comments = request.data.get("comments")
 
     result = {
         'id': batch.id
@@ -250,6 +259,13 @@ def patch_batch(request, bat_id):
 
                 batch.update_descriptors(descriptors_builder.changed_descriptors())
                 batch.update_field('descriptors')
+
+            if comments is not None:
+                # update comments
+                batch.comments = comments
+                result['comments'] = batch.comments
+
+                batch.update_field('comments')
 
                 batch.save()
     except IntegrityError as e:
@@ -308,6 +324,7 @@ def get_batch_batches_list(request, bat_id):
             'accession': batch.accession_id,
             'layout': batch.layout_id,
             'descriptors': batch.descriptors,
+            'comments': batch.comment,
             'location': batch.location
         }
 
@@ -385,6 +402,7 @@ def get_batch_parents_batches_list(request, bat_id):
         parent_batch.accession.content_type.app_label,
         parent_batch.accession.content_type.model,
         parent_batch.accession.pk)
+
     if 'accession.get_accession' not in perms:
         raise PermissionDenied(_('Invalid permission to access to this accession'))
 
@@ -406,6 +424,7 @@ def get_batch_parents_batches_list(request, bat_id):
             'accession': batch.accession_id,
             'layout': batch.layout_id,
             'descriptors': batch.descriptors,
+            'comments': batch.comments,
             'location': batch.location
         }
 
@@ -448,6 +467,7 @@ def get_batch_parents_batches_list_count(request, bat_id):
         parent_batch.accession.content_type.app_label,
         parent_batch.accession.content_type.model,
         parent_batch.accession.pk)
+
     if 'accession.get_accession' not in perms:
         raise PermissionDenied(_('Invalid permission to access to this accession'))
 
@@ -594,6 +614,7 @@ def get_batch_list(request):
             'accession': batch.accession_id,
             'layout': batch.layout_id,
             'descriptors': batch.descriptors,
+            'comments': batch.comments,
             'location': batch.location.get_label() if batch.location else None
         }
 

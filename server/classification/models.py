@@ -250,6 +250,12 @@ class ClassificationEntry(Entity):
     NAME_VALIDATOR_OPTIONAL = {
         "type": "string", "minLength": 3, "maxLength": 128, "pattern": "^\S+.+\S+$", "required": False}
 
+    COMMENT_VALIDATOR = {"type": "array", "minItems": 0, "maxItems": 100, "additionalItems": {
+                         "type": "string"}, "items": []},
+
+    COMMENT_VALIDATOR_OPTIONAL = {"type": "array", "required": False, "minItems": 0, "maxItems": 100,
+                                  "additionalItems": {"type": "string"}, "items": []},
+
     # unique primary name of the classification entry
     name = models.CharField(unique=True, max_length=128, db_index=True)
 
@@ -267,6 +273,9 @@ class ClassificationEntry(Entity):
 
     # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
     descriptors = JSONField(default={})
+
+    # comments fields container. its an array of pair (name:value).
+    comments = JSONField(default=[])
 
     # It refers to a set of models of type of descriptors through a layout of descriptor.
     # It can be null because it is possible to have the choice to defines or not some descriptors
