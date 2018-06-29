@@ -51,6 +51,11 @@ class RestOrganisationIdEstablishmentCount(RestOrganisationIdEstablishment):
     name = 'count'
 
 
+class RestEstablishmentIdComment(RestEstablishmentId):
+    regex = r'^comment/$'
+    suffix = 'comment'
+
+
 @RestOrganisationIdEstablishment.def_auth_request(Method.GET, Format.JSON)
 def get_establishment_list_for_organisation(request, org_id):
     """
@@ -284,8 +289,7 @@ def get_establishment_details(request, est_id):
         "properties": {
             "name": Establishment.NAME_VALIDATOR_OPTIONAL,
             "entity_status": Establishment.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-            "descriptors": {"type": "object", "required": False},
-            "comments": Establishment.COMMENT_VALIDATOR_OPTIONAL
+            "descriptors": {"type": "object", "required": False}
         },
     }, perms={
         'organisation.change_establishment': _("You are not allowed to modify an establishment"),
@@ -296,7 +300,6 @@ def patch_establishment(request, est_id):
     organisation_name = request.data.get("name")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
-    comments = request.data.get("comments")
 
     result = {
         'id': establishment.id
@@ -328,13 +331,6 @@ def patch_establishment(request, est_id):
                 establishment.update_descriptors(descriptors_builder.changed_descriptors())
                 establishment.update_field('descriptors')
 
-            if comments is not None:
-                # update comments
-                establishment.comments = comments
-                result['comments'] = establishment.comments
-
-                establishment.update_field('comments')
-
             establishment.save()
     except IntegrityError as e:
         Descriptor.integrity_except(Establishment, e)
@@ -351,3 +347,80 @@ def delete_establishment(request, est_id):
     establishment.delete()
 
     return HttpResponseRest(request, {})
+
+
+@RestEstablishmentIdComment.def_auth_request(Method.GET, Format.JSON, perms={
+      'organisation.get_establishment': _("You are not allowed to get an establishment"),
+    })
+def get_establishment_comment_list(request, est_id):
+    establishment = get_object_or_404(Establishment, id=int(est_id))
+    result = establishment.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestEstablishmentIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
+    'organisation.change_establishment': _("You are not allowed to modify an establishment"),
+})
+def remove_establishment_comment(request, est_id):
+    establishment = get_object_or_404(Establishment, id=int(est_id))
+
+    comment_label = request.data
+    found = False
+
+    # update comments
+    for comment in establishment.comments:
+        if comment['label'] == comment_label:
+            del comment
+            found = True
+
+    if not found:
+        raise SuspiciousOperation(_("Comment label does not exists."))
+
+    result = establishment.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestEstablishmentIdComment.def_auth_request(Method.POST, Format.JSON, content=Establishment.COMMENT_VALIDATOR, perms={
+  'organisation.change_establishment': _("You are not allowed to modify an establishment"),
+})
+def add_establishment_comment(request, est_id):
+    establishment = get_object_or_404(Establishment, id=int(est_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in establishment.comments:
+        if comment['label'] == comment_data['label']:
+            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+
+    establishment.comments.add = comment_data
+
+    establishment.update_field('comments')
+    establishment.save()
+
+    results = establishment.comments
+
+    return HttpResponseRest(request, results)
+
+
+@RestEstablishmentIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Establishment.COMMENT_VALIDATOR, perms={
+    'organisation.change_establishment': _("You are not allowed to modify an establishment"),
+})
+def patch_establishment_comment(request, est_id):
+    establishment = get_object_or_404(Establishment, id=int(est_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in establishment.comments:
+        if comment['label'] == comment_data['label']:
+            comment['value'] = comment_data['value']
+
+    # establishment.comments = comments
+
+    establishment.update_field('comments')
+    establishment.save()
+
+    result = establishment.comments
+
+    return HttpResponseRest(request, result)

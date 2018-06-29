@@ -51,6 +51,11 @@ class RestClassificationEntryId(RestClassificationEntry):
     suffix = 'id'
 
 
+class RestClassificationEntryIdComment(RestClassificationEntryId):
+    regex = r'^comment/$'
+    suffix = 'comment'
+
+
 class RestClassificationEntryIdChildren(RestClassificationEntryId):
     regex = r'^children/$'
     suffix = 'children'
@@ -86,8 +91,7 @@ class RestClassificationClassificationIdClassificationEntryCount(RestClassificat
         "parent": {"type": ["number", "null"], "required": False},
         "descriptors": {"type": "object"},
         # "descriptors": {"type": "object", "required": False}
-        "language": ClassificationEntrySynonym.LANGUAGE_VALIDATOR,
-        "comments": ClassificationEntry.COMMENT_VALIDATOR
+        "language": ClassificationEntrySynonym.LANGUAGE_VALIDATOR
     },
 }, perms={'classification.add_classificationentry': _('You are not allowed to create a classification entry')}
                                           )
@@ -106,7 +110,6 @@ def create_classification_entry(request):
     language = parameters['language']
     layout = request.data.get('layout')
     descriptors = request.data.get('descriptors')
-    comments = request.data.get('comments')
 
     if not Language.objects.filter(code=language).exists():
         raise SuspiciousOperation(_("The language is not supported"))
@@ -130,8 +133,7 @@ def create_classification_entry(request):
                 parent,
                 language,
                 layout,
-                descriptors,
-                comments)
+                descriptors)
 
     except IntegrityError as e:
         Descriptor.integrity_except(ClassificationEntry, e)
@@ -144,8 +146,7 @@ def create_classification_entry(request):
         'parent_list': classification_entry.parent_list,
         'synonyms': [],
         'layout': classification_entry.layout_id if layout else None,
-        'descriptors': classification_entry.descriptors,
-        'comments': classification_entry.comments
+        'descriptors': classification_entry.descriptors
     }
 
     for s in classification_entry.synonyms.all():
@@ -414,8 +415,7 @@ def search_classification_entry(request):
         "properties": {
             "parent": {"type": ["number", "null"], 'required': False},
             "layout": {"type": ["integer", "null"], 'required': False},
-            "descriptors": {"type": "object", 'required': False},
-            "comments": ClassificationEntry.COMMENT_VALIDATOR_OPTIONAL
+            "descriptors": {"type": "object", 'required': False}
         },
     },
     perms={
@@ -530,15 +530,6 @@ def patch_classification_entry(request, cls_id):
 
                 classification_entry.update_descriptors(descriptors_builder.changed_descriptors())
                 classification_entry.update_field('descriptors')
-
-            # update comments
-            if 'comments' in request.data:
-                comments = request.data["comments"]
-
-                classification_entry.comments = comments
-
-                result['comments'] = classification_entry.comments
-                classification_entry.update_field('comments')
 
             classification_entry.save()
 
@@ -884,3 +875,80 @@ def get_classification_id_list_count(request, cls_id):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestClassificationEntryIdComment.def_auth_request(Method.GET, Format.JSON, perms={
+      'classification.get_classificationentry': _("You are not allowed to get a classification entry"),
+    })
+def get_classification_entry_comment_list(request, cls_id):
+    classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
+    result = classification_entry.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestClassificationEntryIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
+    'classification.change_classificationentry': _("You are not allowed to modify an accession"),
+})
+def remove_classification_entry_comment(request, cls_id):
+    classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
+
+    comment_label = request.data
+    found = False
+
+    # update comments
+    for comment in classification_entry.comments:
+        if comment['label'] == comment_label:
+            del comment
+            found = True
+
+    if not found:
+        raise SuspiciousOperation(_("Comment label does not exists."))
+
+    result = classification_entry.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestClassificationEntryIdComment.def_auth_request(Method.POST, Format.JSON, content=ClassificationEntry.COMMENT_VALIDATOR, perms={
+  'classification.change_classificationentry': _("You are not allowed to modify an accession"),
+})
+def add_classification_entry_comment(request, cls_id):
+    classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in classification_entry.comments:
+        if comment['label'] == comment_data['label']:
+            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+
+    classification_entry.comments.add = comment_data
+
+    classification_entry.update_field('comments')
+    classification_entry.save()
+
+    results = classification_entry.comments
+
+    return HttpResponseRest(request, results)
+
+
+@RestClassificationEntryIdComment.def_auth_request(Method.PATCH, Format.JSON, content=ClassificationEntry.COMMENT_VALIDATOR, perms={
+    'classification.change_classificationentry': _("You are not allowed to modify an accession"),
+})
+def patch_classification_entry_comment(request, cls_id):
+    classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in classification_entry.comments:
+        if comment['label'] == comment_data['label']:
+            comment['value'] = comment_data['value']
+
+    # classification_entry.comments = comments
+
+    classification_entry.update_field('comments')
+    classification_entry.save()
+
+    result = classification_entry.comments
+
+    return HttpResponseRest(request, result)

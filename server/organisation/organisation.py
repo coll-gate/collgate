@@ -47,6 +47,11 @@ class RestOrganisationSearch(RestOrganisation):
     suffix = 'search'
 
 
+class RestOrganisationIdComment(RestOrganisationId):
+    regex = r'^comment/$'
+    suffix = 'comment'
+
+
 @RestOrganisation.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
@@ -301,7 +306,6 @@ def get_organisation_details(request, org_id):
             "type": Organisation.TYPE_VALIDATOR_OPTIONAL,
             "entity_status": Organisation.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
-            "comments": Organisation.COMMENT_VALIDATOR_OPTIONAL,
             "grc": {"type": "boolean", "required": False}
         },
     },
@@ -315,7 +319,6 @@ def patch_organisation(request, org_id):
     organisation_type = request.data.get("type")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
-    comments = request.data.get("comments")
     grc = request.data.get("grc")
 
     result = {
@@ -353,13 +356,6 @@ def patch_organisation(request, org_id):
 
                 organisation.update_descriptors(descriptors_builder.changed_descriptors())
                 organisation.update_field('descriptors')
-
-            if comments is not None:
-                # update comments
-                organisation.comments = comments
-                result['comments'] = organisation.comments
-
-                organisation.update_field('comments')
 
             if grc is not None:
                 # update GRC partner status
@@ -406,3 +402,80 @@ def delete_organisation(request, org_id):
     organisation.delete()
 
     return HttpResponseRest(request, {})
+
+
+@RestOrganisationIdComment.def_auth_request(Method.GET, Format.JSON, perms={
+      'organisation.get_organisation': _("You are not allowed to get an organisation"),
+    })
+def get_organisation_comment_list(request, org_id):
+    organisation = get_object_or_404(Organisation, id=int(org_id))
+    result = organisation.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestOrganisationIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
+    'organisation.change_organisation': _("You are not allowed to modify an organisation"),
+})
+def remove_organisation_comment(request, org_id):
+    organisation = get_object_or_404(Organisation, id=int(org_id))
+
+    comment_label = request.data
+    found = False
+
+    # update comments
+    for comment in organisation.comments:
+        if comment['label'] == comment_label:
+            del comment
+            found = True
+
+    if not found:
+        raise SuspiciousOperation(_("Comment label does not exists."))
+
+    result = organisation.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestOrganisationIdComment.def_auth_request(Method.POST, Format.JSON, content=Organisation.COMMENT_VALIDATOR, perms={
+  'organisation.change_organisation': _("You are not allowed to modify an organisation"),
+})
+def add_organisation_comment(request, org_id):
+    organisation = get_object_or_404(Organisation, id=int(org_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in organisation.comments:
+        if comment['label'] == comment_data['label']:
+            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+
+    organisation.comments.add = comment_data
+
+    organisation.update_field('comments')
+    organisation.save()
+
+    results = organisation.comments
+
+    return HttpResponseRest(request, results)
+
+
+@RestOrganisationIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Organisation.COMMENT_VALIDATOR, perms={
+    'organisation.change_organisation': _("You are not allowed to modify an organisation"),
+})
+def patch_organisation_comment(request, org_id):
+    organisation = get_object_or_404(Organisation, id=int(org_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in organisation.comments:
+        if comment['label'] == comment_data['label']:
+            comment['value'] = comment_data['value']
+
+    # organisation.comments = comments
+
+    organisation.update_field('comments')
+    organisation.save()
+
+    result = organisation.comments
+
+    return HttpResponseRest(request, result)

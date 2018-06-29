@@ -69,6 +69,11 @@ class RestBatchIdParentCount(RestBatchIdParent):
     suffix = 'count'
 
 
+class RestBatchIdComment(RestBatchId):
+    regex = r'^comment/$'
+    suffix = 'comment'
+
+
 @RestBatchId.def_auth_request(Method.GET, Format.JSON)
 def get_batch_details_json(request, bat_id):
     """
@@ -101,8 +106,7 @@ def get_batch_details_json(request, bat_id):
                            'items': []},
         "layout": {"type": "number"},
         "accession": {"type": "number"},
-        "descriptors": {"type": "object"},
-        "comments": Batch.COMMENT_VALIDATOR
+        "descriptors": {"type": "object"}
     },
 }, perms={
     'accession.add_accession': _("You are not allowed to create a batch")
@@ -119,7 +123,6 @@ def create_batch(request):
     accession_id = int_arg(request.data['accession'])
     layout_id = int_arg(request.data['layout'])
     descriptors = request.data['descriptors']
-    comments = request.data['comments']
 
     # batch selection
     selection = request.data['selection']['select']
@@ -174,9 +177,6 @@ def create_batch(request):
             descriptors_builder.check_and_update(layout, descriptors)
             batch.descriptors = descriptors_builder.descriptors
 
-            # comments
-            batch.comments = comments
-
             batch.save()
 
             # parent batches
@@ -201,8 +201,7 @@ def create_batch(request):
         'name': batch.name,
         'layout': layout.id,
         'accession': accession.id,
-        'descriptors': descriptors,
-        'comments': comments
+        'descriptors': descriptors
     }
 
     return HttpResponseRest(request, response)
@@ -212,8 +211,7 @@ def create_batch(request):
         "type": "object",
         "properties": {
             "entity_status": Batch.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-            "descriptors": {"type": "object", "required": False},
-            "comments": Batch.COMMENT_VALIDATOR_OPTIONAL
+            "descriptors": {"type": "object", "required": False}
         },
     }, perms={
       'accession.change_batch': _("You are not allowed to modify a batch"),
@@ -233,7 +231,6 @@ def patch_batch(request, bat_id):
 
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
-    comments = request.data.get("comments")
 
     result = {
         'id': batch.id
@@ -260,14 +257,7 @@ def patch_batch(request, bat_id):
                 batch.update_descriptors(descriptors_builder.changed_descriptors())
                 batch.update_field('descriptors')
 
-            if comments is not None:
-                # update comments
-                batch.comments = comments
-                result['comments'] = batch.comments
-
-                batch.update_field('comments')
-
-                batch.save()
+            batch.save()
     except IntegrityError as e:
         logger.error(repr(e))
         raise SuspiciousOperation(_("Unable to update the batch"))
@@ -324,7 +314,6 @@ def get_batch_batches_list(request, bat_id):
             'accession': batch.accession_id,
             'layout': batch.layout_id,
             'descriptors': batch.descriptors,
-            'comments': batch.comment,
             'location': batch.location
         }
 
@@ -424,7 +413,6 @@ def get_batch_parents_batches_list(request, bat_id):
             'accession': batch.accession_id,
             'layout': batch.layout_id,
             'descriptors': batch.descriptors,
-            'comments': batch.comments,
             'location': batch.location
         }
 
@@ -614,7 +602,6 @@ def get_batch_list(request):
             'accession': batch.accession_id,
             'layout': batch.layout_id,
             'descriptors': batch.descriptors,
-            'comments': batch.comments,
             'location': batch.location.get_label() if batch.location else None
         }
 
@@ -661,3 +648,80 @@ def get_batch_list_count(request):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestBatchIdComment.def_auth_request(Method.GET, Format.JSON, perms={
+      'accession.get_batch': _("You are not allowed to get a batch"),
+    })
+def get_batch_comment_list(request, bat_id):
+    batch = get_object_or_404(Batch, id=int(bat_id))
+    result = batch.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestBatchIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
+    'accession.change_batch': _("You are not allowed to modify a batch"),
+})
+def remove_batch_comment(request, bat_id):
+    batch = get_object_or_404(Batch, id=int(bat_id))
+
+    comment_label = request.data
+    found = False
+
+    # update comments
+    for comment in batch.comments:
+        if comment['label'] == comment_label:
+            del comment
+            found = True
+
+    if not found:
+        raise SuspiciousOperation(_("Comment label does not exists."))
+
+    result = batch.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestBatchIdComment.def_auth_request(Method.POST, Format.JSON, content=Batch.COMMENT_VALIDATOR, perms={
+  'accession.change_batch': _("You are not allowed to modify a batch"),
+})
+def add_batch_comment(request, bat_id):
+    batch = get_object_or_404(Batch, id=int(bat_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in batch.comments:
+        if comment['label'] == comment_data['label']:
+            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+
+    batch.comments.add = comment_data
+
+    batch.update_field('comments')
+    batch.save()
+
+    results = batch.comments
+
+    return HttpResponseRest(request, results)
+
+
+@RestBatchIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Batch.COMMENT_VALIDATOR, perms={
+    'accession.change_batch': _("You are not allowed to modify a batch"),
+})
+def patch_batch_comment(request, bat_id):
+    batch = get_object_or_404(Batch, id=int(bat_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in batch.comments:
+        if comment['label'] == comment_data['label']:
+            comment['value'] = comment_data['value']
+
+    # batch.comments = comments
+
+    batch.update_field('comments')
+    batch.save()
+
+    result = batch.comments
+
+    return HttpResponseRest(request, result)

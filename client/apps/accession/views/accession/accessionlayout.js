@@ -246,10 +246,16 @@ let Layout = LayoutView.extend({
             this.onLayoutChange(this.model, this.model.get('layout'));
 
             // comments
-            let CommentList = require('../../../descriptor/views/commentlist');
-            let commentList = new CommentList({model: this.model});
+            let CommentListView = require('../../../descriptor/views/commentlist');
 
-            accessionLayout.showChildView('comments', commentList);
+            // classifications entry tab
+            let CommentCollection = require('../../../descriptor/collections/comment');
+            let comments = new CommentCollection([], {model: this.model});
+
+            let commentListView = new CommentListView({model: this.model, collection: comments});
+            accessionLayout.showChildView('comments', commentListView);
+
+            commentListView.query();
 
             this.enableTabs();
         } else {

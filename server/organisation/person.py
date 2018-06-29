@@ -51,6 +51,11 @@ class RestEstablishmentIdPersonCount(RestEstablishmentIdPerson):
     name = 'count'
 
 
+class RestPersonIdComment(RestPersonId):
+    regex = r'^comment/$'
+    suffix = 'comment'
+
+
 @RestEstablishmentIdPerson.def_auth_request(Method.GET, Format.JSON)
 def get_person_list_for_establishment(request, est_id):
     """
@@ -86,7 +91,6 @@ def get_person_list_for_establishment(request, est_id):
             'id': person.pk,
             'code': person.code,
             'descriptors': person.descriptors,
-            'comments': person.comments,
             'layout': person.layout,
             'establishment': person.establishment_id,
             'establishment_details': {
@@ -208,8 +212,7 @@ def search_person(request):
         # "last_name": Person.NAME_VALIDATOR,
         "code": Person.CODE_VALIDATOR,
         "establishment": {"type": "number"},
-        "descriptors": {"type": "object"},
-        "comments": Person.COMMENT_VALIDATOR
+        "descriptors": {"type": "object"}
     },
 }, perms={
     'organisation.add_person': _('You are not allowed to create a person/contact'),
@@ -221,7 +224,6 @@ def create_person(request):
     Create a new person.
     """
     descriptors = request.data['descriptors']
-    comments = request.data['comments']
     est_id = request.data['establishment']
     code = request.data['code']
 
@@ -247,9 +249,6 @@ def create_person(request):
             descriptors_builder.check_and_update(layout, descriptors)
             person.descriptors = descriptors_builder.descriptors
 
-            # comments
-            person.comments = comments
-
             person.save()
 
             # update owner on external descriptors
@@ -262,8 +261,7 @@ def create_person(request):
         'code': person.code,
         'establishment': establishment.id,
         'layout': layout.id,
-        'descriptors': person.descriptors,
-        'comments': person.comments
+        'descriptors': person.descriptors
     }
 
     return HttpResponseRest(request, response)
@@ -278,8 +276,7 @@ def get_person_details(request, per_id):
         'code': person.code,
         'establishment': person.establishment_id,
         'layout': person.layout_id,
-        'descriptors': person.descriptors,
-        'comments': person.comments
+        'descriptors': person.descriptors
     }
 
     return HttpResponseRest(request, result)
@@ -290,8 +287,7 @@ def get_person_details(request, per_id):
         "properties": {
             "code": Person.CODE_VALIDATOR_OPTIONAL,
             "entity_status": Person.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-            "descriptors": {"type": "object", "required": False},
-            "comments": Person.COMMENT_VALIDATOR_OPTIONAL
+            "descriptors": {"type": "object", "required": False}
         },
     }, perms={
         'organisation.change_person': _("You are not allowed to modify a person/contact"),
@@ -304,7 +300,6 @@ def patch_person(request, per_id):
     person_code = request.data.get("code")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
-    comments = request.data.get("comments")
 
     result = {
         'id': person.id
@@ -336,13 +331,6 @@ def patch_person(request, per_id):
                 person.update_descriptors(descriptors_builder.changed_descriptors())
                 person.update_field('descriptors')
 
-            if comments is not None:
-                # update comments
-                person.comments = comments
-                result['comments'] = person.comments
-
-                person.update_field('comments')
-
             person.save()
     except IntegrityError as e:
         Descriptor.integrity_except(Person, e)
@@ -361,3 +349,80 @@ def delete_person(request, per_id):
     person.delete()
 
     return HttpResponseRest(request, {})
+
+
+@RestPersonIdComment.def_auth_request(Method.GET, Format.JSON, perms={
+      'organisation.get_person': _("You are not allowed to get a person"),
+    })
+def get_person_comment_list(request, per_id):
+    person = get_object_or_404(Person, id=int(per_id))
+    result = person.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestPersonIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
+    'organisation.change_person': _("You are not allowed to modify a person"),
+})
+def remove_person_comment(request, per_id):
+    person = get_object_or_404(Person, id=int(per_id))
+
+    comment_label = request.data
+    found = False
+
+    # update comments
+    for comment in person.comments:
+        if comment['label'] == comment_label:
+            del comment
+            found = True
+
+    if not found:
+        raise SuspiciousOperation(_("Comment label does not exists."))
+
+    result = person.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestPersonIdComment.def_auth_request(Method.POST, Format.JSON, content=Person.COMMENT_VALIDATOR, perms={
+  'organisation.change_person': _("You are not allowed to modify a person"),
+})
+def add_person_comment(request, per_id):
+    person = get_object_or_404(Person, id=int(per_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in person.comments:
+        if comment['label'] == comment_data['label']:
+            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+
+    person.comments.add = comment_data
+
+    person.update_field('comments')
+    person.save()
+
+    results = person.comments
+
+    return HttpResponseRest(request, results)
+
+
+@RestPersonIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Person.COMMENT_VALIDATOR, perms={
+    'organisation.change_person': _("You are not allowed to modify a person"),
+})
+def patch_person_comment(request, per_id):
+    person = get_object_or_404(Person, id=int(per_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in person.comments:
+        if comment['label'] == comment_data['label']:
+            comment['value'] = comment_data['value']
+
+    # conservatory.comments = comments
+
+    person.update_field('comments')
+    person.save()
+
+    result = person.comments
+
+    return HttpResponseRest(request, result)

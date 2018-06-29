@@ -41,6 +41,11 @@ class RestConservatoryId(RestConservatory):
     suffix = 'id'
 
 
+class RestConservatoryIdComment(RestConservatoryId):
+    regex = r'^comment/$'
+    suffix = 'comment'
+
+
 class RestEstablishmentIdConservatory(RestEstablishmentId):
     regex = r'^conservatory/$'
     suffix = 'conservatory'
@@ -86,7 +91,6 @@ def get_conservatory_list_for_establishment(request, est_id):
             'id': conservatory.pk,
             'name': conservatory.name,
             'descriptors': conservatory.descriptors,
-            'comments': conservatory.comments,
             'layout': conservatory.layout,
             'establishment': conservatory.establishment_id,
             'establishment_details': {
@@ -200,8 +204,7 @@ def search_person(request):
     "properties": {
         "name": Conservatory.NAME_VALIDATOR,
         "establishment": {"type": "number"},
-        "descriptors": {"type": "object"},
-        "comments": Conservatory.COMMENT_VALIDATOR
+        "descriptors": {"type": "object"}
     },
 }, perms={
     'organisation.add_conservatory': _('You are not allowed to create a conservatory'),
@@ -213,7 +216,6 @@ def create_conservatory(request):
     Create a new conservatory.
     """
     descriptors = request.data['descriptors']
-    comments = request.data['comments']
     est_id = request.data['establishment']
     name = request.data['name']
 
@@ -239,9 +241,6 @@ def create_conservatory(request):
             descriptors_builder.check_and_update(layout, descriptors)
             conservatory.descriptors = descriptors_builder.descriptors
 
-            # comments
-            conservatory.comments = comments
-
             conservatory.save()
 
             # update owner on external descriptors
@@ -254,8 +253,7 @@ def create_conservatory(request):
         'name': conservatory.name,
         'establishment': establishment.id,
         'layout': layout.id,
-        'descriptors': conservatory.descriptors,
-        'comments': conservatory.comments
+        'descriptors': conservatory.descriptors
     }
 
     return HttpResponseRest(request, response)
@@ -282,8 +280,7 @@ def get_conservatory_details(request, con_id):
         "properties": {
             "code": Conservatory.NAME_VALIDATOR_OPTIONAL,
             "entity_status": Conservatory.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-            "descriptors": {"type": "object", "required": False},
-            "comments": Conservatory.COMMENT_VALIDATOR_OPTIONAL
+            "descriptors": {"type": "object", "required": False}
         },
     },
     perms={
@@ -297,7 +294,6 @@ def patch_conservatory(request, con_id):
     conservatory_name = request.data.get("name")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
-    comments = request.data.get("comments")
 
     result = {
         'id': conservatory.id
@@ -329,14 +325,7 @@ def patch_conservatory(request, con_id):
                 conservatory.update_descriptors(descriptors_builder.changed_descriptors())
                 conservatory.update_field('descriptors')
 
-            if comments is not None:
-                # update comments
-                conservatory.comments = comments
-                result['comments'] = conservatory.comments
-
-                conservatory.update_field('comments')
-
-                conservatory.save()
+            conservatory.save()
     except IntegrityError as e:
         Descriptor.integrity_except(Conservatory, e)
 
@@ -354,3 +343,80 @@ def delete_conservatory(request, con_id):
     conservatory.delete()
 
     return HttpResponseRest(request, {})
+
+
+@RestConservatoryIdComment.def_auth_request(Method.GET, Format.JSON, perms={
+      'organisation.get_conservatory': _("You are not allowed to get a conservatory"),
+    })
+def get_conservatory_comment_list(request, con_id):
+    conservatory = get_object_or_404(Conservatory, id=int(con_id))
+    result = conservatory.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestConservatoryIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
+    'organisation.change_conservatory': _("You are not allowed to modify a conservatory"),
+})
+def remove_conservatory_comment(request, con_id):
+    conservatory = get_object_or_404(Conservatory, id=int(con_id))
+
+    comment_label = request.data
+    found = False
+
+    # update comments
+    for comment in conservatory.comments:
+        if comment['label'] == comment_label:
+            del comment
+            found = True
+
+    if not found:
+        raise SuspiciousOperation(_("Comment label does not exists."))
+
+    result = conservatory.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestConservatoryIdComment.def_auth_request(Method.POST, Format.JSON, content=Establishment.COMMENT_VALIDATOR, perms={
+  'organisation.change_conservatory': _("You are not allowed to modify a conservatory"),
+})
+def add_conservatory_comment(request, con_id):
+    conservatory = get_object_or_404(Conservatory, id=int(con_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in conservatory.comments:
+        if comment['label'] == comment_data['label']:
+            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+
+    conservatory.comments.add = comment_data
+
+    conservatory.update_field('comments')
+    conservatory.save()
+
+    results = conservatory.comments
+
+    return HttpResponseRest(request, results)
+
+
+@RestConservatoryIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Establishment.COMMENT_VALIDATOR, perms={
+    'organisation.change_conservatory': _("You are not allowed to modify a conservatory"),
+})
+def patch_conservatory_comment(request, con_id):
+    conservatory = get_object_or_404(Conservatory, id=int(con_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in conservatory.comments:
+        if comment['label'] == comment_data['label']:
+            comment['value'] = comment_data['value']
+
+    # conservatory.comments = comments
+
+    conservatory.update_field('comments')
+    conservatory.save()
+
+    result = conservatory.comments
+
+    return HttpResponseRest(request, result)

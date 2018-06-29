@@ -6,7 +6,7 @@
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
@@ -51,6 +51,11 @@ class RestAccessionId(RestAccessionAccession):
     suffix = 'id'
 
 
+class RestAccessionIdComment(RestAccessionId):
+    regex = r'^comment/$'
+    suffix = 'comment'
+
+
 @RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={
     "type": "object",
     "properties": {
@@ -60,7 +65,6 @@ class RestAccessionId(RestAccessionAccession):
         "layout": {"type": "number"},
         "primary_classification_entry": {"type": "number"},
         "descriptors": {"type": "object"},
-        "comments": Accession.COMMENT_VALIDATOR,
         "language": AccessionSynonym.LANGUAGE_VALIDATOR
     },
 }, perms={
@@ -73,7 +77,6 @@ def create_accession(request):
     layout_id = int_arg(request.data['layout'])
     primary_classification_entry_id = int_arg(request.data['primary_classification_entry'])
     descriptors = request.data['descriptors']
-    comments = request.data['comments']
     language = request.data['language']
 
     if not Language.objects.filter(code=language).exists():
@@ -113,9 +116,6 @@ def create_accession(request):
 
             descriptors_builder.check_and_update(layout, descriptors)
             accession.descriptors = descriptors_builder.descriptors
-
-            # comments
-            accession.comments = comments
 
             accession.save()
 
@@ -168,7 +168,6 @@ def create_accession(request):
         'layout': layout.id,
         'primary_classification_entry': primary_classification_entry.id,
         'descriptors': accession.descriptors,
-        'comments': accession.comments,
         'synonyms': [
             {
                 'id': grc_code.id,
@@ -295,7 +294,6 @@ def get_accession_list(request):
             'primary_classification_entry': accession.primary_classification_entry_id,
             'layout': accession.layout_id,
             'descriptors': accession.descriptors,
-            'comments': accession.comments,
             'synonyms': {},
             'primary_classification_entry_details': {
                 'id': accession.primary_classification_entry.id,
@@ -350,7 +348,6 @@ def get_accession_details_json(request, acc_id):
         'synonyms': [],
         'layout': accession.layout_id,
         'descriptors': accession.descriptors,
-        'comments': accession.comments,
         'panels': []
     }
 
@@ -475,8 +472,7 @@ def search_accession(request):
         "properties": {
             "primary_classification_entry": {"type": "integer", "required": False},
             "entity_status": Accession.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-            "descriptors": {"type": "object", "required": False},
-            "comments": Accession.COMMENT_VALIDATOR_OPTIONAL
+            "descriptors": {"type": "object", "required": False}
         },
     },
     perms={
@@ -487,7 +483,6 @@ def patch_accession(request, acc_id):
 
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
-    comments = request.data.get("comments")
 
     result = {
         'id': accession.id
@@ -531,13 +526,6 @@ def patch_accession(request, acc_id):
                 accession.update_descriptors(descriptors_builder.changed_descriptors())
                 accession.update_field('descriptors')
 
-            if comments is not None:
-                # update comments
-                accession.comments = comments
-                result['comments'] = accession.comments
-
-                accession.update_field('comments')
-
             accession.save()
     except IntegrityError as e:
         Descriptor.integrity_except(Accession, e)
@@ -555,3 +543,80 @@ def delete_accession(request, acc_id):
     accession.delete()
 
     return HttpResponseRest(request, {})
+
+
+@RestAccessionIdComment.def_auth_request(Method.GET, Format.JSON, perms={
+      'accession.get_accession': _("You are not allowed to get an accession"),
+    })
+def get_accession_comment_list(request, acc_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+    result = accession.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestAccessionIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
+    'accession.change_accession': _("You are not allowed to modify an accession"),
+})
+def remove_accession_comment(request, acc_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+
+    comment_label = request.data
+    found = False
+
+    # update comments
+    for comment in accession.comments:
+        if comment['label'] == comment_label:
+            del comment
+            found = True
+
+    if not found:
+        raise SuspiciousOperation(_("Comment label does not exists."))
+
+    result = accession.comments
+
+    return HttpResponseRest(request, result)
+
+
+@RestAccessionIdComment.def_auth_request(Method.POST, Format.JSON, content=Accession.COMMENT_VALIDATOR, perms={
+  'accession.change_accession': _("You are not allowed to modify an accession"),
+})
+def add_accession_comment(request, acc_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in accession.comments:
+        if comment['label'] == comment_data['label']:
+            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+
+    accession.comments.add = comment_data
+
+    accession.update_field('comments')
+    accession.save()
+
+    results = accession.comments
+
+    return HttpResponseRest(request, results)
+
+
+@RestAccessionIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Accession.COMMENT_VALIDATOR, perms={
+    'accession.change_accession': _("You are not allowed to modify an accession"),
+})
+def patch_accession_comment(request, acc_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+    comment_data = request.data
+
+    # update comments
+    for comment in accession.comments:
+        if comment['label'] == comment_data['label']:
+            comment['value'] = comment_data['value']
+
+    # accession.comments = comments
+
+    accession.update_field('comments')
+    accession.save()
+
+    result = accession.comments
+
+    return HttpResponseRest(request, result)

@@ -1503,11 +1503,9 @@ class DescribableEntity(Entity):
     Base entity than have descriptor values and uses of a layout of descriptor.
     """
 
-    COMMENT_VALIDATOR = {"type": "array", "minItems": 0, "maxItems": 100, "additionalItems": {
-                         "type": "string"}, "items": []},
-
-    COMMENT_VALIDATOR_OPTIONAL = {"type": "array", "required": False, "minItems": 0, "maxItems": 100,
-                                  "additionalItems": {"type": "string"}, "items": []},
+    COMMENT_VALIDATOR = {"type": "object", "properties": {
+                            "label": {"type": "string", "minLength": 3, "maxLength": 128},
+                            "value": {"type": "string", "minLength": 3, "maxLength": 1024}}}
 
     # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
     descriptors = JSONField(default={})

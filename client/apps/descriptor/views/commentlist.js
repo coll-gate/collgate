@@ -8,102 +8,73 @@
  * @details
  */
 
-let ItemView = require('../../main/views/itemview');
+let AdvancedTable = require('../../main/views/advancedtable');
+let CommentView = require('./comment');
+let DescriptorsColumnsView = require('../mixins/descriptorscolumns');
 
-let View = ItemView.extend({
-    tagName: 'div',
-    template: require('../templates/commentlist.html'),
+let View = AdvancedTable.extend({
+    className: "comment-list advanced-table-container",
+    childView: CommentView,
+
+    userSettingName: 'comment_list_columns',
+    userSettingVersion: '1.0',
 
     templateContext: function () {
-        let result = {};
-
-        if (this.commentCollection) {
-            let i;
-            for (i = 0; i < this.commentCollection.length; i++) {
-                let model = this.commentCollection.models[i];
-                result[model.get('name')] = model.attributes;
-            }
-        }
-
         return {
-            comments_data: result
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
         }
     },
 
+    childViewOptions: function () {
+        return {
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
+        }
+    },
+
+    defaultColumns: [
+        {name: 'label', width: 'auto', sort_by: '+0'},
+        {name: 'value', width: 'auto', sort_by: null}
+    ],
+
+    columnsOptions: {
+        'label': {label: _t('Label'), minWidth: true, event: 'modify-comment'},
+        'value': {label: _t('Value'), minWidth: true, event: 'modify-comment'}
+    },
+
     ui: {
-        "comment": "tr.comment",
-        "modify": "button.modify",
-        "showCommentHistory": "span.show-comment-history"
+        "add": "button.add",
+        // "showCommentHistory": "span.show-comment-history"
     },
 
     triggers: {},
 
     events: {
-        "click @ui.modify": "onModify",
-        "click @ui.showCommentHistory": "onShowCommentHistory"
+        "click @ui.add": "onAdd",
+        // "click @ui.showCommentHistory": "onShowCommentHistory"
     },
 
     initialize: function (options) {
-        View.__super__.initialize.apply(this);
+        View.__super__.initialize.apply(this, arguments);
 
-        this.layoutData = options.layoutData;
-        this.commentCollection = options.commentCollection;
+        if (options.model) {
+            this.model = options.model;
+        }
+
         this.listenTo(this.model, 'change:comment', this.render, this);
     },
 
     onRender: function () {
-        let view = this;
-        let model = this.model;
-        // let descriptors = model.get('descriptors');
-/*
-        $.each(this.ui.comment, function (index) {
-            let el = $(this);
-
-            let pi = el.attr('panel-index');
-            let i = el.attr('index');
-            let id = el.attr('descriptor');
-            let descriptorModel = view.descriptorCollection.get(id);
-            let format = descriptorModel.get('format');
-
-            let values = (model.get('descriptors')[descriptorModel.get('code')] ? model.get('descriptors')[descriptorModel.get('code')] : null);
-
-            let widget = window.application.descriptor.widgets.newElement(format.type);
-            if (widget) {
-                widget.create(format, el.children('td.descriptor-value'), {
-                    readOnly: true,
-                    history: true,
-                    descriptorId: descriptorModel.get('id')
-                });
-
-                widget.set(format, true, values, {
-                    descriptorId: descriptorModel.get('id'),
-                    descriptor: descriptorModel.attributes
-                });
-            }
-
-            // save the descriptor format type widget instance
-            descriptorModel.widget = widget;
-        });*/
+        View.__super__.onRender.apply(this, arguments);
     },
 
-    onDomRefresh: function () {
+    onAdd: function () {
+        let CreateComment = require('./commentcreate');
+        let createComment = new CreateComment({model: this.model});
 
-    },
-
-    onBeforeDetach: function () {
-
-    },
-
-    onApply: function () {
-
-    },
-
-    onModify: function () {
-
-    },
-
-    onCancel: function () {
-
+        createComment.render();
+        return false;
     },
 
     onShowHistory: function () {
@@ -147,18 +118,14 @@ let View = ItemView.extend({
         let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Comments"), glyphicon: 'fa-wrench'}));
 
-        let actions = ['add', 'apply', 'cancel', 'modify'];
+        let actions = ['add'];
 
         let CommentListContextView = require('./commentlistcontext');
         let contextView = new CommentListContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
-        contextView.on("comment:cancel", function() {
-            view.onCancel();
-        });
-
-        contextView.on("comment:apply", function() {
-            view.onApply();
+        contextView.on("comment:add", function() {
+            view.onAdd();
         });
     },
 
@@ -166,5 +133,8 @@ let View = ItemView.extend({
         window.application.main.defaultRightView();
     }
 });
+
+// support of descriptors columns extension
+_.extend(View.prototype, DescriptorsColumnsView);
 
 module.exports = View;
