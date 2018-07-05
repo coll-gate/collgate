@@ -1510,8 +1510,8 @@ class DescribableEntity(Entity):
     # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
     descriptors = JSONField(default={})
 
-    # comments fields container. its an array of pair (name:value).
-    comments = JSONField(default=[])
+    # comments fields container. dict of pair id:(name, value).
+    comments = JSONField(default={})
 
     # It refers to a set of models of type of descriptors through a layout of descriptor.
     layout = models.ForeignKey(Layout, on_delete=models.CASCADE)

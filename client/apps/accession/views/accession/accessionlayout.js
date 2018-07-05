@@ -146,17 +146,15 @@ let Layout = LayoutView.extend({
             let AccessionSynonymsView = require('./accessionsynonyms');
             accessionLayout.showChildView('synonyms', new AccessionSynonymsView({model: this.model}));
 
-            // batches tab
+            // batches tab (query on show tab)
             let BatchCollection = require('../../collections/batch');
             let accessionBatches = new BatchCollection([], {accession_id: this.model.get('id')});
 
             // get available columns
-            let columns1 = window.application.main.cache.lookup({
+            window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'accession.batch'}
-            });
-
-            $.when(columns1, accessionBatches.fetch()).then(function (data) {
+            }).then(function (data) {
                 if (!accessionLayout.isRendered()) {
                     return;
                 }
@@ -184,17 +182,15 @@ let Layout = LayoutView.extend({
                 }));
             });
 
-            // classifications entry tab
+            // classifications entry tab (query on show tab)
             let AccessionClassificationEntryCollection = require('../../collections/accessionclassificationentry');
             let accessionClassificationEntries = new AccessionClassificationEntryCollection([], {accession_id: this.model.get('id')});
 
             // get available columns
-            let columns2 = window.application.main.cache.lookup({
+            window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'classification.classificationentry'}
-            });
-
-            $.when(columns2, accessionClassificationEntries.fetch()).then(function (data) {
+            }).then(function (data) {
                 if (!accessionLayout.isRendered()) {
                     return;
                 }
@@ -214,17 +210,15 @@ let Layout = LayoutView.extend({
                 contentBottomFooterLayout.showChildView('footer', new AccessionClassificationEntryAdd({collection: accessionClassificationEntries}));
             });
 
-            // panels tab
+            // panels tab (query on show tab)
             let PanelCollection = require('../../collections/accessionpanel');
-            let accessionPanels = new PanelCollection({accession_id: this.model.get('id')});
+            let accessionPanels = new PanelCollection([], {accession_id: this.model.get('id')});
 
             // get available columns
-            let columns3 = window.application.main.cache.lookup({
+            window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'accession.accessionpanel'}
-            });
-
-            $.when(columns3, accessionPanels.fetch()).then(function (data) {
+            }).then(function (data) {
                 if (!accessionLayout.isRendered()) {
                     return;
                 }
@@ -239,8 +233,6 @@ let Layout = LayoutView.extend({
 
                 contentBottomLayout.showChildView('content', accessionPanelListView);
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: accessionPanelListView}));
-
-                accessionPanelListView.query();
             });
 
             this.onLayoutChange(this.model, this.model.get('layout'));
@@ -248,14 +240,12 @@ let Layout = LayoutView.extend({
             // comments
             let CommentListView = require('../../../descriptor/views/commentlist');
 
-            // classifications entry tab
+            // classifications entry tab (query on show tab)
             let CommentCollection = require('../../../descriptor/collections/comment');
-            let comments = new CommentCollection([], {model: this.model});
+            let comments = new CommentCollection([], {entity: this.model});
 
-            let commentListView = new CommentListView({model: this.model, collection: comments});
+            let commentListView = new CommentListView({entity: this.model, collection: comments});
             accessionLayout.showChildView('comments', commentListView);
-
-            commentListView.query();
 
             this.enableTabs();
         } else {

@@ -58,5 +58,12 @@
             <span class="fa fa-chain-broken fa-lg"></span>
         </button>
         <% } %>
+
+        <% if (typeof(history) !== 'undefined' && history.display !== false) { %>
+        <% if (history.disabled === true) { disabled = 'disabled=""'; } else { disabled = ""; } %>
+        <button class="action btn btn-default" name="history" type="button" title="<%- history.title %>" <%- disabled %>>
+            <span class="fa fa-line-chart fa-lg"></span>
+        </button>
+        <% } %>
     </div>
 </div>

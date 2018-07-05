@@ -6,7 +6,8 @@
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details
+import uuid
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
@@ -72,6 +73,11 @@ class RestBatchIdParentCount(RestBatchIdParent):
 class RestBatchIdComment(RestBatchId):
     regex = r'^comment/$'
     suffix = 'comment'
+
+
+class RestBatchIdCommentId(RestBatchIdComment):
+    regex = r'^(?P<com_id>[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/$'
+    suffix = 'id'
 
 
 @RestBatchId.def_auth_request(Method.GET, Format.JSON)
@@ -660,18 +666,18 @@ def get_batch_comment_list(request, bat_id):
     return HttpResponseRest(request, result)
 
 
-@RestBatchIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
+@RestBatchIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'uuid'}, perms={
     'accession.change_batch': _("You are not allowed to modify a batch"),
 })
 def remove_batch_comment(request, bat_id):
     batch = get_object_or_404(Batch, id=int(bat_id))
 
-    comment_label = request.data
+    comment_uuid = request.data
     found = False
 
     # update comments
     for comment in batch.comments:
-        if comment['label'] == comment_label:
+        if comment['id'] == comment_uuid:
             del comment
             found = True
 
@@ -695,7 +701,9 @@ def add_batch_comment(request, bat_id):
         if comment['label'] == comment_data['label']:
             raise SuspiciousOperation(_("Comment label already exists. Try another."))
 
-    batch.comments.add = comment_data
+    comment_data['id'] = str(uuid.uuid4())
+
+    batch.comments.append(comment_data)
 
     batch.update_field('comments')
     batch.save()
@@ -714,14 +722,12 @@ def patch_batch_comment(request, bat_id):
 
     # update comments
     for comment in batch.comments:
-        if comment['label'] == comment_data['label']:
+        if comment['id'] == comment_data['id']:
             comment['value'] = comment_data['value']
-
-    # batch.comments = comments
 
     batch.update_field('comments')
     batch.save()
 
-    result = batch.comments
+    result = comment_data
 
     return HttpResponseRest(request, result)

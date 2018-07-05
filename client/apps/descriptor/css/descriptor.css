@@ -14,7 +14,7 @@ div.descriptor-column.unselected span.glyphicon-plus {
     display: inline;
 }
 
-ul.descriptor-value-history {
+ul.descriptor-value-history, ul.comment-value-history {
     padding-left: 0px;
 }
 

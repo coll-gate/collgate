@@ -73,6 +73,9 @@ let View = AdvancedTable.extend({
     onShowTab: function () {
         let view = this;
 
+        // query now to avoid useless queries
+        this.query();
+
         let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
             let DefaultLayout = require('../../../main/views/defaultlayout');

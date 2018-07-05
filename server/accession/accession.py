@@ -7,6 +7,7 @@
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details
+import uuid
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
@@ -54,6 +55,11 @@ class RestAccessionId(RestAccessionAccession):
 class RestAccessionIdComment(RestAccessionId):
     regex = r'^comment/$'
     suffix = 'comment'
+
+
+class RestAccessionIdCommentId(RestAccessionIdComment):
+    regex = r'^(?P<com_id>[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/$'
+    suffix = 'id'
 
 
 @RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={
@@ -549,33 +555,58 @@ def delete_accession(request, acc_id):
       'accession.get_accession': _("You are not allowed to get an accession"),
     })
 def get_accession_comment_list(request, acc_id):
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
     accession = get_object_or_404(Accession, id=int(acc_id))
-    result = accession.comments
 
-    return HttpResponseRest(request, result)
+    comment_items = []
+
+    for cid, comment in accession.comments.items():
+        comment_items.append({
+            'id': cid,
+            'label': comment['label'],
+            'value': comment['value']
+        })
+
+    # sort by label
+    if '-label' in order_by:
+        comment_items.sort(key=lambda c: c['label'], reverse=True)
+    else:
+        comment_items.sort(key=lambda c: c['label'])
+
+    results = {
+        'items': comment_items,
+        'perms': [],
+        'prev': None,  # cq.prev_cursor,
+        'cursor': None,  # cursor,
+        'next': None  # cq.next_cursor
+    }
+
+    return HttpResponseRest(request, results)
 
 
-@RestAccessionIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
+@RestAccessionIdCommentId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'accession.change_accession': _("You are not allowed to modify an accession"),
 })
-def remove_accession_comment(request, acc_id):
+def remove_accession_comment(request, acc_id, com_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
 
-    comment_label = request.data
-    found = False
+    comment_uuid = str(com_id)
 
     # update comments
-    for comment in accession.comments:
-        if comment['label'] == comment_label:
-            del comment
-            found = True
+    if comment_uuid in accession.comments:
+        del accession.comments[comment_uuid]
+    else:
+        raise SuspiciousOperation(_("Comment does not exists."))
 
-    if not found:
-        raise SuspiciousOperation(_("Comment label does not exists."))
+    accession.save()
 
-    result = accession.comments
-
-    return HttpResponseRest(request, result)
+    return HttpResponseRest(request, {})
 
 
 @RestAccessionIdComment.def_auth_request(Method.POST, Format.JSON, content=Accession.COMMENT_VALIDATOR, perms={
@@ -585,38 +616,49 @@ def add_accession_comment(request, acc_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
     comment_data = request.data
 
-    # update comments
-    for comment in accession.comments:
+    for cid, comment in accession.comments.items():
         if comment['label'] == comment_data['label']:
             raise SuspiciousOperation(_("Comment label already exists. Try another."))
 
-    accession.comments.add = comment_data
+    comment_uuid = str(uuid.uuid4())
+    accession.comments[comment_uuid] = {
+        'label': comment_data['label'],
+        'value': comment_data['value']
+    }
 
     accession.update_field('comments')
     accession.save()
 
-    results = accession.comments
+    results = comment_data
+    results['id'] = comment_uuid
 
     return HttpResponseRest(request, results)
 
 
-@RestAccessionIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Accession.COMMENT_VALIDATOR, perms={
+@RestAccessionIdCommentId.def_auth_request(Method.PATCH, Format.JSON, content=Accession.COMMENT_VALIDATOR, perms={
     'accession.change_accession': _("You are not allowed to modify an accession"),
 })
-def patch_accession_comment(request, acc_id):
+def patch_accession_comment(request, acc_id, com_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
     comment_data = request.data
 
-    # update comments
-    for comment in accession.comments:
-        if comment['label'] == comment_data['label']:
-            comment['value'] = comment_data['value']
+    comment = accession.comments.get(com_id)
 
-    # accession.comments = comments
+    if comment is None:
+        raise SuspiciousOperation(_("Comment does not exists."))
+
+    for cid, comment in accession.comments.items():
+        if comment['label'] == comment_data['label'] and cid != com_id:
+            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+
+    # update comments
+    comment['label'] = comment_data['label']
+    comment['value'] = comment_data['value']
 
     accession.update_field('comments')
     accession.save()
 
-    result = accession.comments
+    result = comment_data
+    result['id'] = com_id
 
     return HttpResponseRest(request, result)

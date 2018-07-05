@@ -54,11 +54,16 @@ def search_audit_value_history_for_entity(request):
 
     value_name = request.GET['value']
 
+    # standard field, or descriptor if begin with '#' or comment if '""
+    is_descriptor = False
+    is_comment = False
+
     if value_name.startswith('#'):
         value_name = value_name[1:]
         is_descriptor = True
-    else:
-        is_descriptor = False
+    elif value_name.startswith('"'):
+        value_name = value_name[1:]
+        is_comment = True
 
     content_type = ContentType.objects.get_by_natural_key(app_label, model)
     entity = content_type.get_object_for_this_type(id=object_id)
@@ -97,6 +102,15 @@ def search_audit_value_history_for_entity(request):
                     continue
 
                 value = descriptors.get(value_name)
+            elif is_comment:
+                comments = audit.fields.get("comments")
+                if comments is None:
+                    continue
+
+                if value_name not in comments:
+                    continue
+
+                value = comments.get(value_name)
             else:
                 if value_name not in audit.fields:
                     continue
@@ -118,6 +132,23 @@ def search_audit_value_history_for_entity(request):
                     continue
 
                 value = audit.fields.get(value_name)
+
+        elif "comments" in audit.fields.get("updated_fields", []):
+            if is_comment:
+                comments = audit.fields.get("comments")
+                if comments is None:
+                    continue
+
+                if value_name not in comments:
+                    continue
+
+                value = comments.get(value_name)
+            else:
+                if value_name not in audit.fields:
+                    continue
+
+                value = audit.fields.get(value_name)
+
         else:
             continue
 

@@ -74,6 +74,13 @@ let View = AdvancedTable.extend({
         View.__super__.initialize.apply(this, arguments);
 
         // this.listenTo(this.collection, 'reset', this.render, this);
+    },
+
+    onShowTab: function () {
+        View.__super__.onShowTab.apply(this);
+
+        // query now to avoid useless queries
+        this.query();
     }
 });
 

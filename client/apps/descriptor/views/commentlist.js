@@ -43,26 +43,12 @@ let View = AdvancedTable.extend({
         'value': {label: _t('Value'), minWidth: true, event: 'modify-comment'}
     },
 
-    ui: {
-        "add": "button.add",
-        // "showCommentHistory": "span.show-comment-history"
-    },
-
-    triggers: {},
-
-    events: {
-        "click @ui.add": "onAdd",
-        // "click @ui.showCommentHistory": "onShowCommentHistory"
-    },
-
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
 
-        if (options.model) {
-            this.model = options.model;
+        if (options.entity) {
+            this.entity = options.entity;
         }
-
-        this.listenTo(this.model, 'change:comment', this.render, this);
     },
 
     onRender: function () {
@@ -71,41 +57,17 @@ let View = AdvancedTable.extend({
 
     onAdd: function () {
         let CreateComment = require('./commentcreate');
-        let createComment = new CreateComment({model: this.model});
+        let createComment = new CreateComment({entity: this.entity, collection: this.collection});
 
         createComment.render();
         return false;
     },
 
-    onShowHistory: function () {
-        // @todo
-        alert("@todo");
-    },
-
-    onShowCommentHistory: function (e) {
-        // let tr = $(e.target).closest("tr");
-        // let panelIndex = tr.attr("panel-index");
-        // let index = tr.attr("index");
-        //
-        // let layoutDescriptorModel = this.layoutData.layout_content.panels[panelIndex].descriptors[index];
-        // let descriptorModel = this.descriptorCollection.findWhere({name: layoutDescriptorModel.name});
-        // if (descriptorModel && descriptorModel.widget) {
-        //     let tokens = this.model.url().split('/');
-        //
-        //     let appLabel = tokens[tokens.length - 4];
-        //     let modelName = tokens[tokens.length - 3];
-        //     let objectId = tokens[tokens.length - 2];
-        //     let valueName = '#' + descriptorModel.get('code');
-        //
-        //     let options = {};
-        //
-        //     descriptorModel.widget.showHistory(
-        //         appLabel, modelName, objectId, valueName, descriptorModel, options);
-        // }
-    },
-
     onShowTab: function() {
         let view = this;
+
+        // query now to avoid useless queries
+        this.query();
 
         // contextual panel
         let contextLayout = window.application.getView().getChildView('right');

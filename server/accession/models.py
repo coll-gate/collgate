@@ -202,7 +202,8 @@ class Accession(DescribableEntity):
             'code': self.code,
             'primary_classification_entry': self.primary_classification_entry_id,
             'layout': self.layout_id,
-            'descriptors': self.descriptors
+            'descriptors': self.descriptors,
+            'comments': self.comments
         }
 
     def audit_update(self, user):
@@ -224,13 +225,17 @@ class Accession(DescribableEntity):
                 else:
                     result['descriptors'] = self.descriptors
 
+            if 'comments' in self.updated_fields:
+                result['comments'] = self.comments
+
             return result
         else:
             return {
                 'name': self.name,
                 'code': self.code,
                 'primary_classification_entry': self.primary_classification_entry_id,
-                'descriptors': self.descriptors
+                'descriptors': self.descriptors,
+                'comments': self.comments
             }
 
     def audit_delete(self, user):

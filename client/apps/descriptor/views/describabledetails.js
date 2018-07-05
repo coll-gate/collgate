@@ -135,11 +135,6 @@ let View = ItemView.extend({
 
     },
 
-    onShowHistory: function () {
-        // @todo
-        alert("@todo");
-    },
-
     onShowDescriptorHistory: function (e) {
         let tr = $(e.target).closest("tr");
         let panelIndex = tr.attr("panel-index");

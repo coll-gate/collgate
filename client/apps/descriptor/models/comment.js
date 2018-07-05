@@ -12,11 +12,10 @@ let Backbone = require('backbone');
 
 let Model = Backbone.Model.extend({
     url: function () {
-        if (this.model) {
-            // return window.application.url(['descriptor', 'descriptor', this.get('id')]);
-            return (_.isFunction(this.model.url) ? this.model.url() : this.model.url) + 'comment/' + this.get('id');
+        if (this.isNew()) {
+            return (_.isFunction(this.collection.entity.url) ? this.collection.entity.url() : this.collection.entity.url) + 'comment/';
         } else {
-            return (_.isFunction(this.model.url) ? this.model.url() : this.model.url) + 'comment/';
+            return (_.isFunction(this.collection.entity.url) ? this.collection.entity.url() : this.collection.entity.url) + 'comment/' + this.get('id') + '/';
         }
     },
 
@@ -28,7 +27,6 @@ let Model = Backbone.Model.extend({
 
     parse: function (data) {
         //this.perms = data.perms;
-        this.model = data.model;
         return data;
     },
 

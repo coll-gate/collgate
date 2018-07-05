@@ -56,6 +56,11 @@ class RestPersonIdComment(RestPersonId):
     suffix = 'comment'
 
 
+class RestPersonIdCommentId(RestPersonIdComment):
+    regex = r'^(?P<com_id>[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/$'
+    suffix = 'id'
+
+
 @RestEstablishmentIdPerson.def_auth_request(Method.GET, Format.JSON)
 def get_person_list_for_establishment(request, est_id):
     """

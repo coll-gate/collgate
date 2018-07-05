@@ -13,9 +13,9 @@ let CountableCollection = require('../../main/collections/countable');
 
 let Collection = CountableCollection.extend({
     url: function () {
-        if (this.model) {
-            return (_.isFunction(this.model.url) ? this.model.url() : this.model.url) + 'comment/';
-            // return window.application.url([_.isFunction(this.model.url) ? this.model.url() : this.model.url, 'comment']);
+        if (this.entity) {
+            return (_.isFunction(this.entity.url) ? this.entity.url() : this.entity.url) + 'comment/';
+            // return window.application.url([_.isFunction(this.entity.url) ? this.entity.url() : this.entity.url, 'comment']);
         } else {
             return null;
         }
@@ -30,8 +30,8 @@ let Collection = CountableCollection.extend({
 
         Collection.__super__.initialize.apply(this, arguments);
 
-        if (options.model) {
-            this.model = options.model;
+        if (options.entity) {
+            this.entity = options.entity;
         }
     }
 });

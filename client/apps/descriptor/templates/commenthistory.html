@@ -1,32 +1,36 @@
 <!--
- - @file describablehistory.html
- - @brief Template for the display of a describable value history
+ - @file commenthistory.html
+ - @brief Template for the display of a describable comment history
  - @author Frédéric SCHERMA (INRA UMR1095)
- - @date 2017-11-13
- - @copyright Copyright (c) 2017 INRA/CIRAD
+ - @date 2018-07-03
+ - @copyright Copyright (c) 2018 INRA/CIRAD
  - @license MIT (see LICENSE file)
  - @details
 -->
 
 <div class="modal-dialog modal-lg">
-    <% var format = descriptor.get('format'); %>
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%- _t("History of {{label}}", {label: descriptor.get('label')}) %></h4>
+            <h4 class="modal-title"><%- _t("History of {{label}}", {label: comment.get('label')}) %></h4>
         </div>
         <div class="modal-body">
             <div style="overflow-y: auto;">
-                <ul class="descriptor-value-history">
+                <ul class="comment-value-history">
                     <% _.each(values, function(value) { %>
                         <% let date = moment(value.timestamp); %>
                         <% let ldate = date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'); %>
-                        <li class="descriptor-value" value-history="" format-type="<%- format.type %>">
+                        <li class="comment-value" value-history="" format-type="string">
                             <span class="history-details"><h4>
                                 <span class="label label-info label-large history-date text-selection-all "><%- ldate %></span>
                                 <span class="label label-success label-large history-username text-selection-all "><%- value.username %></span>
                             </h4></span>
-                            <span class="history-value"></span>
+                            <span class="history-value">
+                                <div class="input-group">
+                                    <input class="form-control" value="<%- value.value.value %>" readonly="" style="height: 24px;padding-top: 3px;padding-bottom: 3px;">
+                                    <span class="input-group-addon" style="padding-top: 3px;padding-bottom: 3px;"><span class="fa fa-font"></span></span>
+                                </div>
+                            </span>
                         </li>
                     <% }); %>
                 </ul>

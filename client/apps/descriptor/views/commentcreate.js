@@ -1,9 +1,9 @@
 /**
  * @file commentlist.js
- * @brief Describable entity comments item view
+ * @brief Describable entity comments creation
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2016-12-20
- * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @date 2018-06-28
+ * @copyright Copyright (c) 2018 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details
  */
@@ -30,7 +30,8 @@ let CommentCreateDialog = Dialog.extend({
     initialize: function (options) {
         CommentCreateDialog.__super__.initialize.apply(this, arguments);
 
-        this.model = options.model;
+        this.entity = options.entity;
+        this.collection = options.collection;
     },
 
     onRender: function () {
@@ -43,25 +44,21 @@ let CommentCreateDialog = Dialog.extend({
         }
 
         let self = this;
-        let model = this.model;
-        let label = this.ui.label.val();
-        let value = this.ui.value.val();
+        let label = this.ui.label.val().trim();
+        let value = this.ui.value.val().trim();
 
-        let comments = this.model.get('comments');
-
-        for (let i = 0; i < comments.length; ++i) {
-            if (comments[i].label === label) {
-                $.alert.warning(_("Comment label already exists, try another."));
+        this.collection.create({
+                label: label,
+                value: value
+            }, {
+                wait: true,
+                success: function () {
+                    self.destroy();
+                    $.alert.success(_t("Successfully added !"));
+                },
+                error: function () {
+                    $.alert.error(_t("Unable to create the comment !"));
             }
-        }
-
-        comments.push({
-           label: label,
-           value: value
-        });
-
-        this.model.save({comments: comments}, {wait: true, patch: true}).then(function () {
-            $.alert.success(_t("Successfully added !"));
         });
     },
 

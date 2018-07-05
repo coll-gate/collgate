@@ -52,6 +52,11 @@ class RestOrganisationIdComment(RestOrganisationId):
     suffix = 'comment'
 
 
+class RestOrganisationIdCommentId(RestOrganisationIdComment):
+    regex = r'^(?P<com_id>[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/$'
+    suffix = 'id'
+
+
 @RestOrganisation.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {

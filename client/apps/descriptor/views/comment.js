@@ -14,6 +14,12 @@ let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object comment',
     template: require("../../descriptor/templates/entity.html"),
+    attributes: function() {
+        return {
+            'scope': 'row',
+            'element-id': this.model.get('id')
+        }
+    },
     templateContext: function () {
         return {
             columnsList: this.getOption('columnsList'),
@@ -22,28 +28,30 @@ let View = Marionette.View.extend({
     },
 
     ui: {
-        delete_btn: '.action.delete',
-        edit_btn: '.action.edit'
+         edit_btn: 'td.action.modify-comment'
     },
 
     events: {
-        'click @ui.delete_btn': 'deleteComment',
-        'click @ui.edit_btn': 'editComment'
+         'click @ui.edit_btn': 'editComment'
     },
 
     behaviors: {
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
-                tag: {display: true, event: 'changeLabel'},
                 edit: {display: true, event: 'editComment'},
-                remove: {display: true, event: 'deleteComment'}
+                remove: {display: true, event: 'deleteComment'},
+                history: {display: true, event: 'showHistory'}
             }
         }
     },
 
-    initialize: function() {
+    initialize: function(options) {
+        View.__super__.initialize.apply(this, arguments);
         this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
     },
 
     actionsProperties: function() {
@@ -57,24 +65,54 @@ let View = Marionette.View.extend({
         return properties;
     },
 
-    onRender: function() {
-    },
-
     editComment: function() {
-    },
-
-    changeLabel: function () {
-        let ChangeLabel = require('../../main/views/entitychangelabel');
-        let changeLabel = new ChangeLabel({
+        let CommentEdit = require('./commentedit');
+        let changeLabel = new CommentEdit({
             model: this.model,
             title: _t("Change the comment value")
         });
 
         changeLabel.render();
         return false;
+
     },
 
     deleteComment: function () {
+        this.model.destroy({wait: true});
+    },
+
+    showHistory: function () {
+        let self = this
+        let CommentHistoryDialog = require('./commenthistory');
+        let tokens = this.model.url().split('/');
+
+        let appLabel = tokens[tokens.length - 6];
+        let modelName = tokens[tokens.length - 5];
+        let objectId = tokens[tokens.length - 4];
+        let comId = '"' + this.model.get('id');
+
+        let options = {};
+
+        // @todo
+        // query history with same comment label
+        $.ajax({
+            url: window.application.url(['audit', 'search', 'history', 'value']),
+            dataType: 'json',
+            data: {
+                app_label: appLabel,
+                model: modelName,
+                object_id: objectId,
+                value: comId
+            }
+        }).done(function (data) {
+            let dialog = new CommentHistoryDialog({
+                entries: data.items,
+                readOnly: this.readOnly,
+                comment: self.model
+            });
+
+            dialog.render();
+        });
     }
 });
 

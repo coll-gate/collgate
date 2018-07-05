@@ -5,13 +5,12 @@
  * @date 2017-10-27
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details Actions like copy value to clipboard.
+ * @details Actions like copy value to clipboard, open in new tab...
  */
 
 let Marionette = require('backbone.marionette');
 
 let Behavior = Marionette.Behavior.extend({
-
     defaultTemplate: _.template(
         '<div class="clearfix cell-context-menu" style="position: absolute; display:none;">' +
             '<ul class="actions-list">' +
@@ -58,10 +57,6 @@ let Behavior = Marionette.Behavior.extend({
         $(window).off('keydown', $.proxy(this.onKeyDown, this));
     },
 
-    setupLocation: function() {
-
-    },
-
     show: function(options) {
         let view = this;
 
@@ -75,28 +70,23 @@ let Behavior = Marionette.Behavior.extend({
         this.cell = options.cell;
         this.column = options.column;
 
-        let openNew = this.$el.find('a[name=open-new]');
+        let openNew = this.$el.find('a[name=open-new]').parent('li');
         this.model = null;
-        openNew.attr('href', '#');
+
+        openNew.attr('target', null);
 
         if (this.collection && this.cell[0]) {
             // define the url to open a new tab about the element
-            let id = parseInt(this.cell.parent().attr('element-id'));
-
             if (this.column.event) {
-                console.log(this.column);
-                console.log(this.cell);
-
-                // default uses collection model as target
-                this.model = this.collection.get(id);
-
-                // @todo how to according the type of the target model have the good router/url
-
-                let modelUrl = _.isFunction(this.model.url) ? this.model.url() : this.model.url;
-                let url = window.location.protocol + '//' + window.location.host + modelUrl.replace(window.application.BASE_URL, window.application.BASE_URL + "app/");
-
-                openNew.attr('href', url);
+                let url = this.findModel(this.column, this.cell);
+                if (url) {
+                    openNew.attr('target', url);
+                }
             }
+        }
+
+        if (!openNew.attr('target')) {
+            openNew.hide();
         }
 
         // hide the context menu when click on the glass pane
@@ -116,18 +106,35 @@ let Behavior = Marionette.Behavior.extend({
 
     findModel: function(column, cell) {
         let url = null;
+        let baseUrl = window.location.protocol + '//' + window.location.host;
 
         // define the url to open a new tab about the element
-        let id = parseInt(cell.parent().attr('element-id'));
+        let id = parseInt(cell.closest('tr').attr('element-id'));
 
         if (column.event) {
+            let modelType = undefined;
+
             // default uses collection model as target
             this.model = this.collection.get(id);
 
-            // @todo how to according the type of the target model have the good router/url
+            // according the type of the target model have the good router/url
+            if ("format" in column && column.format.type === "entity") {
+                modelType = column.format.model;
+            }
 
-            let modelUrl = _.isFunction(this.model.url) ? this.model.url() : this.model.url;
-            url = window.location.protocol + '//' + window.location.host + modelUrl.replace(window.application.BASE_URL, window.application.BASE_URL + "app/");
+            if (modelType) {
+                this.relatedModel = this.model.get(cell.closest('td').attr('name'));
+                console.log(this.relatedModel);
+
+                let parts = modelType.split(".");
+
+                if (this.relatedModel) {
+                    url = window.application.url(["app", parts[0], parts[1], this.relatedModel]);
+                }
+            } else {
+                let modelUrl = _.isFunction(this.model.url) ? this.model.url() : this.model.url;
+                url = baseUrl + modelUrl.replace(window.application.BASE_URL, window.application.BASE_URL + "app/");
+            }
         }
 
         return url;
@@ -147,7 +154,8 @@ let Behavior = Marionette.Behavior.extend({
             }
 
             let column = columns[columnName];
-            let url = this.findModel(column, $(e.target));
+            let cell = $(e.target);
+            let url = this.findModel(column, cell);
 
             if (url) {
                 window.open(url, '_blank');
@@ -208,10 +216,19 @@ let Behavior = Marionette.Behavior.extend({
 
         sel.removeAllRanges();
         this.hide();
+
+        return false;
     },
 
     onOpenNewTabWindow: function(e) {
         this.hide();
+
+        let url = $(e.currentTarget).attr('target');
+        if (url) {
+            window.open(url, '_blank');
+        }
+
+        return false;
     }
 });
 

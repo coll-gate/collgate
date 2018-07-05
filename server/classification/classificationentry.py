@@ -56,6 +56,11 @@ class RestClassificationEntryIdComment(RestClassificationEntryId):
     suffix = 'comment'
 
 
+class RestClassificationEntryIdCommentId(RestClassificationEntryIdComment):
+    regex = r'^(?P<com_id>[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/$'
+    suffix = 'id'
+
+
 class RestClassificationEntryIdChildren(RestClassificationEntryId):
     regex = r'^children/$'
     suffix = 'children'

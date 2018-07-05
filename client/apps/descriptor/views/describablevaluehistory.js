@@ -26,14 +26,6 @@ let View = Dialog.extend({
         id: "dlg_describable_show_value_history"
     },
 
-    ui: {
-        descriptor_value: 'li.descriptor-value'
-    },
-
-    events: {
-        'click @ui.descriptor_value': 'selectDescriptorValue'
-    },
-
     initialize: function (options) {
         options || (options = {});
 
@@ -96,10 +88,6 @@ let View = Dialog.extend({
                 });
             }
         });
-    },
-
-    selectDescriptorValue: function () {
-        // @todo
     }
 });
 

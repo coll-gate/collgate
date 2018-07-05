@@ -272,8 +272,8 @@ class ClassificationEntry(Entity):
     # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
     descriptors = JSONField(default={})
 
-    # comments fields container. its an array of pair (name:value).
-    comments = JSONField(default=[])
+    # comments fields container. dict of pair id:(label,value).
+    comments = JSONField(default={})
 
     # It refers to a set of models of type of descriptors through a layout of descriptor.
     # It can be null because it is possible to have the choice to defines or not some descriptors
@@ -383,7 +383,8 @@ class ClassificationEntry(Entity):
             'parent': self.parent_id,
             'parent_list': self.parent_list,
             'layout': self.layout_id,
-            'descriptors': self.descriptors
+            'descriptors': self.descriptors,
+            'comments': self.comments
         }
 
     def audit_update(self, user):
@@ -409,6 +410,9 @@ class ClassificationEntry(Entity):
                 else:
                     result['descriptors'] = self.descriptors
 
+            if 'comments' in self.updated_fields:
+                result['comments'] = self.comments
+
             return result
         else:
             return {
@@ -417,7 +421,8 @@ class ClassificationEntry(Entity):
                 'parent': self.parent_id,
                 'parent_list': self.parent_list,
                 'layout': self.layout_id,
-                'descriptors': self.descriptors
+                'descriptors': self.descriptors,
+                'comments': self.comments
             }
 
     def audit_delete(self, user):

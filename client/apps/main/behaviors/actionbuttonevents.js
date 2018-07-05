@@ -1,7 +1,8 @@
 /**
  * @file actionbuttonevents.js
  * @brief
- * @author Medhi BOULNEMOUR (INRA UMR1095), Frédéric SCHERMA (INRA UMR1095)
+ * @author Medhi BOULNEMOUR (INRA UMR1095)
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-05-19
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
@@ -20,7 +21,8 @@ let ActionBtnEvents = Marionette.Behavior.extend({
             tag: {title: _t('Label'), display: false},
             manage: {title: _t('Manage'), display: false},
             remove: {title: _t('Delete'), display: true},
-            unlink: {title: _t('Unlink'), display: false}
+            unlink: {title: _t('Unlink'), display: false},
+            history: {title: _t('History'), display: false},
         }
     },
 
@@ -59,8 +61,8 @@ let ActionBtnEvents = Marionette.Behavior.extend({
     },
 */
     onDestroy: function() {
-        if (application.main.tmp.lastActionButtonEvents === this) {
-            application.main.tmp.lastActionButtonEvents = null;
+        if (window.application.main.tmp.lastActionButtonEvents === this) {
+            window.application.main.tmp.lastActionButtonEvents = null;
         }
 
         if (this.rowActionButtons) {
@@ -70,15 +72,15 @@ let ActionBtnEvents = Marionette.Behavior.extend({
 
     overActions: function (e) {
         // delete a previous one not clean (issue on chrome)
-        if (application.main.tmp.lastActionButtonEvents !== this) {
-            let last = application.main.tmp.lastActionButtonEvents;
+        if (window.application.main.tmp.lastActionButtonEvents !== this) {
+            let last = window.application.main.tmp.lastActionButtonEvents;
 
             if (last && last.rowActionButtons) {
                 last.inButtons = last.inRow = false;
                 last.rowActionButtons.remove();
             }
 
-            application.main.tmp.lastActionButtonEvents = this;
+            window.application.main.tmp.lastActionButtonEvents = this;
         }
 
         if (this.rowActionButtons && e.relatedTarget && (
