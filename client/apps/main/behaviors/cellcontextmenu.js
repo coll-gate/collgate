@@ -87,6 +87,8 @@ let Behavior = Marionette.Behavior.extend({
 
         if (!openNew.attr('target')) {
             openNew.hide();
+        } else {
+            openNew.show();
         }
 
         // hide the context menu when click on the glass pane
