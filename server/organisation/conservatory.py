@@ -15,6 +15,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from apps.descriptor.comment import CommentController
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
@@ -44,6 +45,11 @@ class RestConservatoryId(RestConservatory):
 class RestConservatoryIdComment(RestConservatoryId):
     regex = r'^comment/$'
     suffix = 'comment'
+
+
+class RestConservatoryIdCommentId(RestConservatoryIdComment):
+    regex = r'^(?P<com_id>[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/$'
+    suffix = 'id'
 
 
 class RestEstablishmentIdConservatory(RestEstablishmentId):
@@ -346,77 +352,55 @@ def delete_conservatory(request, con_id):
 
 
 @RestConservatoryIdComment.def_auth_request(Method.GET, Format.JSON, perms={
-      'organisation.get_conservatory': _("You are not allowed to get a conservatory"),
-    })
+    'organisation.get_conservatory': _("You are not allowed to get a conservatory")
+})
 def get_conservatory_comment_list(request, con_id):
-    conservatory = get_object_or_404(Conservatory, id=int(con_id))
-    result = conservatory.comments
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    return HttpResponseRest(request, result)
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
 
-
-@RestConservatoryIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
-    'organisation.change_conservatory': _("You are not allowed to modify a conservatory"),
-})
-def remove_conservatory_comment(request, con_id):
     conservatory = get_object_or_404(Conservatory, id=int(con_id))
 
-    comment_label = request.data
-    found = False
-
-    # update comments
-    for comment in conservatory.comments:
-        if comment['label'] == comment_label:
-            del comment
-            found = True
-
-    if not found:
-        raise SuspiciousOperation(_("Comment label does not exists."))
-
-    result = conservatory.comments
-
-    return HttpResponseRest(request, result)
-
-
-@RestConservatoryIdComment.def_auth_request(Method.POST, Format.JSON, content=Establishment.COMMENT_VALIDATOR, perms={
-  'organisation.change_conservatory': _("You are not allowed to modify a conservatory"),
-})
-def add_conservatory_comment(request, con_id):
-    conservatory = get_object_or_404(Conservatory, id=int(con_id))
-    comment_data = request.data
-
-    # update comments
-    for comment in conservatory.comments:
-        if comment['label'] == comment_data['label']:
-            raise SuspiciousOperation(_("Comment label already exists. Try another."))
-
-    conservatory.comments.add = comment_data
-
-    conservatory.update_field('comments')
-    conservatory.save()
-
-    results = conservatory.comments
+    comment_controller = CommentController(conservatory)
+    results = comment_controller.list_comments(order_by)
 
     return HttpResponseRest(request, results)
 
 
-@RestConservatoryIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Establishment.COMMENT_VALIDATOR, perms={
-    'organisation.change_conservatory': _("You are not allowed to modify a conservatory"),
+@RestConservatoryIdCommentId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'organisation.change_conservatory': _("You are not allowed to modify a conservatory")
 })
-def patch_conservatory_comment(request, con_id):
+def remove_conservatory_comment(request, con_id, com_id):
     conservatory = get_object_or_404(Conservatory, id=int(con_id))
-    comment_data = request.data
 
-    # update comments
-    for comment in conservatory.comments:
-        if comment['label'] == comment_data['label']:
-            comment['value'] = comment_data['value']
+    comment_controller = CommentController(conservatory)
+    comment_controller.remove_comment(com_id)
 
-    # conservatory.comments = comments
+    return HttpResponseRest(request, {})
 
-    conservatory.update_field('comments')
-    conservatory.save()
 
-    result = conservatory.comments
+@RestConservatoryIdComment.def_auth_request(Method.POST, Format.JSON, content=Conservatory.COMMENT_VALIDATOR, perms={
+    'organisation.change_conservatory': _("You are not allowed to modify a conservatory")
+})
+def add_conservatory_comment(request, con_id):
+    conservatory = get_object_or_404(Conservatory, id=int(con_id))
+
+    comment_controller = CommentController(conservatory)
+    result = comment_controller.add_comment(request.data['label'], request.data['value'])
+
+    return HttpResponseRest(request, result)
+
+
+@RestConservatoryIdCommentId.def_auth_request(Method.PATCH, Format.JSON, content=Conservatory.COMMENT_VALIDATOR, perms={
+    'organisation.change_conservatory': _("You are not allowed to modify a conservatory")
+})
+def patch_conservatory_comment(request, con_id, com_id):
+    conservatory = get_object_or_404(Conservatory, id=int(con_id))
+
+    comment_controller = CommentController(conservatory)
+    result = comment_controller.update_comment(com_id, request.data['label'], request.data['value'])
 
     return HttpResponseRest(request, result)

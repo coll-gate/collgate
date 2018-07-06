@@ -77,6 +77,9 @@ let View = AdvancedTable.extend({
     onShowTab: function () {
         View.__super__.onShowTab.apply(this);
 
+        // query now to avoid useless queries
+        this.query();
+
         // context only for children
         if (this.collection.batch_type !== 'parents') {
             let self = this;

@@ -17,6 +17,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from apps.descriptor.comment import CommentController
 from classification import localsettings
 from classification.classification import RestClassificationClassificationId
 from descriptor.describable import DescriptorsBuilder
@@ -883,77 +884,55 @@ def get_classification_id_list_count(request, cls_id):
 
 
 @RestClassificationEntryIdComment.def_auth_request(Method.GET, Format.JSON, perms={
-      'classification.get_classificationentry': _("You are not allowed to get a classification entry"),
-    })
+    'classification.get_classificationentry': _("You are not allowed to get a classification entry")
+})
 def get_classification_entry_comment_list(request, cls_id):
-    classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
-    result = classification_entry.comments
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    return HttpResponseRest(request, result)
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
 
+    accession = get_object_or_404(ClassificationEntry, id=int(cls_id))
 
-@RestClassificationEntryIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
-    'classification.change_classificationentry': _("You are not allowed to modify an accession"),
-})
-def remove_classification_entry_comment(request, cls_id):
-    classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
-
-    comment_label = request.data
-    found = False
-
-    # update comments
-    for comment in classification_entry.comments:
-        if comment['label'] == comment_label:
-            del comment
-            found = True
-
-    if not found:
-        raise SuspiciousOperation(_("Comment label does not exists."))
-
-    result = classification_entry.comments
-
-    return HttpResponseRest(request, result)
-
-
-@RestClassificationEntryIdComment.def_auth_request(Method.POST, Format.JSON, content=ClassificationEntry.COMMENT_VALIDATOR, perms={
-  'classification.change_classificationentry': _("You are not allowed to modify an accession"),
-})
-def add_classification_entry_comment(request, cls_id):
-    classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
-    comment_data = request.data
-
-    # update comments
-    for comment in classification_entry.comments:
-        if comment['label'] == comment_data['label']:
-            raise SuspiciousOperation(_("Comment label already exists. Try another."))
-
-    classification_entry.comments.add = comment_data
-
-    classification_entry.update_field('comments')
-    classification_entry.save()
-
-    results = classification_entry.comments
+    comment_controller = CommentController(accession)
+    results = comment_controller.list_comments(order_by)
 
     return HttpResponseRest(request, results)
 
 
-@RestClassificationEntryIdComment.def_auth_request(Method.PATCH, Format.JSON, content=ClassificationEntry.COMMENT_VALIDATOR, perms={
-    'classification.change_classificationentry': _("You are not allowed to modify an accession"),
+@RestClassificationEntryIdCommentId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'classification.change_classificationentry': _("You are not allowed to modify a classification entry")
 })
-def patch_classification_entry_comment(request, cls_id):
-    classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
-    comment_data = request.data
+def remove_classification_entry_comment(request, cls_id, com_id):
+    clsentry = get_object_or_404(ClassificationEntry, id=int(cls_id))
 
-    # update comments
-    for comment in classification_entry.comments:
-        if comment['label'] == comment_data['label']:
-            comment['value'] = comment_data['value']
+    comment_controller = CommentController(clsentry)
+    comment_controller.remove_comment(com_id)
 
-    # classification_entry.comments = comments
+    return HttpResponseRest(request, {})
 
-    classification_entry.update_field('comments')
-    classification_entry.save()
 
-    result = classification_entry.comments
+@RestClassificationEntryIdComment.def_auth_request(Method.POST, Format.JSON, content=ClassificationEntry.COMMENT_VALIDATOR, perms={
+    'classification.change_classificationentry': _("You are not allowed to modify a classification entry")
+})
+def add_classification_entry_comment(request, cls_id):
+    clsentry = get_object_or_404(ClassificationEntry, id=int(cls_id))
+
+    comment_controller = CommentController(clsentry)
+    result = comment_controller.add_comment(request.data['label'], request.data['value'])
+
+    return HttpResponseRest(request, result)
+
+
+@RestClassificationEntryIdCommentId.def_auth_request(Method.PATCH, Format.JSON, content=ClassificationEntry.COMMENT_VALIDATOR, perms={
+    'classification.change_classificationentry': _("You are not allowed to modify a classification entry")
+})
+def patch_classification_entry_comment(request, cls_id, com_id):
+    clsentry = get_object_or_404(ClassificationEntry, id=int(cls_id))
+
+    comment_controller = CommentController(clsentry)
+    result = comment_controller.update_comment(com_id, request.data['label'], request.data['value'])
 
     return HttpResponseRest(request, result)

@@ -133,6 +133,16 @@ let Layout = LayoutView.extend({
                 });
             });
 
+            // comments
+            let CommentListView = require('../../descriptor/views/commentlist');
+
+            // classifications entry tab (query on show tab)
+            let CommentCollection = require('../../descriptor/collections/comment');
+            let comments = new CommentCollection([], {entity: this.model});
+
+            let commentListView = new CommentListView({entity: this.model, collection: comments});
+            personLayout.showChildView('comments', commentListView);
+
             // not available tabs
         }
     }

@@ -15,6 +15,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from apps.descriptor.comment import CommentController
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
@@ -357,77 +358,55 @@ def delete_person(request, per_id):
 
 
 @RestPersonIdComment.def_auth_request(Method.GET, Format.JSON, perms={
-      'organisation.get_person': _("You are not allowed to get a person"),
-    })
+    'organisation.get_person': _("You are not allowed to get a person"),
+})
 def get_person_comment_list(request, per_id):
-    person = get_object_or_404(Person, id=int(per_id))
-    result = person.comments
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    return HttpResponseRest(request, result)
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
 
-
-@RestPersonIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
-    'organisation.change_person': _("You are not allowed to modify a person"),
-})
-def remove_person_comment(request, per_id):
     person = get_object_or_404(Person, id=int(per_id))
 
-    comment_label = request.data
-    found = False
-
-    # update comments
-    for comment in person.comments:
-        if comment['label'] == comment_label:
-            del comment
-            found = True
-
-    if not found:
-        raise SuspiciousOperation(_("Comment label does not exists."))
-
-    result = person.comments
-
-    return HttpResponseRest(request, result)
-
-
-@RestPersonIdComment.def_auth_request(Method.POST, Format.JSON, content=Person.COMMENT_VALIDATOR, perms={
-  'organisation.change_person': _("You are not allowed to modify a person"),
-})
-def add_person_comment(request, per_id):
-    person = get_object_or_404(Person, id=int(per_id))
-    comment_data = request.data
-
-    # update comments
-    for comment in person.comments:
-        if comment['label'] == comment_data['label']:
-            raise SuspiciousOperation(_("Comment label already exists. Try another."))
-
-    person.comments.add = comment_data
-
-    person.update_field('comments')
-    person.save()
-
-    results = person.comments
+    comment_controller = CommentController(person)
+    results = comment_controller.list_comments(order_by)
 
     return HttpResponseRest(request, results)
 
 
-@RestPersonIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Person.COMMENT_VALIDATOR, perms={
-    'organisation.change_person': _("You are not allowed to modify a person"),
+@RestPersonIdCommentId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'organisation.change_person': _("You are not allowed to modify a person")
 })
-def patch_person_comment(request, per_id):
+def remove_person_comment(request, per_id, com_id):
     person = get_object_or_404(Person, id=int(per_id))
-    comment_data = request.data
 
-    # update comments
-    for comment in person.comments:
-        if comment['label'] == comment_data['label']:
-            comment['value'] = comment_data['value']
+    comment_controller = CommentController(person)
+    comment_controller.remove_comment(com_id)
 
-    # conservatory.comments = comments
+    return HttpResponseRest(request, {})
 
-    person.update_field('comments')
-    person.save()
 
-    result = person.comments
+@RestPersonIdComment.def_auth_request(Method.POST, Format.JSON, content=Person.COMMENT_VALIDATOR, perms={
+    'organisation.change_person': _("You are not allowed to modify a person")
+})
+def add_person_comment(request, per_id):
+    person = get_object_or_404(Person, id=int(per_id))
+
+    comment_controller = CommentController(person)
+    result = comment_controller.add_comment(request.data['label'], request.data['value'])
+
+    return HttpResponseRest(request, result)
+
+
+@RestPersonIdCommentId.def_auth_request(Method.PATCH, Format.JSON, content=Person.COMMENT_VALIDATOR, perms={
+    'organisation.change_person': _("You are not allowed to modify a person")
+})
+def patch_person_comment(request, per_id, com_id):
+    person = get_object_or_404(Person, id=int(per_id))
+
+    comment_controller = CommentController(person)
+    result = comment_controller.update_comment(com_id, request.data['label'], request.data['value'])
 
     return HttpResponseRest(request, result)

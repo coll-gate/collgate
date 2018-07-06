@@ -146,12 +146,10 @@ let Layout = LayoutView.extend({
             let persons = new PersonCollection([], {establishment_id: this.model.get('id')});
 
             // get available columns
-            let columns2 = window.application.main.cache.lookup({
+            window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'organisation.person'}
-            });
-
-            $.when(columns2, persons.fetch()).then(function (data) {
+            }).then(function (data) {
                 if (!establishmentLayout.isRendered()) {
                     return;
                 }
@@ -179,6 +177,16 @@ let Layout = LayoutView.extend({
                     columns: data[0].value
                 }));
             });
+
+            // comments
+            let CommentListView = require('../../descriptor/views/commentlist');
+
+            // classifications entry tab (query on show tab)
+            let CommentCollection = require('../../descriptor/collections/comment');
+            let comments = new CommentCollection([], {entity: this.model});
+
+            let commentListView = new CommentListView({entity: this.model, collection: comments});
+            establishmentLayout.showChildView('comments', commentListView);
 
             // if necessary enable tabs
             this.ui.conservatories_tab.parent().removeClass('disabled');

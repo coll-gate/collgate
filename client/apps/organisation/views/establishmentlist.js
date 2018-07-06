@@ -54,7 +54,12 @@ let View = AdvancedTable.extend({
     },
     
     onShowTab: function() {
-        let view = this;
+        View.__super__.onShowTab.apply(this, arguments);
+
+        let self = this;
+
+        // query now to avoid useless queries
+        this.query();
 
         let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
@@ -74,10 +79,8 @@ let View = AdvancedTable.extend({
 
         contextView.on("establishment:add", function () {
             window.application.organisation.controllers.establishment.create(
-                view.getOption('model'), view.collection);
+                self.getOption('model'), self.collection);
         });
-
-        View.__super__.onShowTab.apply(this, arguments);
     },
 
     onHideTab: function() {

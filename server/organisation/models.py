@@ -118,7 +118,8 @@ class Organisation(DescribableEntity):
             'name': self.name,
             'type': self.type,
             'layout': self.layout_id,
-            'descriptors': self.descriptors
+            'descriptors': self.descriptors,
+            'comments': self.comments
         }
 
     def audit_update(self, user):
@@ -137,12 +138,16 @@ class Organisation(DescribableEntity):
                 else:
                     result['descriptors'] = self.descriptors
 
+            if 'comments' in self.updated_fields:
+                result['comments'] = self.comments
+
             return result
         else:
             return {
                 'name': self.name,
                 'type': self.type,
-                'descriptors': self.descriptors
+                'descriptors': self.descriptors,
+                'comments': self.comments
             }
 
     def audit_delete(self, user):
@@ -218,7 +223,8 @@ class Establishment(DescribableEntity):
         return {
             'name': self.name,
             'layout': self.layout_id,
-            'descriptors': self.descriptors
+            'descriptors': self.descriptors,
+            'comments': self.comments
         }
 
     def audit_update(self, user):
@@ -234,11 +240,15 @@ class Establishment(DescribableEntity):
                 else:
                     result['descriptors'] = self.descriptors
 
+            if 'comments' in self.updated_fields:
+                result['comments'] = self.comments
+
             return result
         else:
             return {
                 'name': self.name,
-                'descriptors': self.descriptors
+                'descriptors': self.descriptors,
+                'comments': self.comments
             }
 
     def audit_delete(self, user):
@@ -336,7 +346,8 @@ class Conservatory(DescribableEntity):
         return {
             'code': self.name,
             'layout': self.layout_id,
-            'descriptors': self.descriptors
+            'descriptors': self.descriptors,
+            'comments': self.comments
         }
 
     def audit_update(self, user):
@@ -352,11 +363,15 @@ class Conservatory(DescribableEntity):
                 else:
                     result['descriptors'] = self.descriptors
 
+            if 'comments' in self.updated_fields:
+                result['comments'] = self.comments
+
             return result
         else:
             return {
                 'code': self.name,
-                'descriptors': self.descriptors
+                'descriptors': self.descriptors,
+                'comments': self.comments
             }
 
     def audit_delete(self, user):
@@ -450,7 +465,8 @@ class Person(DescribableEntity):
         return {
             'code': self.code,
             'layout': self.layout_id,
-            'descriptors': self.descriptors
+            'descriptors': self.descriptors,
+            'comments': self.comments
         }
 
     def audit_update(self, user):
@@ -466,11 +482,15 @@ class Person(DescribableEntity):
                 else:
                     result['descriptors'] = self.descriptors
 
+            if 'comments' in self.updated_fields:
+                result['comments'] = self.comments
+
             return result
         else:
             return {
                 'code': self.code,
-                'descriptors': self.descriptors
+                'descriptors': self.descriptors,
+                'comments': self.comments
             }
 
     def audit_delete(self, user):

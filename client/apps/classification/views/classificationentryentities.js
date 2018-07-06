@@ -21,6 +21,19 @@ let View = AdvancedTable.extend({
         View.__super__.initialize.apply(this);
 
         this.listenTo(this.collection, 'reset', this.render, this);
+    },
+
+    onShowTab: function() {
+        View.__super__.onShowTab.apply(this);
+
+        let self = this;
+
+        // query now to avoid useless queries
+        this.query();
+    },
+
+    onBeforeDetach: function() {
+        window.application.main.defaultRightView();
     }
 });
 

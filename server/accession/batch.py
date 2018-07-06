@@ -18,6 +18,7 @@ from django.shortcuts import get_object_or_404
 
 from accession.actions.actionstepformat import ActionStepFormatManager
 from accession.namebuilder import NameBuilderManager
+from apps.descriptor.comment import CommentController
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import Layout
 from igdectk.rest.handler import *
@@ -657,36 +658,34 @@ def get_batch_list_count(request):
 
 
 @RestBatchIdComment.def_auth_request(Method.GET, Format.JSON, perms={
-      'accession.get_batch': _("You are not allowed to get a batch"),
-    })
+    'accession.get_accession': _("You are not allowed to get a batch")
+})
 def get_batch_comment_list(request, bat_id):
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
     batch = get_object_or_404(Batch, id=int(bat_id))
-    result = batch.comments
 
-    return HttpResponseRest(request, result)
+    comment_controller = CommentController(batch)
+    results = comment_controller.list_comments(order_by)
+
+    return HttpResponseRest(request, results)
 
 
-@RestBatchIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'uuid'}, perms={
+@RestBatchIdCommentId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'accession.change_batch': _("You are not allowed to modify a batch"),
 })
-def remove_batch_comment(request, bat_id):
+def remove_batch_comment(request, bat_id, com_id):
     batch = get_object_or_404(Batch, id=int(bat_id))
 
-    comment_uuid = request.data
-    found = False
+    comment_controller = CommentController(batch)
+    comment_controller.remove_comment(com_id)
 
-    # update comments
-    for comment in batch.comments:
-        if comment['id'] == comment_uuid:
-            del comment
-            found = True
-
-    if not found:
-        raise SuspiciousOperation(_("Comment label does not exists."))
-
-    result = batch.comments
-
-    return HttpResponseRest(request, result)
+    return HttpResponseRest(request, {})
 
 
 @RestBatchIdComment.def_auth_request(Method.POST, Format.JSON, content=Batch.COMMENT_VALIDATOR, perms={
@@ -694,40 +693,20 @@ def remove_batch_comment(request, bat_id):
 })
 def add_batch_comment(request, bat_id):
     batch = get_object_or_404(Batch, id=int(bat_id))
-    comment_data = request.data
 
-    # update comments
-    for comment in batch.comments:
-        if comment['label'] == comment_data['label']:
-            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+    comment_controller = CommentController(batch)
+    result = comment_controller.add_comment(request.data['label'], request.data['value'])
 
-    comment_data['id'] = str(uuid.uuid4())
-
-    batch.comments.append(comment_data)
-
-    batch.update_field('comments')
-    batch.save()
-
-    results = batch.comments
-
-    return HttpResponseRest(request, results)
+    return HttpResponseRest(request, result)
 
 
-@RestBatchIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Batch.COMMENT_VALIDATOR, perms={
+@RestBatchIdCommentId.def_auth_request(Method.PATCH, Format.JSON, content=Batch.COMMENT_VALIDATOR, perms={
     'accession.change_batch': _("You are not allowed to modify a batch"),
 })
-def patch_batch_comment(request, bat_id):
+def patch_batch_comment(request, bat_id, com_id):
     batch = get_object_or_404(Batch, id=int(bat_id))
-    comment_data = request.data
 
-    # update comments
-    for comment in batch.comments:
-        if comment['id'] == comment_data['id']:
-            comment['value'] = comment_data['value']
-
-    batch.update_field('comments')
-    batch.save()
-
-    result = comment_data
+    comment_controller = CommentController(batch)
+    result = comment_controller.update_comment(com_id, request.data['label'], request.data['value'])
 
     return HttpResponseRest(request, result)

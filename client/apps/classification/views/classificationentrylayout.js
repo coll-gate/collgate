@@ -168,15 +168,13 @@ let Layout = LayoutView.extend({
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({
                     targetView: classificationEntryChildrenView, collection: classificationEntryChildren
                 }));
-
-                classificationEntryChildrenView.query();
             });
 
             // entities relating this classificationEntry tab
             let ClassificationEntryEntitiesCollection = require('../collections/classificationentryentities');
             let classificationEntryEntities = new ClassificationEntryEntitiesCollection([], {model_id: this.model.id});
 
-            classificationEntryEntities.fetch().then(function () {
+            {
                 if (!classificationEntryLayout.isRendered()) {
                     return;
                 }
@@ -191,14 +189,14 @@ let Layout = LayoutView.extend({
 
                 contentBottomLayout.showChildView('content', classificationEntryEntitiesView);
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: classificationEntryEntitiesView}));
-            });
+            }
 
             // related classification entries
 
             let ClassificationEntryCollection = require('../collections/classificationentry');
             let classificationEntryRelated = new ClassificationEntryCollection([], {classification_entry_id: this.model.id});
 
-            $.when(columns, classificationEntryRelated.fetch()).then(function (data) {
+            columns.then(function (data) {
                 if (!classificationEntryLayout.isRendered()) {
                     return;
                 }
@@ -218,6 +216,16 @@ let Layout = LayoutView.extend({
                     targetView: classificationEntryListView, collection: classificationEntryRelated
                 }));
             });
+
+            // comments
+            let CommentListView = require('../../descriptor/views/commentlist');
+
+            // classifications entry tab (query on show tab)
+            let CommentCollection = require('../../descriptor/collections/comment');
+            let comments = new CommentCollection([], {entity: this.model});
+
+            let commentListView = new CommentListView({entity: this.model, collection: comments});
+            classificationEntryLayout.showChildView('comments', commentListView);
 
             this.onLayoutChange(this.model, this.model.get('layout'));
             this.enableTabs();

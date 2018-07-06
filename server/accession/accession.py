@@ -7,6 +7,7 @@
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details
+
 import uuid
 
 from django.contrib.contenttypes.models import ContentType
@@ -20,6 +21,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from accession import localsettings
 from accession.namebuilder import NameBuilderManager
+from apps.descriptor.comment import CommentController
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
@@ -564,28 +566,8 @@ def get_accession_comment_list(request, acc_id):
 
     accession = get_object_or_404(Accession, id=int(acc_id))
 
-    comment_items = []
-
-    for cid, comment in accession.comments.items():
-        comment_items.append({
-            'id': cid,
-            'label': comment['label'],
-            'value': comment['value']
-        })
-
-    # sort by label
-    if '-label' in order_by:
-        comment_items.sort(key=lambda c: c['label'], reverse=True)
-    else:
-        comment_items.sort(key=lambda c: c['label'])
-
-    results = {
-        'items': comment_items,
-        'perms': [],
-        'prev': None,  # cq.prev_cursor,
-        'cursor': None,  # cursor,
-        'next': None  # cq.next_cursor
-    }
+    comment_controller = CommentController(accession)
+    results = comment_controller.list_comments(order_by)
 
     return HttpResponseRest(request, results)
 
@@ -596,15 +578,8 @@ def get_accession_comment_list(request, acc_id):
 def remove_accession_comment(request, acc_id, com_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
 
-    comment_uuid = str(com_id)
-
-    # update comments
-    if comment_uuid in accession.comments:
-        del accession.comments[comment_uuid]
-    else:
-        raise SuspiciousOperation(_("Comment does not exists."))
-
-    accession.save()
+    comment_controller = CommentController(accession)
+    comment_controller.remove_comment(com_id)
 
     return HttpResponseRest(request, {})
 
@@ -614,25 +589,11 @@ def remove_accession_comment(request, acc_id, com_id):
 })
 def add_accession_comment(request, acc_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
-    comment_data = request.data
 
-    for cid, comment in accession.comments.items():
-        if comment['label'] == comment_data['label']:
-            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+    comment_controller = CommentController(accession)
+    result = comment_controller.add_comment(request.data['label'], request.data['value'])
 
-    comment_uuid = str(uuid.uuid4())
-    accession.comments[comment_uuid] = {
-        'label': comment_data['label'],
-        'value': comment_data['value']
-    }
-
-    accession.update_field('comments')
-    accession.save()
-
-    results = comment_data
-    results['id'] = comment_uuid
-
-    return HttpResponseRest(request, results)
+    return HttpResponseRest(request, result)
 
 
 @RestAccessionIdCommentId.def_auth_request(Method.PATCH, Format.JSON, content=Accession.COMMENT_VALIDATOR, perms={
@@ -640,25 +601,8 @@ def add_accession_comment(request, acc_id):
 })
 def patch_accession_comment(request, acc_id, com_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
-    comment_data = request.data
 
-    comment = accession.comments.get(com_id)
-
-    if comment is None:
-        raise SuspiciousOperation(_("Comment does not exists."))
-
-    for cid, comment in accession.comments.items():
-        if comment['label'] == comment_data['label'] and cid != com_id:
-            raise SuspiciousOperation(_("Comment label already exists. Try another."))
-
-    # update comments
-    comment['label'] = comment_data['label']
-    comment['value'] = comment_data['value']
-
-    accession.update_field('comments')
-    accession.save()
-
-    result = comment_data
-    result['id'] = com_id
+    comment_controller = CommentController(accession)
+    result = comment_controller.update_comment(com_id, request.data['label'], request.data['value'])
 
     return HttpResponseRest(request, result)

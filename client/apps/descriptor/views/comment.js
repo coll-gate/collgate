@@ -91,10 +91,7 @@ let View = Marionette.View.extend({
         let objectId = tokens[tokens.length - 4];
         let comId = '"' + this.model.get('id');
 
-        let options = {};
-
-        // @todo
-        // query history with same comment label
+        // query history of the comment id
         $.ajax({
             url: window.application.url(['audit', 'search', 'history', 'value']),
             dataType: 'json',

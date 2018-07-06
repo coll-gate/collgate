@@ -381,7 +381,8 @@ class Batch(DescribableEntity):
             'name': self.name,
             'accession': self.accession_id,
             'layout': self.layout_id,
-            'descriptors': self.descriptors
+            'descriptors': self.descriptors,
+            'comments': self.comments
         }
 
     def audit_update(self, user):
@@ -397,11 +398,15 @@ class Batch(DescribableEntity):
                 else:
                     result['descriptors'] = self.descriptors
 
+            if 'comments' in self.updated_fields:
+                result['comments'] = self.comments
+
             return result
         else:
             return {
                 'name': self.name,
-                'descriptors': self.descriptors
+                'descriptors': self.descriptors,
+                'comments': self.comments
             }
 
     def audit_delete(self, user):
@@ -773,6 +778,7 @@ class AccessionPanel(Panel):
 class StorageLocation(models.Model):
     """
     Defines storage locations of batches.
+    @tddo why not an entity ?
     """
 
     # default name validator
@@ -814,3 +820,47 @@ class StorageLocation(models.Model):
         :note Model instance save() is not called.
         """
         self.label[lang] = label
+
+    def natural_name(self):
+        return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
+    def audit_create(self, user):
+        return {
+            'name': self.name,
+            # 'layout': self.layout_id,
+            # 'descriptors': self.descriptors,
+            # 'comments': self.comments
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
+
+            # if 'descriptors' in self.updated_fields:
+            #     if hasattr(self, 'updated_descriptors'):
+            #         result['descriptors'] = self.updated_descriptors
+            #     else:
+            #         result['descriptors'] = self.descriptors
+            #
+            # if 'comments' in self.updated_fields:
+            #     result['comments'] = self.comments
+
+            return result
+        else:
+            return {
+                'name': self.name,
+                # 'descriptors': self.descriptors,
+                # 'comments': self.comments
+            }
+
+    def audit_delete(self, user):
+        return {
+            'name': self.name
+        }

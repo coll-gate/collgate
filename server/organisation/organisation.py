@@ -17,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
+from apps.descriptor.comment import CommentController
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
@@ -410,36 +411,34 @@ def delete_organisation(request, org_id):
 
 
 @RestOrganisationIdComment.def_auth_request(Method.GET, Format.JSON, perms={
-      'organisation.get_organisation': _("You are not allowed to get an organisation"),
-    })
+    'organisation.change_organisation': _("You are not allowed to modify an organisation")
+})
 def get_organisation_comment_list(request, org_id):
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
     organisation = get_object_or_404(Organisation, id=int(org_id))
-    result = organisation.comments
 
-    return HttpResponseRest(request, result)
+    comment_controller = CommentController(organisation)
+    results = comment_controller.list_comments(order_by)
+
+    return HttpResponseRest(request, results)
 
 
-@RestOrganisationIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
+@RestOrganisationIdCommentId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'organisation.change_organisation': _("You are not allowed to modify an organisation"),
 })
-def remove_organisation_comment(request, org_id):
-    organisation = get_object_or_404(Organisation, id=int(org_id))
+def remove_organisation_comment(request, bat_id, com_id):
+    organisation = get_object_or_404(Organisation, id=int(bat_id))
 
-    comment_label = request.data
-    found = False
+    comment_controller = CommentController(organisation)
+    comment_controller.remove_comment(com_id)
 
-    # update comments
-    for comment in organisation.comments:
-        if comment['label'] == comment_label:
-            del comment
-            found = True
-
-    if not found:
-        raise SuspiciousOperation(_("Comment label does not exists."))
-
-    result = organisation.comments
-
-    return HttpResponseRest(request, result)
+    return HttpResponseRest(request, {})
 
 
 @RestOrganisationIdComment.def_auth_request(Method.POST, Format.JSON, content=Organisation.COMMENT_VALIDATOR, perms={
@@ -447,40 +446,20 @@ def remove_organisation_comment(request, org_id):
 })
 def add_organisation_comment(request, org_id):
     organisation = get_object_or_404(Organisation, id=int(org_id))
-    comment_data = request.data
 
-    # update comments
-    for comment in organisation.comments:
-        if comment['label'] == comment_data['label']:
-            raise SuspiciousOperation(_("Comment label already exists. Try another."))
+    comment_controller = CommentController(organisation)
+    result = comment_controller.add_comment(request.data['label'], request.data['value'])
 
-    organisation.comments.add = comment_data
-
-    organisation.update_field('comments')
-    organisation.save()
-
-    results = organisation.comments
-
-    return HttpResponseRest(request, results)
+    return HttpResponseRest(request, result)
 
 
-@RestOrganisationIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Organisation.COMMENT_VALIDATOR, perms={
+@RestOrganisationIdCommentId.def_auth_request(Method.PATCH, Format.JSON, content=Organisation.COMMENT_VALIDATOR, perms={
     'organisation.change_organisation': _("You are not allowed to modify an organisation"),
 })
-def patch_organisation_comment(request, org_id):
+def patch_organisation_comment(request, org_id, com_id):
     organisation = get_object_or_404(Organisation, id=int(org_id))
-    comment_data = request.data
 
-    # update comments
-    for comment in organisation.comments:
-        if comment['label'] == comment_data['label']:
-            comment['value'] = comment_data['value']
-
-    # organisation.comments = comments
-
-    organisation.update_field('comments')
-    organisation.save()
-
-    result = organisation.comments
+    comment_controller = CommentController(organisation)
+    result = comment_controller.update_comment(com_id, request.data['label'], request.data['value'])
 
     return HttpResponseRest(request, result)

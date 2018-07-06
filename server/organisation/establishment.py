@@ -15,6 +15,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from apps.descriptor.comment import CommentController
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
@@ -355,77 +356,55 @@ def delete_establishment(request, est_id):
 
 
 @RestEstablishmentIdComment.def_auth_request(Method.GET, Format.JSON, perms={
-      'organisation.get_establishment': _("You are not allowed to get an establishment"),
-    })
+    'organisation.get_establishment': _("You are not allowed to get an establishment"),
+})
 def get_establishment_comment_list(request, est_id):
-    establishment = get_object_or_404(Establishment, id=int(est_id))
-    result = establishment.comments
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    return HttpResponseRest(request, result)
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
 
-
-@RestEstablishmentIdComment.def_auth_request(Method.DELETE, Format.JSON, content={'type': 'string', 'minLength': 3, 'maxLength': 128}, perms={
-    'organisation.change_establishment': _("You are not allowed to modify an establishment"),
-})
-def remove_establishment_comment(request, est_id):
     establishment = get_object_or_404(Establishment, id=int(est_id))
 
-    comment_label = request.data
-    found = False
-
-    # update comments
-    for comment in establishment.comments:
-        if comment['label'] == comment_label:
-            del comment
-            found = True
-
-    if not found:
-        raise SuspiciousOperation(_("Comment label does not exists."))
-
-    result = establishment.comments
-
-    return HttpResponseRest(request, result)
-
-
-@RestEstablishmentIdComment.def_auth_request(Method.POST, Format.JSON, content=Establishment.COMMENT_VALIDATOR, perms={
-  'organisation.change_establishment': _("You are not allowed to modify an establishment"),
-})
-def add_establishment_comment(request, est_id):
-    establishment = get_object_or_404(Establishment, id=int(est_id))
-    comment_data = request.data
-
-    # update comments
-    for comment in establishment.comments:
-        if comment['label'] == comment_data['label']:
-            raise SuspiciousOperation(_("Comment label already exists. Try another."))
-
-    establishment.comments.add = comment_data
-
-    establishment.update_field('comments')
-    establishment.save()
-
-    results = establishment.comments
+    comment_controller = CommentController(establishment)
+    results = comment_controller.list_comments(order_by)
 
     return HttpResponseRest(request, results)
 
 
-@RestEstablishmentIdComment.def_auth_request(Method.PATCH, Format.JSON, content=Establishment.COMMENT_VALIDATOR, perms={
-    'organisation.change_establishment': _("You are not allowed to modify an establishment"),
+@RestEstablishmentIdCommentId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'organisation.change_establishment': _("You are not allowed to modify an establishment")
 })
-def patch_establishment_comment(request, est_id):
+def remove_establishment_comment(request, est_id, com_id):
     establishment = get_object_or_404(Establishment, id=int(est_id))
-    comment_data = request.data
 
-    # update comments
-    for comment in establishment.comments:
-        if comment['label'] == comment_data['label']:
-            comment['value'] = comment_data['value']
+    comment_controller = CommentController(establishment)
+    comment_controller.remove_comment(com_id)
 
-    # establishment.comments = comments
+    return HttpResponseRest(request, {})
 
-    establishment.update_field('comments')
-    establishment.save()
 
-    result = establishment.comments
+@RestEstablishmentIdComment.def_auth_request(Method.POST, Format.JSON, content=Establishment.COMMENT_VALIDATOR, perms={
+    'organisation.change_establishment': _("You are not allowed to modify an establishment")
+})
+def add_establishment_comment(request, est_id):
+    establishment = get_object_or_404(Establishment, id=int(est_id))
+
+    comment_controller = CommentController(establishment)
+    result = comment_controller.add_comment(request.data['label'], request.data['value'])
+
+    return HttpResponseRest(request, result)
+
+
+@RestEstablishmentIdCommentId.def_auth_request(Method.PATCH, Format.JSON, content=Establishment.COMMENT_VALIDATOR, perms={
+    'organisation.change_establishment': _("You are not allowed to modify an establishment")
+})
+def patch_establishment_comment(request, est_id, com_id):
+    establishment = get_object_or_404(Establishment, id=int(est_id))
+
+    comment_controller = CommentController(establishment)
+    result = comment_controller.update_comment(com_id, request.data['label'], request.data['value'])
 
     return HttpResponseRest(request, result)

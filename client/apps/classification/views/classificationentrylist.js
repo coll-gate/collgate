@@ -77,7 +77,12 @@ let View = AdvancedTable.extend({
     },
 
     onShowTab: function() {
-        let view = this;
+        View.__super__.onShowTab.apply(this);
+
+        let self = this;
+
+        // query now to avoid useless queries
+        this.query();
 
         let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {

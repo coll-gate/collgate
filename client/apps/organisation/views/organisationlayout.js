@@ -102,12 +102,10 @@ let Layout = LayoutView.extend({
             let establishments = new EstablishmentCollection([], {organisation_id: this.model.get('id')});
 
             // get available columns
-            let columns = window.application.main.cache.lookup({
+            window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'organisation.establishment'}
-            });
-
-            columns.then(function (data) {
+            }).then(function (data) {
                 if (!organisationLayout.isRendered()) {
                     return;
                 }
@@ -134,6 +132,16 @@ let Layout = LayoutView.extend({
 
                 establishmentListView.query();
             });
+
+            // comments
+            let CommentListView = require('../../descriptor/views/commentlist');
+
+            // classifications entry tab (query on show tab)
+            let CommentCollection = require('../../descriptor/collections/comment');
+            let comments = new CommentCollection([], {entity: this.model});
+
+            let commentListView = new CommentListView({entity: this.model, collection: comments});
+            organisationLayout.showChildView('comments', commentListView);
 
             // if necessary enable tabs
             this.ui.establishments_tab.parent().removeClass('disabled');

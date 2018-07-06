@@ -145,7 +145,7 @@ let Layout = LayoutView.extend({
             let BatchCollection = require('../../collections/batch');
             let parentBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'parents'});
 
-            $.when(columns, parentBatches.fetch()).then(function (data) {
+            columns.then(function (data) {
                 if (!batchLayout.isRendered()) {
                     return;
                 }
@@ -176,7 +176,7 @@ let Layout = LayoutView.extend({
             // children batches tab
             let childrenBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'children'});
 
-            $.when(columns, childrenBatches.fetch()).then(function (data) {
+            columns.then(function (data) {
                 if (!batchLayout.isRendered()) {
                     return;
                 }
@@ -209,12 +209,10 @@ let Layout = LayoutView.extend({
             let batchPanels = new PanelCollection({batch_id: this.model.get('id')});
 
             // get available columns
-            let columns3 = window.application.main.cache.lookup({
+            window.application.main.cache.lookup({
                 type: 'entity_columns',
                 format: {model: 'accession.batchpanel'}
-            });
-
-            $.when(columns3, batchPanels.fetch()).then(function (data) {
+            }).then(function (data) {
                 if (!batchLayout.isRendered()) {
                     return;
                 }
@@ -240,8 +238,6 @@ let Layout = LayoutView.extend({
                     collection: batchPanels,
                     columns: data[0].value
                 }));
-
-                // batchPanelListView.query(); here or $.when
             });
 
             let accession = new AccessionModel({id: this.model.get('accession')});
@@ -261,12 +257,10 @@ let Layout = LayoutView.extend({
                 let actions = new ActionCollection({batch_id: batchLayout.model.get('id')});
 
                 // get available columns
-                let columns5 = window.application.main.cache.lookup({
+                window.application.main.cache.lookup({
                     type: 'entity_columns',
                     format: {model: 'accession.action'}
-                });
-
-                $.when(columns5, actions.fetch()).then(function (data) {
+                }).then(function (data) {
                     if (!batchLayout.isRendered()) {
                         return;
                     }
@@ -289,12 +283,21 @@ let Layout = LayoutView.extend({
                         collection: actions,
                         columns: data[0].value
                     }));
-
-                    // batchActionListView.query(); here or $.when
                 });
             });
 
             this.onLayoutChange(this.model, this.model.get('layout'));
+
+            // comments
+            let CommentListView = require('../../../descriptor/views/commentlist');
+
+            // classifications entry tab (query on show tab)
+            let CommentCollection = require('../../../descriptor/collections/comment');
+            let comments = new CommentCollection([], {entity: this.model});
+
+            let commentListView = new CommentListView({entity: this.model, collection: comments});
+            batchLayout.showChildView('comments', commentListView);
+
             this.enableTabs();
         } else {
             // descriptors edit tab

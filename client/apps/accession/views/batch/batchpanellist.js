@@ -72,7 +72,12 @@ let View = AdvancedTable.extend({
     },
 
     onShowTab: function () {
+        View.__super__.onShowTab.apply(this, arguments);
+
         let self = this;
+
+        // query now to avoid useless queries
+        this.query();
 
         let contextLayout = window.application.getView().getChildView('right');
         if (!contextLayout) {
@@ -103,8 +108,6 @@ let View = AdvancedTable.extend({
         contextView.on("panel:link-batches", function () {
             self.onLinkToPanel();
         });
-
-        View.__super__.onShowTab.apply(this, arguments);
     }
 });
 
