@@ -13,7 +13,7 @@ import re
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 from igdectk.common.models import ChoiceEnum, IntegerChoice
@@ -249,6 +249,90 @@ class Accession(DescribableEntity):
             return data.get(field)
         else:
             return default
+
+    def export_list(self, cursor, search, filters, order_by, limit, user):
+        columns = []
+        items = []
+
+        if not order_by:
+            order_by = ['id']
+
+        from main.cursor import CursorQuery
+        cq = CursorQuery(Accession)
+
+        if search:
+            cq.filter(search)
+
+        if filters:
+            cq.filter(filters)
+
+        # @todo filter given user permission per accession (v2)
+
+        # accession panels ids
+        cq.m2m_to_array_field(
+            relationship=AccessionPanel.accessions,
+            selected_field='accessionpanel_id',
+            from_related_field='id',
+            to_related_field='accession_id',
+            alias='panels'
+        )
+
+        # classifications entries
+        cq.m2m_to_array_field(
+            relationship=Accession.classifications_entries,
+            selected_field='classification_entry_id',
+            from_related_field='id',
+            to_related_field='accession_id',
+            alias='classifications'
+        )
+
+        # synonyms
+        cq.set_synonym_model(AccessionSynonym)
+
+        cq.prefetch_related(Prefetch(
+            "synonyms",
+            queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language')
+        ))
+
+        cq.select_related('primary_classification_entry->name', 'primary_classification_entry->rank')
+
+        cq.cursor(cursor, order_by)
+        cq.order_by(order_by).limit(limit)
+
+        accession_items = []
+
+        synonym_types = dict(
+            EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list(
+                'id', 'name'))
+
+        for accession in cq:
+            a = {
+                'id': accession.pk,
+                'name': accession.name,
+                'code': accession.code,
+                'primary_classification_entry': accession.primary_classification_entry_id,
+                'layout': accession.layout_id,
+                'descriptors': accession.descriptors,
+                'synonyms': {},
+                'primary_classification_entry_details': {
+                    'id': accession.primary_classification_entry.id,
+                    'name': accession.primary_classification_entry.name,
+                    'rank': accession.primary_classification_entry.rank_id,
+                }
+            }
+
+            for synonym in accession.synonyms.all():
+                synonym_type_name = synonym_types.get(synonym.synonym_type_id)
+                a['synonyms'][synonym_type_name] = {
+                    'id': synonym.id,
+                    'name': synonym.name,
+                    'synonym_type': synonym.synonym_type_id,
+                    'language': synonym.language
+                }
+
+            accession_items.append(a)
+
+        return columns, items
 
 
 class AccessionSynonym(EntitySynonym):

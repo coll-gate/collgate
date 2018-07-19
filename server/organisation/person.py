@@ -9,19 +9,18 @@
 # @details 
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import SuspiciousOperation
 from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from apps.descriptor.comment import CommentController
+from descriptor.comment import CommentController
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import Layout, Descriptor
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.cursor import CursorQuery
-from organisation.models import Organisation, Establishment, Person
+from organisation.models import Establishment, Person
 
 from .base import RestOrganisationModule
 from .establishment import RestEstablishmentId

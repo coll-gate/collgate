@@ -95,6 +95,10 @@ let View = AdvancedTable.extend({
             view.onLinkToPanel();
         });
 
+        contextView.on("accession:export", function () {
+            view.onExportList();
+        });
+
         View.__super__.onShowTab.apply(this, arguments);
     },
 
@@ -114,6 +118,24 @@ let View = AdvancedTable.extend({
     onLinkToPanel: function () {
         window.application.accession.controllers.accessionpanel.linkAccessions(
             this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+    },
+
+    onExportList: function() {
+        let columns = ['id'];  // @todo get selected columns
+
+        $.ajax({
+            type: "GET",
+            url: window.application.url(['main', 'export']),
+            dataType: 'json',
+            data: {
+                'app_label': 'accession',
+                'model': 'accession',
+                'format': '',
+                'columns': columns
+            }
+        }).done(function (data) {
+
+        });
     }
 });
 

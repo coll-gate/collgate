@@ -85,6 +85,21 @@ DESCRIPTORS = {
         },
         '__comment': 'Not necessary to declare a specific descriptor type. Can use a generic type defined in common group.'
     },
+    # 'donor_institution_name': {
+    #     'id': None,
+    #     'name': 'donor_institution_name',
+    #     'code': 'MCPD_DONORNAME',
+    #     'group_name': 'MCPD',
+    #     'label': {'en': 'Donnor name', 'fr': 'Nom du donateur'},
+    #     'can_delete': False,
+    #     'can_modify': False,
+    #     'description': 'Name of the donor institution of an accession, organisation establishment',
+    #     'format': {
+    #         'type': 'entity',
+    #         'model': 'organisation.establishment'
+    #     },
+    #     '__comment': 'Not necessary to declare a specific descriptor type. Can use a generic type defined in common group.'
+    # },
     'donor_accession_number': {
         'id': None,
         'name': 'donor_accession_number',

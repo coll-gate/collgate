@@ -525,19 +525,15 @@ def download_action_id_content(request, act_id):
         raise SuspiciousOperation(_("The step index has no data"))
 
     if file_format == 'csv':
-        mime_type = 'text/csv'
-        file_ext = ".csv"
         data = exporter.export_data_as_csv()
     elif file_format == 'xlsx':
-        mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        file_ext = ".xlsx"
         data = exporter.export_data_as_xslx()
     else:
         raise SuspiciousOperation("Invalid format")
 
-    file_name = "Action%sDataStep%i" % (act_id, step_index+1,) + file_ext
+    file_name = "Action%sDataStep%i" % (act_id, step_index+1,) + exporter.file_ext
 
-    response = StreamingHttpResponse(data, content_type=mime_type)
+    response = StreamingHttpResponse(data, content_type=exporter.mime_type)
     response['Content-Disposition'] = 'attachment; filename="' + file_name + '"'
     response['Content-Length'] = exporter.size
 

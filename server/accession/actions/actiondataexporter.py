@@ -25,7 +25,10 @@ class ActionDataExporter(object):
         self._action_controller = action_controller
         self._step_index = step_index
         self._columns = []
+
         self._size = 0
+        self._mime_type = ""
+        self._file_ext = ""
 
         data_format = self._action_controller.get_step_data_format(self._step_index)
         for f in data_format:
@@ -94,6 +97,9 @@ class ActionDataExporter(object):
         self._size = output.tell()
         output.seek(0, io.SEEK_SET)
 
+        self._mime_type = 'text/csv'
+        self._file_ext = ".csv"
+
         return output
 
     def export_data_as_xslx(self):
@@ -153,8 +159,19 @@ class ActionDataExporter(object):
         self._size = output.tell()
         output.seek(0, io.SEEK_SET)
 
+        self._mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        self._file_ext = ".xlsx"
+
         return output
 
     @property
     def size(self):
         return self._size
+
+    @property
+    def mime_type(self):
+        return self._mime_type
+
+    @property
+    def file_ext(self):
+        return self._file_ext

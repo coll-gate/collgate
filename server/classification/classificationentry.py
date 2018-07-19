@@ -17,7 +17,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from apps.descriptor.comment import CommentController
+from descriptor.comment import CommentController
 from classification import localsettings
 from classification.classification import RestClassificationClassificationId
 from descriptor.describable import DescriptorsBuilder
