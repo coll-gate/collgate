@@ -40,8 +40,8 @@ let View = Marionette.View.extend({
         "click @ui.create-panel": "panel:create",
         "click @ui.link-to-panel": "panel:link-batches",
         "click @ui.unlink-batches": "batches:unlink",
-        "click @ui.export": "batches:export-list",
-        "click @ui.import": "batches:import-list"
+        "click @ui.export-list": "batches:export-list",
+        "click @ui.import-list": "batches:import-list"
     },
 
     initialize: function (options) {

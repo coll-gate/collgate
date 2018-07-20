@@ -30,8 +30,8 @@ let View = Marionette.View.extend({
     },
 
     triggers: {
-        "click @ui.export": "classifications:export-list",
-        "click @ui.import": "classifications:import-list"
+        "click @ui.export-list": "classifications:export-list",
+        "click @ui.import-list": "classifications:import-list"
     },
 
     initialize: function(options) {

@@ -43,7 +43,8 @@ class CollGateMain(ApplicationMain):
             'profile',
             'language',
             'help',
-            'eventmessage'
+            'eventmessage',
+            'exporter'
             )
         )
 

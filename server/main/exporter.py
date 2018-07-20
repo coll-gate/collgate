@@ -116,7 +116,7 @@ class DataExporter(object):
         return self._file_ext
 
 
-@RestExport.def_auth_request(Method.GET, Format.JSON, parameters=('app_label', 'model', 'format', 'columns'))
+@RestExport.def_auth_request(Method.GET, Format.ANY, parameters=('app_label', 'model', 'format', 'columns[]'))
 def export_entity_for_model_and_options(request):
     """
     Export entity list in a list of 'format' type.
@@ -131,7 +131,7 @@ def export_entity_for_model_and_options(request):
     model = request.GET['model']
     validictory.validate(model, Entity.NAME_VALIDATOR)
 
-    columns = request.GET.get('columns', ['id'])
+    columns = request.GET.getlist('columns[]', ['id'])
     validictory.validate(model, COLUMNS_VALIDATOR)
 
     file_format = request.GET['format']
@@ -160,7 +160,7 @@ def export_entity_for_model_and_options(request):
     export_list = getattr(entity_model, 'export_list')
     if export_list and callable(export_list):
         cursor = None
-        columns, items = export_list(cursor, search, filters, order_by, limit, request.user)
+        columns, items = export_list(columns, cursor, search, filters, order_by, limit, request.user)
     else:
         # nothing to export
         columns, items = [], []

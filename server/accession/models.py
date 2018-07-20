@@ -250,8 +250,9 @@ class Accession(DescribableEntity):
         else:
             return default
 
-    def export_list(self, cursor, search, filters, order_by, limit, user):
-        columns = []
+    @classmethod
+    def export_list(cls, columns, cursor, search, filters, order_by, limit, user):
+        res_columns = []
         items = []
 
         if not order_by:
@@ -306,33 +307,46 @@ class Accession(DescribableEntity):
                 'id', 'name'))
 
         for accession in cq:
-            a = {
-                'id': accession.pk,
-                'name': accession.name,
-                'code': accession.code,
-                'primary_classification_entry': accession.primary_classification_entry_id,
-                'layout': accession.layout_id,
-                'descriptors': accession.descriptors,
-                'synonyms': {},
-                'primary_classification_entry_details': {
-                    'id': accession.primary_classification_entry.id,
-                    'name': accession.primary_classification_entry.name,
-                    'rank': accession.primary_classification_entry.rank_id,
-                }
-            }
+            item = []
 
-            for synonym in accession.synonyms.all():
-                synonym_type_name = synonym_types.get(synonym.synonym_type_id)
-                a['synonyms'][synonym_type_name] = {
-                    'id': synonym.id,
-                    'name': synonym.name,
-                    'synonym_type': synonym.synonym_type_id,
-                    'language': synonym.language
-                }
+            for col in columns:
+                if col == 'id':
+                    item.append(str(accession.pk))
+                elif col == 'name':
+                    item.append(accession.name)
+                elif col == 'code':
+                    item.append(accession.code)
+                elif col == 'primary_classification_entry':
+                    item.append(str(accession.primary_classification_entry_id))
+                    # 'id': accession.primary_classification_entry.id,
+                    # 'name': accession.primary_classification_entry.name,
+                    # 'rank': accession.primary_classification_entry.rank_id,
+                elif col == 'layout':
+                    item.append(str(accession.layout_id))
+                    # layout name ??
+                elif col.startswith('#'):
+                    item.append("")  # descriptors
+                elif col.startswith('&'):
+                    item.append("")  # synonyms
+                    # for synonym in accession.synonyms.all():
+                    #     synonym_type_name = synonym_types.get(synonym.synonym_type_id)
+                    #     a['synonyms'][synonym_type_name] = {
+                    #         'id': synonym.id,
+                    #         'name': synonym.name,
+                    #         'synonym_type': synonym.synonym_type_id,
+                    #         'language': synonym.language
+                    #     }
+                elif col.startswith('$'):
+                    item.append("")  # format
+                elif col.startswith('@'):
+                    item.append("")  # label
+                else:
+                    item.append("")
 
-            accession_items.append(a)
+            items.append(item)
 
-        return columns, items
+        res_columns = columns
+        return res_columns, items
 
 
 class AccessionSynonym(EntitySynonym):
