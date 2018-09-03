@@ -125,55 +125,10 @@ let View = AdvancedTable.extend({
     },
 
     onExportList: function() {
-        // columns from current displayed's
-        let columns = this.displayedColumns;
+        let ExportDialog = require('../../../main/views/exportdialog');
+        let exportDialog = new ExportDialog({collection: this.collection, exportedColumns: this.displayedColumns});
 
-        // @todo a dialog asking export format
-        let dataFormat = 'csv';
-
-        if (dataFormat === 'csv') {
-            // download the document as csv
-            let form = $('<form></form>');
-
-            form.append('<input type="text" name="app_label" value="accession">');
-            form.append('<input type="text" name="model" value="accession">');
-            form.append('<input type="text" name="format" value="csv">');
-
-            for (let col in columns) {
-                form.append('<input type="text" name="columns[]" value="' + columns[col] + '">');
-            }
-
-            form.attr('action', window.application.url(['main', 'export']))
-            .appendTo('body').submit().remove();
-        } else if (dataFormat === 'xlsx') {
-            // download the document as xlsx
-            let form = $('<form></form>');
-
-            form.append('<input type="text" name="app_label" value="accession">');
-            form.append('<input type="text" name="model" value="accession">');
-            form.append('<input type="text" name="format" value="xlsx">');
-
-            for (let col in columns) {
-                form.append('<input type="text" name="columns[]" value="' + columns[col] + '">');
-            }
-
-            form.attr('action', window.application.url(['main', 'export']))
-            .appendTo('body').submit().remove();
-        }
-
-        $.ajax({
-            type: "GET",
-            url: window.application.url(['main', 'export']),
-            dataType: 'json',
-            data: {
-                'app_label': 'accession',
-                'model': 'accession',
-                'format': 'csv',
-                'columns': columns
-            }
-        }).done(function (data) {
-
-        });
+        exportDialog.render();
     },
 
     onImportList: function() {

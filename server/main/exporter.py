@@ -49,25 +49,41 @@ class DataExporter(object):
     def __init__(self, columns, items):
         self._columns = columns
         self._items = items
+        self._columns_status = []
 
         self._size = 0
         self._mime_type = ""
         self._file_ext = ""
 
-        self.num_cols = len(self._columns)
+        # check if the model support any columns
+        for column in self._columns:
+            status = True
+
+            # @todo for now only remove the special 'select' column
+            if column == 'select':
+                status = False
+
+            self._columns_status.append(status)
+
+        self._num_cols = len(self._columns)
 
     def export_data_as_csv(self):
         data = self._items
 
         output = io.BytesIO()
-        header = ','.join(self._columns) + '\n'
+        cols = self.filter_columns(self._columns)
+        header = ','.join(cols) + '\n'
+        # header = ','.join(self._columns) + '\n'
         output.write(header.encode('utf-8'))
 
         for row in data:
-            if len(row) != self.num_cols:
+            if len(row) != self._num_cols:
                 raise SuspiciousOperation("Row have a different number of columns than the header")
 
-            output.write((','.join(row) + '\n').encode('utf-8'))
+            cols = self.filter_columns(row)
+
+            # output.write((','.join(row) + '\n').encode('utf-8'))
+            output.write((','.join(cols) + '\n').encode('utf-8'))
 
         self._size = output.tell()
         output.seek(0, io.SEEK_SET)
@@ -85,13 +101,18 @@ class DataExporter(object):
         wb = Workbook(write_only=True)
         ws = wb.create_sheet()
 
-        ws.append(self._columns)
+        cols = self.filter_columns(self._columns)
+        ws.append(cols)
+        # ws.append(self._columns)
 
         for row in data:
-            if len(row) != self.num_cols:
+            if len(row) != self._num_cols:
                 raise SuspiciousOperation("Row have a different number of columns than the header")
 
-            ws.append(row)
+            cols = self.filter_columns(row)
+
+            # ws.append(row)
+            ws.append(cols)
 
         output.write(save_virtual_workbook(wb))
 
@@ -102,6 +123,24 @@ class DataExporter(object):
         self._file_ext = ".xlsx"
 
         return output
+
+    def filter_columns(self, row):
+        """
+        Only filtered columns are returned
+        """
+        i = 0
+        cols = []
+        for c in self._columns_status:
+            if c:
+                cols.append(row[i])
+
+            i += 1
+
+        return cols
+
+    @property
+    def num_cols(self):
+        return self._num_cols
 
     @property
     def size(self):
@@ -123,7 +162,7 @@ def export_entity_for_model_and_options(request):
     @note EntityModelClass.export_list() must return a list of results.
     User of the request is used to check for permissions.
     """
-    limit = int_arg(request.GET.get('limit', 1000))
+    limit = int_arg(request.GET.get('limit', 100000))
 
     app_label = request.GET['app_label']
     validictory.validate(app_label, Entity.NAME_VALIDATOR)

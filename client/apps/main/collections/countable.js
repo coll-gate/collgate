@@ -18,8 +18,8 @@ let Collection = Backbone.Collection.extend({
     initialize: function (model, options) {
         options || (options = {cacheable: false});
 
-        this.filters = (options.filters || {});
-        this.search = (options.search || {});
+        this.filters = (options.filters || []);
+        this.search = (options.search || []);
 
         if (options.cacheable) {
             window.application.main.cache.registerCollection(this);

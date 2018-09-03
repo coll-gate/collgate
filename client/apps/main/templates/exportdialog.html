@@ -1,0 +1,31 @@
+<!--
+ - @file exportdialog.html
+ - @brief
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2018-08-31
+ - @copyright Copyright (c) 2018 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= _t("Export dialog") %></h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="control-label"><%- _t("Format") %></label>
+                <select class="form-control" name="format">
+                    <option value="csv"><%- _t("CSV (comma separated tab)") %></option>
+                    <option value="xlsx"><%- _t("XLSX Excel format") %></option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%- _t("Cancel") %></button>
+            <button type="button" class="btn btn-success confirm"><%- _t("Export") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
