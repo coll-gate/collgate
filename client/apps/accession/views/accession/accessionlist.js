@@ -95,11 +95,11 @@ let View = AdvancedTable.extend({
             view.onLinkToPanel();
         });
 
-        contextView.on("accessions:export-list", function () {
+        contextView.on("accession:export-list", function () {
             view.onExportList();
         });
 
-        contextView.on("accessions:import-list", function () {
+        contextView.on("accession:import-list", function () {
             view.onImportList();
         });
 

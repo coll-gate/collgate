@@ -160,7 +160,7 @@ AUTHENTICATION_BACKENDS = (
 LDAPS = {
     'default': {
         'HOST': "ldap-authentification.inra.fr",
-        'BASE_DN': "ou=personnes,dc=inra,dc=fr",
+        'BASE_DN': "ou=personnes,dc=inra,dc=fr",   # ou=clermont-ferrand,ou=personnes,dc=inra,dc=fr
         'OPTIONS': {
             'auto_add_user': True,
             'search_filter': "()",
@@ -212,6 +212,7 @@ INSTALLED_APPS = (
     'medialibrary',
     'classification',
     'accession',
+    'printer'
 )
 
 APPLICATIONS = {

@@ -89,7 +89,8 @@ INSTALLED_APPS = (
     'geolocation',
     'organisation',
     'classification',
-    'accession'
+    'accession',
+    'printer'
 )
 
 LOGGING = {

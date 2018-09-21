@@ -38,7 +38,9 @@ let View = AdvancedTable.extend({
         contextLayout.showChildView('title', new TitleView({title: _t("Classification actions"), glyphicon: 'fa-wrench'}));
 
         let actions = [
-            'add'
+            'add',
+            'export-list',
+            'import-list'
         ];
 
         let ClassificationListContextView = require('./classificationlistcontext');
@@ -48,6 +50,14 @@ let View = AdvancedTable.extend({
         contextView.on("classification:create", function () {
             self.onCreateClassification();
         });
+
+        contextView.on("classification:export-list", function () {
+            self.onExportList();
+        });
+
+        contextView.on("classification:import-list", function () {
+            self.onImportList();
+        });
     },
 
     onBeforeDetach: function () {
@@ -56,6 +66,17 @@ let View = AdvancedTable.extend({
 
     onCreateClassification: function () {
         window.application.classification.controllers.classification.create(this.collection);
+    },
+
+    onExportList: function() {
+        let ExportDialog = require('../../main/views/exportdialog');
+        let exportDialog = new ExportDialog({collection: this.collection, exportedColumns: this.displayedColumns});
+
+        exportDialog.render();
+    },
+
+    onImportList: function() {
+        alert("not yet implemented");
     }
 });
 

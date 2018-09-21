@@ -436,7 +436,7 @@ initIndex();
         window.applicationUrl = '{% collgate "webpack_host" %}:{% collgate "webpack_port" %}{% collgate "webpack_entry" %}';
     {% endif %}
 {% else %}
-    window.applicationUrl = {% static 'main/js/app.min.js' %}; {# <script src="{% static 'main/js/app.min.js' %}"></script> #}
+    window.applicationUrl = "{% static 'main/js/app.min.js' %}"; {# <script src="{% static 'main/js/app.min.js' %}"></script> #}
 {% endif %}
 
     // load application and setup

@@ -6,11 +6,7 @@
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
-
-"""
-coll-gate geolocation module models.
-"""
+# @details coll-gate geolocation module models.
 
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -85,4 +81,3 @@ class State(models.Model):
     source = models.CharField(max_length=1024, null=False, blank=False, unique=True, db_index=True)
     last_modified = models.DateTimeField(null=False, blank=False)
     size = models.BigIntegerField(null=True, blank=True)
-

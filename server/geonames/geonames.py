@@ -6,11 +6,7 @@
 # @date 2017-01-03
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
-
-"""
-Geonames Source Manager
-"""
+# @details Geonames Source Manager
 
 from __future__ import unicode_literals
 
@@ -45,8 +41,7 @@ class Geonames(object):
             source_stream = urlopen(source)
             self.size = int(source_stream.headers['content-length'])
             self.last_modified = eut.parsedate_to_datetime(
-                source_stream.headers['last-modified']
-            )
+                source_stream.headers['last-modified'])
 
             if not self._need_import() and not force:
                 self.need_run = False
@@ -180,4 +175,3 @@ class Geonames(object):
                 return True
         else:
             return True
-

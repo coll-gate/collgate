@@ -6,11 +6,7 @@
 # @date 2017-01-03
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
-
-"""
-Install Country
-"""
+# @details Install Country
 
 from django.core.management import BaseCommand
 from geonames.appsettings import COUNTRY_SOURCES, ICountry, DATA_DIR
@@ -211,4 +207,3 @@ class Command(BaseCommand):
         display_status = display_status + str(added) + Style.RESET_ALL
 
         return "Added: %s | Country: %s" % (display_status, country)
-

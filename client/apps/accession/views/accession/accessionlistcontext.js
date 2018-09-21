@@ -43,8 +43,8 @@ let View = Marionette.View.extend({
         "click @ui.link-to-panel": "panel:link-accessions",
         "click @ui.unlink-accessions": "accessions:unlink",
         "click @ui.action-toggle-mode": "action:toggle-mode",
-        "click @ui.export-list": "accessions:export-list",
-        "click @ui.import-list": "accessions:import-list"
+        "click @ui.export-list": "accession:export-list",
+        "click @ui.import-list": "accession:import-list"
     },
 
     initialize: function(options) {

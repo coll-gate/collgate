@@ -72,7 +72,8 @@ INSTALLED_APPS = (
     'igdectk.common',
     'channels',
     'main',
-    'tcpserver'
+    'tcpserver',
+    'printer'
 )
 
 LOGGING = {

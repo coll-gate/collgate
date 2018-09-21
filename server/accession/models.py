@@ -607,8 +607,18 @@ class Action(Entity):
     And considers a suit of steps, as a sequential pipeline.
     """
 
+    # free name, starting and finishing by a non space character and at least 3 length
+    NAME_RE = re.compile(r'^\S+.+\S+$', re.IGNORECASE)
+
+    # default name validator
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 32, "pattern": "^\S+.+\S+$"}
+
+    # default name validator optional
+    NAME_VALIDATOR_OPTIONAL = {
+        "type": "string", "minLength": 3, "maxLength": 32, "pattern": "^\S+.+\S+$", "required": False}
+
     # display name
-    name = models.CharField(max_length=128, db_index=True)
+    name = models.CharField(max_length=128, unique=True, db_index=True)
 
     # actor of the action
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
@@ -746,6 +756,16 @@ class Panel(Entity):
     """
     Panel abstract model
     """
+
+    # free name, starting and finishing by a non space character and at least 3 length
+    NAME_RE = re.compile(r'^\S+.+\S+$', re.IGNORECASE)
+
+    # default name validator
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 32, "pattern": "^\S+.+\S+$"}
+
+    # default name validator optional
+    NAME_VALIDATOR_OPTIONAL = {
+        "type": "string", "minLength": 3, "maxLength": 32, "pattern": "^\S+.+\S+$", "required": False}
 
     # unique name of the panel
     name = models.CharField(unique=True, max_length=255, db_index=True)
