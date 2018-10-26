@@ -31,4 +31,7 @@ class CollGatePrinter(ApplicationMain):
             )
         )
 
+        # no client counterpart
+        printer_module.client_export = False
+
         module_manager.register_module(printer_module)

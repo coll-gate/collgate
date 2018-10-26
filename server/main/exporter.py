@@ -7,6 +7,7 @@
 # @copyright Copyright (c) 2018 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details Controller to export a list of entities, with actives columns and specific options (sort, filters...)
+
 import datetime
 import io
 import json
@@ -73,7 +74,6 @@ class DataExporter(object):
         output = io.BytesIO()
         cols = self.filter_columns(self._columns)
         header = ','.join(cols) + '\n'
-        # header = ','.join(self._columns) + '\n'
         output.write(header.encode('utf-8'))
 
         for row in data:
@@ -81,8 +81,6 @@ class DataExporter(object):
                 raise SuspiciousOperation("Row have a different number of columns than the header")
 
             cols = self.filter_columns(row)
-
-            # output.write((','.join(row) + '\n').encode('utf-8'))
             output.write((','.join(cols) + '\n').encode('utf-8'))
 
         self._size = output.tell()
@@ -103,15 +101,12 @@ class DataExporter(object):
 
         cols = self.filter_columns(self._columns)
         ws.append(cols)
-        # ws.append(self._columns)
 
         for row in data:
             if len(row) != self._num_cols:
                 raise SuspiciousOperation("Row have a different number of columns than the header")
 
             cols = self.filter_columns(row)
-
-            # ws.append(row)
             ws.append(cols)
 
         output.write(save_virtual_workbook(wb))

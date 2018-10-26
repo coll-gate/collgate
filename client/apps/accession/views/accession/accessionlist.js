@@ -126,7 +126,10 @@ let View = AdvancedTable.extend({
 
     onExportList: function() {
         let ExportDialog = require('../../../main/views/exportdialog');
-        let exportDialog = new ExportDialog({collection: this.collection, exportedColumns: this.displayedColumns});
+        let exportDialog = new ExportDialog({
+            collection: this.collection,
+            contentType: 'accession.accession',
+            exportedColumns: this.displayedColumns});
 
         exportDialog.render();
     },

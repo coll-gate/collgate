@@ -106,17 +106,31 @@ let View = AdvancedTable.extend({
         let contextView = new ClassificationEntryListContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
-        contextView.on("classifications:import-list", function () {
-            // view.onImportList();
+        contextView.on("classification:import-list", function () {
+            self.onImportList();
         });
 
-        contextView.on("classifications:import-list", function () {
-            // view.onExportList();
+        contextView.on("classification:export-list", function () {
+            self.onExportList();
         });
     },
 
     onBeforeDetach: function() {
         window.application.main.defaultRightView();
+    },
+
+    onExportList: function() {
+        let ExportDialog = require('../../main/views/exportdialog');
+        let exportDialog = new ExportDialog({
+            collection: this.collection,
+            contentType: 'classification.classificationentry',
+            exportedColumns: this.displayedColumns});
+
+        exportDialog.render();
+    },
+
+    onImportList: function() {
+        alert("not yet implemented");
     }
 });
 

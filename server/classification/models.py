@@ -12,7 +12,7 @@ import re
 
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.utils import translation
 
 from django.utils.translation import ugettext_lazy as _
@@ -442,6 +442,99 @@ class ClassificationEntry(Entity):
                 return True
 
         return False
+
+    @classmethod
+    def export_list(cls, columns, cursor, search, filters, order_by, limit, user):
+        res_columns = []
+        items = []
+
+        if not order_by:
+            order_by = ['id']
+
+        from main.cursor import CursorQuery
+        cq = CursorQuery(ClassificationEntry)
+
+        if search:
+            cq.filter(search)
+
+        if filters:
+            cq.filter(filters)
+
+        cq.prefetch_related(Prefetch(
+            "synonyms",
+            queryset=ClassificationEntrySynonym.objects.all().order_by('synonym_type', 'language')))
+
+        cq.select_related('parent->name', 'parent->rank')
+
+        cq.cursor(cursor, order_by)
+        cq.order_by(order_by).limit(limit)
+
+        items = []
+
+        for classification_entry in cq:
+            item = []
+
+            for col in columns:
+                if col == 'id':
+                    item.append(str(classification_entry.pk))
+                elif col == 'name':
+                    item.append(classification_entry.name)
+                elif col == 'parent':
+                    item.append(classification_entry.parent.name)
+                elif col == 'rank':
+                    item.append(classification_entry.rank.name)
+                elif col == 'layout':
+                    item.append(str(classification_entry.layout.name))
+                # elif col == 'parent_list':
+                #     item.append(classification_entry.parent_list)
+                # elif col == 'synonyms':
+                #     item.append(str(classification_entry.parent_id))
+                elif col.startswith('#'):
+                    # descriptors (@todo how to format at this level...)
+                    descr = classification_entry.descriptors[col[1:]]
+                    if isinstance(descr, list):
+                        v = '-'.join([str(x) for x in descr])
+                    else:
+                        v = str(descr)
+
+                    item.append(v)
+                elif col.startswith('&'):
+                    item.append("")  # synonyms
+                    # for synonym in accession.synonyms.all():
+                    #     synonym_type_name = synonym_types.get(synonym.synonym_type_id)
+                    #     a['synonyms'][synonym_type_name] = {
+                    #         'id': synonym.id,
+                    #         'name': synonym.name,
+                    #         'synonym_type': synonym.synonym_type_id,
+                    #         'language': synonym.language
+                    #     }
+                elif col.startswith('$'):
+                    item.append("")  # format
+                elif col.startswith('@'):
+                    item.append("")  # label
+                else:
+                    item.append("")
+
+            # if classification_entry.parent:
+            #     c['parent_details'] = {
+            #         'id': classification_entry.parent.id,
+            #         'name': classification_entry.parent.name,
+            #         'rank': classification_entry.parent.rank_id
+            #     }
+
+            # for synonym in classification_entry.synonyms.all():
+            #     synonym_type = EntitySynonymType.objects.get(id=synonym.synonym_type_id)
+            #     c['synonyms'][synonym_type.name] = {
+            #         'id': synonym.id,
+            #         'name': synonym.name,
+            #         'synonym_type': synonym.synonym_type_id,
+            #         'language': synonym.language
+            #     }
+
+            items.append(item)
+
+        res_columns = columns
+        return res_columns, items
 
 
 class ClassificationEntrySynonym(EntitySynonym):

@@ -191,12 +191,6 @@ def get_classification_entry_list(request):
         filters = json.loads(request.GET['filters'])
         cq.filter(filters)
 
-    # if request.GET.get('filters'):
-    #     cq.filter(json.loads(request.GET['filters']))
-
-    # if request.GET.get('search'):
-    #     cq.filter(json.loads(request.GET['search']))
-
     cq.prefetch_related(Prefetch(
             "synonyms",
             queryset=ClassificationEntrySynonym.objects.all().order_by('synonym_type', 'language')))

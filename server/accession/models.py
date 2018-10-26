@@ -300,11 +300,7 @@ class Accession(DescribableEntity):
         cq.cursor(cursor, order_by)
         cq.order_by(order_by).limit(limit)
 
-        accession_items = []
-
-        synonym_types = dict(
-            EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list(
-                'id', 'name'))
+        synonym_types = dict(EntitySynonymType.objects.filter(target_model=ContentType.objects.get_for_model(Accession)).values_list('id', 'name'))
 
         for accession in cq:
             item = []
@@ -317,25 +313,28 @@ class Accession(DescribableEntity):
                 elif col == 'code':
                     item.append(accession.code)
                 elif col == 'primary_classification_entry':
-                    item.append(str(accession.primary_classification_entry_id))
-                    # 'id': accession.primary_classification_entry.id,
-                    # 'name': accession.primary_classification_entry.name,
-                    # 'rank': accession.primary_classification_entry.rank_id,
+                    item.append(str(accession.primary_classification_entry.name))
                 elif col == 'layout':
-                    item.append(str(accession.layout_id))
-                    # layout name ??
+                    item.append(str(accession.layout.name))
                 elif col.startswith('#'):
-                    item.append("")  # descriptors
+                    # descriptors (@todo how to format at this level...)
+                    descr = accession.descriptors[col[1:]]
+                    if isinstance(descr, list):
+                        v = '-'.join([str(x) for x in descr])
+                    else:
+                        v = str(descr)
+
+                    item.append(v)
                 elif col.startswith('&'):
-                    item.append("")  # synonyms
-                    # for synonym in accession.synonyms.all():
-                    #     synonym_type_name = synonym_types.get(synonym.synonym_type_id)
-                    #     a['synonyms'][synonym_type_name] = {
-                    #         'id': synonym.id,
-                    #         'name': synonym.name,
-                    #         'synonym_type': synonym.synonym_type_id,
-                    #         'language': synonym.language
-                    #     }
+                    # synonyms
+                    vals = []
+
+                    for synonym in accession.synonyms.all():
+                        synonym_type_name = synonym_types.get(synonym.synonym_type_id)
+                        if col[1:] == synonym_type_name:
+                            vals.append(synonym.language + ':' + synonym.name)
+
+                    item.append("/".join(vals))
                 elif col.startswith('$'):
                     item.append("")  # format
                 elif col.startswith('@'):

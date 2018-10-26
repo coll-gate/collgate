@@ -16,7 +16,6 @@ DEBUG = False
 
 ADMINS = (
     ('admin_fscherma', 'frederic.scherma@inra.fr'),
-    ('admin_nguilhot', 'nicolas.guilhot@inra.fr'),
 )
 
 MANAGERS = ADMINS

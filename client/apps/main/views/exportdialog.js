@@ -30,6 +30,7 @@ let View = Dialog.extend({
 
         this.collection = options.collection;
         this.exportedColumns = options.exportedColumns;
+        this.contentType = options.contentType;
 
         this.exportFormat = null;
     },
@@ -63,8 +64,11 @@ let View = Dialog.extend({
         let dataFormat = this.ui.format.selectpicker('val');
         let form = $('<form></form>');
 
-        form.append('<input type="text" name="app_label" value="accession">');
-        form.append('<input type="text" name="model" value="accession">');
+        let appName = this.contentType.split('.')[0];
+        let modelName = this.contentType.split('.')[1];
+
+        form.append('<input type="text" name="app_label" value="' + appName + '">');
+        form.append('<input type="text" name="model" value="' + modelName + '">');
 
         if (this.collection.filters && !_.isEmpty(this.collection.filters)) {
             let p = [];
