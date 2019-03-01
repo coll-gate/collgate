@@ -469,8 +469,6 @@ class ClassificationEntry(Entity):
         cq.cursor(cursor, order_by)
         cq.order_by(order_by).limit(limit)
 
-        items = []
-
         for classification_entry in cq:
             item = []
 
